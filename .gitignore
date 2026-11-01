@@ -3,3 +3,4 @@ node_modules/
 **/frames/
 *.part.mp4
 __pycache__/
+news/*/out/

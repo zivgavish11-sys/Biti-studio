@@ -69,6 +69,26 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 ### 4) Performance
 Also when Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, 3-second hold, avg % watched, retention drop point, follows, saves, shares/sends) and write 1–2 learnings, diagnosed per playbook §8 (early drop = hook, middle drop = missing re-hook). Use them for future ideas and hooks. Commit and push.
 
+### 5) Daily news carousel ("חדשות היום") — every day, own scheduled task (08:20 Manila)
+Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 Israel); the daily news carousel is for people who already follow.
+1. **Collect** (web search, extended mode): robotics news from the last ~24–36 h (humanoids, robotaxis, drones, home robots, AI-in-robots, Israeli robotics).
+   Pick **only 2–4 genuinely interesting stories** — skip boring ones; fewer slides beat a dull slide. Verify every fact on 2 sources; phrase reports as reports ("לפי הדיווח").
+   Avoid stories already posted (check `news/*/spec.json`). If one story is exceptional, ALSO propose a separate in-depth carousel (4–5 slides: what happened, why it matters, what's next).
+2. **Write** `news/YYYYMMDD/spec.json` (format: header of `engine/news/index.html`; example: `news/20261101/spec.json`):
+   cover (question title + 1 bullet per story) → 1 slide per story (big `stat`, short title with one `pill`/`pink` word, ≤ 3 lines text, `source`) → follow slide.
+   Hebrew, short and punchy. Latin names are fine (Tesla, Figure). Vary `scene` per slide: `anim` (Wave Idle No Yes ThumbsUp Dance Jump Running Walking Punch Sitting),
+   `color` (cyan/pink/purple/orange), `decor` (city/panels), `count` (crowd), `models` (any glb under engine/assets/models — search GitHub for fitting free models per story, CC0/MIT/CC-BY only, log them in CREDITS.md).
+3. **Render**: `python3 tools/news.py render news/YYYYMMDD` → `out/slide-N.jpg` + `out/sheet.jpg`. Look at the sheet: no text overflow, no object over the top bar/stat, nothing blown out.
+4. **Real photos (optional, tested 2026-11-02: works)**: Metricool downloads any public image URL itself. For a story, take the `og:image` of the **official** press release / company newsroom
+   (ask WebFetch for the verbatim og:image URL). Insert it into `media` right after that story's slide and credit it in the caption. Skip URLs that look AI-generated (e.g. "-gen"), logos, or tiny images.
+5. **Upload**: `python3 tools/news.py upload news/YYYYMMDD <Biti-media clone>` → prints the public slide URLs.
+6. **Approval**: send Ziv the slides (SendUserFile) + caption + the real-photo links (SendUserMessage) and wait for his OK. Never schedule without it.
+7. **Schedule** after OK: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok, media = slide URLs (+ photos),
+   `instagramData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title, plain text>"}`, text = caption, `firstCommentText` = the question.
+   If 12:00 Israel already passed, ask Ziv for a new time. Send him the plannerUrl.
+8. Commit `news/YYYYMMDD/spec.json` (not out/). Next day: `news.py clean <prev day> <media repo>`.
+Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
+
 ## Visual rules (learned the hard way — follow them)
 - Style: dark navy neon 3D (cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff). Same for every episode = brand.
 - **First frame is the thumbnail**: hook title visible from frame 0, scene already beautiful, nothing blown out. No white flash at the start.
@@ -88,4 +108,5 @@ Also when Ziv sends stats screenshots: log them to `state/performance.md` (episo
 - `engine/concept/` — morning concept card page.
 - `tools/align.py`, `tools/render.py`, `tools/music.py` (new lo-fi track per episode), `tools/sfx.py`, `tools/build.sh`, `tools/concept.py`.
 - `state/` — episodes.json, topics.md, performance.md.
+- `engine/news/index.html` + `tools/news.py` + `news/YYYYMMDD/spec.json` — daily news carousel.
 - Heavy outputs (`out/`, `frames/`) are git-ignored; never commit mp4 files.

@@ -1,0 +1,142 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Rubik;src:url(/engine/assets/fonts/Rubik_400Regular.ttf);font-weight:400}
+@font-face{font-family:Rubik;src:url(/engine/assets/fonts/Rubik_700Bold.ttf);font-weight:700}
+:root{--cyan:#2ee6ff;--pink:#ff5fd2;--orange:#ffa53a;--purple:#6b5cff;--navy:#05061a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1350px;overflow:hidden;background:var(--navy);font-family:Rubik,sans-serif;color:#fff}
+#c{position:absolute;left:0;top:0;width:1080px;height:1350px}
+.ov{position:absolute;inset:0}
+#shade{background:linear-gradient(180deg,rgba(5,6,26,.0) 0%,rgba(5,6,26,0) 42%,rgba(5,6,26,.82) 58%,rgba(5,6,26,.97) 70%,#05061a 100%)}
+#frame{inset:22px;border-radius:44px;border:3px solid transparent;
+  background:linear-gradient(#0000,#0000) padding-box,linear-gradient(135deg,var(--cyan),var(--purple) 45%,var(--pink)) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);mask:linear-gradient(#000 0 0) padding-box exclude,linear-gradient(#000 0 0);
+  filter:drop-shadow(0 0 14px rgba(46,230,255,.55))}
+#top{position:absolute;top:58px;left:64px;right:64px;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:16px;font-weight:700;font-size:34px}
+.brand img{width:64px;height:64px;border-radius:50%;box-shadow:0 0 18px rgba(46,230,255,.6)}
+.tag{font-size:30px;font-weight:700;padding:10px 26px;border-radius:40px;background:rgba(255,95,210,.16);border:2px solid var(--pink);color:#ffd2f2;box-shadow:0 0 18px rgba(255,95,210,.35)}
+#stat{position:absolute;top:150px;left:64px;font-weight:700;font-size:120px;line-height:1;direction:rtl;
+  color:#fff;text-shadow:0 0 22px var(--c,var(--cyan)),0 0 60px var(--c,var(--cyan))}
+#stat small{display:block;font-size:36px;font-weight:700;margin-top:10px;color:#cfe9ff;text-shadow:0 0 12px rgba(0,0,0,.8)}
+#bottom{position:absolute;left:72px;right:72px;bottom:96px}
+.num{display:inline-block;font-size:30px;font-weight:700;color:var(--navy);background:var(--cyan);padding:6px 20px;border-radius:30px;margin-bottom:22px;box-shadow:0 0 20px rgba(46,230,255,.6)}
+h1{font-size:66px;line-height:1.14;font-weight:700;margin-bottom:22px}
+h1 .pill{color:var(--navy);background:var(--cyan);padding:0 16px;border-radius:18px;box-shadow:0 0 22px rgba(46,230,255,.7)}
+h1 .pink{color:var(--pink);text-shadow:0 0 18px rgba(255,95,210,.7)}
+p{font-size:36px;line-height:1.42;color:#c9d2ff}
+ul{list-style:none;margin-top:6px}
+li{font-size:38px;line-height:1.35;color:#dfe5ff;margin:14px 0;padding-right:44px;position:relative}
+li:before{content:"";position:absolute;right:0;top:16px;width:20px;height:20px;border-radius:50%;background:var(--pink);box-shadow:0 0 14px var(--pink)}
+.src{margin-top:24px;font-size:26px;color:#8b93c9}
+#swipe{position:absolute;bottom:42px;left:72px;font-size:28px;font-weight:700;color:var(--cyan);letter-spacing:1px;opacity:.9}
+.follow h1{font-size:84px;text-align:center}
+.follow p{text-align:center;font-size:40px}
+.handle{display:flex;justify-content:center;align-items:center;gap:20px;margin-top:34px;font-size:48px;font-weight:700}
+.handle img{width:92px;height:92px;border-radius:50%;box-shadow:0 0 26px rgba(46,230,255,.8)}
+</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<div id="shade" class="ov"></div>
+<div id="frame" class="ov"></div>
+<div id="top"><div class="brand"><img src="/engine/assets/logo.jpg">Robotics Israel</div><div class="tag" id="tag"></div></div>
+<div id="stat"></div>
+<div id="bottom"></div>
+<div id="swipe"></div>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+/* Daily news slide. /engine/news/index.html?spec=/news/20261101/spec.json&i=0
+   spec.json: {date_label, slides:[{type:'cover'|'story'|'follow', title, text|bullets, stat, statSub, statColor, source,
+                scene:{anim, count, color, models:[{name,x,z,scale,rot}], cam:[x,y,z], target:[x,y,z]}}]} */
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const q = new URLSearchParams(location.search);
+const spec = await (await fetch(q.get('spec'))).json();
+const i = +(q.get('i') || 0), S = spec.slides[i], N = spec.slides.length;
+const COL = {cyan: 0x2ee6ff, pink: 0xff5fd2, orange: 0xffa53a, purple: 0x6b5cff};
+const col = c => COL[c] ?? (c ? +c : COL.cyan);
+const $ = id => document.getElementById(id);
+
+// ---------- text ----------
+$('tag').textContent = spec.date_label || 'חדשות רובוטים';
+const nStories = spec.slides.filter(s => s.type === 'story').length;
+const storyIdx = spec.slides.slice(0, i + 1).filter(s => s.type === 'story').length;
+if (S.stat) { $('stat').innerHTML = `<bdi>${S.stat}</bdi>` + (S.statSub ? `<small>${S.statSub}</small>` : ''); $('stat').style.setProperty('--c', '#' + col(S.statColor).toString(16).padStart(6, '0')); }
+if (S.type === 'follow') {
+  $('bottom').className = 'follow';
+  $('bottom').innerHTML = `<h1>${S.title || 'עקבו אחרינו<br>לעוד חדשות'}</h1><p>${S.text || 'כל יום, כל מה שקרה בעולם הרובוטים, בעברית'}</p>
+    <div class="handle"><img src="/engine/assets/logo.jpg"><span dir="ltr">@robotics.israel</span></div>`;
+} else {
+  const num = S.type === 'story' ? `<div class="num">${storyIdx}/${nStories}</div>` : '';
+  const body = S.bullets ? `<ul>${S.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : (S.text ? `<p>${S.text}</p>` : '');
+  $('bottom').innerHTML = `${num}<h1>${S.title}</h1>${body}${S.source ? `<div class="src">מקור: ${S.source}</div>` : ''}`;
+  $('swipe').textContent = i < N - 1 ? '← החליקו' : '';
+}
+
+// ---------- 3D ----------
+const W = 1080, H = 1350;
+const renderer = new THREE.WebGLRenderer({canvas: $('c'), antialias: true, preserveDrawingBuffer: true});
+renderer.setSize(W, H, false); renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x05061a); scene.fog = new THREE.FogExp2(0x070a24, 0.035);
+const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.18;
+scene.add(new THREE.AmbientLight(0x7b7cff, 0.45));
+const dl = new THREE.DirectionalLight(0xc8d0ff, 0.8); dl.position.set(-10, 30, 10); scene.add(dl);
+const sc = S.scene || {}; const accent = col(sc.color || (S.type === 'follow' ? 'pink' : 'cyan'));
+const rim = new THREE.PointLight(accent, 30, 30); rim.position.set(3, 4, -3); scene.add(rim);
+const cam = new THREE.PerspectiveCamera(42, W / H, 0.1, 500);
+const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, cam));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), (S.scene?.count || 1) > 1 ? 0.35 : 0.6, 0.45, 0.7)); composer.addPass(new OutputPass());
+
+const grid = new THREE.GridHelper(80, 80, 0x3a4cff, 0x1a2250); grid.material.transparent = true; grid.material.opacity = .45; scene.add(grid);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, .045, 8, 96), new THREE.MeshBasicMaterial({color: accent})); ring.rotation.x = Math.PI / 2; ring.position.y = .02; scene.add(ring);
+const glow = new THREE.Mesh(new THREE.CircleGeometry(2.6, 64), new THREE.MeshBasicMaterial({color: accent, transparent: true, opacity: .09})); glow.rotation.x = -Math.PI / 2; glow.position.y = .01; scene.add(glow);
+
+const loader = new GLTFLoader(); const cache = {};
+async function load(name) { return cache[name] ??= await loader.loadAsync(`/engine/assets/models/${name}.glb`); }
+function neon(obj, c, e = .12) {
+  // tint: keep the model's shading but push its colours towards the slide accent
+ obj.traverse(m => { if (!m.isMesh) return; m.frustumCulled = false; m.material = m.material.clone(); if (m.material.color) m.material.color.lerp(new THREE.Color(c), .45); m.material.emissive = new THREE.Color(c); m.material.emissiveIntensity = e; }); }
+const T = sc.t ?? 1.1;
+async function robot(x, z, rot, anim, t, scale = .55, tint = null) {
+  const g = await load('robot/RobotExpressive'); const o = SkeletonUtils.clone(g.scene); o.scale.setScalar(scale); o.position.set(x, 0, z); o.rotation.y = rot;
+  if (tint != null) neon(o, tint, .18); else o.traverse(m => m.isMesh && (m.frustumCulled = false));
+  const mx = new THREE.AnimationMixer(o); const clip = g.animations.find(c => c.name === anim) || g.animations[0];
+  const a = mx.clipAction(clip); a.play(); a.time = t % clip.duration; mx.update(0); scene.add(o);
+}
+const count = sc.count || 1;
+if (count === 1) await robot(0, 0, sc.rot ?? -0.35, sc.anim || 'Wave', T, sc.scale ?? .5, sc.tint === false ? null : accent);
+else { // crowd: grid of robots, slightly varied timing
+  const n = Math.ceil(Math.sqrt(count)); let k = 0;
+  for (let r = 0; r < n && k < count; r++) for (let c = 0; c < n && k < count; c++, k++)
+    await robot((c - (n - 1) / 2) * 1.7 + (r % 2) * .85, -r * 1.7 + 1, 0, sc.anim || 'Dance', T + ((r + c) % 4) * 0.12, .42, [COL.cyan, COL.pink, COL.purple, COL.orange][(r + c) % 4]);
+}
+if (sc.decor === 'city') {
+  const names = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
+  for (let k = 0; k < 11; k++) { const g = await load('city/' + names[k % 5]); const o = g.scene.clone(true); const a = Math.PI * (1.12 + .76 * k / 10);
+    o.scale.setScalar(2.6 + (k * 37 % 10) / 6); o.position.set(Math.cos(a) * 24, 0, Math.sin(a) * 15 - 9); o.rotation.y = -a; neon(o, COL.purple, .06); scene.add(o); }
+}
+if (sc.decor === 'panels') {
+  for (let k = 0; k < 5; k++) { const w = 1.6 + (k % 2) * .6, h = 1.0 + (k % 3) * .3;
+    const pnl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({color: accent, transparent: true, opacity: .13, side: 2}));
+    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)), new THREE.LineBasicMaterial({color: accent}));
+    pnl.add(edge); pnl.position.set(-0.2 + k * .85, .9 + (k % 3) * .75, -2.6 - (k % 2) * .8); pnl.lookAt(1, 1.4, 8); scene.add(pnl);
+    for (let l = 0; l < 3; l++) { const bar = new THREE.Mesh(new THREE.PlaneGeometry(w * (.35 + .2 * ((k + l) % 3)), .07), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .55}));
+      bar.position.set(0, h * .25 - l * .22, .01); pnl.add(bar); } }
+}
+for (const m of sc.models || []) {
+  const g = await load(m.name); const o = g.scene.clone(true); o.scale.setScalar(m.scale ?? 1); o.position.set(m.x ?? 0, m.y ?? 0, m.z ?? 0); o.rotation.y = m.rot ?? 0;
+  neon(o, col(m.color || 'purple'), .08); scene.add(o);
+}
+const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
+cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
+// shift the subject into the upper part of the slide (text lives at the bottom)
+cam.setViewOffset(W, H, 0, H * (sc.shift ?? 0.2), W, H);
+composer.render();
+window.ready = true;
+</script></body></html>

@@ -1,0 +1,94 @@
+{
+ "date_label": "חדשות השבוע · 1.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה קרה השבוע<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "מטא בנתה רובוט דמוי אדם",
+    "מאסק ענה בשתי אותיות",
+    "110 רובוטים רקדו ביחד"
+   ],
+   "scene": {
+    "anim": "Wave",
+    "color": "cyan",
+    "decor": "city",
+    "target": [
+     -1.1,
+     1.3,
+     0
+    ]
+   }
+  },
+  {
+   "type": "story",
+   "stat": "3 חודשים",
+   "statSub": "מהרעיון לאב־טיפוס",
+   "statColor": "purple",
+   "title": "<span class=\"pill\">מטא</span> בנתה רובוט<br>דמוי אדם",
+   "text": "לפי הדיווח, מטא בנתה עם החברה הסינית Fourier רובוט בשם Max, עם ידיים של חמש אצבעות ומסך הבעות פנים. במטא אומרים: מחקר פנימי, לא למכירה.",
+   "source": "The Information",
+   "scene": {
+    "anim": "Idle",
+    "color": "purple",
+    "decor": "panels",
+    "target": [
+     -1.2,
+     1.3,
+     0
+    ]
+   }
+  },
+  {
+   "type": "story",
+   "stat": "No.",
+   "statSub": "התשובה של מאסק",
+   "statColor": "pink",
+   "title": "הזמנות לרובוט של טסלה?<br>מאסק <span class=\"pink\">הכחיש</span>",
+   "text": "דיווח טען שטסלה תפתח בדצמבר הזמנות לרובוט Optimus. מאסק ענה ב־X במילה אחת: No. לדבריו, משלוחים לחברות אחרות צפויים רק בסביבות סוף השנה הבאה.",
+   "source": "The San Francisco Standard, X",
+   "scene": {
+    "anim": "No",
+    "color": "pink",
+    "decor": "city",
+    "target": [
+     -1.2,
+     1.3,
+     0
+    ]
+   }
+  },
+  {
+   "type": "story",
+   "stat": "110",
+   "statSub": "רובוטים, ריקוד אחד",
+   "statColor": "orange",
+   "title": "שיא גינס: <span class=\"pill\">110</span> רובוטים<br>רקדו ביחד",
+   "text": "החברה הסינית AgiBot העלתה לרחבה 110 רובוטים דמויי אדם מפס הייצור הרגיל, ושברה את השיא העולמי לריקוד קבוצתי של רובוטים.",
+   "source": "Guinness World Records, SBS",
+   "scene": {
+    "anim": "Dance",
+    "count": 20,
+    "color": "orange",
+    "target": [
+     -1.5,
+     0,
+     -3.5
+    ]
+   }
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "anim": "ThumbsUp",
+    "color": "pink",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
+  }
+ ]
+}
