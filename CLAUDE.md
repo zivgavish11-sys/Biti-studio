@@ -16,15 +16,17 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 2. Read `state/episodes.json` (next episode number, past topics), `state/topics.md` (topic bank), `state/performance.md` (what worked).
 3. Pick **3 explainer topics** that were not done yet, from **different domains**:
    איך רובוטים עובדים · בינה מלאכותית ברובוטים · רובוטים בחיי היום־יום · היסטוריה ועתיד.
-   Prefer topics with (a) one jaw-dropping fact, (b) a strong visual idea in 3D, (c) relevance to everyday life. Use performance learnings.
+   Prefer topics with (a) one jaw-dropping fact, (b) a strong visual idea in 3D, (c) relevance to everyday life, (d) a clear "who would I send this to?" answer (sends drive reach). Use performance learnings.
    Quickly verify each idea's key fact with web search.
 4. For each idea write: **hook title** (2 short lines, max ~7 words, one key word in a pill), **one-line pitch**, **the wow fact**, **visual idea** (one line).
 5. Render concept cards: `python3 tools/concept.py <outdir> <nextEp> 'line1|line2 <span class="pill">word</span>?' ...` (append `::anim=Dance` etc. to vary).
 6. Send the 3 images + the 3 ideas (numbered) and ask which one. Nothing else.
 
 ### 2) Script (after Ziv picks)
+**Read `docs/playbook.md` before writing every script and every idea set.** It is the retention playbook; follow it.
 - 30–45 s final length. At the 1.25× speed-up that is about **70–95 Hebrew words**.
-- Fixed opening: `שלום, אני ביטי, והיום אני אלמד אתכם <נושא>.` · Fixed closing: `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
+- Structure: **hook line (≤2 s, from the playbook formulas)** → `אני ביטי, והיום אני אלמד אתכם <נושא>.` → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
+- Offer Ziv 2 hook variants with the script; he picks one.
 - Biti is curious and witty: **one** cute joke per episode (e.g. "הוא עוד ממפה"). Short sentences, commas where the voice should pause.
 - Every fact must be verified (web search) and phrased so nobody can correct it in the comments (avoid shaky exact numbers; "כמעט", "בערך" are fine).
 - Pronunciation for TTS: add niqqud where needed, avoid abbreviations. Write caption overrides inline as `{tts|caption}`, e.g. `{מַכַּם|מכ"ם}`.
@@ -42,11 +44,12 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 4. Preview: `python3 tools/render.py frames episodes/epNNN-slug 0,<mid scene 2>,<mid scene 3>,<...>` → make a contact sheet → **send 4 frames to Ziv for approval**. Fix what he asks.
 5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~10 MB).
    Look at 3–4 frames of the final file before sending. Send **light first**, then full.
-6. Send caption + pinned comment + posting time (18:00 Israel in his timezone). Caption starts with `פרק #N עם ביטי 🤖`.
+6. Send caption + pinned comment + posting time (18:00 Israel in his timezone). Caption line 1 = the searchable question in plain Hebrew, line 2 `פרק #N עם ביטי 🤖`, then 2–3 value lines, one ask, 3–5 hashtags.
+   Pinned comment = an easy opinion question (yes/no or this-or-that). Remind him: upload the same clean file to both platforms, add it to the TikTok playlist, reply to comments in the first hour.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.
 
 ### 4) Performance
-When Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, avg watch, retention drop point, follows, saves, shares) and write 1–2 learnings. Use them for future ideas and hooks. Commit and push.
+When Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, 3-second hold, avg % watched, retention drop point, follows, saves, shares/sends) and write 1–2 learnings, diagnosed per playbook §8 (early drop = hook, middle drop = missing re-hook). Use them for future ideas and hooks. Commit and push.
 
 ## Visual rules (learned the hard way — follow them)
 - Style: dark navy neon 3D (cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff). Same for every episode = brand.
@@ -55,7 +58,9 @@ When Ziv sends stats screenshots: log them to `state/performance.md` (episode, p
 - **Camera never too close** to geometry (> ~3 m from big objects), never inside buildings, and no object passing right in front of the lens (it reads as a black screen).
 - Camera moves continuously (orbits, cranes, dolly-ins). A hard cut only at scene changes (core adds a soft flash + whoosh there).
 - Chips live at y 300–560, captions at y 1290; 3D labels must not collide with chips. Keep important action in the middle third.
-- A new idea every 4–6 seconds: new scene, new chip, a counter, a highlight. Never a static shot longer than ~3 s.
+- A visual change every 2–3 seconds (angle, zoom, chip, counter, highlight) and a new scene every 4–6 s. Never a static shot longer than ~3 s.
+- Frame 0 is already mid-action (camera moving, something happening). The re-hook moment gets a visual shift (color/scene change).
+- The last frame echoes the first frame's composition so the replay loops smoothly.
 - Captions must match the voice word for word.
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
 
