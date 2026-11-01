@@ -48,8 +48,14 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
    Pinned comment = an easy opinion question (yes/no or this-or-that). Remind him: upload the same clean file to both platforms, add it to the TikTok playlist, reply to comments in the first hour.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.
 
+### Metricool (connected: Instagram + TikTok of robotics.israel)
+- Brand/blogId **7444571**. Tools: `mcp__Metricool_Social_Media_Management__*` (load via ToolSearch).
+- **Stats are automatic** — don't ask Ziv for screenshots. Instagram reels metrics: IGRE02 date, IGRE03 caption, IGRE23 views, IGRE11 reach, IGRE21 shares, IGRE12 saves, IGRE24 avg watch time (s), IGRE28 3-second view rate (%). TikTok: TKPO02, TKPO05, TKPO07 views, TKPO10 shares, TKPO13 full-watch rate, TKPO15 avg watch, TKPO16 For You %, TKPO21 search %.
+- 48 h after each episode is posted: pull its metrics, log them in `state/performance.md`, and tell Ziv the 2-line verdict.
+- Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing" once set up). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
+
 ### 4) Performance
-When Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, 3-second hold, avg % watched, retention drop point, follows, saves, shares/sends) and write 1–2 learnings, diagnosed per playbook §8 (early drop = hook, middle drop = missing re-hook). Use them for future ideas and hooks. Commit and push.
+Also when Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, 3-second hold, avg % watched, retention drop point, follows, saves, shares/sends) and write 1–2 learnings, diagnosed per playbook §8 (early drop = hook, middle drop = missing re-hook). Use them for future ideas and hooks. Commit and push.
 
 ## Visual rules (learned the hard way — follow them)
 - Style: dark navy neon 3D (cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff). Same for every episode = brand.
