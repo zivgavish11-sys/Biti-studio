@@ -45,14 +45,23 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~10 MB).
    Look at 3–4 frames of the final file before sending. Send **light first**, then full.
 6. Send caption + pinned comment + posting time (18:00 Israel in his timezone). Caption line 1 = the searchable question in plain Hebrew, line 2 `פרק #N עם ביטי 🤖`, then 2–3 value lines, one ask, 3–5 hashtags.
-   Pinned comment = an easy opinion question (yes/no or this-or-that). Remind him: upload the same clean file to both platforms, add it to the TikTok playlist, reply to comments in the first hour.
+   Pinned comment = an easy opinion question (yes/no or this-or-that). After his OK, publish per "Publishing" below.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.
 
 ### Metricool (connected: Instagram + TikTok of robotics.israel)
 - Brand/blogId **7444571**. Tools: `mcp__Metricool_Social_Media_Management__*` (load via ToolSearch).
 - **Stats are automatic** — don't ask Ziv for screenshots. Instagram reels metrics: IGRE02 date, IGRE03 caption, IGRE23 views, IGRE11 reach, IGRE21 shares, IGRE12 saves, IGRE24 avg watch time (s), IGRE28 3-second view rate (%). TikTok: TKPO02, TKPO05, TKPO07 views, TKPO10 shares, TKPO13 full-watch rate, TKPO15 avg watch, TKPO16 For You %, TKPO21 search %.
 - 48 h after each episode is posted: pull its metrics, log them in `state/performance.md`, and tell Ziv the 2-line verdict.
-- Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing" once set up). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
+- Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing"). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
+
+### Publishing (you upload, not Ziv)
+1. Copy `out/<slug>_full.mp4` to the public repo **zivgavish11-sys/Biti-media** (cloned at /home/claude/biti-media or wherever you cloned it) as `v/<slug>.mp4`, commit, push.
+   Public URL: `https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/<slug>.mp4` — check it returns 200 with curl.
+2. One `createScheduledPost` call, blogId 7444571, providers instagram + tiktok, `instagramData: {type:"REEL", showReelOnFeed:true, isAiGenerated:true}`,
+   `tiktokData: {privacyOption:"PUBLIC_TO_EVERYONE", isAigc:true}`, `videoCoverMilliseconds: 0`, text = caption, `firstCommentText` = pinned-comment question.
+   (TikTok is a personal account: custom covers are ignored there; frame 0 is the cover anyway.)
+3. Send Ziv the plannerUrl + posting time in his timezone. Tell him only: pin the first comment and reply to comments in the first hour.
+4. After the post is live (next session or the 48 h stats check), delete the mp4 from Biti-media (git rm, commit, push).
 
 ### 4) Performance
 Also when Ziv sends stats screenshots: log them to `state/performance.md` (episode, platform, views, 3-second hold, avg % watched, retention drop point, follows, saves, shares/sends) and write 1–2 learnings, diagnosed per playbook §8 (early drop = hook, middle drop = missing re-hook). Use them for future ideas and hooks. Commit and push.
