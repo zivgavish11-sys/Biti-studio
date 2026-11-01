@@ -43,7 +43,10 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
    Save good finds under `engine/assets/models/<category>/` and log them in `engine/assets/models/CREDITS.md` so the library grows.
 4. Preview: `python3 tools/render.py frames episodes/epNNN-slug 0,<mid scene 2>,<mid scene 3>,<...>` → make a contact sheet → **send 4 frames to Ziv for approval**. Fix what he asks.
 5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~10 MB).
-   Look at 3–4 frames of the final file before sending. Send **light first**, then full.
+   build.sh ends with `tools/qa.py` (glare, black/empty frames, dark object sweeping the lens, length, size, loudness, silence, loop).
+   **On QA FAIL: fix the scene and rebuild — never send a failing video.** On WARN: open the contact sheet `out/<slug>_qa.jpg` and judge.
+   Re-render only the broken range when possible (`render.py video --from/--to`, splice at a scene cut) instead of the whole video.
+   Look at the QA contact sheet before sending. Send **light first**, then full.
 6. Send caption + pinned comment + posting time (18:00 Israel in his timezone). Caption line 1 = the searchable question in plain Hebrew, line 2 `פרק #N עם ביטי 🤖`, then 2–3 value lines, one ask, 3–5 hashtags.
    Pinned comment = an easy opinion question (yes/no or this-or-that). After his OK, publish per "Publishing" below.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.

@@ -33,3 +33,10 @@ ffmpeg -v error -y -f concat -safe 0 -i "$OUT/list.txt" -i "$OUT/mix.m4a" -map 0
 ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=720:1280 -c:v libx264 -preset slow -b:v 1300k -maxrate 1800k -bufsize 3600k \
  -profile:v main -level 3.1 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart "$OUT/${SLUG}_light.tmp.mp4" && mv "$OUT/${SLUG}_light.tmp.mp4" "$OUT/${SLUG}_light.mp4"
 ls -la "$OUT"/*_full.mp4 "$OUT"/*_light.mp4
+
+echo "== QA"
+if python3 tools/qa.py "$OUT/${SLUG}_full.mp4" --light "$OUT/${SLUG}_light.mp4" --sheet "$OUT/${SLUG}_qa.jpg"; then
+  echo "QA PASS"
+else
+  echo "QA FAILED — fix the scene and rebuild before sending (see $OUT/${SLUG}_qa.jpg)"; exit 2
+fi
