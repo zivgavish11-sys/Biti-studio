@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// TEMPLATE EPISODE — copy this folder to episodes/epNNN-slug and rewrite the WORLD + SCENES parts.
+// Times: A[i]/B[i] = start/end (seconds) of narration phrase i (see `tools/align.py` output).
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const EPISODE = 0;
+const st = await studio({
+  episode: EPISODE,
+  hook: ['שאלה קצרה', 'עם <span class="pill">מילת מפתח</span>?'],           // on screen from frame 0
+  scenes: (A, B, END) => [0, A[3] - 0.25, A[6] - 0.25, A[A.length - 1] - 0.25, END], // scene cut times
+  chips: (A, B, S) => [
+    {a: A[3], b: S[2], y: 330, c: '', h: '📷 כרטיס הסבר<small>שורה קטנה</small>'},
+    {a: A[6], b: S[3], y: 330, c: 'pnk', h: '⚡ עובדה מפתיעה'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(5);
+
+// ---------------- WORLD (built once) ----------------
+const grid = new THREE.GridHelper(80, 80, 0x3a4cff, 0x1a2250); grid.material.transparent = true; grid.material.opacity = .45; scene.add(grid);
+const names = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
+for (let i = 0; i < 16; i++) { const m = await st.model('city/' + names[i % 5], {scale: 3 + r() * 2}); st.neon(m.object, COL.purple, 0x9a8cff, .06);
+  m.object.position.set((i % 2 ? 1 : -1) * (7 + r() * 3), 0, -i * 5); m.object.rotation.y = (i % 2 ? -1 : 1) * Math.PI / 2; scene.add(m.object); }
+const bot = await st.model('robot/RobotExpressive', {scale: 0.55});
+bot.schedule('Walking', 0).schedule('Wave', S[1]).schedule('ThumbsUp', S[2]).schedule('Dance', S[3]);   // deterministic animation timeline
+scene.add(bot.object);
+
+// ---------------- SCENES (per frame) ----------------
+st.frame(t => {
+  const z = -Math.min(t, S[1]) * 1.2; bot.object.position.set(0, 0, z); bot.object.rotation.y = Math.PI; // walks away from camera, then stops
+  let cp, ct;
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [0, 2.2, z + 6], [0, 1.6, z - 4]], [S[1], [2.5, 2.4, z + 5], [0, 1.6, z]]]);
+  else if (t < S[2]) { const a = (t - S[1]) * 0.3; cp = V(Math.sin(a) * 6, 2.4, z + Math.cos(a) * 6); ct = V(0, 1.6, z); }
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [0, 8, z + 8], [0, 1, z]], [S[3], [0, 4, z + 5], [0, 1.4, z]]]);
+  else [cp, ct] = camKF(t, [[S[3], [0, 3, z + 7], [0, 1.6, z]], [END, [0, 6, z + 12], [0, 1.6, z]]]);
+  return {cp, ct, overlay: t2 => { if (t2 > S[2] && t2 < S[3]) st.detBox(st.bbox(0, 0, z, 1.4, 2.4, 1), 'רובוט', '#7cffb0', win(t2, S[2], S[3])); }};
+});
+st.ready();
+</script></body></html>

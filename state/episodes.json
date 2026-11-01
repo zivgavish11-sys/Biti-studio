@@ -1,0 +1,13 @@
+{
+  "next_episode": 2,
+  "episodes": [
+    {
+      "n": 1,
+      "slug": "ep001-car",
+      "title": "איך מכונית בלי נהג רואה את הכביש",
+      "domain": "איך רובוטים עובדים",
+      "date": "2026-11-01",
+      "notes": "Standalone page (pre-core). Voice 1.25x. Lessons: hook glare, camera too close at start, passing car = black screen."
+    }
+  ]
+}

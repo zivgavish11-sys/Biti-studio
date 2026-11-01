@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Concept card for the morning ideas: /engine/concept/index.html?hook=...&ep=2&anim=Wave&scene=city
+import {studio, THREE, COL, rng} from '/engine/lib/core.js';
+const q=new URLSearchParams(location.search);
+const hook=(q.get('hook')||'שאלה|<span class="pill">מסקרנת</span>?').split('|');
+const st=await studio({episode:q.get('ep')||'?',hook,hookEnd:99,scenes:()=>[0,99]});
+const {scene}=st; const r=rng(+(q.get('seed')||3));
+// floor grid + glow
+const grid=new THREE.GridHelper(60,60,0x3a4cff,0x1a2250);grid.material.transparent=true;grid.material.opacity=.5;scene.add(grid);
+const glow=new THREE.Mesh(new THREE.CircleGeometry(3.2,64),new THREE.MeshBasicMaterial({color:COL.cyan,transparent:true,opacity:.10}));glow.rotation.x=-Math.PI/2;glow.position.y=.01;scene.add(glow);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(3.2,.05,8,96),new THREE.MeshBasicMaterial({color:COL.cyan}));ring.rotation.x=Math.PI/2;ring.position.y=.02;scene.add(ring);
+const sc=q.get('scene')||'city';
+if(sc==='city'){const names=['building-small-a','building-small-b','building-small-c','building-small-d','building-garage'];
+  for(let i=0;i<14;i++){const m=await st.model('city/'+names[i%names.length],{scale:3.2+r()*2});const a=Math.PI*(1.1+0.8*i/13);st.neon(m.object,COL.purple,0x9a8cff,.06);m.object.position.set(Math.cos(a)*(14+r()*6),0,Math.sin(a)*(10+r()*5)-4);m.object.rotation.y=-a;scene.add(m.object);}}
+const bot=await st.model('robot/RobotExpressive',{scale:0.55,anim:q.get('anim')||'Wave'});scene.add(bot.object);
+
+const T=+(q.get('t')||1.2);
+st.frame(t=>({cp:new THREE.Vector3(1.8,2.6,7.2),ct:new THREE.Vector3(0,1.7,0),noFlash:true}));
+st.ready();
+</script></body></html>
