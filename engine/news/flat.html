@@ -1,0 +1,103 @@
+<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<!-- Flat (non-3D) news slide, "modern classic" editorial look. Same spec as index.html; per slide optional "art":
+     cover | follow | mars-medic | robotaxi | border  (falls back to a generic robot). /engine/news/flat.html?spec=...&i=0 -->
+<style>
+@font-face{font-family:Rubik;src:url(/engine/assets/fonts/Rubik_400Regular.ttf);font-weight:400}
+@font-face{font-family:Rubik;src:url(/engine/assets/fonts/Rubik_700Bold.ttf);font-weight:700}
+@font-face{font-family:Frank;src:url(/engine/assets/fonts/FrankRuhlLibre.ttf);font-weight:300 900}
+:root{--bg:#f4f1ea;--ink:#101632;--muted:#5d6380;--line:#d9d3c5;--cyan:#1aa7c4;--pink:#d9488f;--orange:#e9822a;--purple:#5446d6;--c:var(--cyan)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1350px;overflow:hidden;background:var(--bg);font-family:Rubik,sans-serif;color:var(--ink)}
+#top{position:absolute;top:44px;left:64px;right:64px;display:flex;justify-content:space-between;align-items:center;padding-bottom:22px;border-bottom:2px solid var(--ink)}
+.brand{display:flex;align-items:center;gap:14px;font-weight:700;font-size:30px;letter-spacing:.5px}
+.brand img{width:52px;height:52px;border-radius:50%}
+.tag{font-size:28px;font-weight:700;color:var(--muted)}
+#art{position:absolute;top:140px;left:64px;right:64px;height:560px;border-radius:28px;overflow:hidden}
+#art svg{width:100%;height:100%;display:block}
+#bottom{position:absolute;left:64px;right:64px;top:736px}
+.row{display:flex;align-items:baseline;gap:22px;margin-bottom:14px}
+.num{font-size:26px;font-weight:700;color:var(--bg);background:var(--ink);padding:4px 16px;border-radius:8px}
+.stat{font-family:Frank;font-weight:900;font-size:76px;line-height:1;color:var(--c)}
+.statSub{font-size:30px;font-weight:700;color:var(--muted)}
+h1{font-family:Frank;font-size:68px;line-height:1.1;font-weight:800;margin-bottom:18px}
+h1 .pill,h1 .pink{color:var(--c);font-style:normal}
+h1 .pill{box-shadow:inset 0 -14px 0 color-mix(in srgb,var(--c) 22%,transparent)}
+p{font-size:34px;line-height:1.42;color:#2b3150}
+ul{list-style:none;margin-top:4px}
+li{font-size:36px;line-height:1.35;margin:12px 0;padding-right:40px;position:relative}
+li:before{content:"";position:absolute;right:0;top:15px;width:18px;height:18px;background:var(--c)}
+.src{margin-top:18px;font-size:24px;color:var(--muted)}
+#swipe{position:absolute;bottom:44px;left:64px;font-size:26px;font-weight:700;color:var(--ink)}
+#foot{position:absolute;bottom:44px;right:64px;font-size:24px;color:var(--muted)}
+.follow{text-align:center}.follow h1{font-size:88px}.follow p{font-size:38px}
+.handle{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:30px;font-size:46px;font-weight:700}
+.handle img{width:84px;height:84px;border-radius:50%}
+</style></head><body>
+<div id="top"><div class="brand"><img src="/engine/assets/logo.jpg">Robotics Israel</div><div class="tag" id="tag"></div></div>
+<div id="art"></div><div id="bottom"></div><div id="swipe"></div>
+<script>
+(async () => {
+const q = new URLSearchParams(location.search), spec = await (await fetch(q.get('spec'))).json();
+const i = +(q.get('i') || 0), S = spec.slides[i], N = spec.slides.length, $ = id => document.getElementById(id);
+const C = {cyan: '#1aa7c4', pink: '#d9488f', orange: '#e9822a', purple: '#5446d6'};
+const c = C[S.statColor || S.scene?.color] || C.cyan; document.documentElement.style.setProperty('--c', c);
+$('tag').textContent = spec.date_label || 'חדשות רובוטים';
+const nS = spec.slides.filter(s => s.type === 'story').length, sI = spec.slides.slice(0, i + 1).filter(s => s.type === 'story').length;
+if (S.type === 'follow') {
+  $('bottom').className = 'follow'; $('bottom').style.top = '760px';
+  $('bottom').innerHTML = `<h1>${S.title || 'עקבו אחרינו<br>לעוד חדשות'}</h1><p>${S.text || 'כל יום, כל מה שקרה בעולם הרובוטים, בעברית'}</p><div class="handle"><img src="/engine/assets/logo.jpg"><span dir="ltr">@robotics.israel</span></div>`;
+} else {
+  const row = S.type === 'story' ? `<div class="row"><span class="num">${sI}/${nS}</span>${S.stat ? `<span class="stat"><bdi>${S.stat}</bdi></span><span class="statSub">${S.statSub || ''}</span>` : ''}</div>` : '';
+  const body = S.bullets ? `<ul>${S.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : (S.text ? `<p>${S.text}</p>` : '');
+  $('bottom').innerHTML = `${row}<h1>${S.title}</h1>${body}${S.source ? `<div class="src">מקור: ${S.source}</div>` : ''}`;
+  $('swipe').textContent = i < N - 1 ? '← החליקו' : '';
+}
+// ---------- flat illustrations (viewBox 952x560) ----------
+const INK = '#101632', BG = '#f4f1ea';
+const bot = (x, y, s, body, face = INK, wave = false) => `<g transform="translate(${x} ${y}) scale(${s})">
+  <line x1="0" y1="-118" x2="0" y2="-92" stroke="${INK}" stroke-width="6"/><circle cx="0" cy="-122" r="9" fill="${c}"/>
+  <rect x="-62" y="-94" width="124" height="88" rx="30" fill="${body}" stroke="${INK}" stroke-width="5"/>
+  <rect x="-44" y="-76" width="88" height="50" rx="20" fill="${face}"/><circle cx="-18" cy="-51" r="9" fill="${BG}"/><circle cx="18" cy="-51" r="9" fill="${BG}"/>
+  <rect x="-46" y="4" width="92" height="96" rx="22" fill="${body}" stroke="${INK}" stroke-width="5"/><circle cx="0" cy="44" r="12" fill="${c}"/>
+  ${wave ? `<path d="M46 30 Q90 10 96 -40" stroke="${INK}" stroke-width="14" fill="none" stroke-linecap="round"/>` : `<path d="M46 26 Q78 50 70 92" stroke="${INK}" stroke-width="14" fill="none" stroke-linecap="round"/>`}
+  <path d="M-46 26 Q-78 50 -70 92" stroke="${INK}" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <rect x="-34" y="100" width="22" height="40" rx="8" fill="${INK}"/><rect x="12" y="100" width="22" height="40" rx="8" fill="${INK}"/></g>`;
+const stars = n => { let s = 7, o = ''; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; for (let k = 0; k < n; k++) o += `<circle cx="${r() * 952}" cy="${r() * 420}" r="${1 + r() * 2.2}" fill="#fff" opacity="${.4 + r() * .6}"/>`; return o; };
+const ART = {
+  'mars-medic': () => `<rect width="952" height="560" fill="#0f1533"/>${stars(110)}
+    <circle cx="140" cy="210" r="62" fill="#2d6fd2"/><path d="M98 180 q30 -20 50 10 q10 25 -20 30 q-30 0 -30 -40z M150 240 q20 -10 30 10 q-10 20 -30 10z" fill="#3fbf7a"/>
+    <circle cx="790" cy="190" r="128" fill="#d4572e"/><circle cx="740" cy="150" r="22" fill="#b4441f"/><circle cx="830" cy="240" r="30" fill="#b4441f"/><circle cx="820" cy="120" r="12" fill="#b4441f"/>
+    <path d="M210 205 Q470 90 660 175" stroke="#fff" stroke-width="5" stroke-dasharray="4 18" stroke-linecap="round" fill="none"/>
+    <rect x="0" y="470" width="952" height="90" fill="#1a2148"/>
+    <rect x="360" y="440" width="150" height="34" rx="10" fill="#d8dcea"/><rect x="395" y="414" width="80" height="30" rx="8" fill="#b9bfd6"/>
+    <path d="M435 420 L380 300 L520 250" stroke="#e8ebf5" stroke-width="30" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="435" cy="420" r="20" fill="${c}"/><circle cx="380" cy="300" r="20" fill="${c}"/><circle cx="520" cy="250" r="17" fill="${c}"/>
+    <rect x="530" y="215" width="130" height="92" rx="14" fill="#fff"/><rect x="574" y="200" width="42" height="20" rx="8" fill="none" stroke="#fff" stroke-width="7"/>
+    <rect x="583" y="233" width="24" height="58" fill="#e03a4f"/><rect x="566" y="250" width="58" height="24" fill="#e03a4f"/>`,
+  'robotaxi': () => `<rect width="952" height="560" fill="#f9e9e2"/><circle cx="476" cy="215" r="150" fill="#e0384f"/>
+    <g fill="#c9bfd6"><rect x="40" y="190" width="90" height="230"/><rect x="140" y="250" width="70" height="170"/><rect x="740" y="210" width="80" height="210"/><rect x="830" y="160" width="90" height="260"/></g>
+    <rect y="420" width="952" height="140" fill="${INK}"/><g fill="#f4f1ea">${[0,1,2,3,4,5].map(k => `<rect x="${30 + k * 170}" y="486" width="90" height="10" rx="5"/>`).join('')}</g>
+    <g transform="translate(476 0)">
+      ${[90, 150, 210].map((r, k) => `<path d="M${-r} 270 A ${r} ${r} 0 0 1 ${r} 270" stroke="${c}" stroke-width="5" fill="none" opacity="${.9 - k * .25}"/>`).join('')}
+      <rect x="-22" y="258" width="44" height="26" rx="8" fill="${INK}"/><rect x="-26" y="250" width="52" height="12" rx="6" fill="${c}"/>
+      <path d="M-230 430 L-230 360 Q-226 330 -190 326 L-140 326 L-100 284 Q-90 276 -70 276 L110 276 Q140 276 160 300 L200 340 Q236 344 240 372 L240 430 Z" fill="#fff" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M-90 292 L-20 292 L-20 334 L-126 334 Z M0 292 L100 292 Q120 292 134 310 L150 334 L0 334 Z" fill="${c}" opacity=".85"/>
+      <circle cx="-140" cy="432" r="42" fill="${INK}"/><circle cx="-140" cy="432" r="18" fill="#c9cede"/><circle cx="150" cy="432" r="42" fill="${INK}"/><circle cx="150" cy="432" r="18" fill="#c9cede"/>
+      <rect x="216" y="356" width="24" height="14" rx="4" fill="#ffd36b"/></g>`,
+  'border': () => `<rect width="952" height="560" fill="#eae6dc"/><rect y="470" width="952" height="90" fill="#d9d3c5"/>
+    ${[110, 230, 350, 600, 720, 840].map((x, k) => bot(x, 330, .9, '#c4c0b8', '#8a8578')).join('')}
+    <g>${[0,1,2,3].map(k => `<rect x="30" y="${300 + k * 42}" width="892" height="9" rx="4" fill="#e03a4f"/>`).join('')}
+      <rect x="22" y="270" width="22" height="210" rx="6" fill="${INK}"/><rect x="908" y="270" width="22" height="210" rx="6" fill="${INK}"/></g>
+    ${bot(476, 380, 1.15, '#fff')}
+    <circle cx="590" cy="210" r="40" fill="#22a66b"/><path d="M570 210 L585 226 L612 196" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  'cover': () => `<rect width="952" height="560" fill="#e9eef7"/>
+    <g opacity=".9"><circle cx="150" cy="140" r="56" fill="#d4572e"/><rect x="740" y="90" width="120" height="70" rx="16" fill="${INK}"/><circle cx="770" cy="170" r="16" fill="${INK}"/><circle cx="830" cy="170" r="16" fill="${INK}"/>
+    <rect x="120" y="360" width="110" height="80" rx="12" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="164" y="378" width="22" height="44" fill="#e03a4f"/><rect x="153" y="389" width="44" height="22" fill="#e03a4f"/>
+    <rect x="720" y="330" width="150" height="16" rx="6" fill="#e03a4f"/><rect x="720" y="370" width="150" height="16" rx="6" fill="#e03a4f"/></g>
+    ${bot(476, 330, 1.6, '#fff', INK, true)}<rect y="530" width="952" height="30" fill="${INK}"/>`,
+  'follow': () => `<rect width="952" height="560" fill="#e9eef7"/>${bot(476, 330, 1.7, '#fff', INK, true)}<rect y="530" width="952" height="30" fill="${INK}"/>`,
+};
+$('art').innerHTML = `<svg viewBox="0 0 952 560" xmlns="http://www.w3.org/2000/svg">${(ART[S.art] || ART[S.type] || ART.follow)()}</svg>`;
+await document.fonts.ready; window.ready = true;
+})();
+</script></body></html>

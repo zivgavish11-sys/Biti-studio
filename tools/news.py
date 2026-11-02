@@ -2,7 +2,8 @@
 """Daily news carousel: render slides from a spec and (optionally) publish them as public URLs.
 
 Usage:
-  news.py render news/YYYYMMDD            -> news/YYYYMMDD/out/slide-1.jpg ... + contact sheet
+  news.py render news/YYYYMMDD [flat]     -> news/YYYYMMDD/out/slide-1.jpg ... + contact sheet
+                                             (flat = 2D editorial template engine/news/flat.html -> out-flat/)
   news.py upload news/YYYYMMDD MEDIA_REPO  -> copies slides to MEDIA_REPO/v/news-YYYYMMDD-N.jpg, pushes,
                                              checks each URL returns 200, prints the URL list (JSON)
   news.py clean  YYYYMMDD MEDIA_REPO       -> removes that day's slides from the media repo after posting
@@ -16,11 +17,11 @@ RAW = "https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/"
 class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 
-def render(d):
+def render(d, tpl="index", outname="out"):
     from playwright.sync_api import sync_playwright
     d = os.path.abspath(d); rel = os.path.relpath(d, REPO)
     spec = json.load(open(os.path.join(d, "spec.json")))
-    out = os.path.join(d, "out"); os.makedirs(out, exist_ok=True)
+    out = os.path.join(d, outname); os.makedirs(out, exist_ok=True)
     for f in glob.glob(os.path.join(out, "slide-*.jpg")): os.remove(f)
     srv = http.server.ThreadingHTTPServer(("127.0.0.1", 8781), functools.partial(Q, directory=REPO))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -30,7 +31,7 @@ def render(d):
         for i in range(len(spec["slides"])):
             pg = b.new_page(viewport={"width": 1080, "height": 1350})
             pg.on("pageerror", lambda e: print("pageerror:", e))
-            pg.goto(f"http://127.0.0.1:8781/engine/news/index.html?spec=/{rel}/spec.json&i={i}")
+            pg.goto(f"http://127.0.0.1:8781/engine/news/{tpl}.html?spec=/{rel}/spec.json&i={i}")
             pg.wait_for_function("window.ready===true", timeout=180000)
             pg.wait_for_timeout(300)
             path = os.path.join(out, f"slide-{i + 1}.jpg")
@@ -78,7 +79,7 @@ def clean(day, media):
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
-    if cmd == "render": render(sys.argv[2])
+    if cmd == "render": render(sys.argv[2], "flat", "out-flat") if sys.argv[3:4] == ["flat"] else render(sys.argv[2])
     elif cmd == "upload": upload(sys.argv[2], sys.argv[3])
     elif cmd == "clean": clean(sys.argv[2], sys.argv[3])
     else: print(__doc__)

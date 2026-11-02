@@ -10,6 +10,12 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 - Deliver files with SendUserFile; person-facing text mid-task with SendUserMessage.
 - Times: posting target is **18:00 Israel time**. Ziv travels — always convert to his current timezone (from the session's timezone reminder).
 
+## Open decisions from Ziv (check before every task)
+- 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
+- **Next Biti episode: render BOTH a neon version and a clean (no-glow) version** and send both; Ziv will choose the style for the videos.
+- News carousel: two looks exist — 3D clean (`news.py render`) and 2D editorial (`news.py render <dir> flat` → out-flat/, template `engine/news/flat.html`, per-slide `"art"`: cover|follow|mars-medic|robotaxi|border; add new art per story). Until Ziv picks, render and send both.
+- News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
+
 ## The daily flow
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 1. Setup: `cd engine && npm i --silent` ; `python3 -c "import scipy" || pip install --break-system-packages -q scipy`.
