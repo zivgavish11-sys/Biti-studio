@@ -6,7 +6,7 @@
 set -euo pipefail
 EP=${1%/}; SEED=${2:-$RANDOM}
 ROOT=$(cd "$(dirname "$0")/.." && pwd); cd "$ROOT"
-SLUG=$(basename "$EP"); OUT="$EP/out"; mkdir -p "$OUT"
+SLUG=$(basename "$EP")${STYLE:+-$STYLE}; OUT="$EP/out${STYLE:+-$STYLE}"; mkdir -p "$OUT"   # STYLE=classic -> out-classic/<slug>-classic_*.mp4
 END=$(python3 -c "import json;print(json.load(open('$EP/timeline.json'))['end'])")
 HALF=$(python3 -c "print(round(int($END*30/2)/30,4))")
 
@@ -22,7 +22,7 @@ echo "== video render (2 parallel halves)"
 python3 tools/render.py video "$EP" "$OUT/a.mp4" --from 0 --to "$HALF" --port 8771 > "$OUT/a.log" 2>&1 & PA=$!
 python3 tools/render.py video "$EP" "$OUT/b.mp4" --from "$HALF" --port 8772 > "$OUT/b.log" 2>&1 & PB=$!
 wait $PA; wait $PB
-tail -1 "$OUT/a.log" "$OUT/b.log"
+tail -qn1 "$OUT/a.log" "$OUT/b.log"
 test -f "$OUT/a.mp4" && test -f "$OUT/b.mp4"
 
 echo "== final exports"

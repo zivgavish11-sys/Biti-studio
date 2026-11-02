@@ -27,7 +27,8 @@ def open_page(p, epdir, port):
     pg.on("console", lambda m: print("console:", m.text) if m.type in ("error", "warning") else None)
     pg.on("pageerror", lambda e: print("pageerror:", e))
     rel = os.path.relpath(os.path.abspath(epdir), REPO)
-    pg.goto(f"http://127.0.0.1:{port}/{rel}/index.html")
+    q = f"?style={os.environ['STYLE']}" if os.environ.get("STYLE") else ""  # STYLE=clean -> clean look
+    pg.goto(f"http://127.0.0.1:{port}/{rel}/index.html{q}")
     pg.wait_for_function("window.ready===true", timeout=120000)
     return b, pg
 

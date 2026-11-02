@@ -57,6 +57,25 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 #follow .b{display:inline-flex;align-items:center;gap:18px;margin-top:40px;padding:22px 50px;border-radius:60px;background:#2ee6ff;color:#04121f;font:700 58px Rubik;direction:ltr;box-shadow:0 0 60px rgba(46,230,255,.7)}
 #follow .b img{width:72px;height:72px;border-radius:50%}
 `;
+// ---------- CLASSIC style (?style=classic): same dark brand world, modern/classic finish — no glow, no neon edges, real lighting ----------
+export const STYLE = new URLSearchParams(location.search).get('style') || 'neon';
+export const CLASSIC = STYLE === 'classic';
+const CSS_CLASSIC = `
+#brand{text-shadow:0 2px 6px rgba(0,0,0,.6)}
+#badge{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.35);color:#e8ecff;box-shadow:none}
+#hook{text-shadow:0 4px 14px rgba(0,0,0,.7)}
+.pill{background:#2ee6ff;color:#04121f;box-shadow:none}
+#cap{text-shadow:0 3px 10px rgba(0,0,0,.85)}
+#cap span.on{background:#ffffff;color:#0b1022;box-shadow:none}
+.chip{background:rgba(14,19,38,.92);border:2px solid rgba(255,255,255,.18);border-right:10px solid #2ee6ff;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.chip small{color:#aab4d6}
+.chip.red{border-color:rgba(255,255,255,.18);border-right-color:#ff4d6d;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.chip.org{border-color:rgba(255,255,255,.18);border-right-color:#ffa53a;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.chip.pnk{border-color:rgba(255,255,255,.18);border-right-color:#ff5fd2;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.chip.grn{border-color:rgba(255,255,255,.18);border-right-color:#5fe39a;box-shadow:0 12px 30px rgba(0,0,0,.45)}
+#follow .t{text-shadow:0 4px 14px rgba(0,0,0,.7)}
+#follow .b{box-shadow:0 12px 30px rgba(0,0,0,.45)}
+`;
 function el(html) { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
 
 /**
@@ -69,7 +88,7 @@ function el(html) { const d = document.createElement('div'); d.innerHTML = html.
  *  opts.fog / opts.bg / opts.bloom
  */
 export async function studio(opts = {}) {
-  const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+  const st = document.createElement('style'); st.textContent = CSS + (CLASSIC ? CSS_CLASSIC : ''); document.head.appendChild(st);
   document.documentElement.lang = 'he'; document.documentElement.dir = 'rtl';
   const TL = await (await fetch('timeline.json')).json();
   const A = TL.segA, B = TL.segB, END = TL.end;
@@ -90,14 +109,17 @@ export async function studio(opts = {}) {
   const renderer = new THREE.WebGLRenderer({canvas: c, antialias: true, preserveDrawingBuffer: true});
   renderer.setSize(W, H, false); renderer.setPixelRatio(1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
-  const scene = new THREE.Scene(); scene.background = new THREE.Color(opts.bg ?? 0x05061a);
-  const fog = new THREE.FogExp2(opts.fogColor ?? 0x070a24, opts.fog ?? 0.012); scene.fog = fog;
-  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = opts.env ?? 0.18;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(CLASSIC ? 0x0a0f22 : (opts.bg ?? 0x05061a));
+  const fog = new THREE.FogExp2(CLASSIC ? 0x0c1228 : (opts.fogColor ?? 0x070a24), CLASSIC ? 0.010 : (opts.fog ?? 0.012)); scene.fog = fog;
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = CLASSIC ? 0.45 : (opts.env ?? 0.18);
   const cam = new THREE.PerspectiveCamera(55, W / H, 0.1, 800);
   const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, cam));
   const bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), opts.bloom ?? 0.8, 0.5, opts.bloomThreshold ?? 0.55); composer.addPass(bloom); composer.addPass(new OutputPass());
-  scene.add(new THREE.AmbientLight(0x7b7cff, opts.ambient ?? 0.4));
-  const dl = new THREE.DirectionalLight(0xc8d0ff, opts.sun ?? 0.8); dl.position.set(-10, 30, 10); scene.add(dl);
+  scene.add(new THREE.AmbientLight(CLASSIC ? 0xb8c4ff : 0x7b7cff, CLASSIC ? 0.35 : (opts.ambient ?? 0.4)));
+  if (CLASSIC) { scene.add(new THREE.HemisphereLight(0xaab8ff, 0x0a0f22, 0.7)); const rim = new THREE.DirectionalLight(0x8fa2ff, 0.9); rim.position.set(15, 12, -25); scene.add(rim); }
+  const dl = new THREE.DirectionalLight(CLASSIC ? 0xfff4e6 : 0xc8d0ff, CLASSIC ? 1.9 : (opts.sun ?? 0.8)); dl.position.set(-10, 30, 10); scene.add(dl); scene.add(dl.target);
+  if (CLASSIC) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; dl.castShadow = true; dl.shadow.mapSize.set(2048, 2048);
+    const sc = dl.shadow.camera; sc.left = sc.bottom = -30; sc.right = sc.top = 30; sc.near = 1; sc.far = 120; dl.shadow.bias = -0.0005; dl.shadow.radius = 4; }
   const ctx = o.getContext('2d');
 
   // ---------- models ----------
@@ -106,7 +128,7 @@ export async function studio(opts = {}) {
   async function model(name, {scale = 1, anim = null} = {}) {
     if (!cache[name]) cache[name] = await loader.loadAsync(`${ROOT}assets/models/${name}.glb`);
     const g = cache[name]; const obj = SkeletonUtils.clone(g.scene); obj.scale.setScalar(scale);
-    obj.traverse(m => { if (m.isMesh) { m.castShadow = false; m.frustumCulled = false; } });
+    obj.traverse(m => { if (m.isMesh) { m.castShadow = CLASSIC; m.frustumCulled = false; } });
     const inst = {object: obj, clips: g.animations, mixer: null, actions: {}};
     if (g.animations.length) {
       inst.mixer = new THREE.AnimationMixer(obj); mixers.push(inst);
@@ -132,6 +154,7 @@ export async function studio(opts = {}) {
   }
   /** neon-ify a loaded model: keeps textures but adds emissive edge glow color */
   function neon(obj, color = COL.purple, edge = 0x9a8cff, emissive = 0.15) {
+    if (CLASSIC) { obj.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return obj; }
     obj.traverse(m => {
       if (!m.isMesh) return;
       m.material = m.material.clone(); m.material.emissive = new THREE.Color(color); m.material.emissiveIntensity = emissive;
@@ -155,7 +178,7 @@ export async function studio(opts = {}) {
   }
   function tag(x, y, label, col, al = 1) { ctx.save(); ctx.globalAlpha = al; ctx.font = '700 34px Rubik'; ctx.direction = 'rtl'; const tw = ctx.measureText(label).width + 28; rr(x - tw / 2, y - 26, tw, 52, 14); ctx.fillStyle = 'rgba(10,12,30,.85)'; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.stroke(); ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(label, x, y + 12); ctx.restore(); }
   /** counter: animated number in a chip-like box at (x,y) */
-  function counter(x, y, value, suffix, col = '#2ee6ff', al = 1, size = 80) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillStyle = '#fff'; ctx.shadowColor = col; ctx.shadowBlur = 30; ctx.fillText(`${value}${suffix || ''}`, x, y); ctx.restore(); }
+  function counter(x, y, value, suffix, col = '#2ee6ff', al = 1, size = 80) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillStyle = '#fff'; ctx.shadowColor = CLASSIC ? 'rgba(0,0,0,.7)' : col; ctx.shadowBlur = CLASSIC ? 12 : 30; ctx.fillText(`${value}${suffix || ''}`, x, y); if (CLASSIC) { ctx.shadowBlur = 0; ctx.fillStyle = col; ctx.fillRect(x - size * .9, y + size * .18, size * 1.8, size * .08); } ctx.restore(); }
 
   // ---------- captions / chips ----------
   let capKey = '';
@@ -180,17 +203,17 @@ export async function studio(opts = {}) {
   const hookEnd = opts.hookEnd ?? ((S[1] ?? 4) + 0.6);
   let frameFn = () => {};
   const api = {
-    THREE, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
+    THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
     model, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
   };
   window.renderAt = async function (t) {
-    ctx.clearRect(0, 0, W, H); bloom.strength = opts.bloom ?? 0.8; renderer.toneMappingExposure = 1.1; fog.density = opts.fog ?? 0.012;
+    ctx.clearRect(0, 0, W, H); bloom.strength = CLASSIC ? 0 : (opts.bloom ?? 0.8); bloom.enabled = !CLASSIC; renderer.toneMappingExposure = CLASSIC ? 1.0 : 1.1; fog.density = CLASSIC ? 0.009 : (opts.fog ?? 0.012);
     updateMixers(t);
     const r = frameFn(t) || {};
-    if (r.cp) { cam.position.copy(r.cp); cam.lookAt(r.ct); }
+    if (r.cp) { cam.position.copy(r.cp); cam.lookAt(r.ct); if (CLASSIC) { dl.target.position.copy(r.ct); dl.position.copy(r.ct).add(V(-12, 30, 14)); dl.target.updateMatrixWorld(); } }
     if (r.fov) { cam.fov = r.fov; } else cam.fov = 55;
     cam.updateProjectionMatrix(); cam.updateMatrixWorld();
     if (r.overlay) r.overlay(t);

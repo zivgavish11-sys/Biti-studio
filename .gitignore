@@ -1,8 +1,11 @@
 node_modules/
 **/out/
+**/out-*/
 **/frames/
 *.part.mp4
 __pycache__/
 news/*/out/
 episodes/*/*.mp3
 news/*/out-flat/
+episodes/*/*.wav
+episodes/*/sfx.json

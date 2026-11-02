@@ -109,6 +109,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
 
 ## Files
+- Look variants: `neon` (default) or `classic` (same dark world, no glow/neon edges, real light + shadows). Preview `STYLE=classic python3 tools/render.py frames ...`, build `STYLE=classic tools/build.sh EP` → `out-classic/`. Episodes read `st.CLASSIC` for scene-specific materials. (Ziv is choosing between them after ep002.)
 - `engine/lib/core.js` — studio(): renderer, bloom, captions, chips, hook, badge, follow card, models (`st.model('robot/RobotExpressive')`, `.schedule(anim, t)`), overlay helpers (detBox, tag, counter), auto sound cues.
 - `engine/assets/models/` — robot (RobotExpressive: Dance Death Idle Jump No Punch Running Sitting Standing ThumbsUp Walking WalkJump Wave Yes), city (Kenney), vehicles (Kenney trucks).
 - `engine/concept/` — morning concept card page.

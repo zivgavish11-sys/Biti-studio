@@ -22,42 +22,46 @@ const st = await studio({
 });
 const {scene, A, B, S, END} = st; const r = rng(11);
 const BOT = 'robot/RobotExpressive', SC = 0.55;
+const CL = st.CLASSIC; // classic = same world without glow (matte, real light); neon = brand default
+const floorMat = new THREE.MeshStandardMaterial({color: 0x161d38, roughness: .85, metalness: .1});
+function floor(g, w, d, x = 0, z = 0) { if (!CL) return; const f = new THREE.Mesh(new THREE.PlaneGeometry(w, d), floorMat); f.rotation.x = -Math.PI / 2; f.position.set(x, -.005, z); f.receiveShadow = true; g.add(f); }
 
 // ================= L1: TRAINING FIELD (crowd of copies) at z=-90 =================
 const F = new THREE.Group(); F.position.set(0, 0, -90); scene.add(F);
-const fgrid = new THREE.GridHelper(120, 60, 0x2ee6ff, 0x1a2a66); fgrid.material.transparent = true; fgrid.material.opacity = .5; F.add(fgrid);
+floor(F, 400, 400); const fgrid = new THREE.GridHelper(120, 60, CL ? 0x3a4672 : 0x2ee6ff, CL ? 0x232c50 : 0x1a2a66); fgrid.material.transparent = true; fgrid.material.opacity = .5; F.add(fgrid);
 const crowd = []; const N = 6, GAP = 4.6;
 const ringGeo = new THREE.TorusGeometry(1.0, .06, 8, 40);
 for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
   const m = await st.model(BOT, {scale: SC}); const x = (i - (N - 1) / 2) * GAP, z = (j - (N - 1) / 2) * GAP;
   m.object.position.set(x, 0, z); m.object.rotation.y = Math.PI; F.add(m.object);
-  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({color: COL.cyan})); ring.rotation.x = Math.PI / 2; ring.position.set(x, .03, z); F.add(ring);
+  const ring = new THREE.Mesh(ringGeo, CL ? new THREE.MeshStandardMaterial({color: COL.cyan, roughness: .5}) : new THREE.MeshBasicMaterial({color: COL.cyan})); ring.rotation.x = Math.PI / 2; ring.position.set(x, .03, z); F.add(ring);
   const off = r() * 1.6; const mix = ['Walking', 'Death', 'WalkJump', 'Death', 'Running', 'Jump'][Math.floor(r() * 6)];
   // S0: everyone falls (staggered) | S4: chaotic training | S5+: all walk
   m.schedule(r() < .8 ? 'Death' : 'WalkJump', -off, 0).schedule(mix, S[4] - off * .3).schedule('Walking', S[5] + r() * .3);
   crowd.push({m, ring, x, z, ph: r() * 6});
 }
 // far "infinite" copies: simple glowing capsules to suggest thousands
-const farMat = new THREE.MeshBasicMaterial({color: 0x3a6bff, transparent: true, opacity: .55});
+const farMat = CL ? new THREE.MeshStandardMaterial({color: 0x4a5687, roughness: .7}) : new THREE.MeshBasicMaterial({color: 0x3a6bff, transparent: true, opacity: .55});
 const farGeo = new THREE.CapsuleGeometry(.45, 1.2, 4, 8);
-const far = new THREE.InstancedMesh(farGeo, farMat, 900); let fi = 0; const dm = new THREE.Matrix4();
-for (let i = -15; i < 15; i++) for (let j = -15; j < 15; j++) { if (Math.abs(i) < 4 && Math.abs(j) < 4) continue; if (j * GAP < -14) continue; if (fi >= 900) break; dm.makeTranslation(i * GAP, 1, j * GAP); far.setMatrixAt(fi++, dm); }
-far.count = fi; F.add(far);
+const far = new THREE.InstancedMesh(farGeo, farMat, 900), farNear = new THREE.InstancedMesh(farGeo, farMat, 300); let fi = 0, fn = 0; const dm = new THREE.Matrix4();
+for (let i = -15; i < 15; i++) for (let j = -15; j < 15; j++) { if (Math.abs(i) < 4 && Math.abs(j) < 4) continue; if (j * GAP < -14) continue; dm.makeTranslation(i * GAP, 1, j * GAP);
+  if (j * GAP > 14 && Math.abs(i * GAP) < 16) { if (fn < 300) farNear.setMatrixAt(fn++, dm); } else if (fi < 900) far.setMatrixAt(fi++, dm); }
+far.count = fi; farNear.count = fn; F.add(far); F.add(farNear); // farNear is hidden in the re-hook crane (it would pass the lens)
 
 // ================= L2: VIRTUAL LAB (hero) at origin =================
 const L2 = new THREE.Group(); scene.add(L2);
-const lgrid = new THREE.GridHelper(60, 30, 0x2ee6ff, 0x1a2250); lgrid.material.transparent = true; L2.add(lgrid);
-const pad = new THREE.Mesh(new THREE.CircleGeometry(3, 48), new THREE.MeshStandardMaterial({color: 0x0b1440, emissive: 0x1b2a8a, emissiveIntensity: .5})); pad.rotation.x = -Math.PI / 2; pad.position.y = .01; L2.add(pad);
-const padRing = new THREE.Mesh(new THREE.TorusGeometry(3, .07, 8, 64), new THREE.MeshBasicMaterial({color: COL.cyan})); padRing.rotation.x = Math.PI / 2; padRing.position.y = .03; L2.add(padRing);
+floor(L2, 300, 300); const lgrid = new THREE.GridHelper(60, 30, CL ? 0x3a4672 : 0x2ee6ff, CL ? 0x232c50 : 0x1a2250); lgrid.material.transparent = true; L2.add(lgrid);
+const pad = new THREE.Mesh(new THREE.CircleGeometry(3, 48), (CL ? new THREE.MeshStandardMaterial({color: 0x232c52, roughness: .6}) : new THREE.MeshStandardMaterial({color: 0x0b1440, emissive: 0x1b2a8a, emissiveIntensity: .5}))); pad.rotation.x = -Math.PI / 2; pad.position.y = .01; pad.receiveShadow = true; L2.add(pad);
+const padRing = new THREE.Mesh(new THREE.TorusGeometry(3, .07, 8, 64), CL ? new THREE.MeshStandardMaterial({color: 0x8fa0d8, roughness: .5}) : new THREE.MeshBasicMaterial({color: COL.cyan})); padRing.rotation.x = Math.PI / 2; padRing.position.y = .03; L2.add(padRing);
 const cubes = [];
-for (let k = 0; k < 26; k++) { const s = .6 + r() * 1.4; const c = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(s, s, s)), new THREE.LineBasicMaterial({color: k % 3 ? COL.cyan : COL.purple, transparent: true}));
+for (let k = 0; k < 26; k++) { const s = .6 + r() * 1.4; const c = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(s, s, s)), new THREE.LineBasicMaterial({color: CL ? (k % 3 ? 0x5c6aa8 : 0x8a5c9e) : (k % 3 ? COL.cyan : COL.purple), transparent: true}));
   const a = r() * Math.PI * 2, d = 8 + r() * 12; c.position.set(Math.cos(a) * d, 1 + r() * 7, Math.sin(a) * d - 4); L2.add(c); cubes.push({c, sp: (r() - .5) * 1.5, y0: c.position.y}); }
 const hero = await st.model(BOT, {scale: SC}); L2.add(hero.object);
 hero.schedule('Wave', 0, 0).schedule('Idle', S[2]).schedule('Walking', A[7]).schedule('Death', A[9] - .15).schedule('WalkJump', A[11]).schedule('Death', A[11] + .9).schedule('Idle', S[4]);
 
 // ================= L3: REAL WORLD (city) at x=120 =================
 const L3 = new THREE.Group(); L3.position.set(120, 0, 0); scene.add(L3);
-const road = new THREE.Mesh(new THREE.PlaneGeometry(10, 120), new THREE.MeshStandardMaterial({color: 0x0d1030})); road.rotation.x = -Math.PI / 2; road.position.set(0, .01, -40); L3.add(road);
+floor(L3, 300, 300, 0, -40); const road = new THREE.Mesh(new THREE.PlaneGeometry(10, 120), new THREE.MeshStandardMaterial({color: CL ? 0x1b2140 : 0x0d1030})); road.receiveShadow = true; road.rotation.x = -Math.PI / 2; road.position.set(0, .01, -40); L3.add(road);
 for (const sx of [-5, 5]) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(.15, 120), new THREE.MeshBasicMaterial({color: COL.orange})); ln.rotation.x = -Math.PI / 2; ln.position.set(sx, .02, -40); L3.add(ln); }
 const names = ['building-small-a', 'building-small-b', 'building-small-c', 'building-small-d', 'building-garage'];
 for (let i = 0; i < 14; i++) { const b = await st.model('city/' + names[i % 5], {scale: 3 + r() * 1.5}); st.neon(b.object, COL.purple, 0x9a8cff, .06);
@@ -67,12 +71,12 @@ real.schedule('Sitting', 0, 0).schedule('Standing', A[19] - .5).schedule('Walkin
 // ghosts of past falls behind the walking robot (payoff)
 const ghosts = [];
 for (let k = 0; k < 6; k++) { const g = await st.model(BOT, {scale: SC}); g.schedule('Death', -10 - k, 0);
-  g.object.traverse(m => { if (m.isMesh) { m.material = new THREE.MeshBasicMaterial({color: k % 2 ? COL.cyan : COL.pink, transparent: true, opacity: 0, depthWrite: false}); } });
+  g.object.traverse(m => { if (m.isMesh) { m.material = CL ? new THREE.MeshStandardMaterial({color: k % 2 ? 0x8fa0d8 : 0xc08ad8, transparent: true, opacity: 0, depthWrite: false, roughness: .6}) : new THREE.MeshBasicMaterial({color: k % 2 ? COL.cyan : COL.pink, transparent: true, opacity: 0, depthWrite: false}); } });
   g.object.position.set((k % 2 ? 3.2 : -3.2), 0, -5 - k * 3.2); g.object.rotation.y = Math.PI + (r() - .5); L3.add(g.object); ghosts.push(g); }
-const orb = new THREE.Mesh(new THREE.SphereGeometry(.45, 24, 16), new THREE.MeshBasicMaterial({color: COL.pink})); L3.add(orb);
-const orbHalo = new THREE.Mesh(new THREE.SphereGeometry(.8, 24, 16), new THREE.MeshBasicMaterial({color: COL.pink, transparent: true, opacity: .25})); orb.add(orbHalo);
+const orb = new THREE.Mesh(new THREE.SphereGeometry(.45, 24, 16), (CL ? new THREE.MeshStandardMaterial({color: COL.pink, roughness: .3, metalness: .2}) : new THREE.MeshBasicMaterial({color: COL.pink}))); L3.add(orb);
+const orbHalo = new THREE.Mesh(new THREE.SphereGeometry(.8, 24, 16), new THREE.MeshBasicMaterial({color: COL.pink, transparent: true, opacity: .25})); if (!CL) orb.add(orbHalo);
 
-const bgN = new THREE.Color(0x05061a), bgP = new THREE.Color(0x1a0630), fogN = new THREE.Color(0x070a24), fogP = new THREE.Color(0x2a0a40);
+const bgN = new THREE.Color(CL ? 0x0a0f22 : 0x05061a), bgP = new THREE.Color(CL ? 0x1e0c2c : 0x1a0630), fogN = new THREE.Color(CL ? 0x0c1228 : 0x070a24), fogP = new THREE.Color(CL ? 0x2a1238 : 0x2a0a40);
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
 // ================= PER FRAME =================
@@ -80,7 +84,7 @@ st.frame(t => {
   // re-hook color shift (pink) during S4
   const pk = win(t, S[4], S[5], .3); scene.background.copy(bgN).lerp(bgP, pk * .8); st.fog.color.copy(fogN).lerp(fogP, pk);
   for (const c of crowd) c.ring.material.color.setHex(t >= S[4] && t < S[5] ? COL.pink : (t >= S[5] ? 0x7cffb0 : COL.cyan));
-  fgrid.material.opacity = .5;
+  fgrid.material.opacity = .5; farNear.visible = !(t >= S[4] && t < S[5]);
   // crowd walks forward from S5
   const walkZ = -Math.max(0, t - S[5]) * 1.3; for (const c of crowd) { c.m.object.position.z = c.z + walkZ; c.ring.position.z = c.z + walkZ; }
   const fz = -90 + walkZ; // crowd center (world z)
@@ -92,7 +96,7 @@ st.frame(t => {
   // real world
   const rz = -Math.max(0, t - (A[19] + .6)) * 1.25; real.object.position.set(0, 0, rz);
   const ok = sm(S[6], A[19] - .3, t); orb.position.set(0, 12 - 10.2 * ok, -1 + 1 * ok); orb.visible = t > S[6] && t < A[19] + .2; orb.scale.setScalar(1 + .15 * Math.sin(t * 10));
-  ghosts.forEach((g, k) => g.object.traverse(m => { if (m.isMesh) m.material.opacity = .32 * sm(S[7] + k * .25, S[7] + k * .25 + .5, t); }));
+  ghosts.forEach((g, k) => g.object.traverse(m => { if (m.isMesh) m.material.opacity = (CL ? .45 : .32) * sm(S[7] + k * .25, S[7] + k * .25 + .5, t); }));
 
   let cp, ct;
   if (t < S[1]) { // HOOK: crane over falling crowd (mid-action from frame 0)
