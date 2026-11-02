@@ -1,0 +1,151 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP003 — מה השואב הרובוטי עושה בסתר (LiDAR + SLAM). Classic look, built from primitives.
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 3,
+  hook: ['מה השואב הרובוטי', 'עושה <span class="pill">בסתר</span>?'],
+  // S: 0 hook | 1 intro | 2 spinning laser | 3 beam->wall | 4 points->walls | 5 RE-HOOK paradox | 6 both at once | 7 joke | 8 full map | 9 follow
+  scenes: (A, B, END) => [0, A[2] - .25, A[4] - .25, A[6] - .25, A[8] - .25, A[10] - .25, A[15] - .25, A[16] - .25, A[18] - .25, A[20] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[4] + .3, b: S[3], y: 330, c: '', h: '🔄 בערך 5 סיבובים בשנייה<small>לייזר על הגג</small>'},
+    {a: A[6], b: S[4], y: 330, c: 'org', h: '📏 קרן ← קיר ← חזרה'},
+    {a: A[8], b: S[5], y: 330, c: '', h: '✨ אלפי נקודות = קירות'},
+    {a: A[11], b: A[13] - .1, y: 330, c: 'pnk', h: '🗺️ מפה ← צריך מיקום'},
+    {a: A[13], b: S[6], y: 330, c: 'pnk', h: '📍 מיקום ← צריך מפה'},
+    {a: S[6] + .1, b: S[7], y: 330, c: 'org', h: '⚡ שניהם בבת אחת<small>SLAM</small>'},
+    {a: A[16], b: S[8], y: 330, c: 'grn', h: '😅 הוא לא מסתובב סתם'},
+    {a: A[19], b: S[9], y: 330, c: 'grn', h: '✅ מפה של כל הבית'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(3);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .75, ...o});
+
+// ================= APARTMENT (8 x 12 m, long axis = z) =================
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), M(0x121830, {roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const aptFloor = new THREE.Mesh(new THREE.PlaneGeometry(8, 12), M(0x232c4f, {roughness: .8})); aptFloor.rotation.x = -Math.PI / 2; aptFloor.position.y = .01; aptFloor.receiveShadow = true; scene.add(aptFloor);
+const SEG = []; // 2D segments for the lidar [x1,z1,x2,z2]
+const wallMat = M(0x9aa3c8, {transparent: true}); const WALLS = [];
+function wall(x1, z1, x2, z2, h = 1.1) {
+  const len = Math.hypot(x2 - x1, z2 - z1); const w = new THREE.Mesh(new THREE.BoxGeometry(len, h, .15), wallMat);
+  w.position.set((x1 + x2) / 2, h / 2, (z1 + z2) / 2); w.rotation.y = -Math.atan2(z2 - z1, x2 - x1); w.castShadow = w.receiveShadow = true; scene.add(w); WALLS.push(w); SEG.push([x1, z1, x2, z2]);
+}
+wall(-4, -6, 4, -6); wall(4, -6, 4, 6); wall(4, 6, -4, 6); wall(-4, 6, -4, -6);       // outer
+wall(-4, 0, .5, 0); wall(1.7, 0, 4, 0);                                               // living | rest (door .5..1.7)
+wall(0, 0, 0, 2); wall(0, 3.2, 0, 6);                                                 // bedroom | kitchen (door z 2..3.2)
+const FURN = [];
+function box(x, z, w, d, h, c) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(c)); b.position.set(x, h / 2, z); b.castShadow = b.receiveShadow = true; scene.add(b); FURN.push(b);
+  SEG.push([x - w / 2, z - d / 2, x + w / 2, z - d / 2], [x + w / 2, z - d / 2, x + w / 2, z + d / 2], [x + w / 2, z + d / 2, x - w / 2, z + d / 2], [x - w / 2, z + d / 2, x - w / 2, z - d / 2]); return b; }
+box(-2.6, -3.2, 1.0, 2.6, .8, 0x5a4b8a);   // sofa
+box(.6, -3.2, 1.4, .9, .45, 0x6b5a4a);     // coffee table
+box(3.6, -3.4, .5, 2.2, 1.1, 0x2b3150);    // tv unit
+box(-2.4, 4.3, 2.2, 2.6, .6, 0x3d5a8a);    // bed
+box(3.55, 3.6, .8, 4.2, 1.0, 0x7a6a5a);    // kitchen counter
+box(1.6, 4.4, 1.0, 1.0, .75, 0x6b5a4a);    // kitchen table
+// dock
+const dock = new THREE.Mesh(new THREE.BoxGeometry(.9, .35, .25), M(0x2b3150)); dock.position.set(3.2, .18, -5.8); scene.add(dock);
+// room floor colours (map reveal)
+const ROOMS = [{n: 'סלון', x: 0, z: -3, w: 8, d: 6, c: COL.cyan}, {n: 'חדר שינה', x: -2, z: 3, w: 4, d: 6, c: COL.pink}, {n: 'מטבח', x: 2, z: 3, w: 4, d: 6, c: COL.orange}];
+for (const R of ROOMS) { R.m = new THREE.Mesh(new THREE.PlaneGeometry(R.w - .2, R.d - .2), new THREE.MeshStandardMaterial({color: R.c, transparent: true, opacity: 0, roughness: .9})); R.m.rotation.x = -Math.PI / 2; R.m.position.set(R.x, .03, R.z); scene.add(R.m); }
+
+// ================= VACUUM =================
+function makeVac(op = 1) {
+  const g = new THREE.Group(); const tr = op < 1; const mo = o => ({...o, transparent: tr, opacity: op, depthWrite: !tr});
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(.45, .45, .14, 48), M(0x2a2f45, mo({metalness: .3, roughness: .4}))); body.position.y = .1; g.add(body);
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, .02, 48), M(0xd8dcea, mo({roughness: .35}))); top.position.y = .18; g.add(top);
+  const bump = new THREE.Mesh(new THREE.TorusGeometry(.45, .03, 8, 48, Math.PI), M(0x1a1d2b, mo())); bump.rotation.x = Math.PI / 2; bump.rotation.z = Math.PI; bump.position.y = .1; g.add(bump);
+  const tur = new THREE.Group(); tur.position.set(0, .24, .1); g.add(tur);
+  const tc = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, .1, 24), M(0x1a1d2b, mo({roughness: .3}))); tur.add(tc);
+  const notch = new THREE.Mesh(new THREE.BoxGeometry(.05, .05, .06), M(COL.cyan, mo())); notch.position.set(0, 0, .12); tur.add(notch);
+  g.traverse(m => { if (m.isMesh) { m.castShadow = !tr; m.receiveShadow = true; } });
+  scene.add(g); return {g, tur};
+}
+const vac = makeVac();
+const ghosts = [0, 1, 2, 3, 4].map(() => makeVac(.28));
+// path (waypoints) through the flat
+const WP = [[3.2, -5.2], [-1.0, -5.0], [-1.6, -1.2], [1.1, -1.0], [1.1, 1.2], [2.4, 1.6], [2.6, 5.2], [.8, 5.2], [.6, 2.6], [-1.2, 2.6], [-3.2, 1.2], [-3.2, 2.4], [-1.0, 1.0]];
+const CUM = [0]; for (let i = 1; i < WP.length; i++) CUM.push(CUM[i - 1] + Math.hypot(WP[i][0] - WP[i - 1][0], WP[i][1] - WP[i - 1][1]));
+const LEN = CUM[CUM.length - 1];
+function pathAt(s) { const d = Math.max(0, Math.min(1, s)) * LEN; let i = 1; while (i < CUM.length - 1 && CUM[i] < d) i++;
+  const k = (d - CUM[i - 1]) / (CUM[i] - CUM[i - 1]); const a = WP[i - 1], b = WP[i]; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, Math.atan2(b[0] - a[0], b[1] - a[1])]; }
+const sOf = t => Math.min(1, t / (END - 1.2)) ; // path progress over the whole video
+function heading(s) { const a = pathAt(s - .004), b = pathAt(s + .004); return Math.atan2(b[0] - a[0], b[1] - a[1]); }
+
+// ================= LIDAR =================
+function cast(x, z, ang) { const dx = Math.sin(ang), dz = Math.cos(ang); let best = 30;
+  for (const [x1, z1, x2, z2] of SEG) { const ex = x2 - x1, ez = z2 - z1; const den = dx * ez - dz * ex; if (Math.abs(den) < 1e-9) continue;
+    const t = ((x1 - x) * ez - (z1 - z) * ex) / den, u = ((x1 - x) * dz - (z1 - z) * dx) / den; if (t > .05 && u >= 0 && u <= 1 && t < best) best = t; }
+  return best; }
+// precomputed point cloud along the path
+const SAMPLES = 150, RAYS = 48; const PTS = [];
+for (let k = 0; k < SAMPLES; k++) { const s = k / (SAMPLES - 1); const [x, z] = pathAt(s);
+  for (let j = 0; j < RAYS; j++) { const ang = (j / RAYS) * Math.PI * 2 + k * .37; const d = cast(x, z, ang); if (d < 20) PTS.push([x + Math.sin(ang) * d, z + Math.cos(ang) * d, s]); } }
+const ptMesh = new THREE.InstancedMesh(new THREE.BoxGeometry(.09, .09, .09), new THREE.MeshStandardMaterial({color: COL.cyan, roughness: .5}), PTS.length);
+const dm = new THREE.Matrix4(); PTS.forEach((p, i) => { dm.makeTranslation(p[0], .4, p[1]); ptMesh.setMatrixAt(i, dm); }); ptMesh.count = 0; scene.add(ptMesh);
+const NR = 28; const rayGeo = new THREE.BufferGeometry(); rayGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NR * 6), 3));
+const rays = new THREE.LineSegments(rayGeo, new THREE.LineBasicMaterial({color: COL.pink, transparent: true, opacity: .55})); scene.add(rays);
+const fanGeo = new THREE.BufferGeometry(); fanGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((NR + 1) * 3), 3));
+const fIdx = []; for (let i = 1; i < NR; i++) fIdx.push(0, i, i + 1); fanGeo.setIndex(fIdx);
+const fan = new THREE.Mesh(fanGeo, new THREE.MeshBasicMaterial({color: COL.pink, transparent: true, opacity: .22, side: THREE.DoubleSide, depthWrite: false})); scene.add(fan);
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(.035, .035, 1, 8), M(COL.orange)); scene.add(beam);
+const pulse = new THREE.Mesh(new THREE.SphereGeometry(.09, 16, 12), M(COL.orange)); scene.add(pulse);
+// path trace (joke scene)
+const TRN = 400; const trGeo = new THREE.BufferGeometry(); const trPos = new Float32Array(TRN * 3); trGeo.setAttribute('position', new THREE.BufferAttribute(trPos, 3));
+const trace = new THREE.Line(trGeo, new THREE.LineBasicMaterial({color: 0x7cffb0, transparent: true, opacity: .8})); scene.add(trace);
+// Biti cameo in the intro
+const biti = await st.model('robot/RobotExpressive', {scale: .26}); biti.object.position.set(-1.3, 0, -4.3); biti.object.rotation.y = .5; scene.add(biti.object);
+biti.schedule('Wave', 0, 0).schedule('Idle', S[2]);
+
+const bgN = new THREE.Color(0x0a0f22), bgP = new THREE.Color(0x1e0c2c);
+
+// ================= PER FRAME =================
+st.frame(t => {
+  const pk = win(t, S[5], S[6], .3); scene.background.copy(bgN).lerp(bgP, pk * .85); st.fog.color.copy(scene.background);
+  biti.object.visible = t < S[3];
+  const s = sOf(t); const [vx, vz] = pathAt(s); const hd = heading(s);
+  vac.g.position.set(vx, 0, vz); vac.g.rotation.y = hd; vac.tur.rotation.y = t * Math.PI * 2 * 1.3; // visual spin (slower than real, avoids strobing)
+  const tx = vx + Math.sin(hd) * .1, tz = vz + Math.cos(hd) * .1;
+  // live rays: rotating fan
+  const P = rayGeo.attributes.position.array; const rayOn = t < S[4] || t >= S[9] ? 1 : (t < S[8] ? .6 : 0);
+  for (let i = 0; i < NR; i++) { const ang = t * 4 + (i / NR) * Math.PI * 1.2; const d = cast(tx, tz, ang);
+    P.set([tx, .3, tz, tx + Math.sin(ang) * d, .4, tz + Math.cos(ang) * d], i * 6); }
+  const FP = fanGeo.attributes.position.array; FP.set([tx, .32, tz], 0); for (let i = 0; i < NR; i++) FP.set([P[i * 6 + 3], .32, P[i * 6 + 5]], (i + 1) * 3); fanGeo.attributes.position.needsUpdate = true; fanGeo.computeBoundingSphere();
+  rayGeo.attributes.position.needsUpdate = true; rays.material.opacity = .85 * rayOn; rays.visible = rayOn > 0 && !(t > S[3] && t < S[4]); fan.visible = rays.visible; fan.material.opacity = .16 * rayOn;
+  // highlighted beam (S3): toward the nearest wall on the right side
+  const bOn = win(t, S[3] + .1, S[4], .2); beam.visible = pulse.visible = bOn > 0.01;
+  if (beam.visible) { const ang = hd + Math.PI / 2; const d = cast(tx, tz, ang); const ex = tx + Math.sin(ang) * d, ez = tz + Math.cos(ang) * d;
+    beam.position.set((tx + ex) / 2, .35, (tz + ez) / 2); beam.scale.set(1, d, 1); beam.quaternion.setFromUnitVectors(V(0, 1, 0), V(Math.sin(ang), 0, Math.cos(ang)));
+    const ph = ((t - S[3]) * .9) % 1; const f = ph < .5 ? ph * 2 : 2 - ph * 2; pulse.position.set(tx + Math.sin(ang) * d * f, .35, tz + Math.cos(ang) * d * f); beam.userData = {ex, ez, d}; }
+  // point cloud + wall fade (map view from S4)
+  const mapOn = t >= S[4] && t < S[9]; const reveal = mapOn ? s : 0; let n = 0; while (n < PTS.length && PTS[n][2] <= reveal) n++; ptMesh.count = (t >= S[9]) ? PTS.length : n;
+  const wf = t < S[4] ? 1 : (t < S[9] ? 1 - .82 * sm(S[4], S[4] + .8, t) : 1 - .82 * (1 - sm(S[9], S[9] + .6, t)));
+  wallMat.opacity = wf; wallMat.depthWrite = wf > .9;
+  // ghosts (re-hook: "where am I?") collapse into the real vacuum
+  const gk = 1 - sm(A[13], A[15] + .3, t); const gOn = win(t, S[5] + .2, S[6] + .4, .3);
+  ghosts.forEach((g, i) => { const a = i * 1.26 + t * .4; const R = 1.3 * gk; g.g.visible = gOn > .02; g.g.position.set(vx + Math.sin(a) * R, 0, vz + Math.cos(a) * R); g.g.rotation.y = hd + (i - 2) * .5 * gk; });
+  // rooms colour in (full map)
+  for (const R of ROOMS) R.m.material.opacity = .32 * (t >= S[9] ? 1 : sm(A[19], A[19] + .8, t));
+  // trace of the path (joke)
+  const tOn = t >= S[7] && t < S[9]; trace.visible = tOn; if (tOn) { const k0 = sOf(S[4]); for (let i = 0; i < TRN; i++) { const q = pathAt(k0 + (s - k0) * i / (TRN - 1)); trPos.set([q[0], .06, q[1]], i * 3); } trGeo.attributes.position.needsUpdate = true; }
+
+  let cp, ct;
+  if (t < S[1]) { const a = -.6 + t * .09; cp = V(vx + Math.sin(a) * 6, 5.6 - t * .3, vz + Math.cos(a) * 9); ct = V(vx, .3, vz); }                        // HOOK: high orbit, vacuum scanning
+  else if (t < S[2]) { const a = (t - S[1]) * .25 + 2.2; cp = V(vx + Math.sin(a) * 4.4, 3.8, vz + Math.cos(a) * 4.4); ct = V(vx - .4, .4, vz - .6); }          // intro with Biti
+  else if (t < S[3]) { const a = (t - S[2]) * .35 + .3; cp = V(vx + Math.sin(a) * 3.2, 2.7, vz + Math.cos(a) * 3.2); ct = V(vx, .2, vz); }                  // laser on top
+  else if (t < S[4]) { const ang = hd + Math.PI / 2; cp = V(vx - Math.sin(ang) * 2.6 + Math.sin(hd) * 2.4, 3.6, vz - Math.cos(ang) * 2.6 + Math.cos(hd) * 2.4); ct = V(vx + Math.sin(ang) * .9, .2, vz + Math.cos(ang) * .9); } // along the beam
+  else if (t < S[5]) { const k = sm(S[4], S[5], t); cp = V(0, 9 + 7 * k, 7 - 2 * k); ct = V(0, 0, -.5); }                                                   // map view rising
+  else if (t < S[6]) { const k = (t - S[5]) / (S[6] - S[5]); cp = V(vx + 2 - 4 * k, 7.5, vz + 5.5); ct = V(vx, 0, vz); }                                      // RE-HOOK: ghosts around vacuum
+  else if (t < S[7]) { cp = V(vx + 4, 6, vz + 5); ct = V(vx, 0, vz); }                                                                                     // both at once
+  else if (t < S[8]) { const k = (t - S[7]) / (S[8] - S[7]); cp = V(vx - 1 + 2 * k, 8, vz + 6); ct = V(vx, 0, vz - .5); }                                    // joke: trailing
+  else if (t < S[9]) { const k = sm(S[8], S[9], t); cp = V(0, 12 + 6 * k, 6 - 2 * k); ct = V(0, 0, .2); }                                                    // full map crane up
+  else { const k = (t - S[9]) / (END - S[9]); const a = -.6 - .15 * (1 - k); cp = V(vx + Math.sin(a) * 6, 5.6 + .3 * (1 - k), vz + Math.cos(a) * 6); ct = V(vx, .3, vz); } // END: echo frame 0
+  return {cp, ct, overlay: t2 => {
+    if (beam.visible && beam.userData.d) { const ud = beam.userData; const p = st.proj(V((tx + ud.ex) / 2, .9, (tz + ud.ez) / 2)); st.tag(p[0], p[1], `${ud.d.toFixed(1)} מ'`, '#ffa53a', bOn); }
+    if (t2 > A[8] && t2 < S[5]) st.counter(540, 640, ptMesh.count.toLocaleString('en'), ' נקודות', '#2ee6ff', win(t2, A[8], S[5], .25), 100);
+    if (t2 > A[11] && t2 < A[15]) { const p = st.proj(V(vx, 1.3, vz)); st.tag(p[0], p[1], 'איפה אני?', '#ff5fd2', win(t2, A[11], A[15], .25)); }
+    if (t2 > A[19] - .2 && t2 < S[9]) for (const R of ROOMS) { const p = st.proj(V(R.x, .5, R.z)); st.tag(p[0], p[1], R.n, '#' + R.c.toString(16).padStart(6, '0'), sm(A[19], A[19] + .6, t2)); }
+  }};
+});
+st.ready();
+</script></body></html>
