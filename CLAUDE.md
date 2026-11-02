@@ -37,7 +37,8 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 - Biti is curious and witty: **one** cute joke per episode (e.g. "הוא עוד ממפה"). Short sentences, commas where the voice should pause.
 - Every fact must be verified (web search) and phrased so nobody can correct it in the comments (avoid shaky exact numbers; "כמעט", "בערך" are fine).
 - Pronunciation for TTS: add niqqud where needed, avoid abbreviations. Write caption overrides inline as `{tts|caption}`, e.g. `{מַכַּם|מכ"ם}`.
-  Send Ziv the **plain TTS version** (without braces) in a code block, and save the brace version to `episodes/epNNN-slug/script.txt`.
+  Send Ziv the **plain TTS version** (without braces) as **plain right-to-left text, NOT in a code block** (code blocks render left-to-right on his phone), and save the brace version to `episodes/epNNN-slug/script.txt`.
+  TTSMaker pronunciation (from Ziv): write **אלאמד** instead of אלמד → in script.txt the greeting is `אני ביטי, והיום אני {אלאמד|אלמד} אתכם ...`. Also any Hebrew text Ziv will copy (captions, comments) goes as plain RTL text, not code blocks.
 - Tell him: TTSMaker, the female voice, **normal speed**, send back the mp3.
 
 ### 3) Build (after the recording arrives)
