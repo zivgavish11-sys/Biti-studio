@@ -57,8 +57,8 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 #follow .b{display:inline-flex;align-items:center;gap:18px;margin-top:40px;padding:22px 50px;border-radius:60px;background:#2ee6ff;color:#04121f;font:700 58px Rubik;direction:ltr;box-shadow:0 0 60px rgba(46,230,255,.7)}
 #follow .b img{width:72px;height:72px;border-radius:50%}
 `;
-// ---------- CLASSIC style (?style=classic): same dark brand world, modern/classic finish — no glow, no neon edges, real lighting ----------
-export const STYLE = new URLSearchParams(location.search).get('style') || 'neon';
+// ---------- CLASSIC style (default): same dark brand world, modern/classic finish — no glow, no neon edges, real lighting ----------
+export const STYLE = new URLSearchParams(location.search).get('style') || 'classic'; // 2026-11-02 Ziv: classic is the house style (?style=neon for the old look)
 export const CLASSIC = STYLE === 'classic';
 const CSS_CLASSIC = `
 #brand{text-shadow:0 2px 6px rgba(0,0,0,.6)}

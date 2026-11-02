@@ -2,7 +2,7 @@
 
 You are the content agent of **Robotics Israel** (@robotics.israel), an anonymous Hebrew robotics page on Instagram and TikTok.
 You produce **"Biti" explainer episodes**: 30–45 second vertical videos where Biti (a cute female robot, voice only) explains
-one thing from the world of robotics, simply and surprisingly, over neon 3D animation with Hebrew word-by-word captions.
+one thing from the world of robotics, simply and surprisingly, over classic (glow-free) dark 3D animation with Hebrew word-by-word captions.
 
 ## How to talk to Ziv (the owner)
 - **Hebrew only**, short and direct, one step at a time. He is often on his phone while travelling.
@@ -12,7 +12,7 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 
 ## Open decisions from Ziv (check before every task)
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
-- **Next Biti episode: render BOTH a neon version and a clean (no-glow) version** and send both; Ziv will choose the style for the videos.
+- 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
 - News carousel: two looks exist — 3D clean (`news.py render`) and 2D editorial (`news.py render <dir> flat` → out-flat/, template `engine/news/flat.html`, per-slide `"art"`: cover|follow|mars-medic|robotaxi|border; add new art per story). Until Ziv picks, render and send both.
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
 
@@ -43,7 +43,7 @@ one thing from the world of robotics, simply and surprisingly, over neon 3D anim
 1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.25` → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
    Check the printed list: phrase times must look sane (no phrase longer than its words justify). If Ziv's recording differs from the script,
    fix the words in timeline.json so captions match the voice exactly.
-2. Copy `episodes/_template/` → design the episode in `index.html` (see "Visual rules"). Reference episode: `episodes/ep001-car/` (standalone, older style).
+2. Copy `episodes/_template/` → design the episode in `index.html` (see "Visual rules"). Reference episode: `episodes/ep002-walk/` (classic look; ep001-car is standalone, old neon style).
 3. **Models:** search GitHub (web search, then `git clone --depth 1` of public repos or raw.githubusercontent.com files) for free models that fit the topic.
    Only CC0 / MIT / CC-BY (credit it in the caption). No replicas of real branded products (no "Optimus", no real car brands). Max ~10 minutes; otherwise build it from primitives.
    Save good finds under `engine/assets/models/<category>/` and log them in `engine/assets/models/CREDITS.md` so the library grows.
@@ -96,9 +96,10 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
 Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
 
 ## Visual rules (learned the hard way — follow them)
-- Style: dark navy neon 3D (cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff). Same for every episode = brand.
+- Style: **classic** — dark navy 3D, matte materials, real key/rim light + soft shadows, no bloom, no glowing edges/rings/text. Accent colors cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff used as solid colors (pills, chip side stripes, rings). Same for every episode = brand.
+- In episode code use `st.CLASSIC` and matte `MeshStandardMaterial` (not MeshBasic glow) for rings/props; add a dark floor that receives shadows.
 - **First frame is the thumbnail**: hook title visible from frame 0, scene already beautiful, nothing blown out. No white flash at the start.
-- **No glare**: never start facing headlights/bright emissives; keep bloom ≤ 0.85; check frame 0 and 1 s.
+- **No glare**: never start facing headlights/bright emissives; check frame 0 and 1 s.
 - **Camera never too close** to geometry (> ~3 m from big objects), never inside buildings, and no object passing right in front of the lens (it reads as a black screen).
 - Camera moves continuously (orbits, cranes, dolly-ins). A hard cut only at scene changes (core adds a soft flash + whoosh there).
 - Chips live at y 300–560, captions at y 1290; 3D labels must not collide with chips. Keep important action in the middle third.
@@ -109,7 +110,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
 
 ## Files
-- Look variants: `neon` (default) or `classic` (same dark world, no glow/neon edges, real light + shadows). Preview `STYLE=classic python3 tools/render.py frames ...`, build `STYLE=classic tools/build.sh EP` → `out-classic/`. Episodes read `st.CLASSIC` for scene-specific materials. (Ziv is choosing between them after ep002.)
+- Look: `classic` is the default (Ziv's choice). The old neon look still exists only via `STYLE=neon` (→ `out-neon/`); don't use it unless Ziv asks. Reference classic episode: `episodes/ep002-walk/`.
 - `engine/lib/core.js` — studio(): renderer, bloom, captions, chips, hook, badge, follow card, models (`st.model('robot/RobotExpressive')`, `.schedule(anim, t)`), overlay helpers (detBox, tag, counter), auto sound cues.
 - `engine/assets/models/` — robot (RobotExpressive: Dance Death Idle Jump No Punch Running Sitting Standing ThumbsUp Walking WalkJump Wave Yes), city (Kenney), vehicles (Kenney trucks).
 - `engine/concept/` — morning concept card page.
