@@ -5,3 +5,4 @@ node_modules/
 __pycache__/
 news/*/out/
 episodes/*/*.mp3
+news/*/out-flat/
