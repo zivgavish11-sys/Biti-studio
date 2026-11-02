@@ -13,6 +13,7 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 ## Open decisions from Ziv (check before every task)
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
+- 2026-11-02: Biti-studio was made **public** so the agent can host media itself (sessions can't push to Biti-media). **When @robotics.israel reaches 100 followers (check in every stats pull), remind Ziv to make Biti-studio AND Biti-media private again** — the repo shows his name/email and links him to the anonymous page.
 - News carousel: two looks exist — 3D clean (`news.py render`) and 2D editorial (`news.py render <dir> flat` → out-flat/, template `engine/news/flat.html`, per-slide `"art"`: cover|follow|mars-medic|robotaxi|border; add new art per story). Until Ziv picks, render and send both.
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
 
@@ -64,6 +65,10 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 - Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing"). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
 
 ### Publishing (you upload, not Ziv)
+**Current method (2026-11-02, while sessions can't push to Biti-media):** push the mp4 to a temporary branch `media-<slug>` of Biti-studio (orphan branch, never main), use
+`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4` (check 200), schedule, then delete the branch right away:
+Metricool copies the video to its own storage (static.metricool.com) at scheduling time, so the public URL is only needed for that moment. TikTok requires `tiktokData.title` (short plain-text title).
+If pushing to Biti-media works in your session, the Biti-media method below is fine too.
 1. Copy `out/<slug>_full.mp4` to the public repo **zivgavish11-sys/Biti-media** (cloned at /home/claude/biti-media or wherever you cloned it) as `v/<slug>.mp4`, commit, push.
    Public URL: `https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/<slug>.mp4` — check it returns 200 with curl.
 2. One `createScheduledPost` call, blogId 7444571, providers instagram + tiktok, `instagramData: {type:"REEL", showReelOnFeed:true, isAiGenerated:true}`,
