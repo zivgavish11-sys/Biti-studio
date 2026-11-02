@@ -66,7 +66,7 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 
 ### Publishing (you upload, not Ziv)
 **Current method (2026-11-02, while sessions can't push to Biti-media):** push the mp4 to a temporary branch `media-<slug>` of Biti-studio (orphan branch, never main), use
-`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4` (check 200), schedule, then delete the branch right away:
+`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4` (check 200), schedule, then delete the branch right away (if `git push --delete` returns 403, ask Ziv to delete it at github.com/zivgavish11-sys/Biti-studio/branches):
 Metricool copies the video to its own storage (static.metricool.com) at scheduling time, so the public URL is only needed for that moment. TikTok requires `tiktokData.title` (short plain-text title).
 If pushing to Biti-media works in your session, the Biti-media method below is fine too.
 1. Copy `out/<slug>_full.mp4` to the public repo **zivgavish11-sys/Biti-media** (cloned at /home/claude/biti-media or wherever you cloned it) as `v/<slug>.mp4`, commit, push.
