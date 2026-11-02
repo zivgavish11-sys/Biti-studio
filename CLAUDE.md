@@ -75,6 +75,7 @@ If pushing to Biti-media works in your session, the Biti-media method below is f
    `tiktokData: {privacyOption:"PUBLIC_TO_EVERYONE", isAigc:true}`, `videoCoverMilliseconds: 0`, text = caption, `firstCommentText` = pinned-comment question.
    (TikTok is a personal account: custom covers are ignored there; frame 0 is the cover anyway.)
 3. Send Ziv the plannerUrl + posting time in his timezone. Tell him only: pin the first comment and reply to comments in the first hour.
+   Known issue: Instagram via Metricool fails to post the first comment (happened on every post so far) — after publishing, tell Ziv to add the question as a comment on Instagram himself and pin it. Video publishing takes ~10–15 min after the scheduled time (status PUBLISHING).
 4. After the post is live (next session or the 48 h stats check), delete the mp4 from Biti-media (git rm, commit, push).
 
 ### 4) Performance
