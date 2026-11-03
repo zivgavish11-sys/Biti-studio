@@ -26,8 +26,16 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
   (episodes, carousels, other reels), log to `state/performance.md`, draw conclusions, and propose concrete rule changes to Ziv.
   **Only after Ziv's explicit OK** write the approved changes into the "brain and rules" (`CLAUDE.md`, `docs/playbook.md`, `state/topics.md`) and log them in `state/decisions.md`. Never change rules without his OK.
   The 48 h per-episode stats check and the 100-followers privacy reminder belong to this chat.
+- **סוכן בודק עובדות / Fact-checker** (task "סוכן בודק עובדות", daily ~09:45 Israel): independently checks every fact in today's news spec, the latest episode script and the posts scheduled in Metricool.
+  Problems go to the responsible agent's inbox (video/news) + a push to Ziv if the post goes out soon. Quiet when all is fine. So it can see drafts, video/news agents commit script.txt / spec.json **before** sending to Ziv.
+- **סוכן ייעול / Efficiency** (task "סוכן ייעול", weekly): maps what Ziv still does by hand and proposes automations/shortcuts so he works as little as possible. Applies only what he approves.
+- **סוכן קהילה / Community** (task "סוכן קהילה", **dormant** — woken when a post reaches 5 comments): daily comments/DMs digest with ready-to-copy replies.
+- **סוכן שיתופי פעולה / Collaborations** (task "סוכן שיתופי פעולה", **dormant** — woken at 200 followers IG + TikTok combined): finds Israeli robotics companies, creators, communities; drafts outreach.
+- **Milestone watcher** (task "שומר אבני דרך", daily, silent): checks Metricool; wakes the dormant agents at their milestone, sends the 100-followers privacy reminder, then disables itself when nothing is left to watch.
+- **Every new agent interviews Ziv on its first run** (one short question at a time) and they define its role together before it starts working; the result goes to the top of its state file.
+- **Pace**: for now only **one Biti episode per day**. Ep #3 is being finished in the news chat (last time); from ep #4 on, episodes are only made in the video chat.
 - **Recommendations between chats**: a chat may recommend things to the others, but never does their work. Write a dated line to the other chat's inbox
-  `state/inbox/<agent>.md` — video · news · analytics · boss · media · growth (format: `- YYYY-MM-DD [from news] <recommendation>`), commit and push.
+  `state/inbox/<agent>.md` — video · news · analytics · boss · media · growth · factcheck · efficiency · community · collab (format: `- YYYY-MM-DD [from news] <recommendation>`), commit and push.
   **At the start of every run, read your own inbox**, apply what fits (tell Ziv when it changes something visible), and move handled lines to the "Handled" section with a short note.
 
 ## Open decisions from Ziv (check before every task)
