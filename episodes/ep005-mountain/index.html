@@ -1,0 +1,227 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP005 — איך רובוט עולה במדרגות (Mount Tai robot race, 2.11.2026): lidar sees each step, legs feel each touch.
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+const EPISODE = 3;
+const st = await studio({
+  episode: EPISODE,
+  hook: ['איך רובוט עולה', '<span class="pill">3,000</span> מדרגות?'],
+  // S: 0 hook | 1 Biti intro | 2 mountain reveal | 3 humanoid tumbles | 4 dog wins (summit) | 5 lidar | 6 RE-HOOK feet | 7 payoff | 8 follow/end
+  scenes: (A, B, END) => [0, A[2] - .25, A[4] - .25, A[6] - .25, A[8] - .25, A[11] - .25, A[13] - .25, A[17] - .25, A[20] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[4], b: A[5] - .1, y: 330, c: 'org', h: '⛰️ הר טאי, סין<small>מרוץ רובוטים</small>'},
+    {a: A[5], b: S[3], y: 330, c: '', h: '🤖 כ־90 קבוצות'},
+    {a: A[7], b: S[4], y: 330, c: 'org', h: '🤕 הוא עוד מתאמן'},
+    {a: A[8], b: A[10] - .1, y: 330, c: 'grn', h: '🏆 כלב רובוטי ניצח'},
+    {a: A[10], b: S[5], y: 330, c: 'org', h: '🚶 תיירים: לפחות שעתיים'},
+    {a: A[12], b: S[6], y: 330, c: '', h: '📡 חיישני לייזר<small>מפה תלת־ממדית של כל מדרגה</small>'},
+    {a: A[14], b: A[16] - .1, y: 330, c: 'pnk', h: '🦶 הרגליים מרגישות'},
+    {a: A[16], b: S[7], y: 330, c: 'pnk', h: '⚡ תיקון בשבריר שנייה'},
+    {a: A[18], b: S[8], y: 330, c: 'grn', h: '👁️ רואות + 🦶 מרגישות'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(23);
+const CL = st.CLASSIC;
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, metalness: .05, ...o});
+
+// ================= STAIRS (along -z) =================
+const D = .9, R = .36, NST = 140, SW = 6;          // step depth, rise, count, width
+const slope = R / D;
+const stepY = z => { if (z > 0) return 0; const k = Math.min(NST - 1, Math.floor(-z / D)); return (k + 1) * R; };
+const lineY = z => z > 0 ? 0 : Math.min(-z, NST * D) * slope;   // smooth slope for the body
+const unit = new THREE.BoxGeometry(1, 1, 1);
+const stoneA = M(0x5f6684, {roughness: .9}), stoneB = M(0x535a76, {roughness: .9});
+const stA = new THREE.InstancedMesh(unit, stoneA, NST), stB = new THREE.InstancedMesh(unit, stoneB, NST); let na = 0, nb = 0;
+const mx = new THREE.Matrix4(), q0 = new THREE.Quaternion();
+for (let i = 0; i < NST; i++) { const h = (i + 1) * R + 3; mx.compose(V(0, (i + 1) * R - h / 2, -(i + .5) * D), q0, V(SW, h, D));
+  (i % 2 ? stB : stA).setMatrixAt(i % 2 ? nb++ : na++, mx); }
+stA.count = na; stB.count = nb; for (const s of [stA, stB]) { s.castShadow = s.receiveShadow = true; scene.add(s); }
+// parapets
+const wallM = M(0x4c5372, {roughness: .9}); const walls = new THREE.InstancedMesh(unit, wallM, NST * 2); let nw = 0;
+for (let i = 0; i < NST; i++) for (const sx of [-1, 1]) { mx.compose(V(sx * (SW / 2 + .2), (i + 1) * R + .25, -(i + .5) * D), q0, V(.4, .5 + R, D + .02)); walls.setMatrixAt(nw++, mx); }
+walls.castShadow = walls.receiveShadow = true; scene.add(walls);
+// plaza at the bottom + summit plateau
+const plazaM = M(0x6d7390, {roughness: .9});
+const plaza = new THREE.Mesh(new THREE.BoxGeometry(26, 1, 18), plazaM); plaza.position.set(0, -.5, 9); plaza.receiveShadow = true; scene.add(plaza);
+const TOPY = NST * R, TOPZ = -NST * D;
+const plateau = new THREE.Mesh(new THREE.BoxGeometry(30, 4, 24), plazaM); plateau.position.set(0, TOPY - 2, TOPZ - 12); plateau.receiveShadow = true; scene.add(plateau);
+// mountain flanks: sloped rock slabs lower than the stairs (camera stays far above them)
+const rockM = M(0x283052, {roughness: 1}), rockM2 = M(0x222944, {roughness: 1});
+for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) {
+  const len = NST * D + 30, w = 14; const g = new THREE.Mesh(new THREE.BoxGeometry(w, 2, len), k % 2 ? rockM : rockM2);
+  g.position.set(sx * (SW / 2 + 1 + w / 2 + k * w), -1.3 - k * 3 + (NST * D / 2) * slope, -NST * D / 2 + 6); g.rotation.x = Math.atan(slope); g.receiveShadow = true; scene.add(g); }
+// pine trees on the flanks
+const treeM = M(0x1f4038, {roughness: .9}), trunkM = M(0x3a2a24);
+const trees = new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 7), treeM, 260); let nt = 0;
+for (let k = 0; k < 260; k++) { const sx = r() < .5 ? -1 : 1, x = sx * (9 + r() * 16), z = 8 - r() * (NST * D + 10), h = 2.5 + r() * 2.5;
+  const gy = lineY(Math.min(z, 0)) - 1.4 - (Math.abs(x) - 9) * .22; mx.compose(V(x, gy + h / 2, z), q0, V(h * .32, h, h * .32)); trees.setMatrixAt(nt++, mx); }
+trees.castShadow = true; scene.add(trees);
+// distant ranges
+const farM = M(0x1a2140, {roughness: 1, fog: true});
+for (let k = 0; k < 9; k++) { const c = new THREE.Mesh(new THREE.ConeGeometry(35 + r() * 25, 50 + r() * 40, 6), farM); const a = -1.3 + k * .33;
+  c.position.set(Math.sin(a) * 170, 10, -110 + -Math.cos(a) * 120); scene.add(c); }
+const moon = new THREE.Mesh(new THREE.SphereGeometry(7, 32, 16), new THREE.MeshBasicMaterial({color: 0xe8e4d8, fog: false})); moon.position.set(-60, 95, -260); scene.add(moon);
+// red gates (paifang) every ~30 steps, big summit gate at the top
+const red = M(0xb3332e, {roughness: .7}), roofM = M(0x2a2f45, {roughness: .6});
+function gate(i, big = 1) { const g = new THREE.Group(), y = i * R, z = -i * D - .2;
+  for (const sx of [-1, 1]) { const p = new THREE.Mesh(new THREE.BoxGeometry(.5 * big, 6 * big, .5 * big), red); p.position.set(sx * (SW / 2 + .9) * big, 3 * big, 0); p.castShadow = true; g.add(p); }
+  const b1 = new THREE.Mesh(new THREE.BoxGeometry((SW + 3.4) * big, .45 * big, .6 * big), red); b1.position.y = 5.2 * big; g.add(b1);
+  const b2 = new THREE.Mesh(new THREE.BoxGeometry((SW + 5) * big, .35 * big, 1.1 * big), roofM); b2.position.y = 6.15 * big; g.add(b2);
+  g.position.set(0, y, z); g.traverse(m => m.isMesh && (m.castShadow = true)); scene.add(g); return g; }
+for (const i of [12, 42, 72, 102]) gate(i);
+const summit = gate(NST + 6, 1.6); summit.position.set(0, TOPY, TOPZ - 6);
+
+// ================= ROBOT DOG (procedural, trot gait + 2-link IK) =================
+const L1 = .55, L2 = .6, HIPH = .95;
+function cylBetween(m, a, b) { const d = b.clone().sub(a), L = d.length(); m.position.copy(a).addScaledVector(d, .5); m.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); m.scale.set(1, L, 1); }
+function makeDog(accent, body = 0xe3e7f2) {
+  const g = new THREE.Group(); scene.add(g);
+  const torso = new THREE.Group(); g.add(torso);
+  const bm = M(body, {roughness: .45, metalness: .25}), dk = M(0x262b40, {roughness: .5, metalness: .3}), ac = M(accent, {roughness: .5});
+  const add = (geo, mat, x, y, z, p = torso) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; p.add(m); return m; };
+  add(new RoundedBoxGeometry(.72, .36, 1.5, 4, .12), bm, 0, 0, 0);
+  add(new THREE.BoxGeometry(.74, .06, 1.1), ac, 0, -.05, 0);                       // accent side band
+  const head = add(new RoundedBoxGeometry(.5, .3, .42, 4, .1), bm, 0, .02, -.86);
+  add(new THREE.BoxGeometry(.44, .16, .05), M(0x10142a, {roughness: .2, metalness: .6}), 0, .03, -1.08); // visor
+  const lid = add(new THREE.CylinderGeometry(.11, .13, .12, 24), dk, 0, .22, -.84);    // front lidar puck
+  add(new THREE.TorusGeometry(.12, .022, 8, 24), ac, 0, .25, -.84).rotation.x = Math.PI / 2;
+  add(new THREE.CylinderGeometry(.1, .12, .1, 24), dk, 0, .23, .62);                   // rear lidar
+  const legs = [];
+  for (const [fx, fz, off] of [[-1, -1, 0], [1, -1, .5], [-1, 1, .5], [1, 1, 0]]) { // FL FR RL RR, diagonal pairs share phase
+    const th = new THREE.Mesh(new THREE.CylinderGeometry(.09, .07, 1, 12), dk), ca = new THREE.Mesh(new THREE.CylinderGeometry(.05, .04, 1, 12), dk);
+    const kn = new THREE.Mesh(new THREE.SphereGeometry(.1, 16, 12), ac), hp = new THREE.Mesh(new THREE.SphereGeometry(.12, 16, 12), dk);
+    const ft = new THREE.Mesh(new THREE.SphereGeometry(.075, 16, 12), M(0x111320, {roughness: .9}));
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(1, .03, 6, 40), new THREE.MeshStandardMaterial({color: COL.pink, roughness: .5, transparent: true, opacity: 0, depthWrite: false})); ring.rotation.x = Math.PI / 2;
+    for (const m of [th, ca, kn, hp, ft]) { m.castShadow = true; g.add(m); } scene.add(ring);
+    legs.push({hip: V(fx * .4, -.05, fz * .58), off, th, ca, kn, hp, ft, ring, foot: V(), stance: false, tStance: 0});
+  }
+  return {g, torso, legs, lid, head, accent};
+}
+// trot: period TG, stance first half of the cycle. zf(t) = body z as a function of time (continuous per scene segment)
+const TG = .56;
+function place(z, x) { if (z > -.1) return V(x, 0, z); const k = Math.min(NST - 1, Math.floor(-z / D)); return V(x, (k + 1) * R, -(k + .48) * D); }
+function poseDog(dog, t, zf, x0 = 0, opts = {}) {
+  const z = zf(t), y = lineY(z) + HIPH + .06 * Math.sin(t * Math.PI * 4 / TG) * (opts.still ? 0 : 1);
+  const pitch = z < 0 ? Math.atan(slope) * sm(0, -1.5, z) : 0;
+  dog.g.position.set(0, 0, 0); dog.torso.position.set(x0, y, z); dog.torso.rotation.set(pitch, 0, (opts.roll || 0));
+  dog.torso.updateMatrixWorld(true);
+  for (const L of dog.legs) {
+    const H = L.hip.clone().applyMatrix4(dog.torso.matrixWorld);
+    let F;
+    if (opts.still) { F = place(H.z, H.x); L.stance = true; L.tStance = 9; }
+    else {
+      const p = t / TG + L.off, n = Math.floor(p), ph = p - n;
+      const tau = n => (n - L.off) * TG;                      // touchdown time of cycle n
+      const P = n => { const hz = zf(tau(n) + TG / 4) + L.hip.z * Math.cos(pitch); return place(hz, H.x); };
+      if (ph < .5) { F = P(n); L.stance = true; L.tStance = ph * TG; }
+      else { const s = (ph - .5) / .5, a = P(n), b = P(n + 1), e = s * s * (3 - 2 * s);
+        F = a.clone().lerp(b, e); F.y = a.y + (b.y - a.y) * sm(0, .6, s) + (.22 + Math.max(0, b.y - a.y) * .6) * Math.sin(Math.PI * s); L.stance = false; L.tStance = 0; }
+      if (opts.slip && L === dog.legs[0]) F.z += opts.slip;
+    }
+    F.y += .075;
+    // 2-link IK in the leg's sagittal plane, knee points backwards (+z)
+    const d = F.clone().sub(H); let len = d.length(); const reach = L1 + L2 - .02; if (len > reach) { d.multiplyScalar(reach / len); len = reach; F = H.clone().add(d); }
+    const a = Math.acos(Math.min(1, Math.max(-1, (L1 * L1 + len * len - L2 * L2) / (2 * L1 * len))));
+    const u = d.clone().normalize(); const ang = Math.atan2(u.z, -u.y) + a;    // rotate towards +z
+    const K = H.clone().add(V(0, -Math.cos(ang) * L1, Math.sin(ang) * L1));
+    cylBetween(L.th, H, K); cylBetween(L.ca, K, F); L.kn.position.copy(K); L.hp.position.copy(H); L.ft.position.copy(F); L.foot.copy(F);
+    // contact pulse ring
+    const k = L.stance ? L.tStance / .42 : 1; L.ring.visible = k < 1 && !!opts.rings; L.ring.position.set(F.x, F.y - .065, F.z); L.ring.scale.setScalar(.12 + .55 * k); L.ring.material.opacity = (1 - k) * .9;
+  }
+}
+const dog = makeDog(COL.cyan);
+// rivals on the stairs (mountain reveal + background)
+const rivals = []; const RC = [COL.orange, COL.purple, COL.pink, 0x7cffb0, COL.orange, COL.purple];
+for (let k = 0; k < 6; k++) rivals.push({d: makeDog(RC[k], 0xc9cede), x: (k % 3 - 1) * 1.7, z0: -30 - k * 9 - r() * 4, v: 1.15 + r() * .4, ph: r() * 3});
+const BOT = 'robot/RobotExpressive';
+const hum = []; for (let k = 0; k < 4; k++) { const m = await st.model(BOT, {scale: .42}); m.schedule('Walking', -r() * 2, 0); scene.add(m.object); hum.push({m, x: (k % 2 ? 1.4 : -1.4), z0: -36 - k * 13, v: .7}); }
+// the humanoid that tumbles
+const tum = await st.model(BOT, {scale: .45}); scene.add(tum.object);
+tum.schedule('Walking', 0, 0).schedule('Death', A[6] + .1, .15);
+// Biti (intro)
+const biti = await st.model(BOT, {scale: .5}); scene.add(biti.object); biti.schedule('Wave', 0, 0).schedule('ThumbsUp', A[3] + .3);
+biti.object.position.set(-1.9, 0, 5.2); biti.object.rotation.y = .45;
+
+// ================= LIDAR: point cloud on the steps ahead + rays =================
+const NPTS = 900; const pts = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 6, 4), new THREE.MeshStandardMaterial({color: COL.cyan, roughness: .5}), NPTS); pts.frustumCulled = false; scene.add(pts);
+const rayGeo = new THREE.BufferGeometry(); const rayPos = new Float32Array(28 * 6); rayGeo.setAttribute('position', new THREE.BufferAttribute(rayPos, 3));
+const rays = new THREE.LineSegments(rayGeo, new THREE.LineBasicMaterial({color: COL.cyan, transparent: true, opacity: .35})); rays.frustumCulled = false; scene.add(rays);
+function lidar(t, amt) {
+  pts.visible = rays.visible = amt > .01; if (!pts.visible) return;
+  const lp = V(0, .25, -.84).applyMatrix4(dog.torso.matrixWorld); const k0 = Math.max(0, Math.floor(-dog.torso.position.z / D));
+  const sweep = (t * .9) % 1; let n = 0; const sc = V(1, 1, 1).multiplyScalar(amt);
+  for (let s = 1; s <= 9 && n < NPTS; s++) { const k = k0 + s; if (k >= NST) break; const zt = -k * D, yt = (k + 1) * R;
+    const vis = s / 9 < .25 + amt * .75;
+    for (let xi = -10; xi <= 10; xi++) { const x = xi * .27; if (!vis) continue;
+      for (const [y, z] of [[yt, zt - .02], [yt, zt - D * .5], [yt - R * .5, zt + .02]]) { if (n >= NPTS) break;
+        const wob = .01 * Math.sin(xi * 3.1 + k); mx.compose(V(x, y + .03 + wob, z), q0, sc.clone().multiplyScalar(.8 + .4 * Math.abs(Math.sin(xi + k + t * 3)))); pts.setMatrixAt(n++, mx); } } }
+  pts.count = n; pts.instanceMatrix.needsUpdate = true;
+  for (let i = 0; i < 28; i++) { const tgt = (i * 37 + Math.floor(t * 12) * 13) % Math.max(1, n); const m4 = new THREE.Matrix4(); pts.getMatrixAt(tgt, m4); const p = V().setFromMatrixPosition(m4);
+    rayPos.set([lp.x, lp.y, lp.z, p.x, p.y, p.z], i * 6); }
+  rayGeo.attributes.position.needsUpdate = true; rays.material.opacity = .32 * amt;
+}
+
+// ================= colors =================
+const bgN = new THREE.Color(0x0a0f22), bgP = new THREE.Color(0x1e0c2c), fogN = new THREE.Color(0x0c1228), fogP = new THREE.Color(0x2a1238);
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const V_DOG = 1.6;                                  // dog speed (units/s), one stride ≈ one step
+// dog z per scene segment (hard cuts hide the jumps)
+function seg(t) { let i = 0; for (let k = 0; k < S.length - 1; k++) if (t >= S[k]) i = k; return i; }
+const Z0 = {0: -24, 1: 7.5, 2: -40, 3: -60, 4: -NST * D + 7, 5: -18, 6: -45, 7: -70, 8: -24 + V_DOG * (END - S[8])};
+
+// ================= PER FRAME =================
+st.frame(t => {
+  const i = seg(t); const ts = S[i];
+  let zf = tt => Z0[i] - V_DOG * (tt - ts);
+  if (i === 4) zf = tt => Math.max(TOPZ - 9, Z0[4] - V_DOG * (tt - ts)); // stops on the plateau
+  if (i === 8) zf = tt => Z0[8] - V_DOG * (tt - ts);
+  const stopped = i === 4 && zf(t) <= TOPZ - 9 + .01;
+  let roll = 0, slip = 0; if (t > A[16] && t < A[16] + .7) { const k = (t - A[16]) / .7; slip = .32 * Math.sin(Math.PI * Math.min(1, k * 2)) * (1 - k); roll = .07 * Math.sin(k * 18) * (1 - k); }
+  poseDog(dog, t, zf, i === 1 ? 1.4 : 0, {rings: i >= 5 || i === 0, slip, roll, still: stopped});
+  for (const L of dog.legs) L.ring.material.color.setHex(i === 6 || i === 7 ? COL.pink : COL.cyan);
+  // rivals keep climbing
+  for (const rv of rivals) { const vis = i === 2 || i === 3; rv.d.torso.visible = vis; rv.d.legs.forEach(L => [L.th, L.ca, L.kn, L.hp, L.ft].forEach(m => m.visible = vis));
+    if (vis) poseDog(rv.d, t + rv.ph, tt => rv.z0 - rv.v * (tt - rv.ph - 0), rv.x); }
+  for (const h of hum) { h.m.object.visible = i === 2 || i === 3; const z = h.z0 - h.v * t; h.m.object.position.set(h.x, stepY(z), z); h.m.object.rotation.y = Math.PI; }
+  // tumbling humanoid: walks up, falls at A6, slides down ~5 steps
+  { const zt0 = -52 - .6 * Math.min(t, A[6]); const k = sm(A[6] + .55, A[6] + 1.9, t); const z = zt0 + k * 4.6;
+    const bump = Math.abs(Math.sin(k * Math.PI * 5)) * .35 * (1 - k);
+    tum.object.position.set(.8, k > 0 ? lineY(z) + .1 + bump : stepY(z), z); tum.object.rotation.set(-k * 1.2, Math.PI + k * .8, 0); tum.object.visible = i === 3 || i === 2; }
+  biti.object.visible = i === 1; dog.g.visible = true;
+  // lidar amount
+  const la = i === 0 ? 1 : i === 5 ? sm(A[11], A[12] + .6, t) : i === 7 ? 1 : i === 8 ? 1 : i === 1 ? 0 : 0; lidar(t, la);
+  // re-hook color shift
+  const pk = win(t, S[6], S[7], .3); scene.background.copy(bgN).lerp(bgP, pk * .8); st.fog.color.copy(fogN).lerp(fogP, pk);
+  stoneA.color.setHex(0x5f6684).lerp(new THREE.Color(0x7a5486), pk); stoneB.color.setHex(0x535a76).lerp(new THREE.Color(0x6a4878), pk);
+
+  const P = dog.torso.position; let cp, ct;
+  if (i === 0) {        // HOOK: front 3/4, dog climbs towards the right side of frame, lidar painting steps
+    const k = t / (S[1]); cp = V(4.6 - .8 * k, P.y + 2.3, P.z - 3.6 + .9 * k); ct = V(-.3, P.y - .35, P.z - .3);
+  } else if (i === 1) { // Biti waves on the plaza while the dog trots past onto the stairs
+    const k = (t - S[1]) / (S[2] - S[1]); cp = V(2.6 + 1.6 * k, 2.6, 13.8 - 1.2 * k); ct = V(-.4, 1.5, 3.2);
+  } else if (i === 2) { // MOUNTAIN REVEAL: big crane up beside the whole staircase
+    const k = sm(S[2], S[3], t); cp = V(14 + 18 * k, lineY(-40) + 6 + 26 * k, -28 + 16 * k); ct = V(0, lineY(-62) + 2, -62 - 10 * k);
+  } else if (i === 3) { // humanoid tumbles, dog passes
+    const tz = -52 - .6 * A[6]; const k = (t - S[3]) / (S[4] - S[3]); cp = V(11.5 - 1.5 * k, lineY(tz) + 6, tz + 7.5 - 1.2 * k); ct = V(.5, lineY(tz + 2) + .8, tz + 2);
+  } else if (i === 4) { // SUMMIT: dog trots through the big gate onto the plateau, slow orbit
+    const k = (t - S[4]) / (S[5] - S[4]); cp = V(4.8 - 1.5 * k, Math.max(P.y, TOPY) + 2.8, P.z - 7 + 1.2 * k); ct = V(P.x, P.y + .2, P.z + .5);
+  } else if (i === 5) { // LIDAR: over-the-shoulder, looking up the stairs at the point cloud
+    const k = (t - S[5]) / (S[6] - S[5]); cp = V(4.4 - 1.2 * k, P.y + 3.3, P.z + 4.4 - .6 * k); ct = V(0, P.y + .1, P.z - 1.6);
+  } else if (i === 6) { // RE-HOOK: low side view on the legs, pink world, contact pulses
+    const k = (t - S[6]) / (S[7] - S[6]); cp = V(5.6, P.y + .9 + .4 * k, P.z + .6 - 1.4 * k); ct = V(0, P.y - .45, P.z - .4);
+  } else if (i === 7) { // PAYOFF: rising 3/4 shot, eyes (lidar) + legs (pulses) together
+    const k = (t - S[7]) / (S[8] - S[7]); cp = V(5.8 - 1.5 * k, P.y + 3.4 + 1 * k, P.z - 4 + 2 * k); ct = V(0, P.y - .1, P.z - 1);
+  } else {              // END: echo frame 0
+    const k = (t - S[8]) / (END - S[8]); cp = V(4.6 + .6 * (1 - k), P.y + 2.3, P.z - 3.6 - .5 * (1 - k)); ct = V(-.3, P.y - .35, P.z - .3);
+  }
+  return {cp, ct, overlay: t2 => {
+    if (t2 > A[5] && t2 < S[3]) st.counter(540, 760, Math.round(sm(A[5] + .3, S[3] - .4, t2) * 3000).toLocaleString('en'), ' מדרגות', '#ffa53a', win(t2, A[5], S[3], .25), 110);
+    if (t2 > A[9] - .2 && t2 < S[5]) { const k = sm(A[9] - .2, A[9] + 1.0, t2); st.counter(540, 760, fmt(k * (43 * 60 + 41)), '', '#7cffb0', win(t2, A[9] - .2, S[5], .25), 140); }
+    if (t2 > A[6] + .6 && t2 < A[7] + .2) { const tz = -52 - .6 * A[6] + sm(A[6] + .55, A[6] + 1.9, t2) * 4.6; const p = st.proj(V(.8, lineY(tz) + 1.8, tz)); st.tag(p[0], p[1], 'אופס!', '#ffa53a', win(t2, A[6] + .6, A[7] + .2, .2)); }
+    if (t2 > A[16] + .1 && t2 < A[16] + 1.4) { const p = st.proj(dog.legs[0].foot.clone().add(V(0, .9, 0))); st.tag(p[0], p[1], 'תוקן ✓', '#ff5fd2', win(t2, A[16] + .1, A[16] + 1.4, .15)); }
+  }};
+});
+st.ready();
+</script></body></html>
