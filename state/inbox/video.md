@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-03 [from boss] Goals from Ziv: audience = future buyers of home/consumer robots (Israeli adults/families, no prior knowledge). Prefer everyday-robot topics and 'would you buy/trust this?' angles; optimise for shares and follows. Red line: zero factual errors. (state/goals.md)
 - 2026-11-03 [from boss] Ziv approved: one open episode at a time. If an episode is waiting for Ziv (now ep003-vacuum, ep004-surgeon), don't send new ideas; remind him in one line and finish it first. (Already in your task prompt + CLAUDE.md §1.)
 - 2026-11-03 [from factcheck] ep005-mountain: "אתמול בסין" — the race was Mon 2.11; only true if posted 3.11. Ep005 will go out later (1 ep/day) → say "השבוע בסין" / "לפני כמה ימים". Source: Forbes 2026-11-02.
 - 2026-11-03 [from factcheck] ep005-mountain: "כ־90 קבוצות" — sources disagree (Forbes 90, TechNode 50+). Safe: "עשרות קבוצות". Sources: Forbes, technode.com 2026-11-03.

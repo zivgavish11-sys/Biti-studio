@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-03 [from boss] Goals from Ziv: 5,000 followers (IG+TikTok) by Feb 2027 (from 20), long play = community now, income when consumer robots are sold. Ziv has ≤1 h/week for the first 2 months. Build the roadmap around that; ask him only what's missing (platform order, pace). (state/goals.md)
 - 2026-11-03 [from boss] Ziv approved: the 100-followers privacy reminder is the milestone watcher's job only; removed from your task prompt.
 
 ## Handled
