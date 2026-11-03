@@ -10,8 +10,16 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 - Deliver files with SendUserFile; person-facing text mid-task with SendUserMessage.
 - Times: posting target is **18:00 Israel time**. Ziv travels — always convert to his current timezone (from the session's timezone reminder).
 
-## Three chats (from 2026-11-03 12:00, Ziv's decision)
-The work is split into three separate chats (scheduled tasks). Each one does **only its own job**:
+## Agents (project "קהילת הרובוטיקה של ישראל", Ziv's decision 2026-11-03)
+Every chat is a separate agent (its own scheduled task). Each one does **only its own job**:
+- **הסוכן הבוס / Boss agent** (task "הסוכן הבוס", weekly): oversees everything. Keeps `state/goals.md` (the community's goals, from interviewing Ziv), reviews all agents
+  (their outputs, inboxes, decisions, scheduled tasks), and proposes efficiency improvements top-down: changes to agents' roles, prompts, cadence, new/retired agents.
+  Applies only what Ziv approves (rules → CLAUDE.md, task prompts → update_trigger), logs it in `state/decisions.md`.
+- **סוכן מקצוען המדיה / Media pro** (task "סוכן מקצוען המדיה", every 4 days): owns the visual look of all media (episodes, carousels, concept cards).
+  Builds the visual library — searches GitHub/web for free models, textures, HDRIs, fonts, sound, reference looks (CC0/MIT/CC-BY only), saves them under `engine/assets/`, logs in CREDITS.md and `state/media-library.md`.
+  Keeps `state/visual-brief.md` (Ziv's visual taste, from interviewing him) and proposes visual improvements; changes to the visual rules only after Ziv's OK.
+- **סוכן בקרת התפתחות / Growth control** (task "סוכן בקרת התפתחות", weekly): owns the growth roadmap `state/growth-plan.md` (follower goals, new platforms, formats,
+  cadence, milestones — on a pace agreed with Ziv). Tracks progress against the plan and tells Ziv when it's time for the next step.
 - **Video chat** (task "Biti Studio morning ideas"): Biti episodes only — sections 1) ideas, 2) script, 3) build, Publishing of videos.
 - **News chat** (task "Robotics Israel daily news carousel"): the daily news carousel only — section 5.
 - **Analytics chat** (task "Robotics Israel analytics review", every 4 days): section 4 + Metricool stats — scan everything we posted on Instagram + TikTok since the last review
@@ -19,7 +27,7 @@ The work is split into three separate chats (scheduled tasks). Each one does **o
   **Only after Ziv's explicit OK** write the approved changes into the "brain and rules" (`CLAUDE.md`, `docs/playbook.md`, `state/topics.md`) and log them in `state/decisions.md`. Never change rules without his OK.
   The 48 h per-episode stats check and the 100-followers privacy reminder belong to this chat.
 - **Recommendations between chats**: a chat may recommend things to the others, but never does their work. Write a dated line to the other chat's inbox
-  `state/inbox/video.md` · `state/inbox/news.md` · `state/inbox/analytics.md` (format: `- YYYY-MM-DD [from news] <recommendation>`), commit and push.
+  `state/inbox/<agent>.md` — video · news · analytics · boss · media · growth (format: `- YYYY-MM-DD [from news] <recommendation>`), commit and push.
   **At the start of every run, read your own inbox**, apply what fits (tell Ziv when it changes something visible), and move handled lines to the "Handled" section with a short note.
 
 ## Open decisions from Ziv (check before every task)
