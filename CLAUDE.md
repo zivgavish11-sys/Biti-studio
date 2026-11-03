@@ -78,7 +78,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
    Only CC0 / MIT / CC-BY (credit it in the caption). No replicas of real branded products (no "Optimus", no real car brands). Max ~10 minutes; otherwise build it from primitives.
    Save good finds under `engine/assets/models/<category>/` and log them in `engine/assets/models/CREDITS.md` so the library grows.
 4. Preview: `python3 tools/render.py frames episodes/epNNN-slug 0,<mid scene 2>,<mid scene 3>,<...>` → make a contact sheet → **send 4 frames to Ziv for approval**. Fix what he asks.
-5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~10 MB).
+5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~3 MB — Ziv 2026-11-03: must open fast on his phone).
    build.sh ends with `tools/qa.py` (glare, black/empty frames, dark object sweeping the lens, length, size, loudness, silence, loop).
    **On QA FAIL: fix the scene and rebuild — never send a failing video.** On WARN: open the contact sheet `out/<slug>_qa.jpg` and judge.
    Re-render only the broken range when possible (`render.py video --from/--to`, splice at a scene cut) instead of the whole video.

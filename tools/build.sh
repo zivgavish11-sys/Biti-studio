@@ -30,8 +30,8 @@ printf "file a.mp4\nfile b.mp4\n" > "$OUT/list.txt"
 ffmpeg -v error -y -f concat -safe 0 -i "$OUT/list.txt" -i "$OUT/mix.m4a" -map 0:v -map 1:a \
  -c:v libx264 -preset slow -b:v 2800k -maxrate 3500k -bufsize 7000k -profile:v high -level 4.1 -pix_fmt yuv420p -r 30 \
  -c:a aac -b:a 160k -shortest -movflags +faststart "$OUT/${SLUG}_full.tmp.mp4" && mv "$OUT/${SLUG}_full.tmp.mp4" "$OUT/${SLUG}_full.mp4"
-ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=720:1280 -c:v libx264 -preset slow -b:v 1300k -maxrate 1800k -bufsize 3600k \
- -profile:v main -level 3.1 -pix_fmt yuv420p -c:a aac -b:a 128k -movflags +faststart "$OUT/${SLUG}_light.tmp.mp4" && mv "$OUT/${SLUG}_light.tmp.mp4" "$OUT/${SLUG}_light.mp4"
+ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=480:854 -r 24 -c:v libx264 -preset slow -b:v 420k -maxrate 600k -bufsize 1200k \
+ -profile:v main -level 3.1 -pix_fmt yuv420p -c:a aac -b:a 64k -ac 1 -movflags +faststart "$OUT/${SLUG}_light.tmp.mp4" && mv "$OUT/${SLUG}_light.tmp.mp4" "$OUT/${SLUG}_light.mp4"
 ls -la "$OUT"/*_full.mp4 "$OUT"/*_light.mp4
 
 echo "== QA"

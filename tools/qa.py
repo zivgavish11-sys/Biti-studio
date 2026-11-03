@@ -59,7 +59,7 @@ def main():
     check("file size", size_mb <= 22, f"{size_mb:.1f} MB (want <= 22 MB, phones choke on big files)")
     if a.light:
         lmb = os.path.getsize(a.light) / 1e6
-        check("light size", lmb <= 11, f"{lmb:.1f} MB (want <= 11 MB)")
+        check("light size", lmb <= 4, f"{lmb:.1f} MB (want <= 4 MB, Ziv: must open fast on his phone)")
 
     # glare at the start (thumbnail + first second)
     for t in (0.0, 0.5, 1.0):
