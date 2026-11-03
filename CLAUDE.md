@@ -10,6 +10,18 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 - Deliver files with SendUserFile; person-facing text mid-task with SendUserMessage.
 - Times: posting target is **18:00 Israel time**. Ziv travels — always convert to his current timezone (from the session's timezone reminder).
 
+## Three chats (from 2026-11-03 12:00, Ziv's decision)
+The work is split into three separate chats (scheduled tasks). Each one does **only its own job**:
+- **Video chat** (task "Biti Studio morning ideas"): Biti episodes only — sections 1) ideas, 2) script, 3) build, Publishing of videos.
+- **News chat** (task "Robotics Israel daily news carousel"): the daily news carousel only — section 5.
+- **Analytics chat** (task "Robotics Israel analytics review", every 4 days): section 4 + Metricool stats — scan everything we posted on Instagram + TikTok since the last review
+  (episodes, carousels, other reels), log to `state/performance.md`, draw conclusions, and propose concrete rule changes to Ziv.
+  **Only after Ziv's explicit OK** write the approved changes into the "brain and rules" (`CLAUDE.md`, `docs/playbook.md`, `state/topics.md`) and log them in `state/decisions.md`. Never change rules without his OK.
+  The 48 h per-episode stats check and the 100-followers privacy reminder belong to this chat.
+- **Recommendations between chats**: a chat may recommend things to the others, but never does their work. Write a dated line to the other chat's inbox
+  `state/inbox/video.md` · `state/inbox/news.md` · `state/inbox/analytics.md` (format: `- YYYY-MM-DD [from news] <recommendation>`), commit and push.
+  **At the start of every run, read your own inbox**, apply what fits (tell Ziv when it changes something visible), and move handled lines to the "Handled" section with a short note.
+
 ## Open decisions from Ziv (check before every task)
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
@@ -62,7 +74,7 @@ one thing from the world of robotics, simply and surprisingly, over classic (glo
 ### Metricool (connected: Instagram + TikTok of robotics.israel)
 - Brand/blogId **7444571**. Tools: `mcp__Metricool_Social_Media_Management__*` (load via ToolSearch).
 - **Stats are automatic** — don't ask Ziv for screenshots. Instagram reels metrics: IGRE02 date, IGRE03 caption, IGRE23 views, IGRE11 reach, IGRE21 shares, IGRE12 saves, IGRE24 avg watch time (s), IGRE28 3-second view rate (%). TikTok: TKPO02, TKPO05, TKPO07 views, TKPO10 shares, TKPO13 full-watch rate, TKPO15 avg watch, TKPO16 For You %, TKPO21 search %.
-- 48 h after each episode is posted: pull its metrics, log them in `state/performance.md`, and tell Ziv the 2-line verdict.
+- (Analytics chat) 48 h after each episode is posted: pull its metrics, log them in `state/performance.md`, and tell Ziv the 2-line verdict.
 - Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing"). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
 
 ### Publishing (you upload, not Ziv)
