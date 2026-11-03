@@ -25,7 +25,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - **Analytics chat** (task "Robotics Israel analytics review", every 4 days): section 4 + Metricool stats — scan everything we posted on Instagram + TikTok since the last review
   (episodes, carousels, other reels), log to `state/performance.md`, draw conclusions, and propose concrete rule changes to Ziv.
   **Only after Ziv's explicit OK** write the approved changes into the "brain and rules" (`CLAUDE.md`, `docs/playbook.md`, `state/topics.md`) and log them in `state/decisions.md`. Never change rules without his OK.
-  The 48 h per-episode stats check and the 100-followers privacy reminder belong to this chat.
+  Every review also logs each episode posted 48 h+ earlier that is not yet in `state/performance.md` (no separate one-off stats tasks). The 100-followers reminder is NOT this chat's job (milestone watcher only).
 - **סוכן בודק עובדות / Fact-checker** (task "סוכן בודק עובדות", daily ~09:45 Israel): independently checks every fact in today's news spec, the latest episode script and the posts scheduled in Metricool.
   Problems go to the responsible agent's inbox (video/news) + a push to Ziv if the post goes out soon. Quiet when all is fine. So it can see drafts, video/news agents commit script.txt / spec.json **before** sending to Ziv.
 - **סוכן ייעול / Efficiency** (task "סוכן ייעול", weekly): maps what Ziv still does by hand and proposes automations/shortcuts so he works as little as possible. Applies only what he approves.
@@ -41,12 +41,13 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 ## Open decisions from Ziv (check before every task)
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
-- 2026-11-02: Biti-studio was made **public** so the agent can host media itself (sessions can't push to Biti-media). **When @robotics.israel reaches 100 followers (check in every stats pull), remind Ziv to make Biti-studio AND Biti-media private again** — the repo shows his name/email and links him to the anonymous page.
+- 2026-11-02: Biti-studio was made **public** so the agent can host media itself (sessions can't push to Biti-media). **When @robotics.israel reaches 100 followers (only the milestone watcher checks and reminds — Ziv 2026-11-03), remind Ziv to make Biti-studio AND Biti-media private again** — the repo shows his name/email and links him to the anonymous page.
 - News carousel: two looks exist — 3D clean (`news.py render`) and 2D editorial (`news.py render <dir> flat` → out-flat/, template `engine/news/flat.html`, per-slide `"art"`: cover|follow|mars-medic|robotaxi|border; add new art per story). Until Ziv picks, render and send both.
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
 
 ## The daily flow
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
+**One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
 1. Setup: `cd engine && npm i --silent` ; `python3 -c "import scipy" || pip install --break-system-packages -q scipy`.
 2. Read `state/episodes.json` (next episode number, past topics), `state/topics.md` (topic bank), `state/performance.md` (what worked).
 3. Pick **3 explainer topics** that were not done yet, from **different domains**:
