@@ -113,7 +113,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - A visual change every 2–3 seconds (angle, zoom, chip, counter, highlight) and a new scene every 4–6 s. Never a static shot longer than ~3 s.
 - Frame 0 is already mid-action (camera moving, something happening). The re-hook moment gets a visual shift (color/scene change).
 - The last frame echoes the first frame's composition so the replay loops smoothly.
-- Captions must match the voice word for word.
+- Captions must match the voice word for word. Captions are **calm**: no shake/jump/scale — only the active-word highlight changes and each line fades in (Ziv, 2026-11-03).
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
 
 ## Files

@@ -43,8 +43,8 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 #hook{top:215px;text-align:center;color:#fff;font:700 94px/1.2 Rubik;text-shadow:0 6px 30px rgba(0,0,0,.95),0 0 3px #000;padding:0 40px}
 .pill{background:#2ee6ff;color:#04121f;border-radius:20px;padding:0 20px;text-shadow:none;box-shadow:0 0 40px rgba(46,230,255,.7)}
 #cap{top:1290px;text-align:center;padding:0 60px;color:#fff;font:700 80px/1.3 Rubik;text-shadow:0 4px 18px rgba(0,0,0,.95),0 0 3px #000}
-#cap span{display:inline-block;margin:0 9px}
-#cap span.on{background:#2ee6ff;color:#04121f;border-radius:16px;padding:0 16px;text-shadow:none;transform:scale(1.07);box-shadow:0 0 30px rgba(46,230,255,.6)}
+#cap span{display:inline-block;margin:0 1px;padding:0 16px;border-radius:16px}  /* fixed padding: highlight never reflows the line (no caption shake) */
+#cap span.on{background:#2ee6ff;color:#04121f;text-shadow:none;box-shadow:0 0 30px rgba(46,230,255,.6)}
 .chip{position:absolute;left:50%;padding:20px 40px;border-radius:28px;background:rgba(8,14,32,.84);border:3px solid #2ee6ff;color:#fff;font:700 58px Rubik;box-shadow:0 0 40px rgba(46,230,255,.45);white-space:nowrap;opacity:0}
 .chip small{display:block;font:400 34px Rubik;color:#9fdcff;margin-top:4px}
 .chip.red{border-color:#ff4d6d;box-shadow:0 0 50px rgba(255,77,109,.6)}
@@ -187,7 +187,7 @@ export async function studio(opts = {}) {
     if (!ch) { capEl.innerHTML = ''; capKey = ''; return; }
     const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { capEl.innerHTML = ch.words.map(x => `<span>${x.w}</span>`).join(' '); capKey = k; }
     [...capEl.children].forEach((s, i) => { const w = ch.words[i]; s.className = (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
-    const p = sm(ch.a, ch.a + 0.1, t); capEl.style.opacity = p; capEl.style.transform = `translateY(${(1 - p) * 24}px) scale(${0.94 + 0.06 * p})`;
+    const p = sm(ch.a, ch.a + 0.1, t); capEl.style.opacity = p; capEl.style.transform = 'none'; // calm captions: fade only (Ziv: no shake)
   }
   const CH = opts.chips ? opts.chips(A, B, S) : [];
   for (const ch of CH) { const d = document.createElement('div'); d.className = 'chip ' + (ch.c || ''); d.innerHTML = ch.h; d.style.top = (ch.y ?? 300) + 'px'; chipsEl.appendChild(d); ch.el = d; }
