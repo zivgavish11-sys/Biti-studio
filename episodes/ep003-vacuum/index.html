@@ -94,7 +94,7 @@ const pulse = new THREE.Mesh(new THREE.SphereGeometry(.09, 16, 12), M(COL.orange
 const TRN = 400; const trGeo = new THREE.BufferGeometry(); const trPos = new Float32Array(TRN * 3); trGeo.setAttribute('position', new THREE.BufferAttribute(trPos, 3));
 const trace = new THREE.Line(trGeo, new THREE.LineBasicMaterial({color: 0x7cffb0, transparent: true, opacity: .8})); scene.add(trace);
 // Biti cameo in the intro
-const biti = await st.model('robot/RobotExpressive', {scale: .26}); biti.object.position.set(-1.3, 0, -4.3); biti.object.rotation.y = .5; scene.add(biti.object);
+const biti = await st.model('robot/RobotExpressive', {scale: .26}); biti.object.position.set(.2, 0, -4.15); biti.object.rotation.y = .6; scene.add(biti.object);
 biti.schedule('Wave', 0, 0).schedule('Idle', S[2]);
 
 const bgN = new THREE.Color(0x0a0f22), bgP = new THREE.Color(0x1e0c2c);
@@ -102,7 +102,7 @@ const bgN = new THREE.Color(0x0a0f22), bgP = new THREE.Color(0x1e0c2c);
 // ================= PER FRAME =================
 st.frame(t => {
   const pk = win(t, S[5], S[6], .3); scene.background.copy(bgN).lerp(bgP, pk * .85); st.fog.color.copy(scene.background);
-  biti.object.visible = t < S[3];
+  biti.object.visible = t >= S[1] && t < S[2];
   const s = sOf(t); const [vx, vz] = pathAt(s); const hd = heading(s);
   vac.g.position.set(vx, 0, vz); vac.g.rotation.y = hd; vac.tur.rotation.y = t * Math.PI * 2 * 1.3; // visual spin (slower than real, avoids strobing)
   const tx = vx + Math.sin(hd) * .1, tz = vz + Math.cos(hd) * .1;
@@ -131,7 +131,7 @@ st.frame(t => {
 
   let cp, ct;
   if (t < S[1]) { const a = -.6 + t * .09; cp = V(vx + Math.sin(a) * 6, 5.6 - t * .3, vz + Math.cos(a) * 9); ct = V(vx, .3, vz); }                        // HOOK: high orbit, vacuum scanning
-  else if (t < S[2]) { const a = (t - S[1]) * .25 + 2.2; cp = V(vx + Math.sin(a) * 4.4, 3.8, vz + Math.cos(a) * 4.4); ct = V(vx - .4, .4, vz - .6); }          // intro with Biti
+  else if (t < S[2]) { const mx = (vx + .2) / 2, mz = (vz - 4.15) / 2; const a = (t - S[1]) * .22 + .15; cp = V(mx + Math.sin(a) * 4.8, 3.6, mz + Math.cos(a) * 4.8); ct = V(mx, .45, mz); }          // intro: Biti waves next to the vacuum          // intro with Biti
   else if (t < S[3]) { const a = (t - S[2]) * .35 + .3; cp = V(vx + Math.sin(a) * 3.2, 2.7, vz + Math.cos(a) * 3.2); ct = V(vx, .2, vz); }                  // laser on top
   else if (t < S[4]) { const ang = hd + Math.PI / 2; cp = V(vx - Math.sin(ang) * 2.6 + Math.sin(hd) * 2.4, 3.6, vz - Math.cos(ang) * 2.6 + Math.cos(hd) * 2.4); ct = V(vx + Math.sin(ang) * .9, .2, vz + Math.cos(ang) * .9); } // along the beam
   else if (t < S[5]) { const k = sm(S[4], S[5], t); cp = V(0, 9 + 7 * k, 7 - 2 * k); ct = V(0, 0, -.5); }                                                   // map view rising
