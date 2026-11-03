@@ -90,6 +90,21 @@ const ART = {
       <rect x="22" y="270" width="22" height="210" rx="6" fill="${INK}"/><rect x="908" y="270" width="22" height="210" rx="6" fill="${INK}"/></g>
     ${bot(476, 380, 1.15, '#fff')}
     <circle cx="590" cy="210" r="40" fill="#22a66b"/><path d="M570 210 L585 226 L612 196" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  'mountain': () => `<rect width="952" height="560" fill="#f6e3cf"/><circle cx="760" cy="120" r="52" fill="#e9822a" opacity=".85"/>
+    <path d="M-20 560 L300 150 Q330 120 360 150 L560 360 L680 250 Q700 232 720 250 L980 560Z" fill="#7b8ab0"/>
+    <path d="M-20 560 L300 150 Q330 120 360 150 L470 268 L380 330 L250 330Z" fill="#5d6c94"/>
+    <path d="M130 560 Q200 470 260 420 Q300 380 270 330 Q250 280 300 230 Q320 200 330 160" stroke="#f4f1ea" stroke-width="16" fill="none" stroke-dasharray="14 10" stroke-linecap="butt"/>
+    <g transform="translate(330 120)"><rect x="-42" y="-6" width="84" height="12" fill="#c23a3a"/><rect x="-32" y="0" width="9" height="40" fill="#c23a3a"/><rect x="23" y="0" width="9" height="40" fill="#c23a3a"/></g>
+    <g transform="translate(250 400)"><rect x="-58" y="-32" width="116" height="44" rx="18" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="40" y="-60" width="40" height="32" rx="10" fill="#fff" stroke="${INK}" stroke-width="5"/>
+      <circle cx="66" cy="-46" r="5" fill="${c}"/>${[-44, -18, 18, 44].map((x, k) => `<path d="M${x} 10 L${x + (k % 2 ? 12 : -12)} 46" stroke="${INK}" stroke-width="10" stroke-linecap="round"/>`).join('')}
+      <ellipse cx="-6" cy="-46" rx="24" ry="18" fill="#2f9e55" stroke="${INK}" stroke-width="4"/><path d="M-26 -46 Q-6 -40 14 -46" stroke="#1d6b39" stroke-width="3" fill="none"/></g>
+`,
+  'stocks': () => `<rect width="952" height="560" fill="#e6efe9"/><rect y="470" width="952" height="90" fill="#cfdcd3"/>
+    ${[90, 150, 130, 210, 280, 380].map((h, k) => `<rect x="${360 + k * 92}" y="${470 - h}" width="60" height="${h}" rx="6" fill="${k === 5 ? c : '#9aa6c4'}"/>`).join('')}
+    <path d="M390 350 L482 290 L574 310 L666 230 L758 160 L850 70" stroke="#22a66b" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M820 62 L862 58 L856 100" stroke="#22a66b" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="70" y="80" width="220" height="70" rx="14" fill="${INK}"/><text x="180" y="128" font-family="Rubik" font-weight="700" font-size="40" fill="#fff" text-anchor="middle">AGLT</text>
+    ${bot(190, 360, 1.15, '#fff', INK, true)}`,
   'cover': () => `<rect width="952" height="560" fill="#e9eef7"/>
     <g opacity=".9"><circle cx="150" cy="140" r="56" fill="#d4572e"/><rect x="740" y="90" width="120" height="70" rx="16" fill="${INK}"/><circle cx="770" cy="170" r="16" fill="${INK}"/><circle cx="830" cy="170" r="16" fill="${INK}"/>
     <rect x="120" y="360" width="110" height="80" rx="12" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="164" y="378" width="22" height="44" fill="#e03a4f"/><rect x="153" y="389" width="44" height="22" fill="#e03a4f"/>

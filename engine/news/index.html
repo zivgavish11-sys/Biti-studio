@@ -102,8 +102,8 @@ function neon(obj, c, e = .12) {
   // tint: keep the model's shading but push its colours towards the slide accent
  obj.traverse(m => { if (!m.isMesh) return; m.frustumCulled = false; m.material = m.material.clone(); if (m.material.color) m.material.color.lerp(new THREE.Color(c), .3); m.material.emissive = new THREE.Color(c); m.material.emissiveIntensity = e * .1; }); }
 const T = sc.t ?? 1.1;
-async function robot(x, z, rot, anim, t, scale = .55, tint = null) {
-  const g = await load('robot/RobotExpressive'); const o = SkeletonUtils.clone(g.scene); o.scale.setScalar(scale); o.position.set(x, 0, z); o.rotation.y = rot;
+async function robot(x, z, rot, anim, t, scale = .55, tint = null, y = 0) {
+  const g = await load('robot/RobotExpressive'); const o = SkeletonUtils.clone(g.scene); o.scale.setScalar(scale); o.position.set(x, y, z); o.rotation.y = rot;
   if (tint != null) neon(o, tint, .18); else o.traverse(m => m.isMesh && (m.frustumCulled = false));
   const mx = new THREE.AnimationMixer(o); const clip = g.animations.find(c => c.name === anim) || g.animations[0];
   const a = mx.clipAction(clip); a.play(); a.time = t % clip.duration; mx.update(0); scene.add(o);
@@ -183,6 +183,27 @@ for (const p of sc.props || []) {
     const lid = new THREE.Mesh(new THREE.CylinderGeometry(.16, .2, .22, 24), mat(0x20263f, .1)); lid.position.set(cx, top + .11, cz); scene.add(lid);
     const cap = new THREE.Mesh(new THREE.CylinderGeometry(.17, .17, .05, 24), glowM(accent)); cap.position.set(cx, top + .25, cz); scene.add(cap);
     for (const [r, o] of [[1.6, .55], [2.6, .35], [3.6, .2]]) { const w = new THREE.Mesh(new THREE.TorusGeometry(r, .025, 6, 96), glowM(accent, o)); w.rotation.x = Math.PI / 2; w.position.set(cx, .06, cz); scene.add(w); } }
+  if (p === 'mountain') { // stepped sacred mountain with a stair path, robots climbing, a watermelon at the top
+    const rock = mat(0x3a4170, .1, {roughness: .9, metalness: 0}), rock2 = mat(0x2c3260, .1, {roughness: .9, metalness: 0});
+    for (let k = 0; k < 7; k++) { const r = 7 - k * .95, h = .75; const t = new THREE.Mesh(new THREE.CylinderGeometry(r - .5, r, h, 9, 1), k % 2 ? rock : rock2);
+      t.position.set(0, h / 2 + k * h, -7); t.rotation.y = k * .3; scene.add(t); }
+    const stepM = mat(0xe8ecf7, .1, {roughness: .6, metalness: 0});
+    for (let k = 0; k < 26; k++) { const a = .5 - k * .05, y = .1 + k * .2, rr = 6.6 - k * .21;
+      const s = new THREE.Mesh(new THREE.BoxGeometry(.9, .08, .32), stepM); s.position.set(Math.sin(a) * rr, y + .02, -7 + Math.cos(a) * rr); s.rotation.y = a; scene.add(s); }
+    const gate = new THREE.Group(), gm = mat(0xc23a3a, .1, {roughness: .6, metalness: 0});
+    for (const x of [-.5, .5]) { const p2 = new THREE.Mesh(new THREE.BoxGeometry(.14, 1.1, .14), gm); p2.position.set(x, .55, 0); gate.add(p2); }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(1.5, .16, .2), gm); beam.position.y = 1.15; gate.add(beam);
+    gate.position.set(0, 5.25, -7); scene.add(gate);
+    const wm = new THREE.Mesh(new THREE.SphereGeometry(.32, 24, 16), mat(0x2f9e55, .1, {roughness: .5})); wm.scale.set(1.15, .9, .9); wm.position.set(.9, 5.55, -6.6); scene.add(wm);
+    await robot(1.25, -1.9, -0.6, 'Running', T, .42, accent, 1.55); await robot(-.9, -3.1, 0.3, 'Walking', T + .4, .34, COL.purple, 3.1);
+    ring.visible = glow.visible = false; }
+  if (p === 'stocks') { // rising market bars + arrow, robot cheering in front
+    const hs = [.6, 1.0, .85, 1.5, 2.0, 2.7]; hs.forEach((h, k) => { const b = new THREE.Mesh(new THREE.BoxGeometry(.6, h, .6), mat(k === hs.length - 1 ? accent : 0x3b4378, .2, {roughness: .5}));
+      b.position.set(-3.2 + k * 1.05, h / 2, -2.4); scene.add(b); });
+    const pts = hs.map((h, k) => new THREE.Vector3(-3.2 + k * 1.05, h + .55, -2.1));
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 64, .06, 8), mat(0x37e6a0, .2, {roughness: .4})); scene.add(tube);
+    const head = new THREE.Mesh(new THREE.ConeGeometry(.22, .45, 16), mat(0x37e6a0, .2)); head.position.copy(pts.at(-1)).add(new THREE.Vector3(.12, .2, 0)); head.rotation.z = -.5; scene.add(head);
+    await robot(-2.1, .7, 0.45, 'Yes', T, .42, accent); }
   if (p === 'border') {
     for (let k = 0; k < 7; k++) await robot(-3 + k * 1.05 + (k % 2) * .2, -2.4 - (k % 2) * 1.1, 0, 'Idle', T + k * .2, .38, 0x6a2340);
     for (const x of [-3.8, 3.8]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.18, 2.2, .18), mat(0x2a2f55, .1)); post.position.set(x, 1.1, -1.1); scene.add(post); }
