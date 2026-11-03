@@ -1,0 +1,422 @@
+<title>צוות הסוכנים של ביטי</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&family=Heebo:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: an org chart (top-down tree) on a dark navy brand ground; columns stack into one spine on phones. Dark-first, light mirror. */
+:root{
+  --bg:#0b1226; --panel:#121c38; --panel-2:#18244a; --line:#2a3a6b; --fg:#e8eeff; --muted:#93a1c9;
+  --cyan:#2ee6ff; --pink:#ff5fd2; --orange:#ffa53a; --purple:#8a7dff; --green:#4fe0a0; --grey:#6c789c;
+  --display:"Rubik","Heebo",system-ui,sans-serif; --body:"Heebo","Rubik",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#eef2fb; --panel:#ffffff; --panel-2:#f3f6ff; --line:#c5cfe8; --fg:#0f1a38; --muted:#56628a;
+  --cyan:#0796b0; --pink:#c2189b; --orange:#c76a00; --purple:#5a49e0; --green:#13915a; --grey:#7a84a3; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#eef2fb; --panel:#ffffff; --panel-2:#f3f6ff; --line:#c5cfe8; --fg:#0f1a38; --muted:#56628a;
+  --cyan:#0796b0; --pink:#c2189b; --orange:#c76a00; --purple:#5a49e0; --green:#13915a; --grey:#7a84a3; color-scheme:light}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:34px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+/* header */
+header{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;justify-content:space-between}
+.brand{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.14em;color:var(--cyan);font-weight:700}
+h1{font-size:clamp(30px,5vw,48px);font-weight:800;line-height:1.05}
+h1 .pill{display:inline-block;background:var(--cyan);color:#06142b;border-radius:999px;padding:0 .35em;margin-inline-start:.15em}
+.sub{color:var(--muted);max-width:60ch}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;min-width:92px}
+.stat b{display:block;font-family:var(--display);font-size:26px;line-height:1}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.a b{color:var(--green)} .stat.d b{color:var(--orange)} .stat.m b{color:var(--grey)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-inline-end:6px;vertical-align:middle}
+
+/* tree */
+.tree{display:flex;flex-direction:column;align-items:center}
+.stem{width:2px;height:28px;background:var(--line)}
+.node{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;width:100%;max-width:380px;text-align:right}
+.node.top{border-color:var(--cyan);max-width:340px;text-align:center}
+.node.top .av{margin:0 auto 8px}
+.node.boss{border:2px solid var(--purple);max-width:520px;background:linear-gradient(var(--panel),var(--panel-2))}
+.row{display:flex;gap:12px;align-items:center}
+.av{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--panel-2);border:1px solid var(--line)}
+.av svg{width:26px;height:26px}
+.name{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.2}
+.en{font-size:12px;color:var(--muted)}
+.role{margin:8px 0 0;color:var(--fg);opacity:.9;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-size:12px;border-radius:8px;padding:2px 8px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.status{position:absolute;top:12px;left:12px;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;border:1px solid currentColor}
+.st-a{color:var(--green)} .st-d{color:var(--orange)} .st-m{color:var(--grey)} .st-w{color:var(--pink)}
+
+/* departments */
+.bus{position:relative;width:100%;height:28px}
+.bus::before{content:"";position:absolute;top:0;right:12.5%;left:12.5%;height:2px;background:var(--line)}
+.bus::after{content:"";position:absolute;top:-28px;left:50%;width:2px;height:28px;background:var(--line)}
+.depts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;width:100%}
+.dept{display:flex;flex-direction:column;gap:12px;min-width:0;position:relative;padding-top:18px}
+.dept::before{content:"";position:absolute;top:-28px;right:50%;width:2px;height:46px;background:var(--line)}
+.dept-h{display:flex;align-items:center;gap:8px;justify-content:center;font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.04em;
+  background:var(--bg);position:relative;z-index:1;padding:4px 10px;border-radius:999px;border:1px solid var(--line);align-self:center}
+.dept-h i{width:8px;height:8px;border-radius:50%}
+.dept .node{max-width:none;border-top:3px solid var(--c)}
+.sub-tree{display:flex;flex-direction:column;gap:10px;padding-inline-start:18px;border-inline-start:2px dashed var(--line);margin-inline-start:10px}
+.sub-tree .node{opacity:.92}
+.node.merged{opacity:.6;border-style:dashed}
+
+details{margin-top:10px}
+summary{cursor:pointer;font-size:13px;color:var(--cyan);list-style:none;font-weight:500}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ ";font-family:var(--mono)}
+details[open] summary::before{content:"− "}
+summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:4px}
+details ul{margin:8px 0 0;padding-inline-start:18px;font-size:13.5px;color:var(--muted)}
+details li{margin:2px 0}
+details code{font-family:var(--mono);font-size:12px;color:var(--fg)}
+
+/* day strip */
+.day{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.day h2{font-size:20px;margin-bottom:4px}
+.day p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.track-wrap{overflow-x:auto}
+.track{position:relative;min-width:720px;height:150px;direction:ltr}
+.axis{position:absolute;left:0;right:0;top:64px;height:2px;background:var(--line)}
+.tick{position:absolute;top:70px;font-size:11px;color:var(--muted);transform:translateX(-50%)}
+.ev{position:absolute;top:8px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;direction:rtl;text-align:center;width:110px}
+.ev .dot{width:12px;height:12px;border-radius:50%;background:var(--c);margin-top:auto;position:absolute;top:51px}
+.ev .lbl{font-size:12.5px;line-height:1.25;font-weight:500}
+.ev .t{font-size:11px;color:var(--c)}
+.ev.low{top:96px}
+.ev.low .dot{top:-38px}
+
+/* flows */
+.flows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.flow{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.flow h3{font-size:16px;margin-bottom:6px}
+.flow p{margin:0;color:var(--muted);font-size:14px}
+.flow .k{color:var(--fg);font-weight:500}
+
+
+/* live control panel */
+.sec-h{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.sec-h h2{font-size:22px}
+.conn{font-size:12px;color:var(--muted)}
+.waiting{background:var(--panel);border:1px solid var(--pink);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.wait-list{display:flex;flex-direction:column;gap:8px}
+.wi{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);min-width:0}
+.wi b{font-family:var(--display);white-space:nowrap}
+.wi span{min-width:0;overflow-wrap:anywhere}
+.empty{color:var(--muted);font-size:14px}
+.live{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.live .lr{font-family:var(--mono);font-size:11.5px;color:var(--fg)}
+.live .lw{color:var(--pink);font-weight:500}
+.live.stale .lr{color:var(--orange)}
+.chat{display:flex;flex-direction:column;gap:10px}
+.chat-sub{margin:0;color:var(--muted);font-size:14px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.f{font:inherit;font-size:13px;border-radius:999px;padding:4px 12px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+.f.on{background:var(--cyan);color:#06142b;border-color:var(--cyan);font-weight:700}
+.f:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.feed{display:flex;flex-direction:column;gap:10px;max-height:640px;overflow-y:auto;padding-inline-end:4px}
+.msg{display:flex;gap:10px;align-items:flex-start;min-width:0}
+.msg .ab{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:14px;color:#06142b;background:var(--c)}
+.bub{background:var(--panel);border:1px solid var(--line);border-radius:14px;border-start-start-radius:4px;padding:10px 12px;min-width:0;flex:1}
+.bub .hd{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+.bub .hd b{color:var(--fg);font-family:var(--display);font-size:14px}
+.bub .tx{font-size:14.5px;overflow-wrap:anywhere;white-space:pre-wrap}
+.tag{font-size:11px;font-weight:700;border-radius:999px;padding:1px 8px;border:1px solid currentColor}
+.tag.open{color:var(--orange)} .tag.done{color:var(--green)} .tag.ziv{color:var(--pink)}
+.kind{font-size:11px;color:var(--muted)}
+.msg.run .bub{background:var(--panel-2)}
+
+footer{color:var(--muted);font-size:12.5px;text-align:center}
+
+@media (max-width:900px){
+  .depts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bus::before{right:25%;left:25%}
+  .flows{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  .bus{display:none}
+  .depts{grid-template-columns:1fr;gap:28px;border-inline-start:2px solid var(--line);padding-inline-start:14px}
+  .dept{padding-top:0}
+  .dept::before{display:none}
+  .dept-h{align-self:flex-start}
+  .stem.to-depts{height:20px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .node{transition:transform .2s ease,border-color .2s ease}
+  .node:hover{transform:translateY(-2px)}
+}
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header>
+    <div class="brand">
+      <div class="eyebrow">קהילת הרובוטיקה של ישראל · @robotics.israel</div>
+      <h1>צוות ה<span class="pill">סוכנים</span> של ביטי</h1>
+      <div class="sub">מי עושה מה, מתי כל אחד רץ, ומי עונה למי. כל סוכן מדווח לכאן בסוף כל ריצה, וכל המלצה בין הסוכנים מופיעה בצ'אט הצוות.</div>
+    </div>
+    <div class="stats">
+      <div class="stat a"><b class="mono">8</b><span>פעילים</span></div>
+      <div class="stat d"><b class="mono">2</b><span>רדומים</span></div>
+      <div class="stat m"><b class="mono">1</b><span>אוחד לבוס</span></div>
+      <div class="stat"><b class="mono">20</b><span>עוקבים (IG 7 · TikTok 13)</span></div>
+    </div>
+  </header>
+
+  <div class="legend">
+    <span><i style="background:var(--green)"></i>פעיל</span>
+    <span><i style="background:var(--pink)"></i>מחכה לך</span>
+    <span><i style="background:var(--orange)"></i>רדום עד אבן דרך</span>
+    <span><i style="background:var(--grey)"></i>אוחד / לכבות</span>
+    <span>שעות לפי שעון ישראל</span>
+  </div>
+
+  <section class="waiting" aria-label="מחכה לך">
+    <div class="sec-h"><h2>מחכה לך</h2><span class="conn" id="conn">מתחבר…</span></div>
+    <div id="wait-list" class="wait-list"><div class="empty">טוען…</div></div>
+  </section>
+
+  <section class="tree" aria-label="עץ הסוכנים">
+    <!-- Ziv -->
+    <div class="node top" data-agent="ziv">
+      <div class="av" style="border-color:var(--cyan)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></div>
+      <div class="name">זיו · הבעלים</div>
+      <div class="role">מאשר כל שינוי, מקליט את הקול, מאשר פרסומים</div>
+    </div>
+    <div class="stem"></div>
+
+    <!-- Boss -->
+    <div class="node boss" data-agent="boss">
+      <span class="status st-w">ראיון מטרות</span>
+      <div class="row">
+        <div class="av" style="border-color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5z"/></svg></div>
+        <div><div class="name">הסוכן הבוס</div><div class="en">Boss · כולל ייעול</div></div>
+      </div>
+      <p class="role">מפקח על כל הסוכנים, שומר את מטרות הקהילה, מוצא מה תקוע ומה כפול, ומציע לך שיפורים: תפקידים, תדירות, סוכנים חדשים, וגם איך תעבוד פחות.</p><div class="live" hidden></div>
+      <div class="chips"><span class="chip mono">שבועי · א׳ 13:43</span><span class="chip">goals.md</span><span class="chip">decisions.md</span><span class="chip">agent-efficiency.md</span></div>
+      <details><summary>מה השתנה היום</summary><ul>
+        <li>תזכורת 100 העוקבים רק אצל שומר אבני הדרך</li>
+        <li>בדיקות 48 שעות לפרק עברו לאנליטיקה</li>
+        <li>פרק פתוח אחד בכל פעם</li>
+        <li>סוכן הייעול אוחד לבוס</li>
+      </ul></details>
+    </div>
+    <div class="stem to-depts"></div>
+    <div class="bus" aria-hidden="true"></div>
+
+    <div class="depts">
+      <!-- Content -->
+      <div class="dept">
+        <div class="dept-h"><i style="background:var(--cyan)"></i>תוכן</div>
+        <div class="node" data-agent="video" style="--c:var(--cyan)">
+          <span class="status st-w">2 פרקים מחכים</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.8"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></div>
+            <div><div class="name">סוכן הווידאו</div><div class="en">Video · פרקי ביטי</div></div></div>
+          <p class="role">3 רעיונות בבוקר, תסריט, בנייה, תזמון ל־18:00. פרק פתוח אחד בכל פעם.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">יומי · 02:37</span><span class="chip mono">פרסום 18:00</span></div>
+          <details><summary>מחכה לך</summary><ul><li>#3 שואב: סצנות מוכנות</li><li>#4 מנתח: תסריט, מחכה להקלטה</li><li>פרק ההר עלה היום כפרק #3</li></ul></details>
+        </div>
+        <div class="node" data-agent="news" style="--c:var(--cyan)">
+          <span class="status st-a">פעיל</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div>
+            <div><div class="name">סוכן החדשות</div><div class="en">News · קרוסלה יומית</div></div></div>
+          <p class="role">2–4 חדשות רובוטיקה, כל עובדה מ־2 מקורות, שקופיות בשני סגנונות, תזמון ל־12:00 אחרי אישורך.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">יומי · 02:20</span><span class="chip mono">פרסום 12:00</span></div>
+        </div>
+      </div>
+
+      <!-- Quality -->
+      <div class="dept">
+        <div class="dept-h"><i style="background:var(--pink)"></i>איכות ומראה</div>
+        <div class="node" data-agent="factcheck" style="--c:var(--pink)">
+          <span class="status st-a">פעיל</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M8.5 11l2 2 3.5-4"/></svg></div>
+            <div><div class="name">בודק העובדות</div><div class="en">Fact-checker</div></div></div>
+          <p class="role">בודק כל עובדה בחדשות, בתסריט ובפוסטים המתוזמנים. בעיה הולכת לתיבה של הסוכן האחראי, ופוש אליך רק אם הפוסט עולה בקרוב.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">יומי · 09:41</span><span class="chip">שקט כשהכול תקין</span></div>
+        </div>
+        <div class="node" data-agent="media" style="--c:var(--pink)">
+          <span class="status st-a">פעיל</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></div>
+            <div><div class="name">מקצוען המדיה</div><div class="en">Media pro · המראה</div></div></div>
+          <p class="role">אחראי על המראה של כל המדיה. אוסף מודלים, טקסטורות, פונטים וסאונד חינמיים ומציע שיפורים ויזואליים עם לפני/אחרי.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">כל 4 ימים · 08:17</span><span class="chip">visual-brief.md</span></div>
+        </div>
+      </div>
+
+      <!-- Data & growth -->
+      <div class="dept">
+        <div class="dept-h"><i style="background:var(--orange)"></i>נתונים וצמיחה</div>
+        <div class="node" data-agent="analytics" style="--c:var(--orange)">
+          <span class="status st-a">פעיל</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+            <div><div class="name">סוכן האנליטיקה</div><div class="en">Analytics · Metricool</div></div></div>
+          <p class="role">סורק כל מה שעלה, כולל כל פרק שעלה לפני יותר מ־48 שעות. מסיק מסקנות ומציע שינויי חוקים, ומשנה רק אחרי אישורך.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">כל 4 ימים · הבא 7.11</span><span class="chip">performance.md</span></div>
+        </div>
+        <div class="node" data-agent="growth" style="--c:var(--orange)">
+          <span class="status st-w">ראיון ראשון</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+            <div><div class="name">בקרת התפתחות</div><div class="en">Growth · מפת דרכים</div></div></div>
+          <p class="role">יעדי עוקבים, פלטפורמות חדשות, פורמטים וקצב. אומר לך מתי הגיע הזמן לשלב הבא.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">שבועי · ה׳ 09:23</span><span class="chip">growth-plan.md</span></div>
+        </div>
+      </div>
+
+      <!-- Watchers -->
+      <div class="dept">
+        <div class="dept-h"><i style="background:var(--green)"></i>שמירה ואבני דרך</div>
+        <div class="node" data-agent="milestone" style="--c:var(--green)">
+          <span class="status st-a">פעיל · שקט</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <div><div class="name">שומר אבני דרך</div><div class="en">Milestone watcher</div></div></div>
+          <p class="role">בודק כל יום ב־Metricool. מעיר את הסוכנים הרדומים, ורק הוא מזכיר להפוך את הריפו לפרטי ב־100 עוקבים.</p><div class="live" hidden></div>
+          <div class="chips"><span class="chip mono">יומי · 14:11</span><span class="chip mono">20/100</span></div>
+        </div>
+        <div class="sub-tree">
+          <div class="node" data-agent="community" style="--c:var(--orange)">
+            <span class="status st-w">צריך ליצור</span>
+            <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M4 5h16v11H9l-5 4z"/></svg></div>
+              <div><div class="name">סוכן קהילה</div><div class="en">Community</div></div></div>
+            <p class="role">סיכום יומי של תגובות והודעות, עם תשובות מוכנות להעתקה.</p><div class="live" hidden></div>
+            <div class="chips"><span class="chip">אבן הדרך הושגה: 8 תגובות בטיקטוק</span><span class="chip">המשימה עוד לא קיימת</span></div>
+          </div>
+          <div class="node" data-agent="collab" style="--c:var(--orange)">
+            <span class="status st-d">רדום</span>
+            <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M8 12l3 3 5-6"/><circle cx="12" cy="12" r="9"/></svg></div>
+              <div><div class="name">שיתופי פעולה</div><div class="en">Collaborations</div></div></div>
+            <p class="role">מוצא חברות, יוצרים וקהילות רובוטיקה ישראליים ומכין טיוטות פנייה. לעולם לא פונה לבד.</p><div class="live" hidden></div>
+            <div class="chips"><span class="chip mono">מתעורר ב־200 עוקבים</span></div>
+          </div>
+        </div>
+        <div class="node merged" data-agent="efficiency" style="--c:var(--grey)">
+          <span class="status st-m">אוחד לבוס</span>
+          <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--grey)" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg></div>
+            <div><div class="name">סוכן ייעול</div><div class="en">Efficiency</div></div></div>
+          <p class="role">התפקיד עבר לבוס. את המשימה צריך לכבות ידנית (שבת 11:13).</p><div class="live" hidden></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chat" aria-label="צ'אט הצוות">
+    <div class="sec-h"><h2>צ'אט הצוות</h2>
+      <div class="filters" role="tablist">
+        <button class="f on" data-f="all" id="f-all">הכול</button>
+        <button class="f" data-f="open" id="f-open">פתוח</button>
+        <button class="f" data-f="ziv" id="f-ziv">מחכה לזיו</button>
+        <button class="f" data-f="done" id="f-done">טופל</button>
+      </div>
+    </div>
+    <p class="chat-sub">המלצות, תשובות וסיכומי ריצה בין הסוכנים. החדש למעלה.</p>
+    <div id="feed" class="feed"><div class="empty">טוען את הצ'אט…</div></div>
+  </section>
+
+  <section class="day" aria-label="יום רגיל">
+    <h2>יום רגיל של הצוות</h2>
+    <p>מתי כל סוכן רץ ומתי דברים עולים, לפי שעון ישראל.</p>
+    <div class="track-wrap"><div class="track" id="track"><div class="axis"></div></div></div>
+  </section>
+
+  <section class="flows">
+    <div class="flow"><h3>איך הם מדברים</h3><p>כל סוכן ממליץ לאחר בשורה בתיבה שלו, <span class="k mono">state/inbox/&lt;agent&gt;.md</span>, ולא עושה את העבודה שלו. בתחילת כל ריצה כל סוכן קורא את התיבה שלו.</p></div>
+    <div class="flow"><h3>מה תמיד עובר דרכך</h3><p><span class="k">כל שינוי חוקים, כל פרסום, כל הקלטה.</span> אף סוכן לא משנה כללים או מתזמן פוסט בלי אישור מפורש שלך.</p></div>
+    <div class="flow"><h3>הזיכרון המשותף</h3><p>חוקי הפרויקט ב־<span class="k mono">CLAUDE.md</span>, החלטות ב־<span class="k mono">decisions.md</span>, ביצועים ב־<span class="k mono">performance.md</span>. כל הקבצים בריפו Biti-studio.</p></div>
+  </section>
+
+  <footer>לוח הבקרה מתעדכן בכל ריצה של סוכן · נבנה על ידי הסוכן הבוס</footer>
+</div>
+
+<script>
+(function(){
+  var ev=[
+    {h:2.33,l:"חדשות: איסוף ושקופיות",c:"var(--cyan)"},
+    {h:2.62,l:"וידאו: רעיונות / פרק פתוח",c:"var(--cyan)",low:1},
+    {h:9.68,l:"בדיקת עובדות",c:"var(--pink)"},
+    {h:12,l:"קרוסלת חדשות עולה",c:"var(--orange)",low:1},
+    {h:14.18,l:"שומר אבני דרך (שקט)",c:"var(--green)"},
+    {h:18,l:"פרק ביטי עולה",c:"var(--orange)",low:1},
+    {h:19,l:"תגובות בשעה הראשונה (אתה)",c:"var(--pink)"}
+  ];
+  var t=document.getElementById('track');
+  function pct(h){return (h/24*96+2)+'%';}
+  for(var i=0;i<=24;i+=3){var k=document.createElement('div');k.className='tick mono';k.style.left=pct(i);k.textContent=(i<10?'0':'')+i+':00';t.appendChild(k);}
+  ev.forEach(function(e){
+    var d=document.createElement('div');d.className='ev'+(e.low?' low':'');d.style.left=pct(e.h);d.style.setProperty('--c',e.c);
+    var hh=Math.floor(e.h),mm=Math.round((e.h-hh)*60);
+    d.innerHTML='<span class="t mono">'+(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm+'</span><span class="lbl">'+e.l+'</span><span class="dot"></span>';
+    t.appendChild(d);
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var A={ziv:["זיו","var(--cyan)"],boss:["הבוס","var(--purple)"],video:["וידאו","var(--cyan)"],news:["חדשות","var(--cyan)"],
+    factcheck:["בודק העובדות","var(--pink)"],media:["מדיה","var(--pink)"],analytics:["אנליטיקה","var(--orange)"],growth:["צמיחה","var(--orange)"],
+    milestone:["שומר אבני דרך","var(--green)"],community:["קהילה","var(--orange)"],collab:["שיתופי פעולה","var(--orange)"],efficiency:["ייעול","var(--grey)"],all:["כולם","var(--muted)"]};
+  var ST={active:["פעיל","st-a"],waiting:["מחכה לך","st-w"],dormant:["רדום","st-d"],merged:["אוחד","st-m"],error:["תקלה","st-w"]};
+  function nm(id){return (A[id]||[id])[0];}
+  function col(id){return (A[id]||[0,"var(--muted)"])[1];}
+  function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+  function fmt(iso){try{var d=new Date(iso);return d.toLocaleString("he-IL",{timeZone:"Asia/Jerusalem",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){return iso||"";}}
+  var conn=document.getElementById("conn"),feedEl=document.getElementById("feed"),waitEl=document.getElementById("wait-list");
+  var agents={},msgs=[],filter="all";
+  document.querySelectorAll(".f").forEach(function(b){b.addEventListener("click",function(){
+    document.querySelectorAll(".f").forEach(function(x){x.classList.toggle("on",x===b);});filter=b.dataset.f;renderFeed();});});
+  function renderAgents(){
+    Object.keys(agents).forEach(function(id){
+      var a=agents[id],node=document.querySelector('[data-agent="'+id+'"]');if(!node)return;
+      var live=node.querySelector(".live");
+      if(live){live.hidden=false;live.textContent="";
+        if(a.lastRun){var lr=el("span","lr","ריצה אחרונה: "+fmt(a.lastRun));live.appendChild(lr);
+          if(Date.now()-new Date(a.lastRun).getTime()>((a.maxGapH||36)*3600e3))live.classList.add("stale");else live.classList.remove("stale");}
+        if(a.summary)live.appendChild(el("span","",a.summary));
+        if(a.waiting)live.appendChild(el("span","lw","מחכה לך: "+a.waiting));}
+      var st=node.querySelector(".status");
+      if(st&&a.status&&ST[a.status]){st.className="status "+ST[a.status][1];st.textContent=a.statusText||ST[a.status][0];}
+    });
+    renderWait();
+  }
+  function renderWait(){
+    waitEl.textContent="";var n=0;
+    Object.keys(agents).forEach(function(id){var a=agents[id];if(a.waiting){n++;var r=el("div","wi");var b=el("b","",nm(id));b.style.color=col(id);r.appendChild(b);r.appendChild(el("span","",a.waiting));waitEl.appendChild(r);}});
+    msgs.filter(function(m){return m.state==="ziv";}).forEach(function(m){n++;var r=el("div","wi");var b=el("b","",nm(m.from));b.style.color=col(m.from);r.appendChild(b);r.appendChild(el("span","",m.text));waitEl.appendChild(r);});
+    if(!n)waitEl.appendChild(el("div","empty","שום דבר לא מחכה לך כרגע."));
+  }
+  function renderFeed(){
+    feedEl.textContent="";
+    var list=msgs.filter(function(m){return filter==="all"||m.state===filter;});
+    if(!list.length){feedEl.appendChild(el("div","empty",msgs.length?"אין הודעות בסינון הזה.":"עוד אין הודעות. הן יופיעו כאן אחרי הריצה הבאה של הסוכנים."));return;}
+    list.forEach(function(m){
+      var row=el("div","msg"+(m.kind==="run"?" run":""));var ab=el("div","ab",nm(m.from).charAt(0));ab.style.setProperty("--c",col(m.from));row.appendChild(ab);
+      var bub=el("div","bub"),hd=el("div","hd");hd.appendChild(el("b","",nm(m.from)+(m.to?" ← "+nm(m.to):"")));
+      hd.appendChild(el("span","mono",fmt(m.ts)));
+      var K={rec:"המלצה",reply:"תשובה",run:"סיכום ריצה",decision:"החלטה"};if(m.kind&&K[m.kind])hd.appendChild(el("span","kind",K[m.kind]));
+      if(m.state&&m.kind!=="run"){var L={open:"פתוח",done:"טופל",ziv:"מחכה לזיו"};hd.appendChild(el("span","tag "+m.state,L[m.state]||m.state));}
+      bub.appendChild(hd);bub.appendChild(el("div","tx",m.text||""));row.appendChild(bub);feedEl.appendChild(row);});
+  }
+  function offline(msg){conn.textContent=msg;}
+  var timer=setTimeout(function(){offline("לא מצליח להגיע לנתונים כרגע. מה שמוצג אולי לא מעודכן.");},10000);
+  (window.claude&&window.claude.use?window.claude.use("db"):Promise.resolve(null)).then(function(db){
+    if(!db){clearTimeout(timer);offline("הנתונים החיים לא זמינים בתצוגה הזו.");waitEl.textContent="";waitEl.appendChild(el("div","empty","פתח את הדף כשאתה מחובר כדי לראות מה מחכה לך."));feedEl.textContent="";feedEl.appendChild(el("div","empty","הצ'אט זמין רק כשאתה מחובר."));return;}
+    db.collection("agents").onSnapshot(function(s){agents={};s.docs.forEach(function(d){agents[d.id]=d.data();});renderAgents();
+      if(!s.metadata.fromCache){clearTimeout(timer);conn.textContent="מחובר · מתעדכן לבד";}},function(){clearTimeout(timer);offline("החיבור לנתונים נקטע. רענן את הדף.");});
+    db.collection("feed").orderBy("ts","desc").limit(300).onSnapshot(function(s){msgs=s.docs.map(function(d){return d.data();});renderFeed();renderWait();},
+      function(){feedEl.textContent="";feedEl.appendChild(el("div","empty","לא הצלחתי לטעון את הצ'אט."));});
+  });
+})();
+</script>

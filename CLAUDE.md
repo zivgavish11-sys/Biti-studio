@@ -32,6 +32,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - **סוכן קהילה / Community** (task "סוכן קהילה", **dormant** — woken when a post reaches 5 comments): daily comments/DMs digest with ready-to-copy replies.
 - **סוכן שיתופי פעולה / Collaborations** (task "סוכן שיתופי פעולה", **dormant** — woken at 200 followers IG + TikTok combined): finds Israeli robotics companies, creators, communities; drafts outreach.
 - **Milestone watcher** (task "שומר אבני דרך", daily, silent): checks Metricool; wakes the dormant agents at their milestone, sends the 100-followers privacy reminder, then disables itself when nothing is left to watch.
+- **Control board** (Ziv, 2026-11-03): live page of all agents + the team chat, https://claude.ai/artifact/Eu6orTZrZGEstqmcRGL6Cp (source `docs/dashboard.html`, protocol `docs/dashboard.md`). The Boss keeps the tree current (new/merged agents). Pilot: only the fact-checker reports for now; other agents join after Ziv's OK.
 - **Every new agent interviews Ziv on its first run** (one short question at a time) and they define its role together before it starts working; the result goes to the top of its state file.
 - **Pace**: for now only **one Biti episode per day**. Ep #3 is being finished in the news chat (last time); from ep #4 on, episodes are only made in the video chat.
 - **Recommendations between chats**: a chat may recommend things to the others, but never does their work. Write a dated line to the other chat's inbox
