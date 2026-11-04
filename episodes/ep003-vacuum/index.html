@@ -1,22 +1,22 @@
 <!doctype html><html><head><meta charset="utf-8"></head><body>
 <script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
-// EP003 — מה השואב הרובוטי עושה בסתר (LiDAR + SLAM). Classic look, built from primitives.
+// EP003 — מה השואב הרובוטי עושה בסתר (LiDAR + SLAM). Classic look, real furniture + vacuum models.
 import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
 const st = await studio({
   episode: 4,
   hook: ['מה השואב הרובוטי', 'עושה <span class="pill">בסתר</span>?'],
   // S: 0 hook | 1 intro | 2 spinning laser | 3 beam->wall | 4 points->walls | 5 RE-HOOK paradox | 6 both at once | 7 joke | 8 full map | 9 follow
-  scenes: (A, B, END) => [0, A[2] - .25, A[4] - .25, A[6] - .25, A[8] - .25, A[10] - .25, A[15] - .25, A[16] - .25, A[18] - .25, A[20] - .25, END],
+  scenes: (A, B, END) => [0, A[3] - .25, A[6] - .25, A[9] - .25, A[13] - .25, A[15] - .25, A[20] - .25, A[22] - .25, A[24] - .25, A[26] - .25, END],
   chips: (A, B, S) => [
-    {a: A[4] + .3, b: S[3], y: 330, c: '', h: '🔄 בערך 5 סיבובים בשנייה<small>לייזר על הגג</small>'},
-    {a: A[6], b: S[4], y: 330, c: 'org', h: '📏 קרן ← קיר ← חזרה'},
-    {a: A[8], b: S[5], y: 330, c: '', h: '✨ אלפי נקודות = קירות'},
-    {a: A[11], b: A[13] - .1, y: 330, c: 'pnk', h: '🗺️ מפה ← צריך מיקום'},
-    {a: A[13], b: S[6], y: 330, c: 'pnk', h: '📍 מיקום ← צריך מפה'},
+    {a: A[6] + .3, b: S[3], y: 330, c: '', h: '🔄 בערך 5 סיבובים בשנייה<small>לייזר על הגג</small>'},
+    {a: A[9], b: S[4], y: 330, c: 'org', h: '📏 קרן ← קיר ← חזרה'},
+    {a: A[13], b: S[5], y: 330, c: '', h: '✨ אלפי נקודות = קירות'},
+    {a: A[16], b: A[18] - .1, y: 330, c: 'pnk', h: '🗺️ מפה ← צריך מיקום'},
+    {a: A[18], b: S[6], y: 330, c: 'pnk', h: '📍 מיקום ← צריך מפה'},
     {a: S[6] + .1, b: S[7], y: 330, c: 'org', h: '⚡ שניהם בבת אחת<small>SLAM</small>'},
-    {a: A[16], b: S[8], y: 330, c: 'grn', h: '😅 הוא לא מסתובב סתם'},
-    {a: A[19], b: S[9], y: 330, c: 'grn', h: '✅ מפה של כל הבית'},
+    {a: A[22], b: S[8], y: 330, c: 'grn', h: '😅 הוא לא מסתובב סתם'},
+    {a: A[25], b: S[9], y: 330, c: 'grn', h: '✅ מפה של כל הבית'},
   ],
 });
 const {scene, A, B, S, END} = st; const r = rng(3);
@@ -60,7 +60,7 @@ for (const [n, z] of [['kitchenFridge', 1.95], ['kitchenCabinet', 2.75], ['kitch
 box(1.6, 4.4, 1.0, 1.0);   await P('tableRound', {fit: [1.0, 1.0], x: 1.6, z: 4.4});
 for (const [dx, dz, ry] of [[0, -.75, 0], [0, .75, Math.PI]]) await P('chairCushion', {col: 0x4a3f86, fit: [.45, .45], x: 1.6 + dx, z: 4.4 + dz, ry});
 // dock
-const dock = new THREE.Mesh(new THREE.BoxGeometry(.9, .35, .25), M(0x2b3150)); dock.position.set(3.2, .18, -5.8); scene.add(dock);
+await st.prop('home/robotVacuumDock', {h: .45, x: 3.2, z: -5.8, tint: 1});
 // room floor colours (map reveal)
 const ROOMS = [{n: 'סלון', x: 0, z: -3, w: 8, d: 6, c: COL.cyan}, {n: 'חדר שינה', x: -2, z: 3, w: 4, d: 6, c: COL.pink}, {n: 'מטבח', x: 2, z: 3, w: 4, d: 6, c: COL.orange}];
 for (const R of ROOMS) { R.m = new THREE.Mesh(new THREE.PlaneGeometry(R.w - .2, R.d - .2), new THREE.MeshStandardMaterial({color: R.c, transparent: true, opacity: 0, roughness: .9})); R.m.rotation.x = -Math.PI / 2; R.m.position.set(R.x, .03, R.z); scene.add(R.m); }
@@ -77,7 +77,13 @@ function makeVac(op = 1) {
   g.traverse(m => { if (m.isMesh) { m.castShadow = !tr; m.receiveShadow = true; } });
   scene.add(g); return {g, tur};
 }
-const vac = makeVac();
+// real model from the library (home/robotVacuum, CC0, true size Ø34 cm) — scaled ×2.6 so it reads on a phone like the old one
+const vac = await (async () => { const m = await st.model('home/robotVacuum'); const g = new THREE.Group(); m.object.scale.setScalar(2.6); g.add(m.object);
+  m.object.traverse(q => { if (q.isMesh) { q.castShadow = q.receiveShadow = true; } });
+  // light shell so it reads on the dark navy floor (the model's default is dark grey)
+  for (const [n, c] of [['shell', 0xc9cee0], ['shellTop', 0xeef0f7]]) m.object.getObjectByName(n)?.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); q.material.color.set(c); } });
+  scene.add(g);
+  return {g, tur: m.object.getObjectByName('lidar') ?? new THREE.Group()}; })();
 const ghosts = [0, 1, 2, 3, 4].map(() => makeVac(.28));
 // path (waypoints) through the flat
 const WP = [[3.2, -5.2], [-1.0, -5.0], [-1.6, -1.2], [1.1, -1.0], [1.1, 1.2], [2.4, 1.6], [2.6, 5.2], [.8, 5.2], [.6, 2.6], [-1.2, 2.6], [-3.2, 1.2], [-3.2, 2.4], [-1.0, 1.0]];
@@ -138,10 +144,10 @@ st.frame(t => {
   const wf = t < S[4] ? 1 : (t < S[9] ? 1 - .82 * sm(S[4], S[4] + .8, t) : 1 - .82 * (1 - sm(S[9], S[9] + .6, t)));
   wallMat.opacity = wf; wallMat.depthWrite = wf > .9;
   // ghosts (re-hook: "where am I?") collapse into the real vacuum
-  const gk = 1 - sm(A[13], A[15] + .3, t); const gOn = win(t, S[5] + .2, S[6] + .4, .3);
+  const gk = 1 - sm(A[18], A[20] + .3, t); const gOn = win(t, S[5] + .2, S[6] + .4, .3);
   ghosts.forEach((g, i) => { const a = i * 1.26 + t * .4; const R = 1.3 * gk; g.g.visible = gOn > .02; g.g.position.set(vx + Math.sin(a) * R, 0, vz + Math.cos(a) * R); g.g.rotation.y = hd + (i - 2) * .5 * gk; });
   // rooms colour in (full map)
-  for (const R of ROOMS) R.m.material.opacity = .32 * (t >= S[9] ? 1 : sm(A[19], A[19] + .8, t));
+  for (const R of ROOMS) R.m.material.opacity = .32 * (t >= S[9] ? 1 : sm(A[25], A[25] + .8, t));
   // trace of the path (joke)
   const tOn = t >= S[7] && t < S[9]; trace.visible = tOn; if (tOn) { const k0 = sOf(S[4]); for (let i = 0; i < TRN; i++) { const q = pathAt(k0 + (s - k0) * i / (TRN - 1)); trPos.set([q[0], .06, q[1]], i * 3); } trGeo.attributes.position.needsUpdate = true; }
 
@@ -158,9 +164,9 @@ st.frame(t => {
   else { const k = (t - S[9]) / (END - S[9]); const a = -.6 - .15 * (1 - k); cp = V(vx + Math.sin(a) * 6, 5.6 + .3 * (1 - k), vz + Math.cos(a) * 6); ct = V(vx, .3, vz); } // END: echo frame 0
   return {cp, ct, overlay: t2 => {
     if (beam.visible && beam.userData.d) { const ud = beam.userData; const p = st.proj(V((tx + ud.ex) / 2, .9, (tz + ud.ez) / 2)); st.tag(p[0], p[1], `${ud.d.toFixed(1)} מ'`, '#ffa53a', bOn); }
-    if (t2 > A[8] && t2 < S[5]) st.counter(540, 640, ptMesh.count.toLocaleString('en'), ' נקודות', '#2ee6ff', win(t2, A[8], S[5], .25), 100);
-    if (t2 > A[11] && t2 < A[15]) { const p = st.proj(V(vx, 1.3, vz)); st.tag(p[0], p[1], 'איפה אני?', '#ff5fd2', win(t2, A[11], A[15], .25)); }
-    if (t2 > A[19] - .2 && t2 < S[9]) for (const R of ROOMS) { const p = st.proj(V(R.x, .5, R.z)); st.tag(p[0], p[1], R.n, '#' + R.c.toString(16).padStart(6, '0'), sm(A[19], A[19] + .6, t2)); }
+    if (t2 > A[13] && t2 < S[5]) st.counter(540, 640, ptMesh.count.toLocaleString('en'), ' נקודות', '#2ee6ff', win(t2, A[13], S[5], .25), 100);
+    if (t2 > A[16] && t2 < A[20]) { const p = st.proj(V(vx, 1.3, vz)); st.tag(p[0], p[1], 'איפה אני?', '#ff5fd2', win(t2, A[16], A[20], .25)); }
+    if (t2 > A[25] - .2 && t2 < S[9]) for (const R of ROOMS) { const p = st.proj(V(R.x, .5, R.z)); st.tag(p[0], p[1], R.n, '#' + R.c.toString(16).padStart(6, '0'), sm(A[25], A[25] + .6, t2)); }
   }};
 });
 st.ready();
