@@ -1,0 +1,195 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// LAB · PART 1 — "המעבדה של העוקבים". Classic look. Lab: workbench + robot arm (assembling), 3D printer (printing), charging wall.
+// Scene times come from words (robust to the real alignment): T('word') = start of the first word that contains it.
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const TLp = await (await fetch('timeline.json')).json();
+const WORDS = TLp.chunks.flatMap(c => c.words);
+const T = (w, k = 0) => { const hit = WORDS.filter(x => x.w.includes(w)); return (hit[k] ?? hit[hit.length - 1] ?? {a: 0}).a; };
+const st = await studio({
+  hook: ['תגיבו <span class="pill">קהילה</span>', 'ותקבלו עמדה בשמכם'],
+  // S: 0 hook | 1 Biti | 2 workbench+arm | 3 printer | 4 empty (crane) | 5 charging wall | 6 Biti's station | 7 RE-HOOK 0/25 | 8 CTA | 9 part 2 (echo frame 0)
+  scenes: (A, B, END) => [0, T('ביטי') - .25, T('שולחן') - .25, T('ומדפסת') - .2, T('כן') - .2, T('ופה') - .2, T('כרגע', 1) - .2, T('עשרים') - .25, T('תגיבו', 0) - .25, T('השם', 1) - .25, END],
+  chips: (A, B, S) => [
+    {a: T('שולחן') + .1, b: S[3], y: 330, c: '', h: '🦾 זרוע רובוטית<small>מרכיבה על השולחן</small>'},
+    {a: S[3] + .15, b: S[4], y: 330, c: 'org', h: '🖨️ מדפסת תלת מימד'},
+    {a: T('הקיר') + .1, b: S[6], y: 330, c: '', h: '🔋 קיר עמדות הטעינה'},
+    {a: T('השאר'), b: S[7], y: 330, c: 'pnk', h: '👇 כל השאר מחכות לכם'},
+    {a: S[8] + .1, b: S[9], y: 330, c: 'org', h: '💬 תגיבו: קהילה<small>+ איזה רובוט להכניס?</small>'},
+    {a: S[9] + .1, b: S[10], y: 330, c: 'grn', h: '📛 השם שלכם ← בחלק 2'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(7);
+// fixed series tag (whole video) instead of the episode badge
+document.body.insertAdjacentHTML('beforeend', '<div id="badge">המעבדה של העוקבים · חלק 1</div>');
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .7, ...o});
+const sh = o => { o.traverse(q => { if (q.isMesh) { q.castShadow = q.receiveShadow = true; } }); return o; };
+
+// ================= ROOM (16 x 12 m) =================
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), M(0x121830, {roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const labFloor = new THREE.Mesh(new THREE.PlaneGeometry(16, 12), M(0x1f2748, {roughness: .8})); labFloor.rotation.x = -Math.PI / 2; labFloor.position.y = .01; labFloor.receiveShadow = true; scene.add(labFloor);
+// floor grid lines (matte, thin) — lab feel
+for (let i = -7; i <= 7; i++) { const l = new THREE.Mesh(new THREE.PlaneGeometry(.025, 12), M(0x2c3866)); l.rotation.x = -Math.PI / 2; l.position.set(i, .015, 0); scene.add(l); }
+for (let j = -5; j <= 5; j++) { const l = new THREE.Mesh(new THREE.PlaneGeometry(16, .025), M(0x2c3866)); l.rotation.x = -Math.PI / 2; l.position.set(0, .015, j); scene.add(l); }
+const wallM = M(0x2a3358, {roughness: .85});
+const back = sh(new THREE.Mesh(new THREE.BoxGeometry(16, 3.4, .2), wallM)); back.position.set(0, 1.7, -6); scene.add(back);
+const left = sh(new THREE.Mesh(new THREE.BoxGeometry(.2, 3.4, 12), wallM)); left.position.set(-8, 1.7, 0); scene.add(left);
+// accent stripe on the walls
+const strip = new THREE.Mesh(new THREE.BoxGeometry(16, .08, .04), M(COL.cyan)); strip.position.set(0, 2.9, -5.88); scene.add(strip);
+const strip2 = new THREE.Mesh(new THREE.BoxGeometry(.04, .08, 12), M(COL.cyan)); strip2.position.set(-7.88, 2.9, 0); scene.add(strip2);
+
+// ================= WORKBENCH + ROBOT ARM (left) =================
+const BX = -4.6, BZ = 0.6;
+const bench = new THREE.Group(); bench.position.set(BX, 0, BZ); scene.add(bench);
+const top = new THREE.Mesh(new THREE.BoxGeometry(3.2, .1, 1.4), M(0x6b5a48, {roughness: .6})); top.position.y = .9; bench.add(top);
+for (const [x, z] of [[-1.5, -.6], [1.5, -.6], [-1.5, .6], [1.5, .6]]) { const lg = new THREE.Mesh(new THREE.BoxGeometry(.08, .9, .08), M(0x3a4060, {metalness: .4, roughness: .5})); lg.position.set(x, .45, z); bench.add(lg); }
+const mat = new THREE.Mesh(new THREE.BoxGeometry(1.4, .01, .9), M(0x23305a)); mat.position.set(.6, .955, 0); bench.add(mat);
+sh(bench);
+// arm (generic 3-joint industrial arm, primitives)
+const armM = M(0xe9ecf5, {roughness: .45, metalness: .1}), jointM = M(0x2a2f45, {roughness: .4, metalness: .3}), accM = M(COL.orange, {roughness: .5});
+const arm = new THREE.Group(); arm.position.set(-.6, .95, 0); bench.add(arm);
+const base = new THREE.Mesh(new THREE.CylinderGeometry(.26, .3, .14, 32), jointM); base.position.y = .07; arm.add(base);
+const yaw = new THREE.Group(); yaw.position.y = .14; arm.add(yaw);
+const turret = new THREE.Mesh(new THREE.CylinderGeometry(.18, .2, .2, 32), accM); turret.position.y = .1; yaw.add(turret);
+const sh1 = new THREE.Group(); sh1.position.y = .22; yaw.add(sh1);
+sh1.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(.12, 24, 16), jointM)));
+const up = new THREE.Mesh(new THREE.BoxGeometry(.13, .7, .13), armM); up.position.y = .35; sh1.add(up);
+const el = new THREE.Group(); el.position.y = .7; sh1.add(el);
+el.add(new THREE.Mesh(new THREE.SphereGeometry(.1, 24, 16), jointM));
+const fore = new THREE.Mesh(new THREE.BoxGeometry(.11, .6, .11), armM); fore.position.y = .3; el.add(fore);
+const wr = new THREE.Group(); wr.position.y = .6; el.add(wr);
+wr.add(new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .1, 16), accM));
+const fa = new THREE.Mesh(new THREE.BoxGeometry(.04, .14, .05), jointM), fb = fa.clone(); fa.position.set(-.05, .12, 0); fb.position.set(.05, .12, 0); wr.add(fa, fb);
+sh(arm);
+// parts: cubes moving from a tray onto a growing stack (a small "robot torso" being assembled)
+const partCols = [COL.cyan, COL.pink, COL.purple, COL.orange, COL.cyan, COL.pink];
+const parts = partCols.map(c => sh(new THREE.Mesh(new THREE.BoxGeometry(.2, .14, .2), M(c, {roughness: .55})))); parts.forEach(p => bench.add(p));
+const PICK = [.55, 1.05, -.35], DROP = [.95, 1.05, .25]; // local to bench (x, y, z)
+const CYC = 2.2; // seconds per pick&place
+function armPose(t) {
+  const k = (t % CYC) / CYC, n = Math.floor(t / CYC); let yawA, reach, lift, grip, carry = false;
+  const yP = Math.atan2(PICK[0] - arm.position.x, PICK[2]) , yD = Math.atan2(DROP[0] - arm.position.x, DROP[2]);
+  if (k < .25) { const q = sm(0, .25, k); yawA = yD + (yP - yD) * q; lift = 1 - Math.sin(q * Math.PI) * .4; grip = 0; }
+  else if (k < .4) { yawA = yP; lift = sm(.25, .33, k) * -1 + 1 - (1 - sm(.33, .4, k)) * 0; lift = 1 - .9 * Math.sin(sm(.25, .4, k) * Math.PI); grip = sm(.3, .36, k); carry = k > .33; }
+  else if (k < .7) { const q = sm(.4, .7, k); yawA = yP + (yD - yP) * q; lift = 1 + Math.sin(q * Math.PI) * .25; grip = 1; carry = true; }
+  else if (k < .85) { yawA = yD; lift = 1 - .7 * Math.sin(sm(.7, .85, k) * Math.PI); grip = 1 - sm(.78, .84, k); carry = k < .78; }
+  else { yawA = yD; lift = 1; grip = 0; }
+  return {yawA, lift, grip, carry, n, k};
+}
+// 3D PRINTER (right) — open frame, head moving, object growing layer by layer
+const PX = 4.6, PZ = 0.6;
+const ptab = new THREE.Group(); ptab.position.set(PX, 0, PZ); scene.add(ptab);
+const ptop = new THREE.Mesh(new THREE.BoxGeometry(2.2, .1, 1.4), M(0x6b5a48, {roughness: .6})); ptop.position.y = .9; ptab.add(ptop);
+for (const [x, z] of [[-1, -.6], [1, -.6], [-1, .6], [1, .6]]) { const lg = new THREE.Mesh(new THREE.BoxGeometry(.08, .9, .08), M(0x3a4060, {metalness: .4, roughness: .5})); lg.position.set(x, .45, z); ptab.add(lg); }
+const prn = new THREE.Group(); prn.position.y = .95; ptab.add(prn);
+const frM = M(0x2a2f45, {metalness: .4, roughness: .4});
+const pbase = new THREE.Mesh(new THREE.BoxGeometry(1.1, .12, 1.0), frM); pbase.position.y = .06; prn.add(pbase);
+for (const [x, z] of [[-.5, -.45], [.5, -.45], [-.5, .45], [.5, .45]]) { const p = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.1, .05), frM); p.position.set(x, .6, z); prn.add(p); }
+const ptopF = new THREE.Mesh(new THREE.BoxGeometry(1.1, .06, 1.0), frM); ptopF.position.y = 1.15; prn.add(ptopF);
+const bed = new THREE.Mesh(new THREE.BoxGeometry(.8, .03, .8), M(0x8892b8, {roughness: .4})); bed.position.y = .14; prn.add(bed);
+const gantry = new THREE.Mesh(new THREE.BoxGeometry(1.0, .06, .06), M(0xe9ecf5, {roughness: .45})); prn.add(gantry);
+const head = new THREE.Mesh(new THREE.BoxGeometry(.14, .14, .14), M(COL.orange, {roughness: .5})); prn.add(head);
+const nozzle = new THREE.Mesh(new THREE.ConeGeometry(.03, .06, 12), jointM); nozzle.rotation.x = Math.PI; prn.add(nozzle);
+const printObj = new THREE.Mesh(new THREE.CylinderGeometry(.18, .26, 1, 6), M(COL.pink, {roughness: .55})); printObj.position.y = .155; prn.add(printObj);
+const PRINT_H = .45;
+sh(ptab);
+
+// ================= CHARGING WALL (back) =================
+const NST = 9, SW = 1.25, SX0 = -(NST - 1) * SW / 2, SZ = -5.75;
+function plateTex(txt, on) {
+  const c = document.createElement('canvas'); c.width = 512; c.height = 160; const g = c.getContext('2d');
+  g.fillStyle = on ? '#e9ecf5' : '#3a4366'; g.fillRect(0, 0, 512, 160);
+  g.fillStyle = on ? '#ff5fd2' : '#4c5682'; g.fillRect(0, 0, 16, 160);
+  g.font = '800 92px Rubik'; g.direction = 'rtl'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = on ? '#141a33' : '#7480b0'; g.fillText(txt, 264, 86);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+const STATIONS = []; const BITI_ST = 4; // middle station
+for (let i = 0; i < NST; i++) {
+  const g = new THREE.Group(); g.position.set(SX0 + i * SW, 0, SZ); scene.add(g);
+  const mine = i === BITI_ST;
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(1.05, 2.3, .12), M(0x1a2040, {roughness: .6})); frame.position.y = 1.15; g.add(frame);
+  const inner = new THREE.Mesh(new THREE.BoxGeometry(.85, 1.95, .02), M(mine ? 0x24305e : 0x161b36, {roughness: .8})); inner.position.set(0, 1.12, .07); g.add(inner);
+  const pad = new THREE.Mesh(new THREE.CylinderGeometry(.4, .44, .06, 32), M(0x2a2f45, {roughness: .4, metalness: .3})); pad.position.set(0, .03, .5); g.add(pad);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(.36, .025, 8, 48), M(mine ? COL.cyan : 0x3a4366, {roughness: .5})); ring.rotation.x = -Math.PI / 2; ring.position.set(0, .065, .5); g.add(ring);
+  const plug = new THREE.Mesh(new THREE.BoxGeometry(.16, .26, .08), M(0x2a2f45)); plug.position.set(0, 1.1, .1); g.add(plug);
+  const bar = new THREE.Mesh(new THREE.BoxGeometry(.5, .07, .03), M(mine ? COL.cyan : 0x3a4366, {roughness: .5})); bar.position.set(0, 1.55, .1); g.add(bar); // battery bar
+  const plate = new THREE.Mesh(new THREE.PlaneGeometry(.8, .25), new THREE.MeshStandardMaterial({map: plateTex(mine ? 'ביטי' : '?', mine), roughness: .6})); plate.position.set(0, 2.45, .07); g.add(plate);
+  sh(g); STATIONS.push({g, ring, bar, x: SX0 + i * SW});
+}
+// some lab props (library, CC0 Kenney)
+await st.prop('home/chairDesk', {h: .95, x: BX + .6, z: BZ + 1.2, ry: Math.PI});
+await st.prop('home/computerScreen', {h: .45, x: BX + 1.2, y: .95, z: BZ - .45});
+await st.prop('home/cardboardBoxOpen', {h: .5, x: -7.2, z: -4.6, ry: .4});
+await st.prop('home/cardboardBoxClosed', {h: .45, x: -6.6, z: -5.1, ry: -.2});
+await st.prop('home/bookcaseOpen', {h: 2.0, x: 7.4, z: -3.6, ry: -Math.PI / 2});
+await st.prop('home/pottedPlant', {h: 1.2, x: 7.2, z: -5.3});
+await st.prop('home/lampSquareFloor', {h: 1.7, x: -7.3, z: 2.6});
+
+// ================= BITI =================
+const biti = await st.model('robot/RobotExpressive', {scale: .34});
+sh(biti.object); scene.add(biti.object);
+// positions per scene (cuts hide the jumps; walking only inside scenes)
+const BP = {center: [0, 1.2], bench: [BX + 1.0, BZ - 1.5], printer: [PX - 1.0, PZ - 1.5], wallWalk: [STATIONS[BITI_ST].x + 1.6, -2.6], home: [STATIONS[BITI_ST].x, SZ + .5]};
+biti.schedule('Wave', 0).schedule('Idle', S[1] + 1.4)
+    .schedule('Idle', S[2]).schedule('ThumbsUp', S[3] + .2).schedule('No', S[4]).schedule('Walking', S[5]).schedule('Idle', S[6] - .1)
+    .schedule('Yes', S[7] + .4).schedule('Wave', S[8]).schedule('Dance', S[9]);
+// "new robot" silhouette for the re-hook (dark, matte, with a question tag)
+const ghost = await st.model('robot/RobotExpressive', {scale: .38});
+ghost.object.traverse(q => { if (q.isMesh) { q.material = new THREE.MeshStandardMaterial({color: 0x0e1226, roughness: .9}); q.castShadow = true; } });
+ghost.schedule('Idle', 0); scene.add(ghost.object);
+const bgN = new THREE.Color(0x0a0f22), bgP = new THREE.Color(0x1e0c2c);
+
+// ================= PER FRAME =================
+st.frame(t => {
+  // re-hook colour shift
+  const pk = win(t, S[7], S[8], .3); scene.background.copy(bgN).lerp(bgP, pk * .8); st.fog.color.copy(scene.background);
+  // arm
+  const ap = armPose(t); yaw.rotation.y = ap.yawA; sh1.rotation.x = .55 - .35 * (1 - ap.lift); el.rotation.x = .95 + .55 * (1 - ap.lift); wr.rotation.x = .2;
+  fa.position.x = -.05 + .02 * ap.grip; fb.position.x = .05 - .02 * ap.grip;
+  arm.updateMatrixWorld(true); const tip = fa.getWorldPosition(V()).add(fb.getWorldPosition(V())).multiplyScalar(.5); bench.worldToLocal(tip);
+  const m = ap.n % (parts.length + 1);
+  parts.forEach((p, i) => { p.visible = i <= m;
+    if (i < m || (i === m && ap.k >= .78)) p.position.set(DROP[0], .99 + i * .145, DROP[2]);
+    else if (ap.carry) p.position.set(tip.x, tip.y - .16, tip.z);
+    else p.position.set(PICK[0], .99, PICK[2]); });
+  // printer: head zig-zag, object grows (loops every 14 s)
+  const pk2 = (t % 14) / 14; const hgt = PRINT_H * pk2; printObj.scale.set(1, Math.max(.001, hgt), 1); printObj.position.y = .155 + hgt / 2;
+  const hx = Math.sin(t * 5.3) * .2, hz = Math.sin(t * 3.7 + 1) * .2, hy = .155 + hgt + .14;
+  gantry.position.set(0, hy + .02, hz); head.position.set(hx, hy + .02, hz); nozzle.position.set(hx, hy - .08, hz);
+  // stations: Biti's battery bar pulses (charging), empty rings dim
+  STATIONS[BITI_ST].bar.scale.x = .3 + .7 * ((t * .6) % 1);
+  // Biti placement
+  let bp, ry = 0; const o = biti.object;
+  if (t < S[2]) { bp = BP.center; ry = 0; }
+  else if (t < S[3]) { bp = BP.bench; ry = .3; }
+  else if (t < S[4]) { bp = BP.printer; ry = -.3; }
+  else if (t < S[5]) { bp = BP.center; ry = 0; }
+  else if (t < S[6]) { const k = sm(S[5], S[6] - .1, t); bp = [BP.wallWalk[0] + (BP.home[0] - BP.wallWalk[0]) * k, BP.wallWalk[1] + (BP.home[1] - BP.wallWalk[1]) * k]; ry = Math.atan2(BP.home[0] - BP.wallWalk[0], BP.home[1] - BP.wallWalk[1]); }
+  else if (t < S[7]) { bp = BP.home; ry = 0; }
+  else { bp = [BP.center[0] - .9, BP.center[1]]; ry = 0; }
+  o.position.set(bp[0], 0, bp[1]); o.rotation.y = ry;
+  // ghost robot (re-hook): rises in an empty station next to Biti's
+  const gk = sm(S[7] + .2, S[7] + 1.2, t); ghost.object.visible = t >= S[7] && t < S[8];
+  ghost.object.position.set(BP.center[0] + 1.1, 0, BP.center[1] - .2); ghost.object.rotation.y = -.3; ghost.object.scale.setScalar(.38 * (.4 + .6 * gk));
+
+  let cp, ct;
+  if (t < S[1]) { const a = -.5 + t * .06; cp = V(Math.sin(a) * 9, 8.5 - t * .2, 9 + Math.cos(a) * 1.5); ct = V(0, .6, -1.2); }                 // HOOK: lab from above, slow orbit
+  else if (t < S[2]) { const a = (t - S[1]) * .12 - .2; cp = V(Math.sin(a) * 4.2, 2.3, BP.center[1] + Math.cos(a) * 4.2); ct = V(0, 1.0, BP.center[1]); } // Biti intro
+  else if (t < S[3]) { const k = (t - S[2]) / (S[3] - S[2]); cp = V(BX + 3.2 - 1.2 * k, 2.6 - .2 * k, BZ + 3.6 - .3 * k); ct = V(BX - .2, 1.15, BZ); }   // bench + arm dolly
+  else if (t < S[4]) { const k = (t - S[3]) / (S[4] - S[3]); cp = V(PX - 3.0 + 1.0 * k, 2.4, PZ + 3.4 - .3 * k); ct = V(PX, 1.4, PZ); }               // printer
+  else if (t < S[5]) { const k = sm(S[4], S[5], t); cp = V(-2 + 4 * k, 7 + 3 * k, 8.5 + 1 * k); ct = V(0, 0, -1); }                                   // crane up: empty lab
+  else if (t < S[6]) { const k = (t - S[5]) / (S[6] - S[5]); cp = V(3 - 2 * k, 2.6, 2.5 - 1.2 * k); ct = V(0 - .5 * k, 1.3, SZ); }                      // charging wall
+  else if (t < S[7]) { const k = sm(S[6], S[7], t); cp = V(STATIONS[BITI_ST].x + .6 - .6 * k, 2.0, SZ + 5.0 - .7 * k); ct = V(STATIONS[BITI_ST].x, 1.3, SZ + .3); } // dolly-in to Biti's station
+  else if (t < S[8]) { const a = (t - S[7]) * .18 - .3; cp = V(BP.center[0] + Math.sin(a) * 4.6, 2.5, BP.center[1] + Math.cos(a) * 4.6); ct = V(BP.center[0], 1.0, BP.center[1] - .2); } // RE-HOOK: new robot
+  else if (t < S[9]) { const k = (t - S[8]) / (S[9] - S[8]); cp = V(-1.5 + 1 * k, 3.4 + 1.6 * k, 6.5 + 1 * k); ct = V(0, .9, -1.5); }                // CTA wide
+  else { const k = sm(S[9], END, t); const a = -.5 - .12 * (1 - k); cp = V(Math.sin(a) * 9, 8.5 - .6 * (1 - k), 9 + Math.cos(a) * 1.5 - .5 * (1 - k)); ct = V(0, .6, -1.2); } // echo frame 0
+  return {cp, ct, overlay: t2 => {
+    if (t2 > S[1] + .2 && t2 < S[2]) { const p = st.proj(V(o.position.x, 1.95, o.position.z)); st.tag(p[0], p[1] - 20, 'ביטי', '#2ee6ff', win(t2, S[1] + .2, S[2], .2)); }
+    if (t2 > S[6] && t2 < S[7]) { const p = st.proj(V(STATIONS[BITI_ST].x + 1.25, 1.6, SZ + .3)); st.tag(p[0], p[1], 'פנוי', '#ffa53a', win(t2, S[6] + .3, S[7], .2)); }
+    if (t2 > S[7] && t2 < S[8]) { const al = win(t2, S[7], S[8], .25); const n = Math.round(sm(S[7] + .3, S[8] - .6, t2) * 0); st.counter(540, 700, '0/25', '', '#ff5fd2', al, 120);
+      const p = st.proj(V(ghost.object.position.x, 2.0, ghost.object.position.z)); st.tag(p[0], p[1] - 10, 'רובוט חדש?', '#ff5fd2', al); }
+  }};
+});
+st.ready();
+</script></body></html>
