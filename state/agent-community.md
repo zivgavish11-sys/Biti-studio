@@ -12,6 +12,7 @@ Still to agree with Ziv in the first-run interview: auto-DM tool (or none), repl
 - 2026-11-04 Q1 sent: comments source — Metricool exposes only comment COUNTS, not comment text/handles. Options: (1) screenshots from Ziv weekly, (2) ManyChat free plan (comment-keyword auto-DM + list of who joined). Recommended (1) for now. Waiting for answer.
 - 2026-11-04 (manual run, Ziv online, lab part 1 to post today): sent broadcast-channel setup steps (name proposal "המעבדה של ביטי", audience all followers, first message) + keyword plan: no auto-DM tool yet, Ziv replies by hand in the first hour with a ready reply that invites to the channel; screenshots next day → members list. Waiting for Ziv: channel opened? / Q1 answer.
 - 2026-11-04 Ziv's "New message" screen shows only "Group chat", no broadcast channel option → likely not a professional account. Asked him to check Settings → account type and switch to Creator (free, reversible). Waiting.
+- 2026-11-04 Ziv: pause the channel, video first. Woke the video agent (סוכן רילסים) for lab part 1. Resume channel setup + Q1 after the video.
 
 ## Lab counter
 - Series baseline (2026-11-04): IG 7 + TikTok 13 = **20**. Next lab robot due at **45** combined, then 70, 95...
