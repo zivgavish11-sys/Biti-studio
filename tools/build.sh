@@ -13,9 +13,9 @@ HALF=$(python3 -c "print(round(int($END*30/2)/30,4))")
 echo "== sfx cues + audio"
 python3 tools/render.py sfx "$EP" --port 8770
 python3 tools/music.py "$EP/music.wav" "$(python3 -c "print($END+0.5)")" --seed "$SEED"
-python3 tools/sfx.py "$EP" "$(python3 -c "print($END+0.5)")"
-ffmpeg -v error -y -i "$EP/voice.mp3" -i "$EP/music.wav" -i "$EP/sfx.wav" -filter_complex \
- "[0:a]aresample=44100,pan=stereo|c0=c0|c1=c0,asplit=2[v][sc];[1:a]volume=0.25[m];[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=40:release=600[md];[2:a]volume=0.55[fx];[v]apad=whole_dur=$END[vp];[vp][md][fx]amix=inputs=3:duration=longest:normalize=0,atrim=0:$END,alimiter=limit=0.95,loudnorm=I=-15:TP=-1.5:LRA=11" \
+# Ziv 2026-11-04: no sound effects — voice + soft quiet music only
+ffmpeg -v error -y -i "$EP/voice.mp3" -i "$EP/music.wav" -filter_complex \
+ "[0:a]aresample=44100,pan=stereo|c0=c0|c1=c0,asplit=2[v][sc];[1:a]volume=0.14[m];[m][sc]sidechaincompress=threshold=0.03:ratio=4:attack=60:release=800[md];[v]apad=whole_dur=$END[vp];[vp][md]amix=inputs=2:duration=longest:normalize=0,atrim=0:$END,alimiter=limit=0.95,loudnorm=I=-15:TP=-1.5:LRA=11" \
  -ar 44100 -c:a aac -b:a 192k "$OUT/mix.m4a"
 
 echo "== video render (2 parallel halves)"

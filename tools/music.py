@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Original soft lo-fi background track, different every episode (seeded).
+"""Original soft ambient background track (no drums, Ziv 2026-11-04), different every episode (seeded).
 Usage: music.py OUT.wav DURATION_SECONDS [--seed N]
 """
 import sys, wave, argparse, numpy as np
@@ -55,7 +55,8 @@ def make(dur, seed):
         for h in (0, 0.5):
             s = s0 + int(h * beat * SR); L = max(0, min(int(0.05 * SR), N - s))
             if L: tt = np.arange(L) / SR; dr[s:s + L] += hpf(r.standard_normal(L), 7000) * np.exp(-tt * 80) * (0.05 if h else 0.035)
-    mix = pad + bass + arp + dr * 0.8
+    # Ziv 2026-11-04: soft, pleasant background only — no drums, gentle arp
+    mix = pad * 1.3 + bass * .7 + arp * .6
     R = np.roll(mix, int(0.012 * SR)) * 0.95 + mix * 0.05
     fade = np.minimum(1, t / 1.5) * np.minimum(1, (dur - t) / 2.5)
     st = np.stack([mix * fade, R * fade], 1); st /= np.max(np.abs(st)) * 1.12

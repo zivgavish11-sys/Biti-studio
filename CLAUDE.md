@@ -150,6 +150,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - The last frame echoes the first frame's composition so the replay loops smoothly.
 - Captions must match the voice word for word. Captions are **calm**: no shake/jump/scale — only the active-word highlight changes and each line fades in (Ziv, 2026-11-03).
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
+- **Sound** (Ziv 2026-11-04): voice + soft, quiet, pleasant background music only. **No sound effects** (no whooshes/beeps). build.sh no longer mixes sfx; music.py has no drums; music at volume 0.14 under the voice.
 - **Real sky light** (Ziv 2026-11-04): classic look lights scenes with a Poly Haven HDRI — default `sky:'night'` in studio(); `sky:'sunset'` for warm/hopeful endings; `sky:'room'` = old studio light. Automatic in core.js.
 - **Real props, not boxes** (Ziv 2026-11-04): home/indoor scenes use library models (`engine/assets/models/home/`, 140 Kenney furniture pieces) via `st.prop('home/loungeSofa', {fit:[w,d] | h, x, z, ry})`. Keep invisible boxes only as collision/lidar geometry. See `state/media-library.md`.
 - **People in scenes** (Ziv 2026-11-04): where it fits the story, add people (`people/character-{male,female}-{a..f}`, clips idle/walk/sit/pick-up/emote-yes...) via `st.prop(..., {h:1.1–1.6, anim:'sit'})` — robots in real homes with families is our angle. Avoid male-c (police uniform) unless the story needs it.
@@ -159,7 +160,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - `engine/lib/core.js` — studio(): renderer, bloom, captions, chips, hook, badge, follow card, models (`st.model('robot/RobotExpressive')`, `.schedule(anim, t)`), overlay helpers (detBox, tag, counter), auto sound cues.
 - `engine/assets/models/` — robot (RobotExpressive: Dance Death Idle Jump No Punch Running Sitting Standing ThumbsUp Walking WalkJump Wave Yes), city (Kenney), vehicles (Kenney trucks), home (Kenney furniture), people (Kenney mini characters). `engine/assets/hdri/` — sky light. Full list: `state/media-library.md`.
 - `engine/concept/` — morning concept card page.
-- `tools/align.py`, `tools/render.py`, `tools/music.py` (new lo-fi track per episode), `tools/sfx.py`, `tools/build.sh`, `tools/concept.py`.
+- `tools/align.py`, `tools/render.py`, `tools/music.py` (new soft ambient track per episode, no drums), `tools/sfx.py` (unused since 2026-11-04), `tools/build.sh`, `tools/concept.py`.
 - `state/` — episodes.json, topics.md, performance.md.
 - `engine/news/index.html` + `tools/news.py` + `news/YYYYMMDD/spec.json` — daily news carousel.
 - Heavy outputs (`out/`, `frames/`) are git-ignored; never commit mp4 files.
