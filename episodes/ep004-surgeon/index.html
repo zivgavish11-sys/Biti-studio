@@ -1,0 +1,105 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP004-surgeon — איך רובוט מנתח (motion copying, tiny incisions, tremor filtering, motion scaling). Classic look, in-house CC0 OR kit (engine/props/kit.js).
+// Phrases (timeline.json): 0 בניתוח רובוטי | 1 הרופא בכלל לא... | 2 אני ביטי | 3 והיום | 4 איך רובוט מנתח | 5 המנתח יושב | 6 ומסתכל... | 7 הוא מזיז | 8 והרובוט מעתיק
+//  9 הכלים נכנסים | 10 בלי לפתוח | 11 אבל הנה | 12 מסנן רעד | 13 מקטין | 14 כך שתנועה גדולה | 15 הופכת לזעירה | 16 אז הרובוט | 17 הוא נותן | 18 ידיים | 19-20 follow
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 5,
+  hook: ['איך רובוט', '<span class="pill">מנתח</span> בן אדם?'],
+  // S: 0 hook OR wide | 1 intro orbit | 2 console | 3 arms copy | 4 tiny incisions | 5 RE-HOOK tremor (monitor) | 6 scaling | 7 payoff wide | 8 follow  (coffee line cut by Ziv)
+  scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[7] - .25, A[9] - .25, A[11] - .25, A[13] - .25, A[16] - .25, A[19] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[1], b: S[1], y: 330, c: 'pnk', h: '😮 הרופא לא ליד המטופל'},
+    {a: A[5] + .2, b: S[3], y: 330, c: '', h: '🎮 המנתח יושב בצד החדר<small>מסך תלת־ממד</small>'},
+    {a: A[8], b: S[4], y: 330, c: 'org', h: '🖐️ כל תנועה מועתקת'},
+    {a: A[9] + .2, b: S[5], y: 330, c: '', h: '🔹 חתכים זעירים<small>בלי לפתוח את הבטן</small>'},
+    {a: A[12], b: S[6], y: 330, c: 'pnk', h: '〰️ הרעד של היד ← מסונן'},
+    {a: A[14], b: S[7], y: 330, c: 'org', h: '📏 תנועה גדולה ← תנועה זעירה'},
+    {a: A[17], b: S[8], y: 330, c: 'grn', h: '✅ ידיים שלא רועדות'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(4);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .75, ...o});
+
+// ================= OPERATING ROOM =================
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), M(0x121830, {roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const orFloor = new THREE.Mesh(new THREE.PlaneGeometry(9, 8), M(0x1d2748, {roughness: .8})); orFloor.rotation.x = -Math.PI / 2; orFloor.position.set(-.6, .01, .4); orFloor.receiveShadow = true; scene.add(orFloor);
+// low back walls (open to camera) so it reads as a room, not a void
+const wallM = M(0x2a3460, {roughness: .85});
+for (const [x, z, w, ry] of [[-.6, -3.6, 9, 0], [-5.1, .4, 8, Math.PI / 2]]) { const w3 = new THREE.Mesh(new THREE.BoxGeometry(w, 2.8, .12), wallM); w3.position.set(x, 1.4, z); w3.rotation.y = ry; w3.receiveShadow = true; scene.add(w3); }
+const stripe = new THREE.Mesh(new THREE.BoxGeometry(9, .06, .02), M(COL.cyan)); stripe.position.set(-.6, 1.1, -3.53); scene.add(stripe);
+
+await st.prop('medical/operating-table', {h: .86, ry: Math.PI / 2});
+await st.prop('medical/draped-patient', {h: .27, y: .86, ry: Math.PI / 2});
+const robot = await st.prop('medical/surgical-robot', {z: -1.0});
+await st.prop('medical/surgical-lamp', {y: 1.95, x: .3, z: .6});
+const mon = await st.prop('medical/medical-monitor', {x: 1.55, z: -.1, ry: -.5});
+const CON = V(-2.6, 0, 1.6);
+const cons = (await st.prop('medical/surgeon-console', {x: CON.x, z: CON.z, ry: Math.PI * .75})).object;
+const surgeon = await st.prop('people/character-male-b', {h: 1.2, x: -2.15, z: 1.15, ry: -Math.PI / 4, anim: 'sit'});
+const nurse = await st.prop('people/character-female-a', {h: 1.55, x: -1.0, z: -2.3, ry: .5, anim: 'idle'});
+await st.prop('home/pottedPlant', {h: 1.0, x: -4.6, z: -3.1});
+
+// robot parts
+const R = robot.object; const arms = [0, 1, 2, 3].map(i => ({arm: R.getObjectByName('arm' + i), elbow: R.getObjectByName('elbow' + i), wrist: R.getObjectByName('wrist' + i), tool: R.getObjectByName('tool' + i), tip: R.getObjectByName('tip' + i)}));
+const handL = cons.getObjectByName('handL'), handR = cons.getObjectByName('handR'); const hL0 = handL.position.clone(), hR0 = handR.position.clone();
+const tipWorld = i => arms[i].tip.getWorldPosition(new THREE.Vector3());
+
+// ================= MONITOR: tremor graph (hand vs. tool) =================
+const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 680; const c = cv.getContext('2d');
+const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+const scr = mon.object.getObjectByName('screen');
+if (scr) scr.material = new THREE.MeshStandardMaterial({map: tex, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: .5, roughness: .4});
+function drawScreen(t, k) {
+  c.fillStyle = '#071322'; c.fillRect(0, 0, 1080, 680); c.direction = 'rtl'; c.textAlign = 'right';
+  c.fillStyle = '#9fb3d9'; c.font = '700 64px Rubik'; c.fillText('יד ← כלי', 1040, 90);
+  const draw = (y0, col, shake, label) => {
+    c.fillStyle = col; c.font = '700 60px Rubik'; c.fillText(label, 1040, y0 - 66);
+    c.strokeStyle = col; c.lineWidth = 8; c.beginPath(); const n = Math.floor(60 + 900 * k);
+    for (let x = 60; x <= n; x += 4) { const y = y0 + Math.sin(x * .012 + t) * 40 + (shake ? (Math.sin(x * .9) + Math.sin(x * 1.7 + 1) * .7) * 14 : 0); x === 60 ? c.moveTo(1080 - x, y) : c.lineTo(1080 - x, y); }
+    c.stroke(); };
+  draw(290, '#ff5fd2', true, 'היד של הרופא');
+  draw(560, '#2ee6ff', false, 'הכלי בתוך הגוף');
+}
+
+// ================= ANIMATION =================
+st.frame(t => {
+  // arm motion: gentle, "copying" the hands. Tremor on the hands only after the re-hook.
+  const trem = t > S[5] && t < S[6] ? (Math.sin(t * 47) + Math.sin(t * 31 + 1)) * .006 : 0;
+  const big = t > S[6] && t < S[7] ? Math.sin((t - S[6]) * 2.2) : Math.sin(t * 1.1) * .3;   // scaling scene: large hand sweep
+  handL.position.set(hL0.x + Math.sin(t * 1.1) * .03, hL0.y + trem, hL0.z + Math.cos(t * .9) * .02);
+  handR.position.set(hR0.x + big * .08 + trem, hR0.y + trem, hR0.z + Math.sin(t * 1.3) * .02);
+  arms.forEach((a, i) => {
+    if (!a.arm) return; const ph = t * 1.1 + i;
+    a.arm.rotation.y = Math.sin(ph) * .05 + (i === 3 ? big * .015 : 0);
+    if (a.elbow) a.elbow.rotation.x = Math.sin(ph * .8) * .03;
+    // tools slide in through the incisions in scene 4
+    const ins = sm(win(t, S[4], S[4] + 1.6, .01) > 0 ? Math.min(1, (t - S[4]) / 1.6) : t > S[4] ? 1 : 0);
+    if (a.tool) a.tool.position.y = .06 - .08 * (t < S[4] ? 0 : Math.min(1, (t - S[4]) / 1.6));
+    const jaw = Math.abs(Math.sin(t * 2.4 + i)) * .25;
+    const jA = a.tip?.getObjectByName('jawA'), jB = a.tip?.getObjectByName('jawB'); if (jA) jA.rotation.x = .2 + jaw; if (jB) jB.rotation.x = -.2 - jaw;
+  });
+  drawScreen(t * .8, t > S[5] ? Math.min(1, (t - S[5]) / 2.2) : 1); tex.needsUpdate = true;
+  // re-hook colour shift (background warms to purple during the tremor scene)
+  const pk = win(t, S[5], S[6], .3); scene.background.lerpColors(new THREE.Color(0x0d1226), new THREE.Color(0x24164a), pk * .8); st.fog.color.copy(scene.background);
+
+  const T = tipWorld(3);
+  let cp, ct;
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [4.4, 3.2, 4.6], [-.4, 1.0, -.2]], [S[1], [3.2, 2.9, 5.2], [-.6, 1.0, 0]]]);                       // hook: wide OR, console visible far left
+  else if (t < S[2]) { const a = .7 + (t - S[1]) * .16; cp = V(Math.sin(a) * 5.2, 2.6, Math.cos(a) * 5.2); ct = V(-.3, 1.1, -.2); }        // intro orbit
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [1.4, 3.0, 5.6], [-2.3, .9, 1.2]], [S[3], [.6, 2.8, 5.2], [-2.3, .9, 1.2]]]);          // console + surgeon
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [3.0, 1.5, 2.0], [0, 1.7, -.7]], [S[4], [2.6, 1.45, 1.6], [0, 1.6, -.6]]]);                // arms copying
+  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [2.1, 1.75, -.2], [.1, 1.15, -.3]], [S[5], [1.8, 1.65, -.45], [.1, 1.15, -.3]]]);               // tools into tiny incisions
+  else if (t < S[6]) [cp, ct] = camKF(t, [[S[5], [.75, 1.5, 1.6], [1.55, 1.4, -.1]], [S[6], [.9, 1.45, 1.2], [1.55, 1.4, -.1]]]);        // RE-HOOK: monitor graph
+  else if (t < S[7]) { const k = (t - S[6]) / (S[7] - S[6]); if (k < .5) [cp, ct] = camKF(t, [[S[6], [.2, 2.2, 4.4], [-2.3, 1.0, 1.2]], [S[6] + (S[7] - S[6]) * .5, [0, 2.1, 4.0], [-2.3, 1.0, 1.2]]]);
+    else [cp, ct] = camKF(t, [[S[6] + (S[7] - S[6]) * .5, [2.4, 2.0, 2.0], [T.x, T.y, T.z]], [S[7], [2.1, 1.9, 1.7], [T.x, T.y, T.z]]]); } // scaling: big hand, then tiny tool
+  else if (t < S[8]) { const a = 1.3 - (t - S[7]) * .12; cp = V(Math.sin(a) * 5.6, 3.0, Math.cos(a) * 5.6); ct = V(-.6, 1.0, 0); }       // payoff wide
+  else [cp, ct] = camKF(t, [[S[8], [3.6, 3.1, 5.0], [-.5, 1.0, -.1]], [END, [4.4, 3.2, 4.6], [-.4, 1.0, -.2]]]);                            // loop back to frame 0
+  return {cp, ct, overlay: t2 => {
+    if (t2 > S[3] + .3 && t2 < S[4]) { const [x, y] = st.proj(V(0, 1.5, -.5)); st.tag(x, Math.max(y, 700), 'מעתיק כל תנועה', '#2ee6ff', win(t2, S[3] + .3, S[4])); }
+  }};
+});
+st.ready();
+</script></body></html>
