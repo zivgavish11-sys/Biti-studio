@@ -70,7 +70,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - Every fact must be verified (web search) and phrased so nobody can correct it in the comments (avoid shaky exact numbers; "כמעט", "בערך" are fine).
 - Pronunciation for TTS: add niqqud where needed, avoid abbreviations. Write caption overrides inline as `{tts|caption}`, e.g. `{מַכַּם|מכ"ם}`.
   Send Ziv the **plain TTS version** (without braces) as **plain right-to-left text, NOT in a code block** (code blocks render left-to-right on his phone), and save the brace version to `episodes/epNNN-slug/script.txt`.
-  TTSMaker pronunciation (from Ziv): write **אלאמד** instead of אלמד → in script.txt the greeting is `אני ביטי, והיום אני {אלאמד|אלמד} אתכם ...`. Also any Hebrew text Ziv will copy (captions, comments) goes as plain RTL text, not code blocks.
+  TTSMaker pronunciation (Ziv, 2026-11-04): send the TTS text with **full niqqud + rich punctuation** (commas, `...`, `?`, `!` for pauses/intonation); write the greeting as normal niqqud **אֲלַמֵּד** (replaces the old אלאמד trick) → in script.txt each word is `{niqqud|plain}`, e.g. `{אֲלַמֵּד|אלמד}`. Also any Hebrew text Ziv will copy (captions, comments) goes as plain RTL text, not code blocks.
 - Tell him: TTSMaker, the female voice, **normal speed**, send back the mp3.
 
 ### 3) Build (after the recording arrives)
