@@ -177,9 +177,69 @@ export function vacuumDock() {
   return g;
 }
 
+// ---------- quadcopter drone (generic X-frame, no real brand) — added 2026-11-04 for ep006-drone ----------
+// Real metres (~0.5 m motor-to-motor). Nodes: prop0..prop3 (spin .rotation.y; 0&2 one way, 1&3 the other), motor0..3, arm0..3,
+// 'shell' + 'shellTop' (make transparent for the x-ray shot), 'insides' group with 'imu' (small board + chip), 'battery', 'fc' (flight computer),
+// ledFront0/1 (cyan) + ledBack0/1 (pink) — solid colours, no glow. Front = +z.
+export function drone() {
+  const g = grp('drone');
+  const legH = .11, by = legH + .045;                                             // body centre height
+  const body = rbox(.16, .06, .22, .03, MAT.dark, 'shell'); at(body, 0, by, 0); g.add(body);
+  g.add(at(rbox(.13, .018, .18, .009, MAT.shell, 'shellTop'), 0, by + .036, -.005));
+  g.add(at(rbox(.02, .004, .14, .002, MAT.cyan), 0, by + .046, -.005));          // brand stripe on top
+  const inner = grp('insides'); g.add(inner);
+  inner.add(at(rbox(.09, .028, .14, .008, MAT.orange, 'battery'), 0, by - .008, -.02));
+  const fc = grp('fc', at(rbox(.075, .004, .075, .002, M(0x1f7a4a, .6)), 0, 0, 0)); fc.position.set(0, by + .014, .03); inner.add(fc);
+  const imu = grp('imu', at(rbox(.022, .006, .022, .002, MAT.dark), 0, .005, 0), at(rbox(.008, .002, .008, .001, MAT.cyan), 0, .009, 0));
+  imu.position.set(0, by + .014, .03); inner.add(imu);
+  for (let i = 0; i < 6; i++) inner.add(at(rbox(.006, .003, .01, .001, MAT.steel), -.025 + i * .01, by + .018, .06));
+  // camera bump at the front (generic)
+  g.add(at(rbox(.05, .04, .03, .012, MAT.joint), 0, by - .02, .115));
+  g.add(at(cyl(.012, .012, .01, MAT.glass, 'lens'), 0, by - .02, .132, Math.PI / 2));
+  const R = .25;                                                                   // centre → motor
+  [[1, 1], [-1, 1], [-1, -1], [1, -1]].forEach(([sx, sz], i) => {
+    const a = new THREE.Vector3(sx * .05, by, sz * .07), b = new THREE.Vector3(sx * R * .7071, by + .005, sz * R * .7071);
+    g.add(link(a, b, .012, MAT.shell2, 'arm' + i));
+    const m = grp('motor' + i, at(cyl(.022, .024, .03, MAT.joint), 0, 0, 0), at(cyl(.016, .016, .006, MAT.steel), 0, .018, 0));
+    m.position.copy(b).add(new THREE.Vector3(0, .012, 0)); g.add(m);
+    const pr = grp('prop' + i, at(cyl(.006, .006, .012, MAT.steel), 0, 0, 0));
+    for (const k of [0, 1]) pr.add(at(rbox(.115, .004, .022, .002, i % 2 ? MAT.shell : MAT.shell2), (k ? -1 : 1) * .06, 0, 0, (k ? -1 : 1) * .12));
+    pr.position.copy(m.position).add(new THREE.Vector3(0, .028, 0)); pr.rotation.y = i * .7; g.add(pr);
+    // prop guard ring (keeps it generic, reads well on camera)
+    g.add(at(mesh(new THREE.TorusGeometry(.13, .005, 6, 48), MAT.joint), m.position.x, m.position.y + .02, m.position.z, Math.PI / 2));
+    // arm LEDs: front cyan, back pink (solid, no glow)
+    const led = at(rbox(.014, .01, .014, .004, sz > 0 ? MAT.cyan : MAT.pink, (sz > 0 ? 'ledFront' : 'ledBack') + (sx > 0 ? 0 : 1)), m.position.x, m.position.y - .022, m.position.z);
+    g.add(led);
+    // landing leg under each motor
+    g.add(link(new THREE.Vector3(m.position.x * .9, by - .02, m.position.z * .9), new THREE.Vector3(m.position.x * .95, .006, m.position.z * .95), .005, MAT.joint));
+    g.add(at(mesh(new THREE.SphereGeometry(.009, 12, 8), MAT.rubber), m.position.x * .95, .008, m.position.z * .95));
+  });
+  return g;
+}
+
+// ---------- waiter tray with glasses (for 'כמו מלצר עם מגש מלא בחתונה') ----------
+// Real metres, tray Ø 0.36 m standing on y=0 (tray top at y≈0.015). Nodes: 'tray', glass0..glass4 (wobble them), drink0..4.
+export function trayGlasses() {
+  const g = grp('tray-glasses');
+  g.add(at(cyl(.18, .175, .012, MAT.steel, 'tray', 64), 0, .006, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(.178, .006, 8, 64), MAT.steel), 0, .013, 0, Math.PI / 2));
+  const glassM = Object.assign(M(0xcfe6ff, .08, 0), {transparent: true, opacity: .38, depthWrite: false});
+  const wine = M(0x8e1f3f, .25), juice = M(0xffa53a, .3);
+  const spots = [[0, 0], [.1, .06], [-.1, .06], [.07, -.1], [-.08, -.09]];
+  spots.forEach(([x, z], i) => {
+    const gl = grp('glass' + i); gl.position.set(x, .012, z); g.add(gl);
+    gl.add(at(cyl(.03, .032, .004, glassM, null, 24), 0, .002, 0));              // foot
+    gl.add(at(cyl(.004, .004, .07, glassM, null, 12), 0, .039, 0));              // stem
+    gl.add(at(cyl(.034, .018, .08, glassM, null, 24), 0, .114, 0));              // bowl
+    gl.add(at(cyl(.028, .017, .04, i % 2 ? juice : wine, 'drink' + i, 24), 0, .095, 0));
+  });
+  return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
   'medical/instrument-grasper': grasper, 'medical/suture-needle': needle,
   'home/robotVacuum': robotVacuum, 'home/robotVacuumDock': vacuumDock,
+  'drone/quadcopter': drone, 'home/trayGlasses': trayGlasses,
 };
