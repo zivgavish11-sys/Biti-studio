@@ -224,7 +224,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center}
         <div class="node" data-agent="video" style="--c:var(--cyan)">
           <span class="status st-w">2 פרקים מחכים</span>
           <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.8"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></div>
-            <div><div class="name">סוכן הווידאו</div><div class="en">Video · פרקי ביטי</div></div></div>
+            <div><div class="name">סוכן רילסים</div><div class="en">Reels · פרקי ביטי</div></div></div>
           <p class="role">3 רעיונות בבוקר, תסריט, בנייה, תזמון ל־18:00. פרק פתוח אחד בכל פעם.</p><div class="live" hidden></div>
           <div class="chips"><span class="chip mono">יומי · 02:37</span><span class="chip mono">פרסום 18:00</span></div>
           <details><summary>מחכה לך</summary><ul><li>#3 שואב: סצנות מוכנות</li><li>#4 מנתח: תסריט, מחכה להקלטה</li><li>פרק ההר עלה היום כפרק #3</li></ul></details>
@@ -232,7 +232,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center}
         <div class="node" data-agent="news" style="--c:var(--cyan)">
           <span class="status st-a">פעיל</span>
           <div class="row"><div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div>
-            <div><div class="name">סוכן החדשות</div><div class="en">News · קרוסלה יומית</div></div></div>
+            <div><div class="name">סוכן קרוסלות</div><div class="en">Carousels · חדשות יומיות</div></div></div>
           <p class="role">2–4 חדשות רובוטיקה, כל עובדה מ־2 מקורות, שקופיות בשני סגנונות, תזמון ל־12:00 אחרי אישורך.</p><div class="live" hidden></div>
           <div class="chips"><span class="chip mono">יומי · 02:20</span><span class="chip mono">פרסום 12:00</span></div>
         </div>
@@ -343,8 +343,8 @@ footer{color:var(--muted);font-size:12.5px;text-align:center}
 <script>
 (function(){
   var ev=[
-    {h:2.33,l:"חדשות: איסוף ושקופיות",c:"var(--cyan)"},
-    {h:2.62,l:"וידאו: רעיונות / פרק פתוח",c:"var(--cyan)",low:1},
+    {h:2.33,l:"קרוסלות: איסוף ושקופיות",c:"var(--cyan)"},
+    {h:2.62,l:"רילסים: רעיונות / פרק פתוח",c:"var(--cyan)",low:1},
     {h:9.68,l:"בדיקת עובדות",c:"var(--pink)"},
     {h:12,l:"קרוסלת חדשות עולה",c:"var(--orange)",low:1},
     {h:14.18,l:"שומר אבני דרך (שקט)",c:"var(--green)"},
@@ -365,7 +365,7 @@ footer{color:var(--muted);font-size:12.5px;text-align:center}
 
 <script>
 (function(){
-  var A={ziv:["זיו","var(--cyan)"],boss:["הבוס","var(--purple)"],video:["וידאו","var(--cyan)"],news:["חדשות","var(--cyan)"],
+  var A={ziv:["זיו","var(--cyan)"],boss:["הבוס","var(--purple)"],video:["רילסים","var(--cyan)"],news:["קרוסלות","var(--cyan)"],
     factcheck:["בודק העובדות","var(--pink)"],media:["מדיה","var(--pink)"],analytics:["אנליטיקה","var(--orange)"],growth:["צמיחה","var(--orange)"],
     milestone:["שומר אבני דרך","var(--green)"],community:["קהילה","var(--orange)"],collab:["שיתופי פעולה","var(--orange)"],efficiency:["ייעול","var(--grey)"],all:["כולם","var(--muted)"]};
   var ST={active:["פעיל","st-a"],waiting:["מחכה לך","st-w"],dormant:["רדום","st-d"],merged:["אוחד","st-m"],error:["תקלה","st-w"]};

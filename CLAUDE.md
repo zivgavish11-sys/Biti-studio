@@ -20,9 +20,9 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
   Keeps `state/visual-brief.md` (Ziv's visual taste, from interviewing him) and proposes visual improvements; changes to the visual rules only after Ziv's OK.
 - **סוכן בקרת התפתחות / Growth control** (task "סוכן בקרת התפתחות", weekly): owns the growth roadmap `state/growth-plan.md` (follower goals, new platforms, formats,
   cadence, milestones — on a pace agreed with Ziv). Tracks progress against the plan and tells Ziv when it's time for the next step.
-- **Video chat** (task "Biti Studio morning ideas"): Biti episodes only — sections 1) ideas, 2) script, 3) build, Publishing of videos.
-- **News chat** (task "Robotics Israel daily news carousel"): the daily news carousel only — section 5.
-- **Analytics chat** (task "Robotics Israel analytics review", every 4 days): section 4 + Metricool stats — scan everything we posted on Instagram + TikTok since the last review
+- **סוכן רילסים / Video chat** (task "סוכן רילסים", renamed by Ziv 2026-11-04): Biti episodes only — sections 1) ideas, 2) script, 3) build, Publishing of videos.
+- **סוכן קרוסלות / News chat** (task "סוכן קרוסלות", renamed by Ziv 2026-11-04): the daily news carousel only — section 5.
+- **Analytics chat** (task "סוכן אנליטיקה", every 4 days): section 4 + Metricool stats — scan everything we posted on Instagram + TikTok since the last review
   (episodes, carousels, other reels), log to `state/performance.md`, draw conclusions, and propose concrete rule changes to Ziv.
   **Only after Ziv's explicit OK** write the approved changes into the "brain and rules" (`CLAUDE.md`, `docs/playbook.md`, `state/topics.md`) and log them in `state/decisions.md`. Never change rules without his OK.
   Every review also logs each episode posted 48 h+ earlier that is not yet in `state/performance.md` (no separate one-off stats tasks). The 100-followers reminder is NOT this chat's job (milestone watcher only).

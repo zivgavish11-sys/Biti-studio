@@ -12,3 +12,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-04 (boss): 3-month target lowered by Ziv from 5,000 to 1,000 followers (Feb 2027).
 - 2026-11-04 (boss): Community agent milestone raised by Ziv from 5 to 25 comments on a single post (milestone watcher prompt + milestones.md reopened).
 - 2026-11-04 (media): Ziv approved all 3 visual proposals: (1) real furniture models instead of boxes in home scenes, (2) people in scenes, (3) real night sky light (HDRI) as classic default. core.js: `sky` option + `st.prop()` helper; CLAUDE.md Visual rules updated; video + news inboxes told.
+- 2026-11-04 (boss): Tasks renamed by Ziv: 'Biti Studio morning ideas' → 'סוכן רילסים', 'Robotics Israel daily news carousel' → 'סוכן קרוסלות'.
