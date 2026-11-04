@@ -20,3 +20,4 @@ Still to agree with Ziv in the first-run interview: auto-DM tool (or none), repl
 ## Log
 - 2026-11-04 run 1: followers 20 (IG 7, TT 13). Lab part 1 not posted yet → no "קהילה" comments to collect. Metricool can't read comment text. No members yet.
 - 2026-11-04 Account is already professional; still no 'Create broadcast channel' after app update. Ziv chose: vote via the video comments.
+- 2026-11-04 Ziv: "the end goal is more followers". Ready reply for "קהילה" commenters (no channel, asks to follow): "נכנסת למעבדה! 🔋 השם שלך יופיע על עמדת טעינה בחלק 2, תעקוב כדי לא לפספס 🤖". Ziv replies by hand in the first hour. Q1 (comments source: screenshots vs ManyChat) still open — ask after the video.
