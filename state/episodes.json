@@ -1,5 +1,5 @@
 {
- "next_episode": 5,
+ "next_episode": 6,
  "episodes": [
   {
    "n": 1,
@@ -36,6 +36,15 @@
    "date": "2026-11-04",
    "posted": "scheduled 2026-11-04T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-4823008353552545202",
    "notes": "Folder ep003 but badge #4. Hook 'hidden thing'. First episode with real Kenney furniture + in-house vacuum/dock models, niqqud TTS, and NO sfx (soft music only). Pinned: הייתם נותנים לשואב רובוטי למפות לכם את הבית? כן/לא"
+  },
+  {
+   "n": 5,
+   "slug": "ep004-surgeon",
+   "title": "איך רובוט מנתח (העתקת תנועה, חתכים זעירים, סינון רעד, הקטנת תנועה)",
+   "domain": "רובוטים בחיי היום־יום",
+   "date": "2026-11-05",
+   "posted": "scheduled 2026-11-05T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=529002558045637761",
+   "notes": "Badge #5. 33 s (Ziv cut the coffee joke line). In-house CC0 OR kit + people. No sfx. Pinned: הייתם מסכימים לניתוח רובוטי, עם רופא שמפעיל אותו? כן/לא"
   }
  ]
 }
