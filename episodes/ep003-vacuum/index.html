@@ -4,7 +4,7 @@
 // EP003 — מה השואב הרובוטי עושה בסתר (LiDAR + SLAM). Classic look, built from primitives.
 import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
 const st = await studio({
-  episode: 3,
+  episode: 4,
   hook: ['מה השואב הרובוטי', 'עושה <span class="pill">בסתר</span>?'],
   // S: 0 hook | 1 intro | 2 spinning laser | 3 beam->wall | 4 points->walls | 5 RE-HOOK paradox | 6 both at once | 7 joke | 8 full map | 9 follow
   scenes: (A, B, END) => [0, A[2] - .25, A[4] - .25, A[6] - .25, A[8] - .25, A[10] - .25, A[15] - .25, A[16] - .25, A[18] - .25, A[20] - .25, END],
