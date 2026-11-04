@@ -110,6 +110,40 @@ const ART = {
     <rect x="120" y="360" width="110" height="80" rx="12" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="164" y="378" width="22" height="44" fill="#e03a4f"/><rect x="153" y="389" width="44" height="22" fill="#e03a4f"/>
     <rect x="720" y="330" width="150" height="16" rx="6" fill="#e03a4f"/><rect x="720" y="370" width="150" height="16" rx="6" fill="#e03a4f"/></g>
     ${bot(476, 330, 1.6, '#fff', INK, true)}<rect y="530" width="952" height="30" fill="${INK}"/>`,
+  'home': () => `<rect width="952" height="560" fill="#efe6d8"/><rect y="420" width="952" height="140" fill="#d9c7ad"/>
+    <rect x="610" y="70" width="230" height="170" rx="10" fill="#22305e"/><rect x="722" y="70" width="6" height="170" fill="#efe6d8"/><rect x="610" y="152" width="230" height="6" fill="#efe6d8"/><circle cx="790" cy="110" r="18" fill="#f2e6c8"/>
+    <rect x="60" y="300" width="300" height="70" rx="22" fill="#7a6cc0" stroke="${INK}" stroke-width="5"/><rect x="60" y="250" width="300" height="60" rx="22" fill="#6b5cb0" stroke="${INK}" stroke-width="5"/>
+    <rect x="44" y="270" width="40" height="120" rx="14" fill="#6b5cb0" stroke="${INK}" stroke-width="5"/><rect x="336" y="270" width="40" height="120" rx="14" fill="#6b5cb0" stroke="${INK}" stroke-width="5"/>
+    <rect x="80" y="390" width="12" height="30" fill="${INK}"/><rect x="328" y="390" width="12" height="30" fill="${INK}"/>
+    <line x1="880" y1="140" x2="880" y2="420" stroke="${INK}" stroke-width="6"/><path d="M845 140 L915 140 L900 90 L860 90Z" fill="#ffd36b" stroke="${INK}" stroke-width="5"/>
+    <ellipse cx="560" cy="470" rx="250" ry="34" fill="${c}" opacity=".35"/>
+    ${bot(560, 300, 1.15, '#fff')}
+    <rect x="610" y="300" width="96" height="70" rx="8" fill="#d9a86c" stroke="${INK}" stroke-width="5"/><path d="M610 322 L706 322" stroke="${INK}" stroke-width="4"/>`,
+  'mower': () => `<rect width="952" height="560" fill="#e3efe2"/><circle cx="800" cy="110" r="50" fill="#e9822a" opacity=".85"/>
+    <g fill="#f4f1ea" stroke="${INK}" stroke-width="4">${[0,1,2,3,4,5,6,7,8,9,10,11].map(k => `<path d="M${20 + k * 80} 330 L${20 + k * 80} 260 L${45 + k * 80} 235 L${70 + k * 80} 260 L${70 + k * 80} 330Z"/>`).join('')}</g>
+    <rect y="320" width="952" height="240" fill="#4f9b5f"/>${[0,1,2,3,4,5].map(k => `<rect x="${-60 + k * 180}" y="320" width="90" height="240" fill="#5bab6b" transform="skewX(-20)"/>`).join('')}
+    <g transform="translate(330 430)"><rect x="-130" y="-60" width="260" height="80" rx="30" fill="#fff" stroke="${INK}" stroke-width="6"/><rect x="-80" y="-84" width="160" height="34" rx="14" fill="${INK}"/>
+      <rect x="-20" y="-110" width="40" height="28" rx="8" fill="${INK}"/><rect x="-130" y="-14" width="260" height="12" fill="${c}"/>
+      <circle cx="-86" cy="30" r="34" fill="${INK}"/><circle cx="86" cy="30" r="34" fill="${INK}"/><circle cx="-86" cy="30" r="12" fill="#c9cede"/><circle cx="86" cy="30" r="12" fill="#c9cede"/></g>
+    <g transform="translate(680 450)"><rect x="-110" y="-10" width="220" height="24" rx="8" fill="${INK}"/><rect x="-100" y="-170" width="200" height="160" rx="18" fill="#fff" stroke="${INK}" stroke-width="6"/>
+      <rect x="-120" y="-190" width="240" height="26" rx="10" fill="${c}"/><circle cx="0" cy="-90" r="46" fill="#c9cede" stroke="${INK}" stroke-width="5"/>
+      <rect x="-70" y="-98" width="140" height="16" rx="4" fill="#eef1f8" stroke="${INK}" stroke-width="4" transform="rotate(-25 0 -90)"/>
+      ${[0,1,2].map(k => `<path d="M${40 + k * 18} ${-150 + k * 10} l14 -14" stroke="#e9822a" stroke-width="5" stroke-linecap="round"/>`).join('')}</g>`,
+  'robotaxi-cam': () => `<rect width="952" height="560" fill="#f9e9e2"/><circle cx="476" cy="215" r="150" fill="#e0384f"/>
+    <g fill="#c9bfd6"><rect x="40" y="190" width="90" height="230"/><rect x="140" y="250" width="70" height="170"/><rect x="740" y="210" width="80" height="210"/><rect x="830" y="160" width="90" height="260"/></g>
+    <rect y="420" width="952" height="140" fill="${INK}"/><g fill="#f4f1ea">${[0,1,2,3,4,5].map(k => `<rect x="${30 + k * 170}" y="486" width="90" height="10" rx="5"/>`).join('')}</g>
+    <g transform="translate(476 0)">
+      <path d="M-230 430 L-230 360 Q-226 330 -190 326 L-140 326 L-100 284 Q-90 276 -70 276 L110 276 Q140 276 160 300 L200 340 Q236 344 240 372 L240 430 Z" fill="#fff" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M-90 292 L-20 292 L-20 334 L-126 334 Z M0 292 L100 292 Q120 292 134 310 L150 334 L0 334 Z" fill="${c}" opacity=".85"/>
+      <circle cx="-140" cy="432" r="42" fill="${INK}"/><circle cx="-140" cy="432" r="18" fill="#c9cede"/><circle cx="150" cy="432" r="42" fill="${INK}"/><circle cx="150" cy="432" r="18" fill="#c9cede"/>
+      <rect x="216" y="356" width="24" height="14" rx="4" fill="#ffd36b"/>
+      <g transform="translate(-260 150)"><rect x="-70" y="-40" width="140" height="80" rx="14" fill="${INK}"/><text x="0" y="16" font-family="Rubik" font-weight="700" font-size="48" fill="#fff" text-anchor="middle">TX ×4</text></g></g>`,
+  'cover-home': () => `<rect width="952" height="560" fill="#e9eef7"/>
+    <g opacity=".95"><path d="M90 230 L170 160 L250 230 L250 330 L90 330Z" fill="#fff" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><rect x="152" y="270" width="36" height="60" fill="${c}"/>
+    <rect x="80" y="400" width="170" height="56" rx="22" fill="#fff" stroke="${INK}" stroke-width="5"/><rect x="80" y="430" width="170" height="10" fill="#4f9b5f"/><circle cx="115" cy="462" r="18" fill="${INK}"/><circle cx="215" cy="462" r="18" fill="${INK}"/>
+    <path d="M700 330 L700 290 Q702 272 722 270 L750 270 L772 246 Q778 242 790 242 L880 242 Q896 242 906 256 L926 278 Q944 282 946 296 L946 330Z" fill="#fff" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>
+    <circle cx="745" cy="332" r="20" fill="${INK}"/><circle cx="900" cy="332" r="20" fill="${INK}"/></g>
+    ${bot(476, 330, 1.6, '#fff', INK, true)}<rect y="530" width="952" height="30" fill="${INK}"/>`,
   'follow': () => `<rect width="952" height="560" fill="#e9eef7"/>${bot(476, 330, 1.7, '#fff', INK, true)}<rect y="530" width="952" height="30" fill="${INK}"/>`,
 };
 $('art').innerHTML = `<svg viewBox="0 0 952 560" xmlns="http://www.w3.org/2000/svg">${(ART[S.art] || ART[S.type] || ART.follow)()}</svg>`;
