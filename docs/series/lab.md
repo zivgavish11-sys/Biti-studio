@@ -6,7 +6,7 @@ Our version lives in the robot world. Owners: **video agent** builds the episode
 ## Mechanic
 - Comment **"קהילה"** → you get a **charging station (עמדת טעינה) with your name** on the lab's charging wall.
 - In the same comment, write **which robot to add next**.
-- **Every 25 new followers** → a new robot joins the lab. Chosen by a **poll in the Instagram broadcast channel** of @robotics.israel (Ziv's choice: broadcast-only channel, no WhatsApp, nothing under his own name).
+- **Every 25 new followers** → a new robot joins the lab. Chosen by **the robot requests in the "קהילה" comments on the videos** (most-requested robot wins; tallied by the community agent). Ziv 2026-11-04: the Instagram broadcast channel isn't available on our account yet, so no channel/story poll — comments only. No WhatsApp, nothing under his own name.
   Each new robot also gets its own explainer episode.
 - **Every robot does something** (Ziv): a fixed action loop that repeats in every part — autonomous car drives a small track, stops at obstacles, lidar rays visible ·
   humanoid walks, lifts boxes, stocks a shelf · robot dog runs and climbs small stairs · arm assembles on the bench · drone hovers and circles the lab.

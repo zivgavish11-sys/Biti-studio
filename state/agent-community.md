@@ -2,11 +2,11 @@
 
 ## Role (defined with Ziv in the first-run interview)
 Created by Ziv 2026-11-04 (boss session). Already decided with Ziv:
-- Community channel: **Instagram broadcast channel** of @robotics.israel (broadcast-only; no open chat for now; no WhatsApp; nothing under Ziv's name).
+- 2026-11-04 DECIDED (Ziv): **no broadcast channel** — Instagram doesn't offer it on our (professional) account yet, even after an app update. The next lab robot = **most requested robot in the "קהילה" comments** on the videos. No WhatsApp, nothing under Ziv's name. (Re-check the channel option occasionally; propose it again only if it appears.)
 - Runs the members side of the series "המעבדה של העוקבים" (docs/series/lab.md): collects who commented "קהילה" + which robot they asked for → state/community-members.md.
 - Tracks followers: every 25 new followers (IG + TikTok combined) → tell Ziv + video agent that a new robot is due, and prepare the poll for the channel.
 - Daily comments/DMs digest with ready-to-copy replies.
-Still to agree with Ziv in the first-run interview: auto-DM tool (or none), reply tone, what never to say, time budget (goals.md: ≤1 h/week total), broadcast channel setup.
+Still to agree with Ziv in the first-run interview: auto-DM tool (or none), reply tone, what never to say, time budget (goals.md: ≤1 h/week total).
 
 ## Interview status
 - 2026-11-04 Q1 sent: comments source — Metricool exposes only comment COUNTS, not comment text/handles. Options: (1) screenshots from Ziv weekly, (2) ManyChat free plan (comment-keyword auto-DM + list of who joined). Recommended (1) for now. Waiting for answer.
@@ -19,3 +19,4 @@ Still to agree with Ziv in the first-run interview: auto-DM tool (or none), repl
 
 ## Log
 - 2026-11-04 run 1: followers 20 (IG 7, TT 13). Lab part 1 not posted yet → no "קהילה" comments to collect. Metricool can't read comment text. No members yet.
+- 2026-11-04 Account is already professional; still no 'Create broadcast channel' after app update. Ziv chose: vote via the video comments.
