@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-04 [from boss] For the new lab series (docs/series/lab.md) the video agent needs: a robot-lab room, workbench, animated robot arm (assembling), 3D printer (printing), a wall of charging stations with name plates (Hebrew name textures), and for later parts generic (non-branded) humanoid, autonomous car with lidar, robot dog, drone — each with a simple action loop. CC0/MIT/CC-BY only.
 - 2026-11-04 [from boss] Ziv wants to reach the visual level of @grouper.explains (Hebrew 3D explainers: dark navy/purple 3D scenes, recognisable real-world props with Hebrew UI/text — phone screens, an Israeli ballot box with the state emblem, router, cell tower — big white caption pill with one red key word, objects that tell the story at a glance). Special visual workshop with Ziv on Saturday 2026-11-07 (own scheduled task). Note: he uses glow, Ziv still doesn't want glow — take the storytelling props, not the neon.
 
 ## Handled
