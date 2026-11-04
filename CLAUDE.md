@@ -43,7 +43,9 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
 - 2026-11-02: Biti-studio was made **public** so the agent can host media itself (sessions can't push to Biti-media). **When @robotics.israel reaches 100 followers (only the milestone watcher checks and reminds — Ziv 2026-11-03), remind Ziv to make Biti-studio AND Biti-media private again** — the repo shows his name/email and links him to the anonymous page.
-- News carousel: two looks exist — 3D clean (`news.py render`) and 2D editorial (`news.py render <dir> flat` → out-flat/, template `engine/news/flat.html`, per-slide `"art"`: cover|follow|mars-medic|robotaxi|border; add new art per story). Until Ziv picks, render and send both.
+- 2026-11-04 DECIDED (Ziv): news carousel = **3D only** (`news.py render`). Don't render or send the 2D flat look (`engine/news/flat.html` stays in the repo, unused).
+- 2026-11-04 (Ziv): when you can't find a fitting image/model for a story, ask the media agent for help (line in `state/inbox/media.md`) — it finds what's needed on GitHub. Applies to the news and video agents.
+- 2026-11-04 (Ziv): the swipe hint arrow pointed the wrong way — now `החליקו →` in the templates; keep it.
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
 
 ## The daily flow
@@ -124,7 +126,7 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
    cover (question title + 1 bullet per story) → 1 slide per story (big `stat`, short title with one `pill`/`pink` word, ≤ 3 lines text, `source`) → follow slide.
    Hebrew, short and punchy. Latin names are fine (Tesla, Figure). Vary `scene` per slide: `anim` (Wave Idle No Yes ThumbsUp Dance Jump Running Walking Punch Sitting),
    `color` (cyan/pink/purple/orange), `decor` (city/panels), `count` (crowd), `models` (any glb under engine/assets/models — search GitHub for fitting free models per story, CC0/MIT/CC-BY only, log them in CREDITS.md).
-3. **Render**: `python3 tools/news.py render news/YYYYMMDD` → `out/slide-N.jpg` + `out/sheet.jpg`. Look at the sheet: no text overflow, no object over the top bar/stat, nothing blown out.
+3. **Render** (3D only): `python3 tools/news.py render news/YYYYMMDD` → `out/slide-N.jpg` + `out/sheet.jpg`. Look at the sheet: no text overflow, no object over the top bar/stat, nothing blown out.
 4. **Real photos (optional, tested 2026-11-02: works)**: Metricool downloads any public image URL itself. For a story, take the `og:image` of the **official** press release / company newsroom
    (ask WebFetch for the verbatim og:image URL). Insert it into `media` right after that story's slide and credit it in the caption. Skip URLs that look AI-generated (e.g. "-gen"), logos, or tiny images.
 5. **Upload**: `python3 tools/news.py upload news/YYYYMMDD <Biti-media clone>` → prints the public slide URLs.

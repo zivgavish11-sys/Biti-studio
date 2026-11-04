@@ -50,7 +50,7 @@ if (S.type === 'follow') {
   const row = S.type === 'story' ? `<div class="row"><span class="num">${sI}/${nS}</span>${S.stat ? `<span class="stat"><bdi>${S.stat}</bdi></span><span class="statSub">${S.statSub || ''}</span>` : ''}</div>` : '';
   const body = S.bullets ? `<ul>${S.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : (S.text ? `<p>${S.text}</p>` : '');
   $('bottom').innerHTML = `${row}<h1>${S.title}</h1>${body}${S.source ? `<div class="src">מקור: ${S.source}</div>` : ''}`;
-  $('swipe').textContent = i < N - 1 ? '← החליקו' : '';
+  $('swipe').textContent = i < N - 1 ? 'החליקו →' : '';
 }
 // ---------- flat illustrations (viewBox 952x560) ----------
 const INK = '#101632', BG = '#f4f1ea';
