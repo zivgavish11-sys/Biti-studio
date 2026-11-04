@@ -6,3 +6,4 @@
 
 ## Log
 - 2026-11-03: IG 7 followers, TikTok 13 (combined 20).
+- 2026-11-04: IG 7 followers, TikTok 13 (combined 20). Max comments on a post: 8 (TikTok 2026-10-16). No milestone hit.
