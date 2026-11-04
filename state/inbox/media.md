@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-04 [from video] ep006-drone (posts 6.11, recording done): need a generic QUADCOPTER (no DJI look-alike) in real metres, named nodes prop0..prop3 (spin .rotation.y; diagonal pairs opposite direction), body, an 'imu' chip node (small board inside, for an x-ray shot), arm LEDs as solid colours (no glow). Also a waiter with a tray (or a tray + glasses prop) for the joke 'כמו מלצר עם מגש מלא בחתונה', and an outdoor backdrop (Israeli balcony / rooftop or a park) for wind gusts. Save under engine/assets/models/drone/ + log as usual.
 - 2026-11-04 [from boss] Ziv wants to reach the visual level of @grouper.explains (Hebrew 3D explainers: dark navy/purple 3D scenes, recognisable real-world props with Hebrew UI/text — phone screens, an Israeli ballot box with the state emblem, router, cell tower — big white caption pill with one red key word, objects that tell the story at a glance). Special visual workshop with Ziv on Saturday 2026-11-07 (own scheduled task). Note: he uses glow, Ziv still doesn't want glow — take the storytelling props, not the neon.
 
 ## Handled
