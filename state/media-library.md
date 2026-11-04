@@ -24,7 +24,7 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
 
 - **drone/quadcopter** (added 2026-11-04, in-house CC0, 0.4 MB, source engine/props/kit.js): generic X-frame quadcopter in real metres (~0.5 m motor-to-motor) with prop guards. Nodes: prop0..prop3 (spin .rotation.y, 0&2 vs 1&3 opposite), motor0..3, arm0..3,
   'shell'/'shellTop' (make transparent for x-ray), group 'insides' with 'imu' (chip on the flight board), 'battery', 'fc'; ledFront0/1 cyan, ledBack0/1 pink (solid). Front = +z. Use `scale` 3–4 for readable wide shots.
-  Tip: at 30 fps fast-spinning blades strobe / look frozen — see proposal "prop discs" (engine/props/showcase-drone-disc). Fits: ep006-drone, delivery drones, drone news.
+  Spinning props are soft discs by default (disc0..3 visible, blades0..3 hidden; Ziv approved 2026-11-04) — just spin prop{i}; for a parked drone hide disc{i} and show blades{i}. Fits: ep006-drone, delivery drones, drone news.
 - **home/trayGlasses** (in-house CC0): round waiter tray Ø0.36 m with 5 stemmed glasses (glass0..4, drink0..4 wine/juice). Pair with a person using clip 'holding-both' (tray at ~45% of the person's height, a bit in front). Fits: the "waiter with a full tray" joke, restaurants, service robots.
 - **outdoor/** (added 2026-11-04, Quaternius CC0, 1.8 MB): CommonTree_1..3, PalmTree_1/3 (Israeli feel), Bush_1/2, Flowers, Grass, Rock_1, Bench_1, Streetlight_Single,
   apartment blocks 2Story_Balcony, 3Story_Balcony, 4Story (backdrop with balconies). Fits: park / balcony / street scenes, wind gusts, delivery robots on sidewalks. Use tint ~.8 if too bright at night.

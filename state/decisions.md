@@ -15,3 +15,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-04 (boss): Tasks renamed by Ziv: 'Biti Studio morning ideas' → 'סוכן רילסים', 'Robotics Israel daily news carousel' → 'סוכן קרוסלות'.
 - 2026-11-04 (video, Ziv): TTS text = full niqqud + punctuation; greeting 'אֲלַמֵּד' with niqqud (no more 'אלאמד'). Plan: finish 6 Biti episodes (#4 vacuum, #5 surgeon, #6 drone), then analyse all 6; next make the same Biti format but shorter, then analyse + compare to decide how to continue.
 - 2026-11-04 (video, Ziv): no sound effects in episodes; only a soft, quiet, pleasant background track (build.sh + music.py changed, CLAUDE.md Visual rules).
+- 2026-11-04 (media): Ziv approved proposal 'prop discs' — spinning propellers drawn as a soft see-through disc + thin cyan rim (no glow) instead of frozen blades. Built into drone/quadcopter (disc0..3 on, blades0..3 off); CLAUDE.md Visual rules; video inbox told.

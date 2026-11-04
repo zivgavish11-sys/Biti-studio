@@ -12,9 +12,9 @@ Planned questions: 1) pages/creators whose look he likes · 2) Biti's look (keep
 
 ## Approved visual changes
 - 2026-11-04: real furniture in home scenes · people in scenes · night HDRI sky light (all three proposals).
+- 2026-11-04: spinning propellers as soft see-through discs with a cyan rim (Ziv: "כן").
 
 ## Pending proposals (sent to Ziv 2026-11-04, run 2) — waiting for his OK
 1. Hebrew UI on in-scene screens (monitors/phones show real Hebrew text + live data instead of black screens; matte, no glow). Demo: engine/props/proposals (t 2 vs 22).
 2. X-ray view of everyday robots (shell turns see-through, insides visible: battery, motors, lidar) — the grouper "inside the object" idea, without glow. Demo: engine/props/proposals (t 6 vs 26).
 Interview: Q2+ paused until the visual workshop with Ziv on Sat 2026-11-07 (boss task), to avoid double-asking.
-3. (run 3, 2026-11-04) Prop discs for spinning drone propellers: soft see-through disc + thin cyan rim instead of frozen blades (30 fps strobes). Matte, no glow. Demo: engine/props/showcase-drone-disc vs showcase-drone (t 6).

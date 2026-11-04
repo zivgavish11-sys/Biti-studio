@@ -153,6 +153,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - **Sound** (Ziv 2026-11-04): voice + soft, quiet, pleasant background music only. **No sound effects** (no whooshes/beeps). build.sh no longer mixes sfx; music.py has no drums; music at volume 0.14 under the voice.
 - **Real sky light** (Ziv 2026-11-04): classic look lights scenes with a Poly Haven HDRI — default `sky:'night'` in studio(); `sky:'sunset'` for warm/hopeful endings; `sky:'room'` = old studio light. Automatic in core.js.
 - **Real props, not boxes** (Ziv 2026-11-04): home/indoor scenes use library models (`engine/assets/models/home/`, 140 Kenney furniture pieces) via `st.prop('home/loungeSofa', {fit:[w,d] | h, x, z, ry})`. Keep invisible boxes only as collision/lidar geometry. See `state/media-library.md`.
+- **Spinning propellers = soft discs** (Ziv 2026-11-04): fast rotors (drones etc.) are drawn as a see-through matte disc with a thin cyan rim, not frozen blades (they strobe at 30 fps). `drone/quadcopter` has it built in (disc0..3 visible, blades0..3 hidden — show blades only for a parked/slow drone). No glow.
 - **People in scenes** (Ziv 2026-11-04): where it fits the story, add people (`people/character-{male,female}-{a..f}`, clips idle/walk/sit/pick-up/emote-yes...) via `st.prop(..., {h:1.1–1.6, anim:'sit'})` — robots in real homes with families is our angle. Avoid male-c (police uniform) unless the story needs it.
 
 ## Files

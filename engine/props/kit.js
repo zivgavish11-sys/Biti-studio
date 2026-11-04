@@ -178,7 +178,7 @@ export function vacuumDock() {
 }
 
 // ---------- quadcopter drone (generic X-frame, no real brand) — added 2026-11-04 for ep006-drone ----------
-// Real metres (~0.5 m motor-to-motor). Nodes: prop0..prop3 (spin .rotation.y; 0&2 one way, 1&3 the other), motor0..3, arm0..3,
+// Real metres (~0.5 m motor-to-motor). Nodes: prop0..prop3 (spin .rotation.y; 0&2 one way, 1&3 the other) each holding disc{i} (visible, default look) + blades{i} (hidden; show for a parked/slow-spin drone), motor0..3, arm0..3,
 // 'shell' + 'shellTop' (make transparent for the x-ray shot), 'insides' group with 'imu' (small board + chip), 'battery', 'fc' (flight computer),
 // ledFront0/1 (cyan) + ledBack0/1 (pink) — solid colours, no glow. Front = +z.
 export function drone() {
@@ -203,7 +203,13 @@ export function drone() {
     const m = grp('motor' + i, at(cyl(.022, .024, .03, MAT.joint), 0, 0, 0), at(cyl(.016, .016, .006, MAT.steel), 0, .018, 0));
     m.position.copy(b).add(new THREE.Vector3(0, .012, 0)); g.add(m);
     const pr = grp('prop' + i, at(cyl(.006, .006, .012, MAT.steel), 0, 0, 0));
-    for (const k of [0, 1]) pr.add(at(rbox(.115, .004, .022, .002, i % 2 ? MAT.shell : MAT.shell2), (k ? -1 : 1) * .06, 0, 0, (k ? -1 : 1) * .12));
+    const bl = grp('blades' + i); bl.visible = false; pr.add(bl);                // real blades (hidden: at 30 fps they strobe/look frozen)
+    for (const k of [0, 1]) bl.add(at(rbox(.115, .004, .022, .002, i % 2 ? MAT.shell : MAT.shell2), (k ? -1 : 1) * .06, 0, 0, (k ? -1 : 1) * .12));
+    // spinning-prop disc (Ziv approved 2026-11-04): soft see-through disc + thin cyan rim, matte, no glow
+    const disc = grp('disc' + i,
+      at(mesh(new THREE.CircleGeometry(.12, 48), Object.assign(M(0xdfe6f0, .6), {transparent: true, opacity: .22, depthWrite: false, side: THREE.DoubleSide})), 0, 0, 0, -Math.PI / 2),
+      at(mesh(new THREE.RingGeometry(.112, .12, 48), Object.assign(M(0x2ee6ff, .5), {transparent: true, opacity: .55, side: THREE.DoubleSide})), 0, .001, 0, -Math.PI / 2));
+    disc.children.forEach(c => c.castShadow = false); pr.add(disc);
     pr.position.copy(m.position).add(new THREE.Vector3(0, .028, 0)); pr.rotation.y = i * .7; g.add(pr);
     // prop guard ring (keeps it generic, reads well on camera)
     g.add(at(mesh(new THREE.TorusGeometry(.13, .005, 6, 48), MAT.joint), m.position.x, m.position.y + .02, m.position.z, Math.PI / 2));
