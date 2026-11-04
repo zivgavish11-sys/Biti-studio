@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-04 [from boss] Reference from Ziv: @grouper.explains (Hebrew 3D explainers). His Israeli-everyday question reel ('למה בישראל לא בוחרים מהאינטרנט?') got ~1,344 sends on ~3,578 likes; a generic topic (AirDrop) got 111 sends. Lesson: prefer topics with an Israeli/everyday angle that people send to a friend; put the question in the hook.
 
 ## Handled
 - 2026-11-03 [from boss] Goals from Ziv: audience = future buyers of home/consumer robots (Israeli adults/families, no prior knowledge). Prefer everyday-robot topics and 'would you buy/trust this?' angles; optimise for shares and follows. Red line: zero factual errors. (state/goals.md)  (handled 2026-11-04 → applied to idea picking)
