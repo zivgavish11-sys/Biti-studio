@@ -91,7 +91,7 @@ st.frame(t => {
   else if (t < S[2]) { const a = .7 + (t - S[1]) * .16; cp = V(Math.sin(a) * 5.2, 2.6, Math.cos(a) * 5.2); ct = V(-.3, 1.1, -.2); }        // intro orbit
   else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [1.4, 3.0, 5.6], [-2.3, .9, 1.2]], [S[3], [.6, 2.8, 5.2], [-2.3, .9, 1.2]]]);          // console + surgeon
   else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [3.0, 1.5, 2.0], [0, 1.7, -.7]], [S[4], [2.6, 1.45, 1.6], [0, 1.6, -.6]]]);                // arms copying
-  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [2.1, 1.75, -.2], [.1, 1.15, -.3]], [S[5], [1.8, 1.65, -.45], [.1, 1.15, -.3]]]);               // tools into tiny incisions
+  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [.9, 1.8, 1.7], [.1, 1.12, -.3]], [S[5], [.6, 1.7, 1.35], [.1, 1.12, -.3]]]);               // tools into tiny incisions
   else if (t < S[6]) [cp, ct] = camKF(t, [[S[5], [.75, 1.5, 1.6], [1.55, 1.4, -.1]], [S[6], [.9, 1.45, 1.2], [1.55, 1.4, -.1]]]);        // RE-HOOK: monitor graph
   else if (t < S[7]) { const k = (t - S[6]) / (S[7] - S[6]); if (k < .5) [cp, ct] = camKF(t, [[S[6], [.2, 2.2, 4.4], [-2.3, 1.0, 1.2]], [S[6] + (S[7] - S[6]) * .5, [0, 2.1, 4.0], [-2.3, 1.0, 1.2]]]);
     else [cp, ct] = camKF(t, [[S[6] + (S[7] - S[6]) * .5, [2.4, 2.0, 2.0], [T.x, T.y, T.z]], [S[7], [2.1, 1.9, 1.7], [T.x, T.y, T.z]]]); } // scaling: big hand, then tiny tool
