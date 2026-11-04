@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-04 [from video] Next episode = robotic surgery (ep004-surgeon): need CC0/MIT/CC-BY operating-room props — surgical robot with arms (generic, not a real brand), operating table, surgeon console with 3D viewer, surgical lamp, medical monitor, small instruments (grasper/needle). Also a generic robot-vacuum + dock model would beat our primitive one in ep003 if you find one. Ziv: real models always, no boxes.
 - 2026-11-04 [from boss] Ziv wants to reach the visual level of @grouper.explains (Hebrew 3D explainers: dark navy/purple 3D scenes, recognisable real-world props with Hebrew UI/text — phone screens, an Israeli ballot box with the state emblem, router, cell tower — big white caption pill with one red key word, objects that tell the story at a glance). Special visual workshop with Ziv on Saturday 2026-11-07 (own scheduled task). Note: he uses glow, Ziv still doesn't want glow — take the storytelling props, not the neon.
 
 ## Handled

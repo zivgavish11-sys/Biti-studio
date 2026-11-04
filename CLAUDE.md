@@ -78,6 +78,9 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 2. Copy `episodes/_template/` → design the episode in `index.html` (see "Visual rules"). Reference episode: `episodes/ep002-walk/` (classic look; ep001-car is standalone, old neon style).
 3. **Models:** search GitHub (web search, then `git clone --depth 1` of public repos or raw.githubusercontent.com files) for free models that fit the topic.
    Only CC0 / MIT / CC-BY (credit it in the caption). No replicas of real branded products (no "Optimus", no real car brands). Max ~10 minutes; otherwise build it from primitives.
+   **First check the library (Ziv, 2026-11-04 — "we aim for the best"):** every build, read `state/media-library.md` + `ls engine/assets/models/*` for new fitting models
+   and use them (`st.prop('home/...')` etc.) — never boxes/primitives where a real model exists (furniture, people, props). Recolour pastels to the brand palette.
+   If nothing fits, write a request to the media agent's inbox (`state/inbox/media.md`) with exactly what the episode needs, and use the best available meanwhile.
    Save good finds under `engine/assets/models/<category>/` and log them in `engine/assets/models/CREDITS.md` so the library grows.
 4. Preview: `python3 tools/render.py frames episodes/epNNN-slug 0,<mid scene 2>,<mid scene 3>,<...>` → make a contact sheet → **send 4 frames to Ziv for approval**. Fix what he asks.
 5. Full build: `tools/build.sh episodes/epNNN-slug` (≈30–45 min, run in background). Outputs `out/<slug>_full.mp4` (publish, ~20 MB) and `out/<slug>_light.mp4` (phone preview, ~3 MB — Ziv 2026-11-03: must open fast on his phone).

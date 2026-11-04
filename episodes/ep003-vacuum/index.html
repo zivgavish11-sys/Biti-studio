@@ -35,14 +35,30 @@ wall(-4, -6, 4, -6); wall(4, -6, 4, 6); wall(4, 6, -4, 6); wall(-4, 6, -4, -6); 
 wall(-4, 0, .5, 0); wall(1.7, 0, 4, 0);                                               // living | rest (door .5..1.7)
 wall(0, 0, 0, 2); wall(0, 3.2, 0, 6);                                                 // bedroom | kitchen (door z 2..3.2)
 const FURN = [];
-function box(x, z, w, d, h, c) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), M(c)); b.position.set(x, h / 2, z); b.castShadow = b.receiveShadow = true; scene.add(b); FURN.push(b);
-  SEG.push([x - w / 2, z - d / 2, x + w / 2, z - d / 2], [x + w / 2, z - d / 2, x + w / 2, z + d / 2], [x + w / 2, z + d / 2, x - w / 2, z + d / 2], [x - w / 2, z + d / 2, x - w / 2, z - d / 2]); return b; }
-box(-2.6, -3.2, 1.0, 2.6, .8, 0x5a4b8a);   // sofa
-box(.6, -3.2, 1.4, .9, .45, 0x6b5a4a);     // coffee table
-box(3.6, -3.4, .5, 2.2, 1.1, 0x2b3150);    // tv unit
-box(-2.4, 4.3, 2.2, 2.6, .6, 0x3d5a8a);    // bed
-box(3.55, 3.6, .8, 4.2, 1.0, 0x7a6a5a);    // kitchen counter
-box(1.6, 4.4, 1.0, 1.0, .75, 0x6b5a4a);    // kitchen table
+// footprints = lidar segments only (invisible); the visible furniture is real models (Kenney Furniture Kit, CC0)
+function box(x, z, w, d) { SEG.push([x - w / 2, z - d / 2, x + w / 2, z - d / 2], [x + w / 2, z - d / 2, x + w / 2, z + d / 2], [x + w / 2, z + d / 2, x - w / 2, z + d / 2], [x - w / 2, z + d / 2, x - w / 2, z - d / 2]); }
+// recolour Kenney's salmon/pink fabric to our brand palette (navy world); wood/white keep their tint
+const hsl = {};
+const P = (n, {col, ...o} = {}) => st.prop('home/' + n, o).then(m => { FURN.push(m.object);
+  if (col) m.object.traverse(q => { if (q.isMesh) { q.material.color.getHSL(hsl); if ((hsl.h < .06 || hsl.h > .9) && hsl.s > .25) q.material.color.set(col); } }); return m; });
+// living room
+box(-2.6, -3.2, 1.0, 2.6); await P('loungeSofaLong', {col: 0x4a3f86, fit: [1.0, 2.6], x: -2.6, z: -3.2, ry: Math.PI / 2});
+box(.6, -3.2, 1.4, .9);    await P('tableCoffee', {fit: [1.4, .9], x: .6, z: -3.2});
+box(3.6, -3.4, .5, 2.2);   await P('cabinetTelevision', {fit: [.5, 2.2], x: 3.6, z: -3.4, ry: -Math.PI / 2});
+                           await P('televisionModern', {h: .75, x: 3.65, y: .55, z: -3.4, ry: -Math.PI / 2});
+await P('rugRectangle', {col: 0x2c3a66, fit: [2.2, 3.0], x: -.8, z: -3.2, ry: Math.PI / 2});
+box(-3.5, -5.4, .5, .5);   await P('pottedPlant', {h: 1.1, x: -3.5, z: -5.4});
+box(-3.5, -1.0, .45, .45); await P('lampRoundFloor', {h: 1.5, x: -3.5, z: -1.0});
+// bedroom
+box(-2.4, 4.3, 2.2, 2.6);  await P('bedDouble', {col: 0x2f4f86, fit: [2.2, 2.6], x: -2.4, z: 4.3, ry: Math.PI});
+box(-3.6, 2.6, .5, .5);    await P('cabinetBedDrawerTable', {fit: [.5, .5], x: -3.6, z: 2.6, ry: Math.PI / 2});
+await P('rugRound', {col: 0x3a2f5e, fit: [1.6, 1.6], x: -1.6, z: 1.6});
+// kitchen
+box(3.55, 3.6, .8, 4.2);
+for (const [n, z] of [['kitchenFridge', 1.95], ['kitchenCabinet', 2.75], ['kitchenSink', 3.55], ['kitchenStove', 4.35], ['kitchenCabinet', 5.15]])
+  await P(n, {fit: [.8, .8], x: 3.55, z, ry: -Math.PI / 2});
+box(1.6, 4.4, 1.0, 1.0);   await P('tableRound', {fit: [1.0, 1.0], x: 1.6, z: 4.4});
+for (const [dx, dz, ry] of [[0, -.75, 0], [0, .75, Math.PI]]) await P('chairCushion', {col: 0x4a3f86, fit: [.45, .45], x: 1.6 + dx, z: 4.4 + dz, ry});
 // dock
 const dock = new THREE.Mesh(new THREE.BoxGeometry(.9, .35, .25), M(0x2b3150)); dock.position.set(3.2, .18, -5.8); scene.add(dock);
 // room floor colours (map reveal)
