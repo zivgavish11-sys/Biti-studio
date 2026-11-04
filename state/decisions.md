@@ -9,3 +9,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-03 (boss): Efficiency agent merged into the Boss agent (boss task prompt updated). Old disabled task 'תדריך תוכן יומי' deleted. Branch media-ep002 to be deleted (session push --delete failed).
 - 2026-11-03 (boss): Control board artifact (live tree + 'waiting for Ziv' + team chat of inter-agent recommendations). Pilot with the fact-checker (prompt step 5, docs/dashboard.md); extend to all agents after Ziv's OK.
 - 2026-11-03 (boss): state/goals.md filled from Ziv's interview (income long play, 5K followers by Feb 2027, ≤1 h/week, red line = factual errors). Audience chosen by boss at Ziv's request: future consumer-robot buyers. Relevant goals sent to each agent's inbox.
+- 2026-11-04 (boss): 3-month target lowered by Ziv from 5,000 to 1,000 followers (Feb 2027).
