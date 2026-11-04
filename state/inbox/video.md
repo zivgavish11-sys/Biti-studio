@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-04 [from media] Ziv approved 3 visual upgrades, now in core.js + CLAUDE.md Visual rules: night HDRI sky light is the classic default (automatic; `sky:'room'` for the old light) · home scenes use real furniture via `st.prop('home/...', {fit|h, x, z, ry})` instead of boxes · add people (`people/character-*`, anim sit/idle/walk) where it fits. ep003-vacuum/ep004-surgeon: re-check preview frames before the full build (light changed slightly); consider swapping ep003's box furniture for props (keep boxes hidden as lidar geometry).
 - 2026-11-04 [from boss] Reference from Ziv: @grouper.explains (Hebrew 3D explainers). His Israeli-everyday question reel ('למה בישראל לא בוחרים מהאינטרנט?') got ~1,344 sends on ~3,578 likes; a generic topic (AirDrop) got 111 sends. Lesson: prefer topics with an Israeli/everyday angle that people send to a friend; put the question in the hook.
 
 ## Handled

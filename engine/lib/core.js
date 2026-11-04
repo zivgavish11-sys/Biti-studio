@@ -8,6 +8,7 @@ import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
 
 export {THREE};
 export const W = 1080, H = 1920;
@@ -112,11 +113,16 @@ export async function studio(opts = {}) {
   const scene = new THREE.Scene(); scene.background = new THREE.Color(CLASSIC ? 0x0a0f22 : (opts.bg ?? 0x05061a));
   const fog = new THREE.FogExp2(CLASSIC ? 0x0c1228 : (opts.fogColor ?? 0x070a24), CLASSIC ? 0.010 : (opts.fog ?? 0.012)); scene.fog = fog;
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = CLASSIC ? 0.45 : (opts.env ?? 0.18);
+  // 2026-11-04 Ziv approved: real sky light (Poly Haven HDRI, CC0) in the classic look. opts.sky: 'night' (default) | 'sunset' | 'room' (old studio light)
+  const SKY = {night: 'moonless_golf_1k', sunset: 'venice_sunset_1k'}; const sky = CLASSIC ? (opts.sky ?? 'night') : 'room';
+  if (SKY[sky]) { const hdr = await new RGBELoader().loadAsync(`${ROOT}assets/hdri/${SKY[sky]}.hdr`); hdr.mapping = THREE.EquirectangularReflectionMapping;
+    scene.environment = pm.fromEquirectangular(hdr).texture; hdr.dispose(); scene.environmentIntensity = opts.env ?? 1.4; }
   const cam = new THREE.PerspectiveCamera(55, W / H, 0.1, 800);
   const composer = new EffectComposer(renderer); composer.addPass(new RenderPass(scene, cam));
   const bloom = new UnrealBloomPass(new THREE.Vector2(W / 2, H / 2), opts.bloom ?? 0.8, 0.5, opts.bloomThreshold ?? 0.55); composer.addPass(bloom); composer.addPass(new OutputPass());
-  scene.add(new THREE.AmbientLight(CLASSIC ? 0xb8c4ff : 0x7b7cff, CLASSIC ? 0.35 : (opts.ambient ?? 0.4)));
-  if (CLASSIC) { scene.add(new THREE.HemisphereLight(0xaab8ff, 0x0a0f22, 0.7)); const rim = new THREE.DirectionalLight(0x8fa2ff, 0.9); rim.position.set(15, 12, -25); scene.add(rim); }
+  const HDRI = !!SKY[sky];
+  scene.add(new THREE.AmbientLight(CLASSIC ? 0xb8c4ff : 0x7b7cff, CLASSIC ? (HDRI ? 0.15 : 0.35) : (opts.ambient ?? 0.4)));
+  if (CLASSIC) { scene.add(new THREE.HemisphereLight(0xaab8ff, 0x0a0f22, HDRI ? 0.35 : 0.7)); const rim = new THREE.DirectionalLight(0x8fa2ff, 0.9); rim.position.set(15, 12, -25); scene.add(rim); }
   const dl = new THREE.DirectionalLight(CLASSIC ? 0xfff4e6 : 0xc8d0ff, CLASSIC ? 1.9 : (opts.sun ?? 0.8)); dl.position.set(-10, 30, 10); scene.add(dl); scene.add(dl.target);
   if (CLASSIC) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; dl.castShadow = true; dl.shadow.mapSize.set(2048, 2048);
     const sc = dl.shadow.camera; sc.left = sc.bottom = -30; sc.right = sc.top = 30; sc.near = 1; sc.far = 120; dl.shadow.bias = -0.0005; dl.shadow.radius = 4; }
@@ -139,6 +145,20 @@ export async function studio(opts = {}) {
       if (anim) inst.schedule(anim, 0, 0);
     }
     return inst;
+  }
+  /** prop(name, {h|fit, x, y, z, ry, tint, anim}) — place a library model (home/*, people/*, city/* ...) sized in metres.
+   *  h: target height (m) · fit: [w, d] footprint to fit into · tint: colour multiplier (default .62 for home/ and people/ so Kenney pastels sit in our dark world; 1 = original).
+   *  2026-11-04 Ziv approved: real furniture instead of boxes in home scenes + people in scenes. */
+  async function prop(name, {h = null, fit = null, x = 0, y = 0, z = 0, ry = 0, tint = null, anim = null, scale = 1} = {}) {
+    const m = await model(name, {anim}); const o = m.object; o.rotation.y = ry; o.scale.setScalar(scale);
+    const size = () => new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3());
+    if (fit) { const sz = size(); o.scale.multiplyScalar(Math.min(fit[0] / sz.x, fit[1] / sz.z)); }
+    if (h) { o.scale.multiplyScalar(h / size().y); }
+    const bb = new THREE.Box3().setFromObject(o); const c = bb.getCenter(new THREE.Vector3());
+    o.position.set(x + o.position.x - c.x, y + o.position.y - bb.min.y, z + o.position.z - c.z);
+    const k = tint ?? (/^(home|people)\//.test(name) ? 0.62 : 1);
+    o.traverse(q => { if (q.isMesh) { q.castShadow = q.receiveShadow = true; if (k !== 1) { q.material = q.material.clone(); q.material.color.multiplyScalar(k); } } });
+    scene.add(o); return m;
   }
   function updateMixers(t) {
     for (const m of mixers) {
@@ -204,7 +224,7 @@ export async function studio(opts = {}) {
   let frameFn = () => {};
   const api = {
     THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
-    model, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
+    model, prop, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
