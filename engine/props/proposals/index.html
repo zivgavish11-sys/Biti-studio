@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro proposals 2026-11-04 (before = t<20, after = t>=20). P1: Hebrew UI on screens. P2: x-ray view of an everyday robot.
+import {studio, THREE, V, camKF} from '/engine/lib/core.js';
+const st = await studio({hook: [], scenes: (A, B, E) => [0, 45, E]});
+const {scene} = st;
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({color: 0x141b33, roughness: .9}));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+await st.prop('medical/operating-table', {h: .86, ry: Math.PI / 2});
+await st.prop('medical/draped-patient', {h: .27, y: .86, ry: Math.PI / 2});
+await st.prop('medical/surgical-robot', {z: -1.0});
+await st.prop('medical/surgical-lamp', {y: 1.95, x: .3, z: .6});
+const mon = await st.prop('medical/medical-monitor', {x: 1.55, z: -.1, ry: .34});
+// P1: a vital-signs screen with Hebrew UI (matte: emissive low, no bloom)
+const cv = document.createElement('canvas'); cv.width = 1080; cv.height = 680; const c = cv.getContext('2d');
+function drawScreen(t) {
+  c.fillStyle = '#071322'; c.fillRect(0, 0, 1080, 680); c.direction = 'rtl'; c.textAlign = 'right';
+  c.fillStyle = '#9fb3d9'; c.font = '700 54px Rubik'; c.fillText('ניתוח רובוטי · חדר 3', 1040, 80);
+  const rows = [['דופק', '72', '#5fe39a'], ['חמצן', '98%', '#2ee6ff'], ['לחץ דם', '120/80', '#ffa53a']];
+  rows.forEach(([k, v, col], i) => { const y = 200 + i * 160; c.fillStyle = '#9fb3d9'; c.font = '600 46px Rubik'; c.fillText(k, 1040, y);
+    c.fillStyle = col; c.font = '700 96px Rubik'; c.fillText(v, 1040, y + 92); });
+  c.strokeStyle = '#5fe39a'; c.lineWidth = 6; c.beginPath();
+  for (let x = 40; x < 620; x += 4) { const ph = ((x + t * 260) % 230) / 230; const y = 260 + (ph > .45 && ph < .5 ? -120 : ph > .5 && ph < .55 ? 70 : Math.sin(ph * 30) * 4); x === 40 ? c.moveTo(x, y) : c.lineTo(x, y); }
+  c.stroke();
+}
+const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+const scr = mon.object.getObjectByName('screen'); const blank = scr.material;
+const ui = new THREE.MeshStandardMaterial({map: tex, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: .55, roughness: .4});
+// P2: x-ray robot vacuum (far right)
+const VX = 30;
+const vac = await st.prop('home/robotVacuum', {h: .12, x: VX, z: 0, tint: 1});
+const xr = [];
+vac.object.traverse(m => { if (m.isMesh && /shell|bumper/.test(m.name + m.parent?.name)) { const n = m.material.clone(); n.transparent = true; n.opacity = .28; n.color.set(0x8ea2c8); n.depthWrite = false; xr.push([m, m.material, n]); } });
+const grid = new THREE.GridHelper(4, 40, 0x2a3a7a, 0x1a2450); grid.position.set(VX, .002, 0); scene.add(grid);
+st.frame(t => {
+  const after = t >= 20, u = t % 20;
+  drawScreen(u); tex.needsUpdate = true; scr.material = after ? ui : blank;
+  xr.forEach(([m, a, b]) => { m.material = after ? b : a; });
+  const lid = vac.object.getObjectByName('lidar'); if (lid) lid.rotation.y = u * 3;
+  let cp, ct;
+  if (u < 4) [cp, ct] = camKF(u, [[0, [2.5, 1.7, 2.9], [.9, 1.25, 0]], [4, [2.8, 1.75, 2.7], [.9, 1.25, 0]]]);
+  else [cp, ct] = camKF(u, [[4, [VX + .38, .55, .62], [VX, .02, 0]], [8, [VX + .48, .58, .52], [VX, .02, 0]]]);
+  return {cp, ct};
+});
+st.ready();
+</script></body></html>

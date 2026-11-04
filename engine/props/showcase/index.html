@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Library showcase (Media pro): the in-house operating-room kit + robot vacuum in the classic look. Not an episode.
+// t 0–4: OR wide · 4–8: arms close-up · 8–12: surgeon console · 12–16: robot vacuum in a living room
+import {studio, THREE, COL, V, camKF} from '/engine/lib/core.js';
+const st = await studio({hook: [], scenes: (A, B, E) => [0, 4, 8, 12, 16, E]});
+const {scene} = st;
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({color: 0x141b33, roughness: .9}));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+// OR at origin
+await st.prop('medical/operating-table', {h: .86, ry: Math.PI / 2});
+await st.prop('medical/draped-patient', {h: .27, y: .86, ry: Math.PI / 2});
+const robot = await st.prop('medical/surgical-robot', {z: -1.0});
+await st.prop('medical/surgical-lamp', {y: 1.95, x: .3, z: .6});
+await st.prop('medical/medical-monitor', {x: 1.7, z: -.6, ry: -.6});
+const cons = await st.prop('medical/surgeon-console', {x: -2.6, z: 1.6, ry: Math.PI * .75});
+await st.prop('people/character-male-b', {h: 1.2, x: -2.15, z: 1.15, ry: -Math.PI / 4, anim: 'sit'});
+// living room far away
+const LX = 30;
+await st.prop('home/rugRectangle', {fit: [3, 2], x: LX, z: 0});
+await st.prop('home/loungeSofa', {fit: [2.2, 1], x: LX, z: -1.6});
+await st.prop('home/tableCoffee', {fit: [1.1, .6], x: LX + .2, z: -.2});
+const vac = await st.prop('home/robotVacuum', {h: .12, x: LX - .9, z: .7, tint: 1});
+await st.prop('home/robotVacuumDock', {h: .42, x: LX + 1.6, z: -1.7, tint: 1});
+// space corner (Quaternius CC0)
+const SX = -30;
+await st.prop('space/Rover_1', {h: 1.4, x: SX, z: 0, ry: .6});
+await st.prop('space/SolarPanel_Ground', {h: 1.2, x: SX + 2.6, z: -1.5, ry: -.4});
+await st.prop('space/SolarPanel_Structure', {h: 2.2, x: SX - 2.8, z: -2.2, ry: .3});
+await st.prop('home/phone', {h: .15, x: LX + .2, y: .42, z: -.2, ry: .4});
+const arms = [0, 1, 2, 3].map(i => robot.object.getObjectByName('arm' + i));
+st.frame(t => {
+  arms.forEach((a, i) => { if (a) a.rotation.y = Math.sin(t * 1.3 + i) * .08; });
+  const lid = vac.object.getObjectByName('lidar'); if (lid) lid.rotation.y = t * 8;
+  vac.object.position.x = LX - .9 + Math.sin(t * .6) * .4;
+  let cp, ct;
+  if (t < 4) [cp, ct] = camKF(t, [[0, [3.6, 2.8, 4.2], [0, 1.1, -.3]], [4, [4.2, 3.0, 2.6], [0, 1.1, -.3]]]);
+  else if (t < 8) [cp, ct] = camKF(t, [[4, [1.6, 1.7, 1.6], [0, 1.25, -.3]], [8, [1.9, 1.9, 1.2], [0, 1.25, -.3]]]);
+  else if (t < 12) [cp, ct] = camKF(t, [[8, [-4.6, 2.0, -.2], [-2.4, 1.0, 1.4]], [12, [-4.9, 2.1, .3], [-2.4, 1.0, 1.4]]]);
+  else if (t >= 16) [cp, ct] = camKF(t, [[16, [SX + 3.5, 2.2, 5], [SX, .8, -.6]], [20, [SX + 4.2, 2.4, 4.2], [SX, .8, -.6]]]);
+  else [cp, ct] = camKF(t, [[12, [LX + 1.2, 1.3, 2.4], [LX - .6, .1, .3]], [16, [LX + 1.5, 1.4, 2.1], [LX - .5, .1, .3]]]);
+  return {cp, ct};
+});
+st.ready();
+</script></body></html>
