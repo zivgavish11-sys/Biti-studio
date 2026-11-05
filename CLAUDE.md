@@ -47,6 +47,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - 2026-11-04 (Ziv): when you can't find a fitting image/model for a story, ask the media agent for help (line in `state/inbox/media.md`) — it finds what's needed on GitHub. Applies to the news and video agents.
 - 2026-11-04 (Ziv): the swipe hint arrow pointed the wrong way — now `החליקו →` in the templates; keep it.
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
+- 2026-11-05 (Ziv, on news 20261105): "start improving" — the cover art and the city buildings look bad; story art must reflect the text literally (Xiaomi factory slide didn't). Stop reusing the same props every day: vary them — more robot types, more building types, more autonomous machines, everything. Never the same cover twice in a row. Pull new models from the media library / ask the media agent.
 
 ## The daily flow
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
