@@ -1,0 +1,125 @@
+{
+ "date_label": "חדשות היום · 5.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "רובוטים של שיאומי עבדו משמרת שלמה",
+    "הרובוט הביתי של אפל נדחה",
+    "וויימו נפרדת מאובר בשתי ערים"
+   ],
+   "scene": {
+    "anim": "Wave",
+    "color": "cyan",
+    "decor": "city",
+    "target": [
+     -1.1,
+     1.3,
+     0
+    ]
+   }
+  },
+  {
+   "type": "story",
+   "stat": "8 שעות",
+   "statSub": "משמרת שלמה במפעל, לפי שיאומי",
+   "statColor": "cyan",
+   "title": "רובוטים דמויי אדם<br>עבדו <span class=\"pill\">משמרת</span> שלמה",
+   "text": "שיאומי פרסמה סרטון של רובוטים דמויי אדם שממיינים חלקי רכב במפעל המכוניות החשמליות שלה במשך 8 שעות. לפי החברה הם עבדו לבד ותיקנו לבד את הטעויות שלהם.",
+   "source": "Xiaomi, Electrek, Interesting Engineering",
+   "scene": {
+    "robot": false,
+    "props": [
+     "factory"
+    ],
+    "color": "cyan",
+    "anim": "Idle",
+    "cam": [
+     3.2,
+     3.0,
+     10.2
+    ],
+    "target": [
+     0,
+     1.0,
+     -1.6
+    ],
+    "shift": 0.02
+   }
+  },
+  {
+   "type": "story",
+   "stat": "~$1,000",
+   "statSub": "המחיר המדווח",
+   "statColor": "pink",
+   "title": "הרובוט הביתי של אפל<br><span class=\"pill\">נדחה</span>",
+   "text": "לפי The Information, אפל דחתה ל־2027 ואולי ל־2028 רובוט שולחני לבית: מסך שיושב על זרוע רובוטית ומסתובב אחריכם בשיחות וידאו. לפי הדיווח, התוכנה עוד לא מוכנה.",
+   "source": "The Information, 9to5Mac, Macworld",
+   "scene": {
+    "robot": false,
+    "props": [
+     "homehub"
+    ],
+    "color": "pink",
+    "cam": [
+     3.9,
+     2.1,
+     4.9
+    ],
+    "target": [
+     0.4,
+     1.15,
+     -2.0
+    ],
+    "shift": -0.04
+   }
+  },
+  {
+   "type": "story",
+   "stat": "2028",
+   "statSub": "וויימו עם אפליקציה משלה באוסטין ואטלנטה",
+   "statColor": "purple",
+   "title": "וויימו <span class=\"pill\">נפרדת</span><br>מאובר בשתי ערים",
+   "text": "לפי בלומברג, מינואר 2028 וויימו תפסיק את הבלעדיות עם אובר באוסטין ובאטלנטה, ותציע נסיעות ברובוטקסי גם באפליקציה שלה. אובר אמרה שתמשיך להציע את הרכבים שלה.",
+   "source": "Bloomberg, TechCrunch",
+   "scene": {
+    "robot": false,
+    "props": [
+     "robotaxi"
+    ],
+    "color": "purple",
+    "cam": [
+     4.6,
+     2.2,
+     8.2
+    ],
+    "target": [
+     0,
+     0.9,
+     -1
+    ],
+    "shift": 0.08,
+    "decor": "city",
+    "sun": [
+     14,
+     2.4,
+     -38
+    ]
+   }
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "anim": "ThumbsUp",
+    "color": "pink",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
+  }
+ ]
+}
