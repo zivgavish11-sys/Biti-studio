@@ -1,0 +1,140 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP006-drone — איך רחפן נשאר יציב באוויר (IMU + 4 motors, hundreds of corrections/s). Classic look, library models (drone/quadcopter, outdoor/*, people/*, home/*).
+// Phrases: 0 אם המחשב | 1 נופל כמו אבן | 2 אני ביטי | 3 והיום | 4 איך רחפן | 5 ארבעה מנועים | 6 חיישן קטן | 7 כל הטיה | 8 רוח דוחפת | 9 החיישן מרגיש
+//  10 מגביר מנוע | 11 ומחליש | 12 אבל הנה | 13 מאות פעמים | 14 ריחוף רגוע | 15 מאבק | 16 מלצר | 17 מגש | 18 בחתונה | 19 אז רחפן | 20 מתקן | 21 מהר יותר | 22-23 follow
+import {studio, THREE, COL, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 6,
+  hook: ['איך רחפן', 'נשאר <span class="pill">יציב</span> באוויר?'],
+  // S: 0 hook + fall | 1 intro orbit park | 2 x-ray motors + IMU | 3 wind gust + correction | 4 RE-HOOK hundreds/s | 5 calm = fight | 6 waiter | 7 payoff wide | 8 follow
+  scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[8] - .25, A[12] - .25, A[14] - .25, A[16] - .25, A[19] - .25, A[22] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[0] + .3, b: S[1], y: 330, c: 'pnk', h: '⚠️ המחשב נכבה ← הרחפן נופל'},
+    {a: A[5], b: A[6] - .15, y: 330, c: '', h: '⚙️ ארבעה מנועים'},
+    {a: A[6], b: S[3], y: 330, c: 'org', h: '🧭 חיישן שמרגיש כל הטיה'},
+    {a: A[8] + .1, b: A[10] - .15, y: 330, c: 'pnk', h: '💨 רוח ← הטיה'},
+    {a: A[10], b: S[4], y: 330, c: '', h: '⬆️ מנוע אחד חזק יותר<small>⬇️ ומנוע אחר חלש יותר</small>'},
+    {a: A[13], b: S[5], y: 330, c: 'pnk', h: '🔁 מאות תיקונים בכל שנייה'},
+    {a: A[15], b: S[6], y: 330, c: '', h: '🤹 ריחוף רגוע = מאבק בלי הפסקה'},
+    {a: A[16] + .1, b: S[7], y: 330, c: 'org', h: '🍽️ כמו מלצר עם מגש מלא'},
+    {a: A[20], b: S[8], y: 330, c: 'grn', h: '✅ מתקן מהר יותר מהעין'},
+  ],
+});
+const {scene, A, B, S, END} = st;
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
+
+// ================= PARK (main set, origin) =================
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), M(0x17263a, {roughness: .95})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const path = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 40), M(0x2a3142, {roughness: .9})); path.rotation.x = -Math.PI / 2; path.position.set(2.5, .01, 0); path.receiveShadow = true; scene.add(path);
+const P = (n, o) => st.prop('outdoor/' + n, o);
+await P('CommonTree_1', {h: 5, x: -4, z: -5}); await P('CommonTree_2', {h: 4.5, x: 5.5, z: -6}); await P('CommonTree_3', {h: 4, x: -6.5, z: 1});
+await P('PalmTree_1', {h: 6.5, x: 7.5, z: -2}); await P('PalmTree_3', {h: 6, x: -2, z: -9});
+await P('Bush_1', {h: .9, x: -2.6, z: -2.4}); await P('Bush_2', {h: .8, x: 4.2, z: -1.5}); await P('Flowers', {h: .4, x: -1.4, z: -1.8});
+await P('Bench_1', {h: .85, x: 5.6, z: -1.2, ry: -Math.PI / 2}); await P('Streetlight_Single', {h: 4, x: 3.8, z: -3.5});
+await P('Rock_1', {h: .5, x: -3, z: 1.5});
+for (let i = 0; i < 6; i++) await P('Grass', {h: .3, x: -5 + i * 1.7, z: -3.2 + (i % 2) * 1.8});
+await P('4Story', {h: 13, x: -9, z: -18}); await P('3Story_Balcony', {h: 10, x: 1, z: -17}); await P('2Story_Balcony', {h: 7, x: 10, z: -16});
+await st.prop('people/character-female-b', {h: 1.6, x: -3.4, z: -2.6, ry: .9, anim: 'idle'});
+await st.prop('people/character-male-d', {h: 1.1, x: 5.65, z: -1.2, ry: -Math.PI / 2, anim: 'sit', y: .1});
+await st.prop('people/character-female-d', {h: 1.15, x: -1.6, z: .2, ry: .6, anim: 'idle'});   // child watching the drone
+const DP = V(.5, 2.2, 2.5);
+const dr = await st.prop('drone/quadcopter', {x: DP.x, y: DP.y, z: DP.z, scale: 3});
+const D = dr.object;
+const nm = (o, n) => [0, 1, 2, 3].map(i => o.getObjectByName(n + i));
+const props = nm(D, 'prop'), discs = nm(D, 'disc'), blades = nm(D, 'blades'), motors = nm(D, 'motor');
+
+// wind streaks (matte, see-through)
+const windM = M(0xbfe6ff, {transparent: true, opacity: 0, depthWrite: false});
+const streaks = Array.from({length: 14}, (_, i) => { const m = new THREE.Mesh(new THREE.BoxGeometry(1.6 + (i % 3) * .5, .025, .025), windM); m.userData = {y: 1.4 + (i * .37) % 1.8, z: 1.4 + (i * .53) % 2.2, ph: i * .41}; scene.add(m); return m; });
+
+// ================= X-RAY drone (far set, x=40) =================
+const XX = 40;
+const xpad = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, .04, 64), M(0x1d2440)); xpad.position.set(XX, .02, 0); xpad.receiveShadow = true; scene.add(xpad);
+const xring = new THREE.Mesh(new THREE.TorusGeometry(2.4, .03, 8, 96), M(COL.cyan, {roughness: .5})); xring.rotation.x = Math.PI / 2; xring.position.set(XX, .05, 0); scene.add(xring);
+const dx = await st.prop('drone/quadcopter', {x: XX, y: 1.1, z: 0, scale: 4});
+const X = dx.object;
+X.traverse(q => { if (q.isMesh && (q.name === 'shell' || q.name === 'shellTop')) { q.material = q.material.clone(); q.material.transparent = true; q.material.opacity = .18; q.material.depthWrite = false; } });
+const xprops = nm(X, 'prop'), xmotors = nm(X, 'motor'); const imu = X.getObjectByName('imu');
+
+// ================= WEDDING (far set, x=-40) =================
+const WX = -40;
+const hall = new THREE.Mesh(new THREE.PlaneGeometry(14, 10), M(0x2a2140, {roughness: .85})); hall.rotation.x = -Math.PI / 2; hall.position.set(WX, .01, -1); hall.receiveShadow = true; scene.add(hall);
+for (const [x, z] of [[WX - 2.6, -1.6], [WX + 2.4, -2.4]]) {
+  await st.prop('home/tableRound', {fit: [1.4, 1.4], x, z}).catch(() => st.prop('home/table', {fit: [1.4, 1.0], x, z}));
+  const cloth = new THREE.Mesh(new THREE.CylinderGeometry(.78, .82, .05, 40), M(0xf2ecf7, {roughness: .9})); cloth.position.set(x, .76, z); cloth.castShadow = cloth.receiveShadow = true; scene.add(cloth);
+}
+await st.prop('people/character-female-c', {h: 1.15, x: WX - 3.4, z: -1.3, ry: 1.2, anim: 'sit'});
+await st.prop('people/character-male-e', {h: 1.15, x: WX - 1.8, z: -1.9, ry: -1.4, anim: 'sit'});
+await st.prop('people/character-female-e', {h: 1.15, x: WX + 2.4, z: -1.5, ry: Math.PI, anim: 'sit'});
+await st.prop('people/character-male-f', {h: 1.6, x: WX + 3.6, z: -3.4, ry: -.6, anim: 'idle'});
+// string of party bulbs (matte warm spheres, no glow)
+const bulbM = M(0xffd27a, {emissive: 0xffb347, emissiveIntensity: .35, roughness: .6});
+for (let i = 0; i < 16; i++) { const x = WX - 6 + i * .8; const b = new THREE.Mesh(new THREE.SphereGeometry(.07, 12, 8), bulbM); b.position.set(x, 3.0 - Math.sin(i / 15 * Math.PI) * .5, -4.2); scene.add(b); }
+const waiter = await st.prop('people/character-male-a', {h: 1.6, x: WX, z: 0, ry: .4, anim: 'holding-both'});
+const tray = await st.prop('home/trayGlasses', {x: WX + .05, y: .72, z: .5, tint: 1, scale: 1.3});
+
+// ================= ANIMATION =================
+const FALL0 = A[1] - .05;
+st.frame(t => {
+  // --- park drone ---
+  const falling = t >= FALL0 && t < S[1];
+  const gust = t > A[8] && t < S[4] ? sm(A[8], A[8] + .5, t) : 0;
+  props.forEach((p, i) => p && (p.rotation.y = (falling ? (FALL0 * 40) : t * 40) * (i % 2 ? -1 : 1)));
+  discs.forEach(d => d && (d.visible = !falling)); blades.forEach(b => b && (b.visible = falling));
+  let tilt = 0, roll = 0;
+  if (falling) {
+    const dt = t - FALL0; const y = Math.max(.25, DP.y - 4.9 * dt * dt);
+    D.position.set(DP.x + dt * .3, y, DP.z); D.rotation.set(y > .26 ? dt * 2.2 : .35, 0, y > .26 ? dt * 3.1 : .28);
+  } else {
+    // wind: tilt pushed, corrected back with a quick damped wobble; tiny jitter always (constant corrections)
+    const k = t - (A[8] + .1);
+    roll = t > A[8] + .1 && t < S[4] ? .32 * Math.exp(-Math.max(0, k - .6) * 1.6) * Math.cos(Math.max(0, k - .6) * 7) * sm(0, .6, k) : 0;
+    const jit = Math.sin(t * 23) * .012 + Math.sin(t * 37 + 1) * .008;
+    tilt = Math.sin(t * 1.9) * .04 + jit;
+    D.position.set(DP.x - roll * .9, DP.y + Math.sin(t * 1.7) * .06, DP.z);
+    D.rotation.set(tilt, 0, Math.sin(t * 2.3) * .04 + jit + roll);
+  }
+  windM.opacity = .35 * win(t, A[8], A[10] + .6, .3);
+  streaks.forEach(s => { const u = s.userData; s.position.set(6 - ((t * 9 + u.ph * 7) % 12), u.y, u.z); });
+  // --- x-ray drone ---
+  xprops.forEach((p, i) => p && (p.rotation.y = t * 40 * (i % 2 ? -1 : 1)));
+  X.rotation.z = Math.sin(t * 2.1) * .05; X.rotation.x = Math.sin(t * 1.6) * .04; X.position.y = 1.1 + Math.sin(t * 1.5) * .04;
+  if (imu) { const pulse = win(t, A[6], S[3], .3); imu.scale.setScalar(1 + pulse * (.15 + Math.sin(t * 8) * .08)); }
+  // --- wedding tray wobble (waiter keeps correcting) ---
+  tray.object.rotation.z = Math.sin(t * 2.1) * .04 + Math.sin(t * 6.3) * .012; tray.object.rotation.x = Math.sin(t * 1.6) * .03;
+  // re-hook colour shift
+  const pk = win(t, S[4], S[5], .3); scene.background.lerpColors(new THREE.Color(0x0a0f22), new THREE.Color(0x24164a), pk * .8); st.fog.color.copy(scene.background);
+
+  const Dw = D.position;
+  let cp, ct;
+  if (t < S[1]) { if (t < FALL0) [cp, ct] = camKF(t, [[0, [3.0, 3.0, 7.6], [.6, 2.3, 2.2]], [FALL0, [2.2, 3.0, 7.8], [.6, 2.2, 2.3]]]);
+    else [cp, ct] = camKF(t, [[FALL0, [2.2, 3.0, 7.8], [.6, 2.2, 2.3]], [FALL0 + .7, [2.0, 2.6, 7.4], [.7, .9, 2.3]], [S[1], [1.8, 2.4, 7.0], [.8, .6, 2.4]]]); }                       // hook, then follow the fall
+  else if (t < S[2]) { const a = .35 + (t - S[1]) * .14; cp = V(DP.x + Math.sin(a) * 6.5, 3.2, DP.z + Math.cos(a) * 6.5); ct = V(DP.x, 2.1, DP.z); } // intro orbit
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [XX + 4.6, 4.0, 5.2], [XX, .9, 0]], [A[6], [XX + 3.4, 3.8, 5.0], [XX, .9, 0]], [S[3], [XX + 2.4, 3.9, 4.6], [XX, 1.0, 0]]]); // x-ray
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [DP.x + .9, 2.8, DP.z + 4.6], [DP.x, 2.6, DP.z]], [S[4], [DP.x - .4, 2.6, DP.z + 4.0], [DP.x - .2, 2.6, DP.z]]]); // wind, front view (roll visible)
+  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [DP.x - 3.4, 2.4, DP.z + 3.4], [DP.x, 2.3, DP.z]], [S[5], [DP.x - 2.6, 2.3, DP.z + 3.0], [DP.x, 2.3, DP.z]]]); // RE-HOOK dolly-in
+  else if (t < S[6]) { const a = 1.9 + (t - S[5]) * .18; cp = V(XX + Math.sin(a) * 5.8, 3.0, Math.cos(a) * 5.8); ct = V(XX, .9, 0); }   // calm hover = fight (x-ray orbit)
+  else if (t < S[7]) [cp, ct] = camKF(t, [[S[6], [WX + 4.6, 2.6, 6.0], [WX - .4, 1.0, -.8]], [S[7], [WX + 2.8, 2.2, 5.0], [WX, 1.0, 0]]]); // waiter
+  else if (t < S[8]) { const a = .9 - (t - S[7]) * .1; cp = V(DP.x + Math.sin(a) * 7, 3.4, DP.z + Math.cos(a) * 7); ct = V(DP.x, 1.9, DP.z - .5); } // payoff wide
+  else [cp, ct] = camKF(t, [[S[8], [4.0, 3.0, 7.8], [.4, 2.0, 1.0]], [END, [3.0, 3.0, 7.6], [.6, 2.3, 2.2]]]);                                    // loop to frame 0
+  return {cp, ct, overlay: t2 => {
+    // motors (x-ray scene)
+    if (t2 > A[5] && t2 < A[6] + .4) xmotors.forEach((m, i) => { if (!m) return; const [x, y] = st.proj(m.getWorldPosition(new THREE.Vector3())); st.tag(x, y - 60, 'מנוע ' + (i + 1), '#2ee6ff', win(t2, A[5] + i * .12, A[6] + .4)); });
+    if (t2 > A[6] && t2 < S[3] && imu) { const [x, y] = st.proj(imu.getWorldPosition(new THREE.Vector3())); st.tag(x, Math.max(y - 90, 640), 'חיישן הטיה', '#ffa53a', win(t2, A[6], S[3])); }
+    // stronger / weaker motor during the correction
+    if (t2 > A[10] && t2 < S[4]) {
+      const ws = motors.filter(Boolean).map(m => ({m, p: D.worldToLocal(m.getWorldPosition(new THREE.Vector3()))}));
+      const lo = ws.reduce((a, b) => (b.p.x < a.p.x ? b : a)), hi = ws.reduce((a, b) => (b.p.x > a.p.x ? b : a));
+      const al = win(t2, A[10], S[4]);
+      const [x1, y1] = st.proj(lo.m.getWorldPosition(new THREE.Vector3())); st.tag(x1, Math.max(y1 - 80, 650), '⬆️ חזק', '#2ee6ff', al);
+      if (t2 > A[11]) { const [x2, y2] = st.proj(hi.m.getWorldPosition(new THREE.Vector3())); st.tag(x2, Math.max(y2 - 80, 650), '⬇️ חלש', '#ff5fd2', win(t2, A[11], S[4])); }
+    }
+    // re-hook counter: corrections ticking up
+    if (t2 > S[4] && t2 < S[5]) st.counter(540, 1130, Math.floor(Math.max(0, t2 - S[4]) * 500).toLocaleString('he-IL'), ' תיקונים', '#ff5fd2', win(t2, S[4] + .1, S[5]), 96);
+    if (t2 > S[6] + .4 && t2 < S[7]) { const [x, y] = st.proj(V(WX + .05, .95, .5)); st.tag(x, Math.max(y - 120, 650), 'מתקן כל הזמן', '#ffa53a', win(t2, S[6] + .4, S[7])); }
+  }};
+});
+st.ready();
+</script></body></html>
