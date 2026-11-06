@@ -7,7 +7,7 @@
 import {studio, THREE, COL, sm, win, camKF, V} from '/engine/lib/core.js';
 const st = await studio({
   episode: 6,
-  hook: ['איך רחפן', 'נשאר <span class="pill">יציב</span> באוויר?'],
+  hook: ['איך רחפן', '<span class="pill">לא נופל</span>?'],
   // S: 0 hook + fall | 1 intro orbit park | 2 x-ray motors + IMU | 3 wind gust + correction | 4 RE-HOOK hundreds/s | 5 calm = fight | 6 waiter | 7 payoff wide | 8 follow
   scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[8] - .25, A[12] - .25, A[14] - .25, A[16] - .25, A[19] - .25, A[22] - .25, END],
   chips: (A, B, S) => [
