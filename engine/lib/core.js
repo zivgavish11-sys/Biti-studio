@@ -38,10 +38,10 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#04050c
 canvas{position:absolute;inset:0;width:1080px;height:1920px}
 .ov{position:absolute;left:0;right:0;pointer-events:none}
 #vig{inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
-#brand{top:70px;display:flex;justify-content:center;align-items:center;gap:14px;direction:ltr;color:#fff;font:700 34px Rubik;opacity:.92;text-shadow:0 2px 12px #000}
+#brand{top:232px;display:flex;justify-content:center;align-items:center;gap:14px;direction:ltr;color:#fff;font:700 34px Rubik;opacity:.92;text-shadow:0 2px 12px #000}
 #brand img{width:58px;height:58px;border-radius:50%}
-#badge{position:absolute;top:150px;right:60px;padding:8px 22px;border-radius:30px;background:rgba(46,230,255,.16);border:2px solid #2ee6ff;color:#bff6ff;font:700 32px Rubik;direction:rtl;box-shadow:0 0 24px rgba(46,230,255,.35)}
-#hook{top:215px;text-align:center;color:#fff;font:700 94px/1.2 Rubik;text-shadow:0 6px 30px rgba(0,0,0,.95),0 0 3px #000;padding:0 40px}
+#badge{padding:4px 18px;margin-left:6px;border-radius:30px;background:rgba(46,230,255,.16);border:2px solid #2ee6ff;color:#bff6ff;font:700 28px Rubik;direction:rtl;box-shadow:0 0 24px rgba(46,230,255,.35)}
+#hook{top:322px;text-align:center;color:#fff;font:700 94px/1.2 Rubik;text-shadow:0 6px 30px rgba(0,0,0,.95),0 0 3px #000;padding:0 40px}
 .pill{background:#2ee6ff;color:#04121f;border-radius:20px;padding:0 20px;text-shadow:none;box-shadow:0 0 40px rgba(46,230,255,.7)}
 #cap{top:1290px;text-align:center;padding:0 60px;color:#fff;font:700 80px/1.3 Rubik;text-shadow:0 4px 18px rgba(0,0,0,.95),0 0 3px #000}
 #cap span{display:inline-block;margin:0 1px;padding:0 16px;border-radius:16px}  /* fixed padding: highlight never reflows the line (no caption shake) */
@@ -98,8 +98,7 @@ export async function studio(opts = {}) {
   const c = el('<canvas id="c" width="1080" height="1920"></canvas>'); body.appendChild(c);
   const o = el('<canvas id="o" width="1080" height="1920"></canvas>'); body.appendChild(o);
   body.appendChild(el('<div id="vig" class="ov"></div>'));
-  body.appendChild(el(`<div id="brand" class="ov"><img src="${ROOT}assets/logo.jpg"><span>Robotics Israel</span></div>`));
-  if (opts.episode) body.appendChild(el(`<div id="badge">פרק #${opts.episode}</div>`));
+  body.appendChild(el(`<div id="brand" class="ov"><img src="${ROOT}assets/logo.jpg"><span>Robotics Israel</span>${opts.episode ? `<span id="badge">פרק #${opts.episode}</span>` : ''}</div>`));
   const hook = el(`<div id="hook" class="ov">${(opts.hook || []).map(l => `<div>${l}</div>`).join('')}</div>`); body.appendChild(hook);
   const chipsEl = el('<div id="chips"></div>'); body.appendChild(chipsEl);
   const extra = el('<div id="extra"></div>'); body.appendChild(extra);

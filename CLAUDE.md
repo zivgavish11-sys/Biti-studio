@@ -150,7 +150,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - Frame 0 is already mid-action (camera moving, something happening). The re-hook moment gets a visual shift (color/scene change).
 - The last frame echoes the first frame's composition so the replay loops smoothly.
 - Captions must match the voice word for word. Captions are **calm**: no shake/jump/scale — only the active-word highlight changes and each line fades in (Ziv, 2026-11-03).
-- Episode badge "פרק #N" is automatic (pass `episode:` to studio()).
+- Episode badge "פרק #N" is automatic (pass `episode:` to studio()). Brand + badge sit in one row at y≈232 and the hook starts at y 322 — below Instagram's top bar (Ziv 2026-11-06: they were hidden under 'Reels/Friends' and the icons). Keep all overlays below y≈220.
 - **Sound** (Ziv 2026-11-04): voice + soft, quiet, pleasant background music only. **No sound effects** (no whooshes/beeps). build.sh no longer mixes sfx; music.py has no drums; music at volume 0.14 under the voice.
 - **Real sky light** (Ziv 2026-11-04): classic look lights scenes with a Poly Haven HDRI — default `sky:'night'` in studio(); `sky:'sunset'` for warm/hopeful endings; `sky:'room'` = old studio light. Automatic in core.js.
 - **Real props, not boxes** (Ziv 2026-11-04): home/indoor scenes use library models (`engine/assets/models/home/`, 140 Kenney furniture pieces) via `st.prop('home/loungeSofa', {fit:[w,d] | h, x, z, ry})`. Keep invisible boxes only as collision/lidar geometry. See `state/media-library.md`.
