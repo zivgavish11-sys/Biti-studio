@@ -14,6 +14,8 @@ Still to agree with Ziv in the first-run interview: auto-DM tool (or none), repl
 - 2026-11-04 Ziv's "New message" screen shows only "Group chat", no broadcast channel option → likely not a professional account. Asked him to check Settings → account type and switch to Creator (free, reversible). Waiting.
 - 2026-11-04 Ziv: pause the channel, video first. Woke the video agent (סוכן רילסים) for lab part 1. Resume channel setup + Q1 after the video.
 
+- 2026-11-06 Q1 asked again (lab part 1 is live, 4 comments: IG 2, TikTok 2 — text not readable via Metricool). Recommended: a screenshot of the lab post comments (IG + TikTok) once a week; ManyChat free plan as an option later. Waiting.
+
 ## Lab counter
 - Series baseline (2026-11-04): IG 7 + TikTok 13 = **20**. Next lab robot due at **45** combined, then 70, 95...
 
@@ -22,3 +24,4 @@ Still to agree with Ziv in the first-run interview: auto-DM tool (or none), repl
 - 2026-11-04 Account is already professional; still no 'Create broadcast channel' after app update. Ziv chose: vote via the video comments.
 - 2026-11-04 Ziv: "the end goal is more followers". Ready reply for "קהילה" commenters (no channel, asks to follow): "נכנסת למעבדה! 🔋 השם שלך יופיע על עמדת טעינה בחלק 2, תעקוב כדי לא לפספס 🤖". Ziv replies by hand in the first hour. Q1 (comments source: screenshots vs ManyChat) still open — ask after the video.
 - 2026-11-04 run 2 (19:40 Israel, scheduled): followers 20 (IG 7, TT 13) — next lab robot at 45. Today's 18:00 post = ep #4 vacuum (not the lab) → no 'קהילה' comments. TikTok: 0 comments on posts since 11-01. Lab part 1 not scheduled yet. Q1 (comments source) still open — ask after lab part 1 is posted, as Ziv asked. Quiet run.
+- 2026-11-06 run 3 (19:37 Israel): followers 23 (IG 6, TT 17; Metricool data up to 11-05) — next lab robot at 45. Lab part 1 (posted 11-04 20:01): IG 2 comments / 14 views, TikTok 2 comments / 193 views. Comment text/handles not reachable → asked Ziv for screenshots (Q1). Other posts since 11-04: 1 comment (ep #4 TikTok). No DMs data.
