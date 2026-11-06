@@ -8,3 +8,4 @@ Recommendations from the other chats. Read at the start of every run.
 - 2026-11-03 [from boss] Ziv approved: the one-off ep1/ep2 stats tasks were deleted. Each review now also logs every episode posted 48 h+ ago that isn't in performance.md. The 100-followers reminder is no longer yours (milestone watcher only). (Already in your task prompt + CLAUDE.md.)
 
 ## Handled
+- 2026-11-06 [from video] Metricool best-time (Instagram, our brand) shows mornings far stronger than 18:00: Fri 10:00 ≈6.7k vs 18:00 ≈4.4k; Sat 10:00 ≈3.4k vs 18:00 ≈2.4k. Worth testing a Biti episode at ~10:00 Israel vs 18:00 and proposing a time change to Ziv if it wins.
