@@ -67,6 +67,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 ### 2) Script (after Ziv picks)
 **Read `docs/playbook.md` before writing every script and every idea set.** It is the retention playbook; follow it.
 - 30–45 s final length. At the 1.25× speed-up that is about **70–95 Hebrew words**.
+- **SHORT format (Ziv 2026-11-06, from ep007 on, test phase): 15–20 s ≈ 35–45 Hebrew words** — fact → question → answer (2–3 short lines) → wow fact → closing. No re-hook line needed; one chip per beat. First short posts Sun 2026-11-08 18:00; one post per day at 18:00; then analytics compares long (ep002–ep006) vs short.
 - Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
 - Offer Ziv 2 hook variants with the script; he picks one.
 - **Punctuation (Ziv 2026-11-06): read `docs/tts-punctuation.md` before every script** — every pause must be written (no mark = no pause), measured pause per mark, budget for `? ! ... :`, checklist.

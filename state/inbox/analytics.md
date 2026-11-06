@@ -9,3 +9,4 @@ Recommendations from the other chats. Read at the start of every run.
 
 ## Handled
 - 2026-11-06 [from video] Metricool best-time (Instagram, our brand) shows mornings far stronger than 18:00: Fri 10:00 ≈6.7k vs 18:00 ≈4.4k; Sat 10:00 ≈3.4k vs 18:00 ≈2.4k. Worth testing a Biti episode at ~10:00 Israel vs 18:00 and proposing a time change to Ziv if it wins.
+- 2026-11-06 [from video] Short-format phase starts: ep007 = first short Biti (15–20 s), posts Sun 2026-11-08 18:00; ep006 (last long, 30 s, new fact→question opening, no 'אני ביטי') posts Sat 2026-11-07 18:00. Please compare long (ep002–ep006) vs shorts once 2–3 shorts are out (3s-hold, avg % watched, sends).
