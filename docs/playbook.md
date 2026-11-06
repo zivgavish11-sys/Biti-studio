@@ -5,7 +5,7 @@ Confirmed by the platforms themselves: Instagram ranks by **watch time, likes pe
 
 ## 1. The first 2 seconds decide everything
 People decide to scroll in ~1.5 s. A slow opener ("Hi, I'm…", logo, calm establishing shot) is the #1 retention killer.
-- **Open with the hook sentence, not the greeting.** Structure: `<hook line, ≤2 s>` → `אני ביטי, והיום אני אלמד אתכם <נושא>.` (greeting moves to second place, shortened).
+- **Open with the hook sentence, not the greeting.** Structure (Ziv 2026-11-06): `<surprising fact, ≤2 s>` → `<curiosity question about it, e.g. אז איך זה עובד?>` → body. No Biti greeting any more — the question keeps people watching.
 - **Three layers at once, all saying the same thing:** spoken hook + big hook title on screen from frame 0 (works on mute — most feed views start muted) + motion already happening (mid-action, camera moving).
 - **Hook formulas (Hebrew)** — pick one per episode, write 2 variants:
   1. Myth-break: `<דבר> לא <עושה X> כמו שאתם חושבים.`
