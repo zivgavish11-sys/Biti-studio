@@ -69,6 +69,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - 30–45 s final length. At the 1.25× speed-up that is about **70–95 Hebrew words**.
 - Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
 - Offer Ziv 2 hook variants with the script; he picks one.
+- **Punctuation (Ziv 2026-11-06): read `docs/tts-punctuation.md` before every script** — every pause must be written (no mark = no pause), measured pause per mark, budget for `? ! ... :`, checklist.
 - Biti is curious and witty: **one** cute joke per episode (e.g. "הוא עוד ממפה"). Short sentences, commas where the voice should pause.
 - Every fact must be verified (web search) and phrased so nobody can correct it in the comments (avoid shaky exact numbers; "כמעט", "בערך" are fine).
 - Pronunciation for TTS: add niqqud where needed, avoid abbreviations. Write caption overrides inline as `{tts|caption}`, e.g. `{מַכַּם|מכ"ם}`.
