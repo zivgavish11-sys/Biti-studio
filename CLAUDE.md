@@ -49,6 +49,8 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 - News story slides must show art that matches the story (not the same robot on every slide). Format stays 4:5 (1080x1350).
 - 2026-11-05 (Ziv, on news 20261105): "start improving" — the cover art and the city buildings look bad; story art must reflect the text literally (Xiaomi factory slide didn't). Stop reusing the same props every day: vary them — more robot types, more building types, more autonomous machines, everything. Never the same cover twice in a row. Pull new models from the media library / ask the media agent.
 
+- 2026-11-06 (Ziv, on news 20261106): news carousels no longer need his approval — schedule them yourself. **Put the extra effort into visuals**: keep upgrading the story art every day (new props per story, better composition, nothing over the stat/top bar, main action in the top ~55% above the text shade).
+
 ## The daily flow
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 **One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
@@ -131,8 +133,8 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
 4. **Real photos (optional, tested 2026-11-02: works)**: Metricool downloads any public image URL itself. For a story, take the `og:image` of the **official** press release / company newsroom
    (ask WebFetch for the verbatim og:image URL). Insert it into `media` right after that story's slide and credit it in the caption. Skip URLs that look AI-generated (e.g. "-gen"), logos, or tiny images.
 5. **Upload**: `python3 tools/news.py upload news/YYYYMMDD <Biti-media clone>` → prints the public slide URLs.
-6. **Approval**: send Ziv the slides (SendUserFile) + caption + the real-photo links (SendUserMessage) and wait for his OK. Never schedule without it.
-7. **Schedule** after OK: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok, media = slide URLs (+ photos),
+6. **No approval needed (Ziv, 2026-11-06: "מעכשיו אני לא צריך לאשר לך יותר")**: after the sheet check, schedule right away and send Ziv the slides (SendUserFile) + caption + plannerUrl for his information. He can still ask for changes (update via updateScheduledPost before 12:00). The fact-checker (~09:45 Israel) checks the scheduled post — so schedule before then when possible.
+7. **Schedule**: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok, media = slide URLs (+ photos),
    `instagramData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title, plain text>"}`, text = caption, `firstCommentText` = the question.
    If 12:00 Israel already passed, ask Ziv for a new time. Send him the plannerUrl.
 8. Commit `news/YYYYMMDD/spec.json` (not out/). Next day: `news.py clean <prev day> <media repo>`.
