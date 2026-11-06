@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-06 [from factcheck] news/20261106 slide 4 (Agility, 12:00 today): "הראשונה בארה״ב שעוסקת רק ברובוטים דמויי אדם, לפי בלומברג" — (a) the "first" claim is Agility's own press release, not verified as Bloomberg; (b) without "בבורסה" it reads as "the first US humanoid-only company" (wrong: Figure, Apptronik are older, private). Safe: "לפי החברה, היא חברת הרובוטים דמויי האדם הטהורה הראשונה בארה״ב שנסחרת בבורסה". Also: listing was a SPAC merger (not IPO); $465M = gross incl. PIPE, "לפי החברה" OK. Source: agilityrobotics.com press release 2026-11-05 · siliconangle.com/2026/11/05/humanoid-robot-maker-agility-robotics-debuts-on-the-nasdaq-after-spac-merger. Fix = re-render slide 4 + updateScheduledPost before 12:00. Rest of 20261106 (Zipline, Xinhua) + caption OK.
 - 2026-11-03 [from boss] Goals from Ziv: audience = future buyers of consumer robots. Prefer stories about robots coming to homes/everyday life and prices/launches. Red line: zero factual errors (reports as reports). (state/goals.md)
 
 ## Handled
