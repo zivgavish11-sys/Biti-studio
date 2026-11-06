@@ -315,6 +315,101 @@ for (const p of sc.props || []) {
     const blade = new THREE.Mesh(new THREE.BoxGeometry(.9, .03, .12), mat(0xdfe6ff, .1, {roughness: .15, metalness: .9})); blade.position.set(0, .5, -.3); blade.rotation.z = .6; dock.add(blade);
     dock.position.set(2.2, 0, -1.6); dock.rotation.y = -.35; scene.add(dock);
     const moon = new THREE.Mesh(new THREE.CircleGeometry(1.4, 48), new THREE.MeshBasicMaterial({color: 0xffc27a, fog: false})); moon.position.set(8, 7, -30); moon.lookAt(0, 3, 0); scene.add(moon); }
+  if (p === 'park') { // cover: evening park with palms, benches, streetlights and balcony blocks behind; Biti greets
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.028);
+    const grass = new THREE.Mesh(new THREE.CircleGeometry(30, 64), mat(0x24563a, .1, {roughness: 1, metalness: 0})); grass.rotation.x = -Math.PI / 2; scene.add(grass);
+    const path = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 40), mat(0x6b6478, .1, {roughness: .95, metalness: 0})); path.rotation.x = -Math.PI / 2; path.rotation.z = .35; path.position.set(.4, .01, -6); scene.add(path);
+    await place('outdoor/3Story_Balcony', {x: -9, z: -16, ry: .35, h: 8, dim: .55});
+    await place('outdoor/4Story', {x: 2, z: -19, ry: 0, h: 11, dim: .5});
+    await place('outdoor/2Story_Balcony', {x: 11, z: -15, ry: -.4, h: 6, dim: .55});
+    await place('outdoor/PalmTree_1', {x: -4.2, z: -3.5, h: 5.2, dim: .75});
+    await place('outdoor/PalmTree_3', {x: 4.6, z: -5.5, h: 4.6, dim: .75});
+    await place('outdoor/CommonTree_2', {x: -7, z: -8, h: 4.2, dim: .7});
+    await place('outdoor/Bench_1', {x: 2.6, z: -1.6, ry: -.9, h: .8, dim: .8});
+    await place('outdoor/Streetlight_Single', {x: -2.4, z: -1.2, h: 3.6, dim: .8});
+    const lampL = new THREE.PointLight(0xffc27a, 14, 10); lampL.position.set(-2.2, 3.4, -1.2); scene.add(lampL);
+    await place('outdoor/Bush_1', {x: -1.6, z: -4.5, h: .9, dim: .7}); await place('outdoor/Flowers', {x: 1.6, z: -3.4, h: .4, dim: .8});
+    await place('people/character-female-d', {x: 2.75, y: .32, z: -1.75, ry: -.9, h: 1.3, dim: .85, anim: 'sit', t: .4});
+    const moon = new THREE.Mesh(new THREE.CircleGeometry(1.2, 48), new THREE.MeshBasicMaterial({color: 0xf2e6c8, fog: false})); moon.position.set(-12, 7, -34); moon.lookAt(0, 3, 0); scene.add(moon);
+    await robot(0, 0, -0.3, sc.anim || 'Wave', T, .5, accent); }
+  if (p === 'dronedelivery') { // suburban back yard: a delivery drone lowering a parcel on a tether to a waiting customer
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.025);
+    const lawn = new THREE.Mesh(new THREE.CircleGeometry(30, 64), mat(0x2f7a46, .1, {roughness: 1, metalness: 0})); lawn.rotation.x = -Math.PI / 2; scene.add(lawn);
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(5, .15, 3), mat(0x8a6a48, .1, {roughness: .8, metalness: 0})); deck.position.set(-3, .07, -5.5); scene.add(deck);
+    await place('outdoor/2Story_Balcony', {x: -7, z: -14, ry: .35, h: 5.5, dim: .6});
+    await place('outdoor/3Story_Balcony', {x: 7, z: -14, ry: -.3, h: 8, dim: .5});
+    await place('outdoor/CommonTree_1', {x: 4.5, z: -6, h: 4.4, dim: .7}); await place('outdoor/Bush_2', {x: -.8, z: -4.2, h: .9, dim: .7});
+    await place('outdoor/PalmTree_1', {x: -7.5, z: -5, h: 5, dim: .75});
+    const fence = mat(0xd9dcea, .1, {roughness: .8, metalness: 0});
+    for (let k = 0; k < 16; k++) { const pk = new THREE.Mesh(new THREE.BoxGeometry(.18, 1.0, .08), fence); pk.position.set(-.5 + k * .85, .5, -7.5); scene.add(pk); }
+    await place('people/character-male-b', {x: -1.6, z: .2, ry: .9, h: 1.7, dim: .85, anim: 'idle', t: .3});
+    // landing target on the grass + parcel on a tether
+    const tgt = new THREE.Mesh(new THREE.RingGeometry(.55, .75, 48), mat(accent, .1, {roughness: .6})); tgt.rotation.x = -Math.PI / 2; tgt.position.set(.6, .02, -.4); scene.add(tgt);
+    const box = new THREE.Mesh(new THREE.BoxGeometry(.5, .38, .4), mat(0xd9b27c, .1, {roughness: .9, metalness: 0})); box.position.set(.6, .95, -.4); scene.add(box);
+    const tape = new THREE.Mesh(new THREE.BoxGeometry(.52, .06, .42), mat(accent, .1)); tape.position.copy(box.position); scene.add(tape);
+    const g = await load('drone/quadcopter'); const dr = g.scene.clone(true); dr.scale.setScalar(4); dr.position.set(.6, 2.85, -.4); dr.rotation.set(.08, -.6, .04); scene.add(dr);
+    dr.traverse(m => { if (m.isMesh) m.frustumCulled = false; });
+    const teth = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1.7, 6), mat(0xdfe6ff, .1)); teth.position.set(.6, 1.98, -.4); scene.add(teth);
+    const key = new THREE.PointLight(0xffffff, 10, 10); key.position.set(3, 5, 3); scene.add(key); }
+  if (p === 'newsdesk') { // TV studio: two life-like android anchors (silver skin) behind a desk, wall screens, studio camera
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.02);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(20, 14), mat(0x161a36, .1, {roughness: .35, metalness: .3})); fl.rotation.x = -Math.PI / 2; fl.position.z = -2; scene.add(fl);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(20, 8), mat(0x1c2250, .1, {roughness: .9, metalness: 0})); wall.position.set(0, 4, -6); scene.add(wall);
+    // big video wall with a globe + lower-third bars
+    const cvs = document.createElement('canvas'); cvs.width = 1024; cvs.height = 400; const c2 = cvs.getContext('2d');
+    const gr = c2.createLinearGradient(0, 0, 1024, 400); gr.addColorStop(0, '#1b2a6b'); gr.addColorStop(1, '#3a1f6b'); c2.fillStyle = gr; c2.fillRect(0, 0, 1024, 400);
+    c2.strokeStyle = 'rgba(46,230,255,.8)'; c2.lineWidth = 5; c2.beginPath(); c2.arc(250, 200, 140, 0, 6.3); c2.stroke();
+    for (const r of [.35, .7]) { c2.beginPath(); c2.ellipse(250, 200, 140 * r, 140, 0, 0, 6.3); c2.stroke(); }
+    for (const y of [-70, 0, 70]) { c2.beginPath(); c2.moveTo(250 - Math.sqrt(140 * 140 - y * y), 200 + y); c2.lineTo(250 + Math.sqrt(140 * 140 - y * y), 200 + y); c2.stroke(); }
+    
+    const tex = new THREE.CanvasTexture(cvs); tex.colorSpace = THREE.SRGBColorSpace;
+    const vw = new THREE.Mesh(new THREE.PlaneGeometry(8, 3.1), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .18, roughness: .5})); vw.position.set(0, 3.0, -5.9); scene.add(vw);
+    const frameM = mat(0x0c0f24, .1); const fr = new THREE.Mesh(new THREE.BoxGeometry(8.3, 3.4, .08), frameM); fr.position.set(0, 3.0, -5.95); scene.add(fr);
+    // desk: curved front panel with accent stripe
+    const desk = new THREE.Group(); const top = new THREE.Mesh(new THREE.BoxGeometry(5.2, .1, 1.3), mat(0xe9ecf6, .1, {roughness: .3, metalness: .1})); top.position.y = .8; desk.add(top);
+    const front = new THREE.Mesh(new THREE.BoxGeometry(5.0, .75, .12), mat(0x232a55, .1, {roughness: .6})); front.position.set(0, .4, .55); desk.add(front);
+    const st = new THREE.Mesh(new THREE.BoxGeometry(5.02, .1, .13), mat(accent, .1)); st.position.set(0, .55, .56); desk.add(st);
+    desk.position.set(0, 0, -2.6); scene.add(desk);
+    // anchors: human figures with brushed-silver skin = bionic androids
+    for (const [nm, x, ry] of [['people/character-female-a', -1.15, .15], ['people/character-male-f', 1.15, -.15]]) {
+      const o = await place(nm, {x, y: .35, z: -3.35, ry, h: 2.3, dim: 1, anim: 'sit', t: .5});
+      o.traverse(m => { if (!m.isMesh) return; m.material.map = null; m.material.color = new THREE.Color(0xc4cce0); m.material.metalness = .55; m.material.roughness = .35; m.material.needsUpdate = true; });
+      scene.updateMatrixWorld(true); const hb = new THREE.Box3().setFromObject(o); const hh = hb.max.y - hb.min.y;
+      const vis = new THREE.Mesh(new THREE.BoxGeometry(.62, .1, .06), mat(COL.cyan, .1, {roughness: .3})); vis.position.set(x + Math.sin(ry) * .02, hb.max.y - hh * .3, hb.max.z + .01); vis.rotation.y = ry; scene.add(vis); }
+    for (const x of [-1.15, 1.15]) { const mic = new THREE.Mesh(new THREE.CylinderGeometry(.02, .02, .3, 8), mat(0x0c0f24, .1)); mic.position.set(x * .8, 1.0, -2.3); mic.rotation.x = -.4; scene.add(mic); }
+    // studio camera on a tripod in the foreground-left
+    const camG = new THREE.Group(), dk = mat(0x262c4a, .1, {roughness: .5});
+    const body = new THREE.Mesh(new THREE.BoxGeometry(.5, .45, .9), dk); body.position.y = 1.55; camG.add(body);
+    const lens = new THREE.Mesh(new THREE.CylinderGeometry(.14, .16, .35, 24), mat(0x0c0f24, .1)); lens.rotation.x = Math.PI / 2; lens.position.set(0, 1.55, -.6); camG.add(lens);
+    const tally = new THREE.Mesh(new THREE.BoxGeometry(.12, .06, .04), mat(0xff2e4d, .1)); tally.position.set(0, 1.83, -.3); camG.add(tally);
+    for (let k = 0; k < 3; k++) { const a = k * 2.09; const lg = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, 1.5, 8), mat(0x8a93b8, .1, {metalness: .6})); lg.position.set(Math.cos(a) * .3, .68, Math.sin(a) * .3); lg.rotation.set(Math.sin(a) * .35, 0, -Math.cos(a) * .35); camG.add(lg); }
+    camG.position.set(-3.6, 0, .6); camG.rotation.y = -.55; scene.add(camG);
+    for (const x of [-4, 0, 4]) { const lamp = new THREE.SpotLight(0xffffff, 40, 14, .5, .6); lamp.position.set(x, 6, 1); lamp.target.position.set(0, 1.5, -3); scene.add(lamp, lamp.target); } }
+  if (p === 'warehouse') { // logistics floor: humanoid carrying a tote between shelves, conveyor with totes, big ticker screen with a rising line
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.03);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x22284a, .1, {roughness: .7, metalness: .1})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    const lane = new THREE.Mesh(new THREE.PlaneGeometry(.15, 30), mat(0xffa53a, .1, {roughness: .6})); lane.rotation.x = -Math.PI / 2; lane.position.set(-1.6, .01, -4); scene.add(lane);
+    const steel = mat(0x5a6390, .1, {roughness: .5, metalness: .6}), tote = mat(0x2b5fd9, .1, {roughness: .6}), tote2 = mat(0xff5fd2, .1, {roughness: .6});
+    for (const [x, z] of [[-4.6, -3], [-4.6, -6.5], [4.4, -4], [4.4, -7.5]]) { const sh = new THREE.Group();
+      for (const dx of [-1.3, 1.3]) for (const dz of [-.4, .4]) { const up = new THREE.Mesh(new THREE.BoxGeometry(.08, 3.2, .08), steel); up.position.set(dx, 1.6, dz); sh.add(up); }
+      for (let l = 0; l < 4; l++) { const bd = new THREE.Mesh(new THREE.BoxGeometry(2.7, .06, .9), steel); bd.position.y = .3 + l * .9; sh.add(bd);
+        for (let k = 0; k < 3; k++) { const t = new THREE.Mesh(new THREE.BoxGeometry(.7, .4, .6), (k + l) % 3 ? tote : tote2); t.position.set(-.85 + k * .85, .55 + l * .9, 0); sh.add(t); } }
+      sh.position.set(x, 0, z); sh.rotation.y = x < 0 ? .25 : -.25; scene.add(sh); }
+    // conveyor with totes behind the robot
+    const cv = new THREE.Mesh(new THREE.BoxGeometry(6, .12, 1), mat(0x12152b, .1, {roughness: .7})); cv.position.set(.4, .85, -5.2); scene.add(cv);
+    for (let k = 0; k < 4; k++) { const t = new THREE.Mesh(new THREE.BoxGeometry(.7, .4, .6), k % 2 ? tote : tote2); t.position.set(-1.9 + k * 1.5, 1.12, -5.2); scene.add(t); }
+    for (const x of [-2.4, 3.2]) { const lg = new THREE.Mesh(new THREE.BoxGeometry(.1, .8, .9), steel); lg.position.set(x, .4, -5.2); scene.add(lg); }
+    // ticker screen high on the back wall
+    const cvs = document.createElement('canvas'); cvs.width = 800; cvs.height = 300; const g = cvs.getContext('2d');
+    g.fillStyle = '#0d1230'; g.fillRect(0, 0, 800, 300); g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2; for (let y = 50; y < 300; y += 50) { g.beginPath(); g.moveTo(0, y); g.lineTo(800, y); g.stroke(); }
+    g.strokeStyle = '#37e6a0'; g.lineWidth = 9; g.beginPath(); [[30, 250], [140, 225], [250, 235], [360, 180], [470, 190], [580, 120], [690, 95], [770, 45]].forEach(([x, y], k) => k ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke();
+    const tex = new THREE.CanvasTexture(cvs); tex.colorSpace = THREE.SRGBColorSpace;
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 2.1), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .5, roughness: .5})); scr.position.set(4.2, 3.4, -9); scene.add(scr);
+    const bz = new THREE.Mesh(new THREE.BoxGeometry(5.8, 2.3, .1), mat(0x0c0f24, .1)); bz.position.set(4.2, 3.4, -9.07); scene.add(bz);
+    for (let k = 0; k < 3; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-3.5 + k * 3.5, 6.5, -3); scene.add(lamp); }
+    const sp = new THREE.SpotLight(0xffffff, 50, 18, .6, .5); sp.position.set(1, 7, 3); sp.target.position.set(0, 1, -1); scene.add(sp, sp.target);
+    await robot(.2, -1.0, -0.25, sc.anim || 'Walking', T, .5, accent);
+    const carry = new THREE.Mesh(new THREE.BoxGeometry(.75, .42, .55), tote2); carry.position.set(.15, .8, -.3); carry.rotation.y = -.25; scene.add(carry); }
   if (p === 'border') {
     for (let k = 0; k < 7; k++) await robot(-3 + k * 1.05 + (k % 2) * .2, -2.4 - (k % 2) * 1.1, 0, 'Idle', T + k * .2, .38, 0x6a2340);
     for (const x of [-3.8, 3.8]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.18, 2.2, .18), mat(0x2a2f55, .1)); post.position.set(x, 1.1, -1.1); scene.add(post); }
