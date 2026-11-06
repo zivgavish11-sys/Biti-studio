@@ -45,6 +45,18 @@ Key finding: **no mark = no pause at all**. The voice never breathes on its own,
 After `align.py`, re-measure: `python3 tools/punct_stats.py` (pause per mark over all episodes). If a mark behaves differently, update the table above.
 Compare retention (analytics) of episodes that used `...` vs `:` before the reveal, and with/without a mid-body rhetorical question.
 
+## 5. Deeper research (2026-11-06, round 2)
+- **TTSMaker has two exact-pause tools** (ttsmaker.com/blog/ttsmaker-user-guide; API field `text_paragraph_pause_time`, default 0):
+  (a) "Pause Time" under More Settings = silence after every new line; (b) an "insert pause" button that puts a pause marker into the text.
+  Asked Ziv (2026-11-06) for the marker syntax + his current paragraph-pause setting. Until known: write the whole script with **no stray line breaks inside a sentence**
+  (a new line may add silence). Once the marker is known, use it for exact beats instead of spending a `?`/`...`.
+- Engine is undocumented; our measured pauses fit Azure's break ladder (250/500/750/1000 ms), so it is probably Azure he-IL (Hila). Azure also pauses on `;` (between `,` and `.`) — **test `;` in a coming script**; untested: maqaf `־`, ` – `, geresh/gershayim → don't use until measured.
+- **Hebrew intonation** (degruyter opli-2024-0028; Mixdorff & Amir 2002): yes/no questions are marked ONLY by a rising end (word order doesn't change) → a yes/no line without `?` sounds like a statement. Unfinished phrases rise on their last stressed word (= `,`), statements fall (= `.`).
+  Focus: the focused word gets the strongest accent and stresses after it drop → **put the key word last, then `.` to make it land** (or `,` to keep it rising/suspenseful).
+- **Wh-questions (איך/למה/מה)** naturally fall in Hebrew, but TTS raises the pitch on any `?`. Keep `?` on the hook question (the rise = curiosity); if a mid-body wh-question sounds sing-song, swap the `?` for `.` or `...`.
+- **Stress**: niqqud fixes vowels, not stress. If a word gets wrong stress, rephrase or move it — niqqud won't fix it. Dagesh matters for ב/כ/פ.
+- **Pace**: our 70–95 words in 30–45 s ≈ 2.1–2.3 words/s after 1.25× — inside short-form ranges; Hebrew words are long, don't push more words. Energy arc: calm-curious hook, faster middle (shorter clauses, fewer commas), slower payoff (more commas).
+
 Sources (general TTS practice, matched by our measurements): docs.sestek.com/docs/tts-best-practices (pause per mark, avoid over-punctuation, spell out numbers/symbols),
 docs.smallest.ai/models/text-to-speech/best-practices (max one `!`, no repeated punctuation, short chunks),
 freetexttospeech.net/blog/control-pauses-pacing-text-to-speech (comma < period < dash/ellipsis < paragraph; fix rhythm with punctuation before speed).
