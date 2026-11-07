@@ -1,5 +1,5 @@
 {
- "next_episode": 8,
+ "next_episode": 9,
  "episodes": [
   {
    "n": 1,
@@ -88,6 +88,17 @@
    "notes": "FIRST SHORT (22.5 s). Hook: במאדים יש רובוט שנוהג לבד! Scenes: drive, Earth→Mars 20 min signal, stuck in pit (ואין שם גרר), scan+map+path, record 45 km / >90% AutoNav. Pinned: הייתם סומכים על רכב שנוהג לבד? כן / לא",
    "format": "short",
    "look": "classic-v1"
+  },
+  {
+   "n": 8,
+   "slug": "ep008-amazon",
+   "title": "מה הרובוטים עושים במחסנים של אמזון?",
+   "domain": "רובוטים בחיי היום־יום",
+   "date": "2026-11-07",
+   "format": "short",
+   "look": "classic-v1",
+   "posted": "scheduled 2026-11-09T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-2846588876536984420",
+   "notes": "20.8 s. Number hook (1M robots). First caption with the deep-facts block \"😳 רגע, זה לא הכל...\". Pinned: הייתם עובדים לצד רובוטים? כן / לא"
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
