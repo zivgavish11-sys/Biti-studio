@@ -479,8 +479,9 @@ for (const p of sc.props || []) {
         for (const sx of [-.45, .3]) { const seat = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .5), mat(0x2b2f45, .1, {roughness: .7})); seat.position.set(sx, 1.0, 0); g.add(seat); } }
       g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; }
     pod(1.0, -.6, -.12, accent, true); pod(-3.8, -1.2, -.12, COL.cyan); pod(-8.6, -1.8, -.12, COL.purple); pod(-13.4, -2.4, -.12, COL.cyan);
-    // robot arms along the line
-    arm(-6.2, -4.2, accent); arm(-1.4, -3.6, accent);
+    // charging posts beside the finished pods (no arms: the line just rolls them out)
+    for (const [x, z] of [[-1.6, -3.4], [-6.4, -4.0], [-11.2, -4.6]]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.35, 1.3, .3), mat(0xeef1f8, .1, {roughness: .4})); post.position.set(x, .65, z); scene.add(post);
+      const lit = new THREE.Mesh(new THREE.BoxGeometry(.2, .08, .02), mat(accent, .1)); lit.position.set(x, 1.05, z + .16); scene.add(lit); }
     // empty, unlit bay on the right with a parked angular cargo trolley under a dimmed sign frame
     const bay = new THREE.Mesh(new THREE.BoxGeometry(5, .08, 4), mat(0x161a33, .1, {roughness: .8})); bay.position.set(7.5, .04, -5); scene.add(bay);
     const frm = new THREE.Mesh(new THREE.BoxGeometry(4.6, .2, .2), mat(0x3a4170, .1)); frm.position.set(7.5, 4, -6.8); scene.add(frm);
