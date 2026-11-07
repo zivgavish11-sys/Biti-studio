@@ -25,8 +25,30 @@ def phrases_from(text):
     parts = re.findall(r"[^,.?!:\n]+[,.?!:]*", disp)
     return [p.strip() for p in parts if p.strip() and re.search(r"\w", p)]
 
+def align_groups(phr, segs):
+    """2026-11-07: assign whole phrases to speech segments (each segment = 1+ consecutive phrases), DP on chars-vs-duration fit;
+    TTS often skips the pause at a comma, so a segment may hold several phrases. Inside a segment, split by characters."""
+    n, m = len(phr), len(segs); w = [len(p.replace(" ", "")) + 2 for p in phr]; W = sum(w)
+    D = [b - a for a, b in segs]; T = sum(D); import math
+    INF = 1e18; dp = [[INF] * (n + 1) for _ in range(m + 1)]; bk = [[0] * (n + 1) for _ in range(m + 1)]; dp[0][0] = 0
+    for j in range(1, m + 1):
+        for i in range(j, n - (m - j) + 1):
+            for k in range(j - 1, i):
+                if dp[j - 1][k] >= INF: continue
+                c = sum(w[k:i]) / W; d = D[j - 1] / T
+                cost = dp[j - 1][k] + math.log(c / d) ** 2
+                if cost < dp[j][i]: dp[j][i] = cost; bk[j][i] = k
+    out = [None] * n; i = n
+    for j in range(m, 0, -1):
+        k = bk[j][i]; a, b = segs[j - 1]; tot = sum(w[k:i]); t = a
+        for q in range(k, i):
+            d = (b - a) * w[q] / tot; out[q] = [t, t + d]; t += d
+        i = k
+    return out
+
 def align(phr, segs):
     if len(segs) == len(phr): return [list(x) for x in segs]
+    if len(segs) < len(phr): return align_groups(phr, segs)
     speech = sum(b - a for a, b in segs)
     w = [len(p.replace(" ", "")) + 2 for p in phr]; tot = sum(w)
     def at(frac):
