@@ -39,7 +39,7 @@ def main():
     ap.add_argument("video")
     ap.add_argument("--light")
     ap.add_argument("--sheet")
-    ap.add_argument("--min", type=float, default=30)
+    ap.add_argument("--min", type=float, default=14)  # short format 15-20 s (Ziv 2026-11-06)
     ap.add_argument("--max", type=float, default=46)
     a = ap.parse_args()
     v = a.video
