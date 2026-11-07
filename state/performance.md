@@ -2,12 +2,25 @@
 
 | Episode | Platform | Date posted | Views | Avg watch | Drop point | Follows | Saves | Shares | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| ep001-car (53 s) | IG | 2026-11-01 18:14 | 119 (reach 104) | 7.5 s (~14%), 3s-hold 42.9% | early (0–3 s) | – | 0 | 0 | manual upload; worst 3s-hold |
+| ep001-car (45 s) | IG | 2026-11-01 18:14 | 119 (reach 104); 120 @6 d | 7.5 s (~14%), 3s-hold 42.9% | early (0–3 s) | – | 0 | 0 | manual upload; worst 3s-hold |
 | ep001-car (53 s) | TikTok | 2026-11-01 18:13 | 663 | n/a (personal acct) | – | – | – | 2 | best TikTok post so far, 12 likes |
-| ep002-walk (40 s) | IG | 2026-11-02 18:05 | 25 (reach 15) @~30 h | 12.2 s (~31%), 3s-hold 68.0% | middle | – | 0 | 0 | via Metricool, AI label on; best hold but almost no distribution |
-| ep002-walk (40 s) | TikTok | 2026-11-02 18:05 | 38 @~30 h | n/a | – | – | – | 0 | via Metricool, AIGC on |
+| ep002-walk (40 s) | IG | 2026-11-02 18:05 | 25 (reach 15) @~30 h → 120 (reach 112) @5 d | 9.9 s (24%), 3s-hold 54.1% @5 d | middle | – | 0 | 0 | via Metricool, AI label on |
+| ep002-walk (40 s) | TikTok | 2026-11-02 18:05 | 38 @~30 h → 467 @5 d | n/a | – | – | – | 0 | via Metricool, AIGC on |
 | news carousel 20261102 | IG | 2026-11-02 12:03 | 4 (reach 2) | – | – | 0 | 0 | 0 | followers only |
 | news carousel 20261102 | TikTok | 2026-11-02 12:03 | 106 | – | – | – | – | 0 | |
+| #3 ep005-mountain (44 s) | IG | 2026-11-03 18:17 | 126 (reach 113) @4 d | 10.0 s (23%), 3s-hold 60.0% | middle | – | 1 | 0 | best IG hold of the Biti episodes; number hook "3,000 מדרגות" |
+| #3 ep005-mountain (44 s) | TikTok | 2026-11-03 18:08 | 462 @4 d | n/a | – | – | – | 1 | |
+| #4 ep003-vacuum (40 s) | IG | 2026-11-04 18:09 | 119 (reach 107) @3 d | 6.9 s (17%), 3s-hold 53.3% | middle | – | 1 | 0 | |
+| #4 ep003-vacuum (40 s) | TikTok | 2026-11-04 18:07 | **746** @3 d | n/a | – | – | – | 1 | best TikTok post ever; everyday object + big send-group ("מי שיש לו שואב") |
+| #5 ep004-surgeon (33 s) | IG | 2026-11-05 18:09 | 120 (reach 105) @1.5 d | 5.4 s (16%), 3s-hold **31.4%** | early | – | 3 | 0 | worst hold; only saves so far (3); <48 h, re-check next review |
+| #5 ep004-surgeon (33 s) | TikTok | 2026-11-05 18:07 | 225 @1.5 d | n/a | – | – | – | 0 | <48 h |
+| lab series pt 1 (30 s, CTA only) | IG | 2026-11-04 20:09 | **14** (reach 10) | 7.3 s, 3s-hold 9.1% | early | – | 1 | 0 | 20:00 slot + pure call-to-action video: dead on IG |
+| lab series pt 1 | TikTok | 2026-11-04 20:07 | 199 | n/a | – | – | – | 1 | |
+| news carousel 20261103 | IG / TikTok | 2026-11-03 11:41 | 6 (reach 2) / 81 | – | – | 0 | 0 | 0 / 0 | |
+| news carousel 20261104 | IG / TikTok | 2026-11-04 12:05 | 5 (reach 2) / 90 | – | – | 0 | 0 | 0 / 0 | |
+| news carousel 20261105 | IG / TikTok | 2026-11-05 12:06 | 1 (reach 1) / 96 | – | – | 0 | 0 | 0 / 1 | |
+| news carousel 20261106 | IG / TikTok | 2026-11-06 12:06 | 1 (reach 1) / 108 | – | – | 0 | 0 | 0 / 0 | |
+| news carousel 20261102 (update) | IG / TikTok | 2026-11-02 12:03 | 8 (reach 4) / 158 | – | – | 0 | 1 | 0 / 0 | |
 | reel: Argentina robot (screen rec) | IG / TikTok | 2026-10-25 18:03 | 158 / 369 | 6.2 s, 3s-hold 62.9% | – | – | 0 | 2 / 0 | funny |
 | reel: kart robot | IG / TikTok | 2026-10-26 ~16:52 | 134 / 362 | 4.9 s, 53.0% | – | – | 0 | 0 / 0 | |
 | reel: Realbotix Echo | IG / TikTok | 2026-10-27 ~18:52 | 141 / 352 | 5.4 s, 49.1% | – | – | 0 | 0 / 0 | |
@@ -32,3 +45,14 @@
 - Carousel: IG reaches only followers (4 views); TikTok 106. Matches the old learning.
 - Shares/saves ≈ 0 everywhere; no "send" trigger works yet.
 - TikTok watch-time metrics are empty (personal account), so TikTok retention can't be diagnosed.
+
+## Review 2026-11-07 (#2, analytics chat)
+- Followers: IG 6 (−1), TikTok 19 (+6) → total 25 (+5 in 4 days ≈ 1.3/day vs ~11/day needed for 1,000 by Feb 2027).
+- Instagram ceiling: every Biti reel ends at 119–126 views / ~105–113 reach, whatever its hold (31–60%) or upload path (ep001 manual = same 120). IG shows each reel to a fixed test pool and never expands → it's an account-level ceiling (new account, 6 followers, ~0 shares), not Metricool. The ep002 "Metricool/AI label suppresses reach" hypothesis is not supported.
+- TikTok is where growth happens: #4 vacuum 746 (record), #2 walk 467, #3 mountain 462, #5 surgeon 225 (@1.5 d), lab 199. All follower growth came from TikTok.
+- Topic: everyday object people own (vacuum) + broad send-group ("מי שיש לו שואב רובוטי") won TikTok; niche send-group (hospital workers) + medical topic was weakest on both platforms.
+- Hook: number/shock hooks held best on IG (3,000 stairs 60%, "fell thousands of times" 54%); plain "איך רובוט מנתח בן אדם?" held 31% → early drop (hook/first frame).
+- Avg % watched 16–24% on every long episode (goal 60%) → middle drop on all; supports the short-format test starting ep007 (8.11).
+- Carousels: IG 1–8 views (≈ followers only, falling as the IG follower base is 6), TikTok 81–158, 0 follows, 0 shares. Lowest return per effort of all formats.
+- Lab series standalone CTA video (20:00): IG 14 views, 9% hold. A video that is only an ask doesn't travel; the ask belongs inside a content episode.
+- Shares ≈ 0–1 per post everywhere; saves only on surgeon (3).
