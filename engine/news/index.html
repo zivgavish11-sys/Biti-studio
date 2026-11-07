@@ -445,10 +445,16 @@ for (const p of sc.props || []) {
   if (p === 'showroom') { // humanoid showroom: glossy floor, robots on round podiums with price stands, shoppers, glass wall onto a tower skyline
     grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.018);
     const fl = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), mat(0x2a3060, .1, {roughness: .18, metalness: .4})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 10), mat(0x0e1230, .1, {roughness: .7, metalness: .1, transparent: true, opacity: .55})); wall.position.set(0, 5, -7); scene.add(wall);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 10), mat(0x0e1230, .1, {roughness: .7, metalness: .1, transparent: true, opacity: .88})); wall.position.set(0, 5, -7); scene.add(wall);
     for (let k = -6; k <= 6; k++) { const mul = new THREE.Mesh(new THREE.BoxGeometry(.1, 10, .1), mat(0x8a93b8, .1, {metalness: .7, roughness: .3})); mul.position.set(k * 2.2, 5, -6.95); scene.add(mul); }
-    for (const [x, w, h] of [[-9, 2.4, 9], [-5.5, 1.8, 14], [-2, 2.6, 7], [1.5, 1.6, 18], [4.5, 2.4, 11], [8, 2, 15], [11, 2.6, 8]]) {
-      const tw = new THREE.Mesh(new THREE.BoxGeometry(w, h, 1.5), new THREE.MeshStandardMaterial({color: 0x2a3170, emissive: 0x3a4390, emissiveIntensity: .25, roughness: .7, fog: false})); tw.position.set(x, h / 2 - 1, -18); scene.add(tw); }
+    { const winTex = (seed) => { const cv = document.createElement('canvas'); cv.width = 128; cv.height = 512; const g = cv.getContext('2d'); g.fillStyle = '#141838'; g.fillRect(0, 0, 128, 512);
+        let s2 = seed; const rnd = () => (s2 = (s2 * 9301 + 49297) % 233280) / 233280;
+        for (let y = 8; y < 512; y += 18) for (let x = 8; x < 128; x += 22) { g.fillStyle = rnd() < .45 ? (rnd() < .5 ? '#ffd9a0' : '#bfe9ff') : '#20264f'; g.fillRect(x, y, 12, 9); }
+        const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; };
+      for (const [x, w, h, sd] of [[-16, 4, 14, 3], [-10, 3.2, 22, 7], [-4, 4.5, 12, 11], [2, 3.2, 26, 5], [8, 4.2, 16, 9], [14, 3.6, 20, 13]]) {
+        const t = winTex(sd); t.repeat.set(w / 3, h / 10);
+        const tw = new THREE.Mesh(new THREE.BoxGeometry(w, h, w * .8), new THREE.MeshStandardMaterial({color: 0xffffff, map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .1, roughness: .6}));
+        tw.position.set(x, h / 2 - 1, -32); scene.add(tw); } }
     const ceil = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), mat(0x0b0e24, .1, {roughness: .9})); ceil.rotation.x = Math.PI / 2; ceil.position.y = 7.5; scene.add(ceil);
     const podM = mat(0xeef1f8, .1, {roughness: .25, metalness: .2});
     const slots = [[-2.9, -3.2, .35, 'Idle', COL.orange, .5], [0, -2.2, -.15, 'Wave', COL.cyan, .58], [2.9, -3.4, -.5, 'ThumbsUp', COL.pink, .5]];
@@ -479,15 +485,11 @@ for (const p of sc.props || []) {
         for (const sx of [-.45, .3]) { const seat = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .5), mat(0x2b2f45, .1, {roughness: .7})); seat.position.set(sx, 1.0, 0); g.add(seat); } }
       g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; }
     pod(1.0, -.6, -.12, accent, true); pod(-3.8, -1.2, -.12, COL.cyan); pod(-8.6, -1.8, -.12, COL.purple); pod(-13.4, -2.4, -.12, COL.cyan);
-    // charging posts beside the finished pods (no arms: the line just rolls them out)
-    for (const [x, z] of [[-1.6, -3.4], [-6.4, -4.0], [-11.2, -4.6]]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.35, 1.3, .3), mat(0xeef1f8, .1, {roughness: .4})); post.position.set(x, .65, z); scene.add(post);
-      const lit = new THREE.Mesh(new THREE.BoxGeometry(.2, .08, .02), mat(accent, .1)); lit.position.set(x, 1.05, z + .16); scene.add(lit); }
-    // empty, unlit bay on the right with a parked angular cargo trolley under a dimmed sign frame
-    const bay = new THREE.Mesh(new THREE.BoxGeometry(5, .08, 4), mat(0x161a33, .1, {roughness: .8})); bay.position.set(7.5, .04, -5); scene.add(bay);
-    const frm = new THREE.Mesh(new THREE.BoxGeometry(4.6, .2, .2), mat(0x3a4170, .1)); frm.position.set(7.5, 4, -6.8); scene.add(frm);
-    for (const x of [5.3, 9.7]) { const pl = new THREE.Mesh(new THREE.BoxGeometry(.2, 4, .2), mat(0x3a4170, .1)); pl.position.set(x, 2, -6.8); scene.add(pl); }
+    // factory back wall: panels, a high strip of windows, an accent band at eye height
+    const bw = new THREE.Mesh(new THREE.PlaneGeometry(60, 9), mat(0x1a1f42, .1, {roughness: .85, metalness: .1})); bw.position.set(0, 4.5, -9); scene.add(bw);
+    for (let k = -14; k <= 14; k++) { const rib = new THREE.Mesh(new THREE.BoxGeometry(.12, 9, .12), mat(0x2a3160, .1, {roughness: .6})); rib.position.set(k * 2, 4.5, -8.9); scene.add(rib); }
+    const band2 = new THREE.Mesh(new THREE.PlaneGeometry(60, .18), mat(accent, .1)); band2.position.set(0, 2.2, -8.85); scene.add(band2);
     for (let k = 0; k < 5; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-10 + k * 4, 6.5, -2.5); scene.add(lamp); }
-    for (const [x, z] of [[-11, -10], [-3, -11], [5, -12]]) { const rack = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 1.2), mat(0x262c55, .1, {roughness: .8})); rack.position.set(x, 2, z); scene.add(rack); }
     await place('people/character-male-d', {x: 4.4, z: -3.2, ry: -1.2, h: 1.7, dim: .85, anim: 'idle', t: .2});
     const sp = new THREE.SpotLight(0xffffff, 70, 20, .55, .5); sp.position.set(2, 8, 3); sp.target.position.set(0, 1, -1); scene.add(sp, sp.target); }
   if (p === 'teachbench') { // factory cell: a wheeled humanoid routing cables on a harness board, a human operator teaching it from a tablet, progress screen
@@ -533,7 +535,6 @@ for (const p of sc.props || []) {
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.08), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .45, roughness: .5})); scr.position.set(-3.3, 2.3, -4.0); scr.rotation.y = .5; scene.add(scr);
     const bz = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.18, .06), dark); bz.position.set(-3.32, 2.3, -4.04); bz.rotation.y = .5; scene.add(bz);
     const stp = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1.8, 10), steel); stp.position.set(-3.35, .9, -4.1); scene.add(stp);
-    for (const [x, z] of [[-6, -9], [6.5, -9]]) { const rack = new THREE.Mesh(new THREE.BoxGeometry(3, 2.2, 1), mat(0x262c55, .1, {roughness: .8})); rack.position.set(x, 1.1, z); scene.add(rack); }
     for (let k = 0; k < 3; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-3.5 + k * 3.5, 6.5, -3); scene.add(lamp); }
     const sp = new THREE.SpotLight(0xffffff, 60, 18, .5, .5); sp.position.set(0, 7, 3); sp.target.position.set(.3, 1.4, -2.5); scene.add(sp, sp.target); }
   if (p === 'border') {

@@ -51,6 +51,8 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 
 - 2026-11-06 (Ziv, on news 20261106): news carousels no longer need his approval — schedule them yourself. **Put the extra effort into visuals**: keep upgrading the story art every day (new props per story, better composition, nothing over the stat/top bar, main action in the top ~55% above the text shade).
 
+- 2026-11-07 (Ziv, on news 20261107): every prop must belong to the story — no props that don't fit (robot arms over robotaxis) and no plain filler boxes in the background (racks, flat 'towers', blank window panels). Backgrounds = real-looking walls/skylines or nothing.
+
 ## The daily flow
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 **One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
