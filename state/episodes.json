@@ -8,7 +8,9 @@
    "domain": "איך רובוטים עובדים",
    "date": "2026-11-01",
    "posted": "2026-11-01T18:16+02:00 (Ziv uploaded manually, IG + TikTok)",
-   "notes": "Standalone page (pre-core). Voice 1.25x. Lessons: hook glare, camera too close at start, passing car = black screen."
+   "notes": "Standalone page (pre-core). Voice 1.25x. Lessons: hook glare, camera too close at start, passing car = black screen.",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 2,
@@ -17,7 +19,9 @@
    "domain": "בינה מלאכותית ברובוטים",
    "date": "2026-11-02",
    "posted": "2026-11-02T18:00+02:00 via Metricool. IG https://www.instagram.com/reel/DfPsek8jaj6/ (first comment failed, post manually) · TikTok https://www.tiktok.com/@robotics.israel/video/7703605911209872660",
-   "notes": "First CLASSIC-look episode (no glow). Hook: shock number 'נפל אלפי פעמים'. Pinned: הייתם סומכים על רובוט שלמד ללכת רק בסימולציה? כן/לא. Source: Rudin et al. 2021 (arXiv 2109.11978)."
+   "notes": "First CLASSIC-look episode (no glow). Hook: shock number 'נפל אלפי פעמים'. Pinned: הייתם סומכים על רובוט שלמד ללכת רק בסימולציה? כן/לא. Source: Rudin et al. 2021 (arXiv 2109.11978).",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 3,
@@ -26,7 +30,9 @@
    "domain": "איך רובוטים עובדים",
    "date": "2026-11-03",
    "posted": "scheduled 2026-11-03T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=1801720581300633659",
-   "notes": "News-driven episode (Mount Tai robot race 2.11). Hook B myth-break 'לא רק רואה... מרגיש'. Procedural robot dog (trot + IK), lidar points, foot-contact rings. Folder ep005 but badge #3 (posted before ep003-vacuum/ep004-surgeon). Pinned: מי היה מגיע ראשון למעלה: אתם או הכלב הרובוטי?"
+   "notes": "News-driven episode (Mount Tai robot race 2.11). Hook B myth-break 'לא רק רואה... מרגיש'. Procedural robot dog (trot + IK), lidar points, foot-contact rings. Folder ep005 but badge #3 (posted before ep003-vacuum/ep004-surgeon). Pinned: מי היה מגיע ראשון למעלה: אתם או הכלב הרובוטי?",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 4,
@@ -35,7 +41,9 @@
    "domain": "רובוטים בחיי היום־יום",
    "date": "2026-11-04",
    "posted": "scheduled 2026-11-04T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-4823008353552545202",
-   "notes": "Folder ep003 but badge #4. Hook 'hidden thing'. First episode with real Kenney furniture + in-house vacuum/dock models, niqqud TTS, and NO sfx (soft music only). Pinned: הייתם נותנים לשואב רובוטי למפות לכם את הבית? כן/לא"
+   "notes": "Folder ep003 but badge #4. Hook 'hidden thing'. First episode with real Kenney furniture + in-house vacuum/dock models, niqqud TTS, and NO sfx (soft music only). Pinned: הייתם נותנים לשואב רובוטי למפות לכם את הבית? כן/לא",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 5,
@@ -44,7 +52,9 @@
    "domain": "רובוטים בחיי היום־יום",
    "date": "2026-11-05",
    "posted": "scheduled 2026-11-05T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=529002558045637761",
-   "notes": "Badge #5. 33 s (Ziv cut the coffee joke line). In-house CC0 OR kit + people. No sfx. Pinned: הייתם מסכימים לניתוח רובוטי, עם רופא שמפעיל אותו? כן/לא"
+   "notes": "Badge #5. 33 s (Ziv cut the coffee joke line). In-house CC0 OR kit + people. No sfx. Pinned: הייתם מסכימים לניתוח רובוטי, עם רופא שמפעיל אותו? כן/לא",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": null,
@@ -53,7 +63,9 @@
    "domain": "קהילה",
    "date": "2026-11-04",
    "posted": "scheduled 2026-11-04T20:01+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=4124359269050893991",
-   "notes": "Series badge instead of episode number. 30 s. Lab built from primitives (arm, 3D printer, charging wall). Ziv changed the caption: 'כל מי שעוקב ומגיב קהילה'. Plate shows 'ביטי'. Pinned: איזה רובוט להכניס ראשון? 🤖🚗🐕🦾🚁"
+   "notes": "Series badge instead of episode number. 30 s. Lab built from primitives (arm, 3D printer, charging wall). Ziv changed the caption: 'כל מי שעוקב ומגיב קהילה'. Plate shows 'ביטי'. Pinned: איזה רובוט להכניס ראשון? 🤖🚗🐕🦾🚁",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 6,
@@ -62,7 +74,9 @@
    "domain": "איך רובוטים עובדים",
    "date": "2026-11-06",
    "posted": "scheduled 2026-11-07T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-2824554345128769790",
-   "notes": "First episode without 'אני ביטי' greeting (fact → question opening, Ziv 2026-11-06). 30 s. Brand+badge moved below IG top bar. Pinned: הייתם סומכים על רחפן שיביא לכם משלוח הביתה? כן / לא"
+   "notes": "First episode without 'אני ביטי' greeting (fact → question opening, Ziv 2026-11-06). 30 s. Brand+badge moved below IG top bar. Pinned: הייתם סומכים על רחפן שיביא לכם משלוח הביתה? כן / לא",
+   "format": "long",
+   "look": "classic-v1"
   },
   {
    "n": 7,
@@ -71,7 +85,10 @@
    "domain": "היסטוריה ועתיד",
    "date": "2026-11-07",
    "posted": "scheduled 2026-11-08T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=7400431930139626587",
-   "notes": "FIRST SHORT (22.5 s). Hook: במאדים יש רובוט שנוהג לבד! Scenes: drive, Earth→Mars 20 min signal, stuck in pit (ואין שם גרר), scan+map+path, record 45 km / >90% AutoNav. Pinned: הייתם סומכים על רכב שנוהג לבד? כן / לא"
+   "notes": "FIRST SHORT (22.5 s). Hook: במאדים יש רובוט שנוהג לבד! Scenes: drive, Earth→Mars 20 min signal, stuck in pit (ואין שם גרר), scan+map+path, record 45 km / >90% AutoNav. Pinned: הייתם סומכים על רכב שנוהג לבד? כן / לא",
+   "format": "short",
+   "look": "classic-v1"
   }
- ]
+ ],
+ "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
 }

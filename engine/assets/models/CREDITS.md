@@ -17,3 +17,4 @@
 | File | Source | License |
 |---|---|---|
 | moonless_golf_1k.hdr, venice_sunset_1k.hdr | Poly Haven (polyhaven.com), via three.js examples/textures/equirectangular | CC0 |
+- everyday/smartphone, router, cellTower, busStop — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-07.

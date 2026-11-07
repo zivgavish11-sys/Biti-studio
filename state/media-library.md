@@ -30,6 +30,10 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   apartment blocks 2Story_Balcony, 3Story_Balcony, 4Story (backdrop with balconies). Fits: park / balcony / street scenes, wind gusts, delivery robots on sidewalks. Use tint ~.8 if too bright at night.
   Showcase: `python3 tools/render.py frames engine/props/showcase-drone 2,6,10,14` (park wide, drone, x-ray, waiter).
 
+- **everyday/** (added 2026-11-07, in-house CC0, source engine/props/kit.js, real metres): smartphone (7.5×15.5 cm, plane 'screen' → st.screen; use scale 2–3 for hero shots),
+  router (led0..3 solid, ant0..3), cellTower (18 m lattice, sector0..2 with panels, dish0..1), busStop (Israeli-style shelter; 'screen' arrival board aspect 3, 'sign' route plate aspect 1.6).
+  Next for this kit: shikun apartment block, Shabbat elevator, supermarket till, coffee machine, ballot-box-style box (no state emblem replica unless public-domain), traffic light.
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.

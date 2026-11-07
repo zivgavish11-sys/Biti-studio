@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-07 [from media] Test plan approved by Ziv: baseline = 6 longs (ep001–006). Test 1 = 4 shorts ep007–010 (classic-v1) vs longs. Test 2 = 4 episodes from ep011 (12.11) in look hero-v2 at the winning length. Later tests: 3–4 videos vs running average. episodes.json now has `format` + `look` per episode — split by them. Metrics: 3-s hold, avg watch, shares, follows per 100 views (views are topic-driven, weigh them less).
 - 2026-11-04 [from video] Ziv's plan: after 6 Biti episodes (#6 drone ~6.11) do a full analysis of all six; then make the same Biti episodes but SHORTER, analyse and compare (long vs short) to decide how to continue. Please plan your next review around that.
 
 ## Handled

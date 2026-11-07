@@ -242,10 +242,66 @@ export function trayGlasses() {
   return g;
 }
 
+
+// ---------- everyday Israeli props (Media pro, 2026-11-07 workshop — Ziv approved "Israeli everyday prop kit") ----------
+// Screens are flat planes named 'screen'/'sign' with clean 0..1 UVs → paint Hebrew UI with st.screen(obj.getObjectByName('screen'), draw).
+const bar = (a, b, r, m) => { const d = new THREE.Vector3().subVectors(b, a); const o = mesh(new THREE.CylinderGeometry(r, r, d.length(), 6), m); o.position.copy(a).addScaledVector(d, .5); o.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); return o; };
+const plane = (w, h, m, name) => mesh(new THREE.PlaneGeometry(w, h), m, name);
+/** smartphone, 7.5 x 15.5 cm, screen faces +z. Nodes: body, screen (aspect .46) */
+export function smartphone() {
+  const g = grp('smartphone', at(rbox(.075, .155, .008, .009, M(0x15172e, .35, .4), 'body'), 0, .0775, 0));
+  const scr = at(plane(.069, .149, MAT.screen, 'screen'), 0, .0775, .0041); scr.userData.aspect = .069 / .149; g.add(scr);
+  g.add(at(cyl(.004, .004, .002, MAT.dark, 'camera'), .025, .145, -.0045, Math.PI / 2));
+  return g;
+}
+/** home Wi-Fi router, 26 cm wide. Nodes: body, led0..3 (solid colours, set material colour for on/off), ant0..3 (rotate .x) */
+export function router() {
+  const body = at(rbox(.26, .045, .17, .02, M(0x1b1e2c, .45, .2), 'body'), 0, .03, 0);
+  const g = grp('router', body);
+  [-.075, -.025, .025, .075].forEach((x, i) => { const led = at(cyl(.005, .005, .003, M(i < 3 ? 0x5fe39a : 0x2ee6ff, .4), 'led' + i, 12), x, .03, .086, Math.PI / 2); g.add(led); });
+  [-.11, -.04, .04, .11].forEach((x, i) => { const a = grp('ant' + i, at(rbox(.018, .17, .009, .004, M(0x1b1e2c, .5, .1)), 0, .085, 0)); a.position.set(x, .05, -.08); a.rotation.x = -.12; a.rotation.z = (i - 1.5) * .08; g.add(a); });
+  for (let i = 0; i < 9; i++) g.add(at(mesh(new THREE.BoxGeometry(.012, .004, .1), MAT.dark), -.08 + i * .02, .053, 0));
+  return g;
+}
+/** cell tower, 18 m lattice mast with 3 antenna sectors + microwave dishes. Nodes: mast, sector0..2 (groups, each with panel{i}a/b), dish0..1 */
+export function cellTower() {
+  const steel = M(0x9aa3b2, .45, .7), white = M(0xe6e9ef, .55);
+  const g = grp('cellTower'); const mast = grp('mast'); g.add(mast);
+  const H = 18, legs = [0, 1, 2].map(i => i * Math.PI * 2 / 3);
+  const leg = (k, y) => { const r = .9 - .55 * (y / H); return new THREE.Vector3(Math.cos(legs[k]) * r, y, Math.sin(legs[k]) * r); };
+  for (let k = 0; k < 3; k++) mast.add(bar(leg(k, 0), leg(k, H), .05, steel));
+  for (let y = 0; y < H; y += 1.5) for (let k = 0; k < 3; k++) { const n = (k + 1) % 3; mast.add(bar(leg(k, y), leg(n, y), .025, steel)); mast.add(bar(leg(k, y), leg(n, y + 1.5), .018, steel)); }
+  mast.add(at(cyl(.6, .6, .12, steel), 0, H - 1.8, 0));
+  legs.forEach((a, i) => { const s = grp('sector' + i); s.position.set(0, H - 1.2, 0); s.rotation.y = -a + Math.PI / 2;
+    [-.22, .22].forEach((dx, j) => s.add(at(rbox(.3, 1.4, .12, .04, white, 'panel' + i + 'ab'[j]), dx, 0, .7)));
+    s.add(at(rbox(.7, .06, .06, .02, steel), 0, .5, .6)); s.add(at(rbox(.7, .06, .06, .02, steel), 0, -.5, .6)); g.add(s); });
+  [0, 1].forEach(i => { const d = grp('dish' + i, at(cyl(.4, .25, .2, white, null, 32), 0, 0, 0, Math.PI / 2), at(cyl(.05, .05, .3, steel), 0, 0, -.2, Math.PI / 2));
+    d.position.set(Math.cos(i * 2.2) * .55, H - 4 - i * 1.2, Math.sin(i * 2.2) * .55); d.rotation.y = -i * 2.2 + Math.PI / 2; g.add(d); });
+  g.add(at(rbox(2.6, .3, 2.6, .05, M(0x6d7482, .9)), 0, .15, 0));
+  return g;
+}
+/** Israeli-style bus stop shelter, 3.6 m wide. Nodes: roof, bench, sign (route-number plate on a pole, aspect 1.6), screen (arrival board, aspect 3), glassL/glassR, back */
+export function busStop() {
+  const frame = M(0x9aa3b2, .4, .6), roof = M(0xd9dde6, .5), seat = M(0xc7ccd6, .45, .4);
+  const g = grp('busStop');
+  [[-1.75, -.6], [1.75, -.6], [-1.75, .55], [1.75, .55]].forEach(([x, z]) => g.add(at(cyl(.04, .04, 2.5, frame), x, 1.25, z)));
+  g.add(at(rbox(3.8, .08, 1.5, .03, roof, 'roof'), 0, 2.54, 0));
+  const back = at(rbox(3.5, 2, .03, .01, Object.assign(M(0x8fb6d8, .1, .1), {transparent: true, opacity: .35}), 'back'), 0, 1.3, -.6); g.add(back);
+  [-1, 1].forEach(s => g.add(at(rbox(.03, 2, 1.0, .01, Object.assign(M(0x8fb6d8, .1, .1), {transparent: true, opacity: .3}), s < 0 ? 'glassL' : 'glassR'), s * 1.75, 1.3, -.05)));
+  g.add(at(rbox(2.4, .06, .4, .02, seat, 'bench'), 0, .5, -.35)); [-1, 1].forEach(s => g.add(at(rbox(.05, .5, .3, .01, frame), s * 1.0, .25, -.35)));
+  const board = at(rbox(1.2, .42, .08, .02, MAT.dark), .8, 2.2, .45); g.add(board);
+  const scr = at(plane(1.12, .3733, MAT.screen, 'screen'), .8, 2.2, .491); scr.userData.aspect = 3; g.add(scr);
+  g.add(at(cyl(.05, .05, 3.2, frame), 2.4, 1.6, .7));
+  g.add(at(rbox(.62, .4, .04, .03, M(0xf2f4f8, .5)), 2.4, 2.9, .73));
+  const sign = at(plane(.58, .3625, M(0xf2f4f8, .5), 'sign'), 2.4, 2.9, .752); sign.userData.aspect = 1.6; g.add(sign);
+  return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
   'medical/instrument-grasper': grasper, 'medical/suture-needle': needle,
   'home/robotVacuum': robotVacuum, 'home/robotVacuumDock': vacuumDock,
   'drone/quadcopter': drone, 'home/trayGlasses': trayGlasses,
+  'everyday/smartphone': smartphone, 'everyday/router': router, 'everyday/cellTower': cellTower, 'everyday/busStop': busStop,
 };

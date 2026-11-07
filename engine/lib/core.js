@@ -77,6 +77,14 @@ const CSS_CLASSIC = `
 #follow .t{text-shadow:0 4px 14px rgba(0,0,0,.7)}
 #follow .b{box-shadow:0 12px 30px rgba(0,0,0,.45)}
 `;
+// ---------- HERO look (Ziv approved 2026-11-07, workshop vs grouper.explains): opt-in with studio({look:'hero'}) — rollout from ep011 (12.11) ----------
+// one hero object on a monochrome indigo stage, Hebrew UI inside the scene (st.screen), white caption pill with the active word in brand pink. Matte, no glow.
+const CSS_HERO = `
+#cap{top:1250px;text-shadow:none;padding:0 24px;font:700 68px/1.25 Rubik}
+#cap .box{display:inline-block;background:#fff;border-radius:56px;padding:12px 40px 16px;box-shadow:0 14px 34px rgba(0,0,0,.5);direction:rtl}
+#cap span{color:#0b1022;padding:0 6px;margin:0}
+#cap span.on{background:none;color:#e8338f;box-shadow:none}
+`;
 function el(html) { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
 
 /**
@@ -89,7 +97,8 @@ function el(html) { const d = document.createElement('div'); d.innerHTML = html.
  *  opts.fog / opts.bg / opts.bloom
  */
 export async function studio(opts = {}) {
-  const st = document.createElement('style'); st.textContent = CSS + (CLASSIC ? CSS_CLASSIC : ''); document.head.appendChild(st);
+  const HERO = CLASSIC && opts.look === 'hero';
+  const st = document.createElement('style'); st.textContent = CSS + (CLASSIC ? CSS_CLASSIC : '') + (HERO ? CSS_HERO : ''); document.head.appendChild(st);
   document.documentElement.lang = 'he'; document.documentElement.dir = 'rtl';
   const TL = await (await fetch('timeline.json')).json();
   const A = TL.segA, B = TL.segB, END = TL.end;
@@ -109,8 +118,8 @@ export async function studio(opts = {}) {
   const renderer = new THREE.WebGLRenderer({canvas: c, antialias: true, preserveDrawingBuffer: true});
   renderer.setSize(W, H, false); renderer.setPixelRatio(1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
-  const scene = new THREE.Scene(); scene.background = new THREE.Color(CLASSIC ? 0x0a0f22 : (opts.bg ?? 0x05061a));
-  const fog = new THREE.FogExp2(CLASSIC ? 0x0c1228 : (opts.fogColor ?? 0x070a24), CLASSIC ? 0.010 : (opts.fog ?? 0.012)); scene.fog = fog;
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(HERO ? 0x0d0f2e : CLASSIC ? 0x0a0f22 : (opts.bg ?? 0x05061a));
+  const fog = new THREE.FogExp2(HERO ? 0x0d0f2e : CLASSIC ? 0x0c1228 : (opts.fogColor ?? 0x070a24), CLASSIC ? 0.010 : (opts.fog ?? 0.012)); scene.fog = fog;
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = CLASSIC ? 0.45 : (opts.env ?? 0.18);
   // 2026-11-04 Ziv approved: real sky light (Poly Haven HDRI, CC0) in the classic look. opts.sky: 'night' (default) | 'sunset' | 'room' (old studio light)
   const SKY = {night: 'moonless_golf_1k', sunset: 'venice_sunset_1k'}; const sky = CLASSIC ? (opts.sky ?? 'night') : 'room';
@@ -204,8 +213,8 @@ export async function studio(opts = {}) {
   function captions(t) {
     let ch = null; for (const c3 of TL.chunks) if (t >= c3.a && t < c3.b) { ch = c3; break; }
     if (!ch) { capEl.innerHTML = ''; capKey = ''; return; }
-    const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { capEl.innerHTML = ch.words.map(x => `<span>${x.w}</span>`).join(' '); capKey = k; }
-    [...capEl.children].forEach((s, i) => { const w = ch.words[i]; s.className = (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
+    const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { const inner = ch.words.map(x => `<span>${x.w}</span>`).join(' '); capEl.innerHTML = HERO ? `<div class="box">${inner}</div>` : inner; capKey = k; }
+    [...(HERO ? capEl.firstChild.children : capEl.children)].forEach((s, i) => { const w = ch.words[i]; s.className = (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
     const p = sm(ch.a, ch.a + 0.1, t); capEl.style.opacity = p; capEl.style.transform = 'none'; // calm captions: fade only (Ziv: no shake)
   }
   const CH = opts.chips ? opts.chips(A, B, S) : [];
@@ -219,17 +228,37 @@ export async function studio(opts = {}) {
   SFX.push({t: A[A.length - 1], k: 'pop'});
   window.SFX = SFX;
 
+  /** stage({r, grid, spot, target}) — hero look: matte indigo floor, faint matte grid, one soft spot light (real light + shadow, no bloom). */
+  function stage({r = 30, grid = 4, floor = 0x1a1c4a, spot = [-.6, 2.4, 1.4], target = [0, 0, 0], power = 18, reach = 6} = {}) {
+    const f = new THREE.Mesh(new THREE.CircleGeometry(r, 64), new THREE.MeshStandardMaterial({color: floor, roughness: .85})); f.rotation.x = -Math.PI / 2; f.receiveShadow = true; scene.add(f);
+    let g = null; if (grid) { g = new THREE.GridHelper(grid, grid * 4, 0x2c2f6e, 0x23265c); g.position.y = .002; scene.add(g); }
+    let s2 = null; if (spot) { s2 = new THREE.SpotLight(0xffffff, power, reach, .5, .7); s2.position.set(...spot); s2.target.position.set(...target); s2.castShadow = true; s2.shadow.mapSize.set(1024, 1024); scene.add(s2, s2.target); }
+    return {floor: f, grid: g, spot: s2};
+  }
+  /** screen(target, draw, {w, h, px, light}) — Hebrew UI on an in-scene screen. target = a mesh (e.g. prop.object.getObjectByName('screen')) or [width, height] in m for a new plane.
+   *  draw(c, t, W, H) paints a canvas (RTL + right-aligned preset); call .update(t) each frame for live UI. light = how much the screen lights itself (matte, default .25 — no glow). */
+  function screen(target, draw, {px = 1024, light = .25} = {}) {
+    let m = target; let w = 1, h = 1;
+    if (Array.isArray(target)) { [w, h] = target; m = new THREE.Mesh(new THREE.PlaneGeometry(w, h)); }
+    else { m.geometry.computeBoundingBox(); const sz = m.geometry.boundingBox.getSize(new THREE.Vector3()); const a = [sz.x, sz.y, sz.z].sort((p, q) => q - p); w = a[0]; h = a[1]; if (m.userData.aspect) { w = m.userData.aspect; h = 1; } }
+    const cv = document.createElement('canvas'); const ar = w / h; cv.width = ar >= 1 ? px : Math.round(px * ar); cv.height = ar >= 1 ? Math.round(px / ar) : px;
+    const c = cv.getContext('2d'); const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    m.material = new THREE.MeshStandardMaterial({map: tex, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: light, roughness: .45});
+    const update = (t = 0) => { c.save(); c.direction = 'rtl'; c.textAlign = 'right'; c.textBaseline = 'alphabetic'; draw(c, t, cv.width, cv.height); c.restore(); tex.needsUpdate = true; };
+    update(0); return {mesh: m, canvas: cv, ctx: c, tex, update};
+  }
+
   const hookEnd = opts.hookEnd ?? ((S[1] ?? 4) + 0.6);
   let frameFn = () => {};
   const api = {
     THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
-    model, prop, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
+    model, prop, stage, screen, HERO, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
   };
   window.renderAt = async function (t) {
-    ctx.clearRect(0, 0, W, H); bloom.strength = CLASSIC ? 0 : (opts.bloom ?? 0.8); bloom.enabled = !CLASSIC; renderer.toneMappingExposure = CLASSIC ? 1.0 : 1.1; fog.density = CLASSIC ? 0.009 : (opts.fog ?? 0.012);
+    ctx.clearRect(0, 0, W, H); bloom.strength = CLASSIC ? 0 : (opts.bloom ?? 0.8); bloom.enabled = !CLASSIC; renderer.toneMappingExposure = CLASSIC ? 1.0 : 1.1; fog.density = HERO ? (opts.fog ?? 0.05) : CLASSIC ? 0.009 : (opts.fog ?? 0.012);
     updateMixers(t);
     const r = frameFn(t) || {};
     if (r.cp) { cam.position.copy(r.cp); cam.lookAt(r.ct); if (CLASSIC) { dl.target.position.copy(r.ct); dl.position.copy(r.ct).add(V(-12, 30, 14)); dl.target.updateMatrixWorld(); } }

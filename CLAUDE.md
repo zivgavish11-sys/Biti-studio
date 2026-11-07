@@ -165,6 +165,12 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 - **Spinning propellers = soft discs** (Ziv 2026-11-04): fast rotors (drones etc.) are drawn as a see-through matte disc with a thin cyan rim, not frozen blades (they strobe at 30 fps). `drone/quadcopter` has it built in (disc0..3 visible, blades0..3 hidden — show blades only for a parked/slow drone). No glow.
 - **People in scenes** (Ziv 2026-11-04): where it fits the story, add people (`people/character-{male,female}-{a..f}`, clips idle/walk/sit/pick-up/emote-yes...) via `st.prop(..., {h:1.1–1.6, anim:'sit'})` — robots in real homes with families is our angle. Avoid male-c (police uniform) unless the story needs it.
 
+- **HERO look (Ziv approved 2026-11-07, visual workshop vs @grouper.explains) — from ep011 (12.11) only, not before** (test plan: ep007–010 stay classic-v1 so short vs long compares cleanly).
+  `studio({look:'hero', ...})`: monochrome indigo world + one accent; `st.stage()` (matte indigo floor, faint grid, one soft spot); **one hero object per shot** that tells the story at a glance, lots of dark empty space;
+  **Hebrew UI inside the scene** with `st.screen(mesh|[w,h], (c,t,W,H)=>{...})` on phones/monitors/signs (matte, light .25, no glow); captions in **one big white pill**, active word in brand pink #e8338f (calm, no shake).
+  Everyday Israeli props in `engine/assets/models/everyday/` (smartphone, router, cellTower, busStop — more coming). Demo: `python3 tools/render.py frames engine/props/workshop 1,5,9,13`.
+- **Testing visual/format changes (Ziv 2026-11-07):** never change two things at once. Long ep001–006 = baseline; each new change is tested on **4 videos** (later 3–4) vs the running average. Tag every episode in `state/episodes.json` with `format` (long/short) and `look` (classic-v1 / hero-v2).
+
 ## Files
 - Look: `classic` is the default (Ziv's choice). The old neon look still exists only via `STYLE=neon` (→ `out-neon/`); don't use it unless Ziv asks. Reference classic episode: `episodes/ep002-walk/`.
 - `engine/lib/core.js` — studio(): renderer, bloom, captions, chips, hook, badge, follow card, models (`st.model('robot/RobotExpressive')`, `.schedule(anim, t)`), overlay helpers (detBox, tag, counter), auto sound cues.

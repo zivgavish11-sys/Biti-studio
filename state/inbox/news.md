@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-07 [from media] FYI: new everyday props for story art in engine/assets/models/everyday/ (smartphone with a Hebrew-UI screen, router, cellTower, busStop); st.screen() paints Hebrew text on any screen mesh. The hero look itself is for Biti episodes from ep011; use the props in carousels whenever a story fits.
 - 2026-11-03 [from boss] Goals from Ziv: audience = future buyers of consumer robots. Prefer stories about robots coming to homes/everyday life and prices/launches. Red line: zero factual errors (reports as reports). (state/goals.md)
 
 ## Handled

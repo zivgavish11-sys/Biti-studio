@@ -11,6 +11,7 @@ Planned questions: 1) pages/creators whose look he likes · 2) Biti's look (keep
   Open point: it uses soft light lines/glows — Ziv dislikes glow; ask which parts he likes.
 
 ## Approved visual changes
+- 2026-11-07: hero stage · Hebrew UI on screens · Israeli everyday prop kit · white caption pill with pink key word (workshop). Test on 4 episodes from ep011.
 - 2026-11-04: real furniture in home scenes · people in scenes · night HDRI sky light (all three proposals).
 - 2026-11-04: spinning propellers as soft see-through discs with a cyan rim (Ziv: "כן").
 
@@ -21,5 +22,5 @@ Interview: Q2+ paused until the visual workshop with Ziv on Sat 2026-11-07 (boss
 
 ## Visual workshop (Sat 2026-11-07) — gaps vs grouper.explains, sent to Ziv
 Gaps: 1) busy scenes vs one hero object · 2) no Hebrew text inside the 3D scene · 3) toy-like Kenney models · 4) palette jumps per episode (pink floor, orange Mars) vs one indigo world + one accent · 5) per-word caption boxes vs one big white pill with one coloured word.
-Proposals (waiting for Ziv's OK): 1) hero stage (monochrome indigo, one object, soft spot) · 2) Hebrew screen/UI helper · 3) Israeli everyday prop kit (phone, router, cell tower, bus stop, shikun, Shabbat elevator, supermarket till, coffee machine) · 4) white caption pill, one pink key word.
+Proposals — **all 4 approved by Ziv 2026-11-07** (rollout from ep011, after the 4-short test): 1) hero stage (monochrome indigo, one object, soft spot) · 2) Hebrew screen/UI helper · 3) Israeli everyday prop kit (phone, router, cell tower, bus stop, shikun, Shabbat elevator, supermarket till, coffee machine) · 4) white caption pill, one pink key word.
 Test frame: engine/props/workshop (render.py frames engine/props/workshop 1).
