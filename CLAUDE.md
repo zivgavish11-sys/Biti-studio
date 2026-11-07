@@ -101,6 +101,7 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
    Re-render only the broken range when possible (`render.py video --from/--to`, splice at a scene cut) instead of the whole video.
    Look at the QA contact sheet before sending. Send **light first**, then full.
 6. Send caption + pinned comment + posting time (18:00 Israel in his timezone). Caption line 1 = the searchable question in plain Hebrew, line 2 `פרק #N עם ביטי 🤖`, then 2–3 value lines, one ask, 3–5 hashtags.
+   **Deep caption (Ziv 2026-11-07):** after the value lines add a short `🤓 לחנונים:` block — 3–4 deeper, scientific/technical facts about the topic (how it really works, numbers, history), every fact verified, phrased safely.
    Pinned comment = an easy opinion question (yes/no or this-or-that). After his OK, publish per "Publishing" below.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.
 
