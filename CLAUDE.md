@@ -61,6 +61,8 @@ Every chat is a separate agent (its own scheduled task). Each one does **only it
 3. Pick **3 explainer topics** that were not done yet, from **different domains**:
    איך רובוטים עובדים · בינה מלאכותית ברובוטים · רובוטים בחיי היום־יום · היסטוריה ועתיד.
    Prefer topics with (a) one jaw-dropping fact, (b) a strong visual idea in 3D, (c) relevance to everyday life, (d) a clear "who would I send this to?" answer (sends drive reach). Use performance learnings.
+   **Everyday first (Ziv 2026-11-07, analytics #2):** among the 3 ideas, prefer things people own at home or see every day, with a broad send-group ("שלחו את זה למי שיש לו שואב רובוטי") — vacuum = 746 TikTok views (record) vs surgeon/hospital workers = weakest.
+   **Number hook when there is one (Ziv 2026-11-07):** if the topic has a strong concrete number/shock fact, put it in hook line 1 ("3,000 מדרגות" held 60% at 3 s vs 31% for a plain question). Not forced every time.
    Quickly verify each idea's key fact with web search.
 4. For each idea write: **hook title** (2 short lines, max ~7 words, one key word in a pill), **one-line pitch**, **the wow fact**, **visual idea** (one line).
 5. **No images with the ideas (Ziv 2026-11-07: wastes tokens)** — send the 3 ideas as text only. Render a concept card only for the idea he picks, after he picks (optional): `python3 tools/concept.py <outdir> <nextEp> 'line1|line2 <span class="pill">word</span>?' ...` (append `::anim=Dance` etc. to vary).

@@ -56,3 +56,4 @@
 - Carousels: IG 1–8 views (≈ followers only, falling as the IG follower base is 6), TikTok 81–158, 0 follows, 0 shares. Lowest return per effort of all formats.
 - Lab series standalone CTA video (20:00): IG 14 views, 9% hold. A video that is only an ask doesn't travel; the ask belongs inside a content episode.
 - Shares ≈ 0–1 per post everywhere; saves only on surgeon (3).
+- Ziv's answer (2026-11-07): approved everyday topics + number hook when available; Trial Reels not available (follower threshold); carousels stay as they are (agent-run, costs him nothing).

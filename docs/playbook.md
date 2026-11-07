@@ -7,6 +7,8 @@ Confirmed by the platforms themselves: Instagram ranks by **watch time, likes pe
 People decide to scroll in ~1.5 s. A slow opener ("Hi, I'm…", logo, calm establishing shot) is the #1 retention killer.
 - **Open with the hook sentence, not the greeting.** Structure (Ziv 2026-11-06): `<surprising fact, ≤2 s>` → `<curiosity question about it, e.g. אז איך זה עובד?>` → body. No Biti greeting any more — the question keeps people watching.
 - **Three layers at once, all saying the same thing:** spoken hook + big hook title on screen from frame 0 (works on mute — most feed views start muted) + motion already happening (mid-action, camera moving).
+- **Number first when the topic has one** (Ziv 2026-11-07): a concrete number/shock fact in hook line 1 held best (3,000 stairs 60% vs plain question 31%). Only when a real number exists — don't force it.
+- **Topics: everyday objects + broad send-group** (Ziv 2026-11-07): things people own or see daily, "שלחו את זה למי ש..." aimed at a big group.
 - **Hook formulas (Hebrew)** — pick one per episode, write 2 variants:
   1. Myth-break: `<דבר> לא <עושה X> כמו שאתם חושבים.`
   2. Shock number: `הרובוט הזה נופל אלפי פעמים ביום. בכוונה.`
@@ -41,7 +43,7 @@ People decide to scroll in ~1.5 s. A slow opener ("Hi, I'm…", logo, calm estab
 ## 6. Posting hygiene
 - Upload the **clean exported file** to both platforms. Never download from TikTok to repost (watermark = suppressed on Instagram).
 - Our music is original (generated) — good for both platforms. Don't add platform-trending sounds that are platform-specific.
-- **Instagram Trial Reels**: post to non-followers first to test hooks; useful for A/B testing the 2 hook variants.
+- **Instagram Trial Reels**: not available on our account yet (needs a minimum follower count — Ziv 2026-11-07). Revisit when we grow.
 - Consistent time (18:00 Israel) and consistent cadence (every ~2 days, same format = series recognition).
 - TikTok: add every episode to a playlist "ביטי מסבירה" so episodes autoplay into each other.
 

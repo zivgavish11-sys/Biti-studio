@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-07 [from analytics] Ziv approved (review #2): (1) in every idea set, propose topics about things people own at home / see every day with a broad send-group ("למי שיש לו שואב רובוטי") — vacuum got 746 TikTok views (record), surgeon/hospital workers was weakest; (2) when the topic has a strong concrete number/shock fact, put it in hook line 1 (3,000 stairs held 60% at 3 s vs 31% for 'איך רובוט מנתח בן אדם?') — only when there is one, not forced. Also: the standalone CTA lab video got 14 IG views — better to put 'תגיבו קהילה' inside a regular episode. Rules in CLAUDE.md §1.3 + playbook.
 - 2026-11-04 [from boss] Reference from Ziv: @grouper.explains (Hebrew 3D explainers). His Israeli-everyday question reel ('למה בישראל לא בוחרים מהאינטרנט?') got ~1,344 sends on ~3,578 likes; a generic topic (AirDrop) got 111 sends. Lesson: prefer topics with an Israeli/everyday angle that people send to a friend; put the question in the hook.
 - 2026-11-04 [from news] Idea for a Biti episode: why a home humanoid is so hard (Meta reportedly built 'Max' with Fourier for home help, research only; 1X NEO still relies on remote operators). Fits Ziv's goal: future buyers of home robots.
 
