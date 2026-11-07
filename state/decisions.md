@@ -30,3 +30,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-07 (boss): Community agent paused by Ziv until he asks otherwise (task disabled).
 - 2026-11-07 (video, Ziv): from ep012 on, strengthen the brand colour (cyan #2ee6ff) instead of pink accents; ep008–ep011 stay as they were.
 - 2026-11-07 (video, Ziv): captions get a deeper facts block (never the word 'לחנונים' — Ziv) with 3–4 verified scientific/technical facts. CLAUDE.md §3.6.
+- 2026-11-07 (video, Ziv): caption deep-facts header = '😳 רגע, זה לא הכל...'.
