@@ -1,0 +1,116 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP008-amazon — short, classic-v1. Warehouse robots: drive unit slides under a shelf, lifts it, brings it to the worker; AI manages the traffic.
+// Phrases: 0 hook (1M robots) | 1 מה הם עושים | 2 נכנס מתחת למדף | 3 מרים | 4 מביא לעובד | 5 העובד לא זז | 6 המדף זז | 7 בינה מלאכותית/פקקים | 8 יש סיכוי | 9 החבילה שלכם | 10-11 follow
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 8,
+  hookEnd: 4.6,
+  hook: ['באמזון עובדים', 'יותר ממיליון <span class="pill">רובוטים</span>!'],
+  // S: 0 hook wide | 1 under-lift-carry | 2 worker still, shelves come | 3 AI traffic top view | 4 your package | 5 follow
+  scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[7] - .25, A[8] - .25, A[10] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[2], b: A[3] - .05, y: 330, c: '', h: '🤖 נכנס מתחת למדף'},
+    {a: A[3], b: A[4] - .05, y: 330, c: 'org', h: '⬆️ מרים אותו'},
+    {a: A[4], b: S[2], y: 330, c: '', h: '➡️ ומביא לעובד'},
+    {a: A[5], b: S[3], y: 330, c: 'pnk', h: '🧍 העובד לא זז<small>המדף זז</small>'},
+    {a: A[7], b: S[4], y: 330, c: 'grn', h: '🧠 בינה מלאכותית מנהלת את התנועה'},
+    {a: A[8] + .1, b: S[5], y: 330, c: 'org', h: '📦 אולי גם החבילה שלכם'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(8);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
+
+// ================= WAREHOUSE FLOOR =================
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), M(0x1b2233, {roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+// floor fiducial grid (the robots drive on a grid of floor markers)
+const gm = M(0x2a3550, {roughness: .9});
+for (let i = -12; i <= 12; i++) { const a = new THREE.Mesh(new THREE.PlaneGeometry(.06, 48), gm); a.rotation.x = -Math.PI / 2; a.position.set(i * 2, .005, -6); scene.add(a);
+  const b = new THREE.Mesh(new THREE.PlaneGeometry(48, .06), gm); b.rotation.x = -Math.PI / 2; b.position.set(0, .005, -6 + i * 2); scene.add(b); }
+
+// drive unit (low orange robot), built in-house — generic, not a replica
+function unit() {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.0, .3, 1.0), M(COL.orange, {roughness: .6})); body.position.y = .2; body.castShadow = body.receiveShadow = true; g.add(body);
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .06, 32), M(0x2b2f3d)); top.position.y = .38; top.castShadow = true; g.add(top); g.userData.top = top;
+  const strip = new THREE.Mesh(new THREE.BoxGeometry(1.02, .05, .3), M(0x1a1d27)); strip.position.set(0, .2, .36); g.add(strip);
+  const eye = new THREE.Mesh(new THREE.BoxGeometry(.24, .05, .02), M(COL.cyan, {roughness: .5})); eye.position.set(0, .22, .51); g.add(eye);
+  for (const [x, z] of [[-.4, -.4], [.4, -.4], [-.4, .4], [.4, .4]]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .05, 16), M(0x111318)); w.rotation.z = Math.PI / 2; w.position.set(x, .07, z); g.add(w); }
+  scene.add(g); return g;
+}
+// shelf pod: library bookcase + boxes, standing on 4 short legs (robot fits under)
+const boxCols = [0x8a6a48, 0x9b7a55, 0x7a5c3e];
+async function pod(x, z) {
+  const g = new THREE.Group(); scene.add(g); g.position.set(x, 0, z);
+  const bc = await st.prop('home/bookcaseOpen', {fit: [1.3, 1.3], h: 2.1, tint: .45}); bc.object.position.set(0, .5, 0); g.add(bc.object);
+  const legM = M(0x3b4256);
+  for (const [lx, lz] of [[-.6, -.6], [.6, -.6], [-.6, .6], [.6, .6]]) { const l = new THREE.Mesh(new THREE.BoxGeometry(.06, .5, .06), legM); l.position.set(lx, .25, lz); l.castShadow = true; g.add(l); }
+  for (let k = 0; k < 4; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.35 + r() * .2, .25, .4), M(boxCols[k % 3], {roughness: .95})); b.position.set(-.3 + (k % 2) * .6, .72 + Math.floor(k / 2) * .62, .1); b.castShadow = true; g.add(b); }
+  return g;
+}
+// --- wide field of pods + units (S0, S3)
+const field = [];
+for (let i = -4; i <= 4; i++) for (let j = -5; j <= 0; j++) { if ((i + j) % 3 === 0) continue; field.push(await pod(i * 4 + 2, -4 + j * 4)); }
+const movers = [];
+for (let k = 0; k < 10; k++) { const u = unit(); const p = await pod(0, 0); movers.push({u, p, lane: -22 + (k % 5) * 4 + 2, dir: k < 5 ? 1 : -1, ph: r() * 30, axis: k % 2}); }
+
+// --- station set (x = 60): worker at a pick station, a shelf arrives
+const SX = 60;
+const stPad = new THREE.Mesh(new THREE.BoxGeometry(3, .9, 1.2), M(0x2f3a52)); stPad.position.set(SX + 3, .45, 2.4); stPad.castShadow = stPad.receiveShadow = true; scene.add(stPad);
+const yellow = new THREE.Mesh(new THREE.PlaneGeometry(4, .12), M(0xe8c23a)); yellow.rotation.x = -Math.PI / 2; yellow.position.set(SX + 1.5, .01, 1.4); scene.add(yellow);
+const worker = await st.prop('people/character-female-a', {h: 1.65, x: SX + 3, z: 3.6, ry: Math.PI, anim: 'idle'});
+const tote = await st.prop('home/cardboardBoxOpen', {h: .35, x: SX + 2.4, y: .9, z: 2.4, tint: .9});
+const heroU = unit(); const heroP = await pod(0, 0);
+const queue = []; for (let k = 0; k < 3; k++) { const u = unit(); const p = await pod(0, 0); queue.push({u, p}); }
+
+// --- package set (x = -60): a parcel on a table, ready to ship
+const PX = -60;
+const tbl = await st.prop('home/table', {fit: [2.4, 1.2], x: PX, z: 0, tint: .7});
+const parcel = await st.prop('home/cardboardBoxClosed', {h: .6, x: PX, y: .78, z: 0, tint: .95});
+const tape = new THREE.Mesh(new THREE.BoxGeometry(.62, .02, .1), M(COL.cyan, {roughness: .5})); scene.add(tape);
+const pkU = unit(); pkU.position.set(PX + 2.6, 0, 1.2);
+
+// ================= ANIMATION =================
+const place = (u, p, x, z, lift, ry = 0) => { u.position.set(x, 0, z); u.rotation.y = ry; if (p) { p.position.set(x, lift, z); p.rotation.y = 0; } };
+st.frame(t => {
+  // field traffic: units carrying pods along lanes; in S3 they pause at crossings (managed traffic)
+  const manage = t >= S[3] && t < S[4];
+  movers.forEach((m, k) => {
+    let s = (t * 1.2 + m.ph) % 44 - 22;
+    if (manage && k % 2) s = (S[3] * 1.2 + m.ph) % 44 - 22 + Math.max(0, t - S[3] - .8) * 1.2 * sm(S[3] + .8, S[3] + 1.4, t);
+    const x = m.axis ? s * m.dir : m.lane, z = m.axis ? -7 + m.lane * .5 : -6 + s * m.dir * .8;
+    place(m.u, m.p, x, z, .1, m.axis ? (m.dir > 0 ? Math.PI / 2 : -Math.PI / 2) : (m.dir > 0 ? 0 : Math.PI));
+  });
+  // station: hero unit drives under the pod, lifts, carries it to the worker
+  const PZ = -6; let ux, uz = PZ, lift = 0, px = SX - 4, pz = PZ;
+  if (t < A[2] + .9) { ux = SX - 9 + sm(S[1], A[2] + .9, t) * 5; }                       // drives in under the pod
+  else { ux = SX - 4; }
+  lift = .14 * sm(A[3], A[3] + .45, t);
+  if (t > A[4]) { const k = sm(A[4], S[2] + 1.5, t); ux = SX - 4 + k * 5.5; uz = PZ + k * 7.6; }
+  if (lift > .01 || t > A[4]) { px = ux; pz = uz; }
+  heroU.position.set(ux, 0, uz); heroU.rotation.y = t > A[4] ? .62 : Math.PI / 2;
+  heroU.userData.top.position.y = .38 + lift;
+  heroP.position.set(px, lift, pz);
+  // queue of shelves arriving to the still worker (S2)
+  queue.forEach((q, k) => { const k2 = sm(S[2] + k * .35, S[3] + .6, t); const x = SX - 6 + k2 * 4 - k * 1.8, z = 1.6 - (k + 1) * 1.7 + k2 * 1.5; q.u.position.set(x, 0, z); q.u.rotation.y = .4; q.p.position.set(x, .14, z); });
+  // package set: box closes, tape slides on, a unit rolls past
+  tape.position.set(PX, .78 + .61, 0); tape.scale.x = Math.max(.01, sm(A[9], A[9] + .8, t));
+  pkU.position.x = PX + 2.6 - sm(S[4], S[5], t) * 5;
+  // re-hook-ish colour shift for the AI traffic scene
+  const pk = win(t, S[3], S[4], .3); scene.background.lerpColors(new THREE.Color(0x0a0f22), new THREE.Color(0x1d1640), pk * .8); st.fog.color.copy(scene.background);
+
+  let cp, ct;
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [14, 9, 10], [0, 0, -8]], [S[1], [9, 8.5, 11], [-1, 0, -9]]]);                                   // hook: wide over the robot army
+  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [SX - 4, 3.2, PZ + 6.5], [SX - 5, .6, PZ]], [A[4], [SX - 2, 3.4, PZ + 7], [SX - 4, .8, PZ]], [S[2], [SX + 4, 3.6, PZ + 9], [SX + 1, .8, PZ + 5]]]); // under → lift → carry
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [SX + 7.5, 3.6, -5], [SX + 1.5, 1, 2]], [S[3], [SX + 6, 3.4, -6], [SX + 1, 1, 2]]]);            // worker still, shelves come
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [0, 26, 6], [0, 0, -7]], [S[4], [1.5, 24, 4], [0, 0, -8]]]);                                    // AI traffic, top view
+  else if (t < S[5]) { const a = .5 + (t - S[4]) * .2; cp = V(PX + Math.sin(a) * 5.5, 3.0, Math.cos(a) * 5.5); ct = V(PX, .9, 0); }          // your package
+  else [cp, ct] = camKF(t, [[S[5], [10, 8.5, 12], [-1, 0, -9]], [END, [14, 9, 10], [0, 0, -8]]]);                                               // loop to frame 0
+  return {cp, ct, overlay: t2 => {
+    if (t2 > S[3] + .2 && t2 < S[4]) movers.forEach((m, k) => { if (k % 2) { const [x, y] = st.proj(m.u.position.clone().add(V(0, 2.8, 0))); if (y > 640 && y < 1200) st.tag(x, y, '✋ עוצר', '#ff5fd2', win(t2, S[3] + .8, S[4])); } });
+    if (t2 > A[9] && t2 < S[5]) { const [x, y] = st.proj(V(PX, 1.5, 0)); st.tag(x, Math.max(y - 40, 650), 'החבילה שלכם', '#2ee6ff', win(t2, A[9], S[5])); }
+  }};
+});
+st.ready();
+</script></body></html>

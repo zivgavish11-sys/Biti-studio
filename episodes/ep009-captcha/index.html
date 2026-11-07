@@ -1,0 +1,90 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP009-captcha — short, classic-v1. The "I'm not a robot" box watches how the mouse moves: humans wobble, stop, correct; bots move too straight.
+// Phrases: 0 hook | 1 איך הוא יודע | 2 בין השאר | 3 העכבר זז | 4 רועד קצת | 5 עוצר | 6 ומתקן | 7 ישר מדי | 8 מדויקת מדי | 9 מה שמוכיח | 10 לא מושלמים | 11-12 follow
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 9,
+  hookEnd: 3.9,
+  hook: ['אני לא רובוט', 'איך הוא <span class="pill">יודע</span>?'],
+  // S: 0 hook desk | 1 screen: mouse path | 2 human hand: wobble/stop/correct | 3 bot: too straight | 4 imperfect = human ✓ | 5 follow
+  scenes: (A, B, END) => [0, A[2] - .25, A[4] - .25, A[7] - .25, A[9] - .25, A[11] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[2] + .1, b: S[2], y: 330, c: '', h: '🖱️ בודק איך העכבר זז'},
+    {a: A[4], b: A[5] - .05, y: 330, c: 'org', h: '〰️ רועד קצת'},
+    {a: A[5], b: A[6] - .05, y: 330, c: 'org', h: '✋ עוצר'},
+    {a: A[6], b: S[3], y: 330, c: 'org', h: '↩️ ומתקן'},
+    {a: A[7], b: S[4], y: 330, c: 'pnk', h: '🤖 ישר מדי, מדויק מדי'},
+    {a: A[10], b: S[5], y: 330, c: 'grn', h: '✅ לא מושלמים = בני אדם'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(9);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), M(0x161d30, {roughness: .95})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+// ---- mouse paths in screen space (0..1), from bottom-left to the checkbox (right side, RTL page)
+const BOX = [.80, .45];
+const human = [], bot = [];
+for (let i = 0; i <= 120; i++) { const u = i / 120;
+  // overshoot then correct, with tremor and a pause plateau at ~60%
+  const e = u < .6 ? sm(0, .6, u) * .92 : .92 + (u < .7 ? 0 : sm(.7, 1, u) * .08);
+  const over = Math.sin(Math.min(1, u / .85) * Math.PI) * .07;
+  const x = .12 + (BOX[0] - .12) * e + Math.sin(u * 47) * .006 + over * .4, y = .85 - (.85 - BOX[1]) * e - over + Math.sin(u * 61 + 1) * .007;
+  human.push([x, y]); bot.push([.12 + (BOX[0] - .12) * u, .85 - (.85 - BOX[1]) * u]); }
+// screen UI state (set per frame)
+const UI = {path: human, prog: 0, check: 0, bad: 0, trail: 1};
+function drawUI(c, t, W, H) {
+  c.fillStyle = '#eef1f8'; c.fillRect(0, 0, W, H);
+  c.fillStyle = '#c9cfe2'; c.fillRect(0, 0, W, H * .09); c.fillStyle = '#12142e'; c.font = `700 ${H * .05}px Rubik`; c.fillText('הרשמה לאתר', W * .95, H * .065);
+  // the captcha card
+  const cx = W * .30, cy = H * .33, cw = W * .62, ch = H * .24;
+  c.fillStyle = '#fff'; c.strokeStyle = '#c9cfe2'; c.lineWidth = 4; c.beginPath(); c.roundRect(cx, cy, cw, ch, 14); c.fill(); c.stroke();
+  const bx = W * BOX[0] - H * .045, by = H * BOX[1] - H * .045, bs = H * .09;
+  c.lineWidth = 6; c.strokeStyle = UI.check ? '#1f9e6a' : '#8a90ad'; c.beginPath(); c.roundRect(bx, by, bs, bs, 8); c.stroke();
+  if (UI.check) { c.strokeStyle = '#1f9e6a'; c.lineWidth = 12; c.beginPath(); c.moveTo(bx + bs * .2, by + bs * .55); c.lineTo(bx + bs * .42, by + bs * .78); c.lineTo(bx + bs * .85, by + bs * .25); c.stroke(); }
+  c.fillStyle = '#12142e'; c.font = `700 ${H * .062}px Rubik`; c.fillText('אני לא רובוט', bx - W * .03, by + bs * .72);
+  // trail + cursor
+  const P = UI.path, n = Math.max(1, Math.floor(UI.prog * (P.length - 1)));
+  if (UI.trail) { c.strokeStyle = UI.bad ? '#ff5fd2' : '#2ea8c7'; c.lineWidth = 7; c.setLineDash([]); c.beginPath(); P.slice(0, n + 1).forEach(([x, y], i) => (i ? c.lineTo(x * W, y * H) : c.moveTo(x * W, y * H))); c.stroke(); }
+  const [mx, my] = P[n]; const X = mx * W, Y = my * H, k = H * .07;
+  c.fillStyle = '#12142e'; c.strokeStyle = '#fff'; c.lineWidth = 4; c.beginPath(); c.moveTo(X, Y); c.lineTo(X, Y + k); c.lineTo(X + k * .28, Y + k * .74); c.lineTo(X + k * .62, Y + k * .7); c.closePath(); c.fill(); c.stroke();
+}
+async function desk(x, who) {
+  await st.prop('home/desk', {fit: [2.2, 1.1], x, z: 0, tint: .7});
+  const mon = await st.prop('home/computerScreen', {h: 1.0, x, y: .76, z: -.25, tint: .6});
+  const bb = new THREE.Box3().setFromObject(mon.object), sz = bb.getSize(new THREE.Vector3());
+  const scr = st.screen([sz.x * .86, sz.y * .62], drawUI, {px: 1100, light: .5}); scr.mesh.position.set(x, bb.min.y + sz.y * .62, bb.max.z + .01); scene.add(scr.mesh);
+  await st.prop('home/computerMouse', {h: .05, x: x + .55, y: .76, z: .25, tint: .9});
+  await st.prop('home/computerKeyboard', {fit: [.8, .3], x: x - .1, y: .76, z: .25, tint: .8});
+  return scr;
+}
+const scrH = await desk(0);
+await st.prop('people/character-male-b', {h: 1.6, x: -1.05, z: .85, ry: Math.PI - .55, anim: 'idle'});
+await st.prop('home/pottedPlant', {h: 1.3, x: -2.2, z: -.6}); await st.prop('home/lampSquareFloor', {h: 1.9, x: 2.3, z: -.8});
+await st.prop('home/bookcaseClosedWide', {h: 2.2, x: -.5, z: -2.6});
+const BX = 30;
+const scrB = await desk(BX);
+const rob = await st.model('robot/RobotExpressive'); rob.object.scale.setScalar(.3); rob.object.position.set(BX - 1.1, 0, .8); rob.object.rotation.y = Math.PI - .55; scene.add(rob.object); rob.schedule('Idle', 0, 0);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, .03, 8, 96), M(COL.pink, {roughness: .5})); ring.rotation.x = Math.PI / 2; ring.position.set(BX, .02, .3); scene.add(ring);
+
+st.frame(t => {
+  // human screen: path progress across the hook → body; checkbox ticks at the end
+  UI.path = human; UI.bad = 0; UI.trail = t > S[1];
+  UI.prog = t < S[1] ? .25 + sm(0, S[1], t) * .3 : t < S[2] ? sm(S[1], S[2] - .2, t) : t < S[3] ? sm(S[2], S[3] - .2, t) : 1;
+  UI.check = t >= A[10] - .1 || t >= S[5] ? 1 : 0; scrH.update(t);
+  UI.path = bot; UI.bad = 1; UI.trail = 1; UI.prog = sm(S[3], A[8] + .3, t); UI.check = 0; scrB.update(t);
+  const pk = win(t, S[3], S[4], .3); scene.background.lerpColors(new THREE.Color(0x0a0f22), new THREE.Color(0x24164a), pk * .8); st.fog.color.copy(scene.background);
+  let cp, ct;
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [2.2, 2.1, 4.9], [-.45, 1.0, -.1]], [S[1], [1.6, 1.8, 4.3], [-.35, 1.1, -.15]]]);                          // hook: desk, user, screen
+  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [.5, 1.35, 1.9], [0, 1.2, -.25]], [S[2], [-.3, 1.35, 1.7], [0, 1.2, -.25]]]);                // screen close: path
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [1.9, 1.8, 3.0], [-.3, 1.15, -.15]], [S[3], [1.3, 1.7, 2.5], [-.2, 1.2, -.2]]]);                // the human wobbles, stops, corrects
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [BX + 1.8, 2.1, 4.2], [BX - .7, 1.0, 0]], [S[4], [BX + 1.2, 1.9, 3.4], [BX - .5, 1.1, -.1]]]);      // bot: too straight
+  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [-.5, 1.4, 2.1], [0, 1.2, -.25]], [S[5], [-.1, 1.5, 2.5], [0, 1.15, -.25]]]);                 // ✓ human
+  else [cp, ct] = camKF(t, [[S[5], [1.4, 1.8, 3.8], [0, 1.15, -.2]], [END, [2.2, 2.1, 4.9], [-.45, 1.0, -.1]]]);                               // loop
+  return {cp, ct, overlay: t2 => {
+    if (t2 > S[3] + .3 && t2 < S[4]) { const [x, y] = st.proj(V(BX - 1.1, 2.0, .8)); st.tag(x, Math.max(y, 650), 'בוט', '#ff5fd2', win(t2, S[3] + .3, S[4])); }
+  }};
+});
+st.ready();
+</script></body></html>

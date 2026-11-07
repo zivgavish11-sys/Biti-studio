@@ -1,0 +1,107 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP010-zipline — short, classic-v1. Delivery drones: 2M+ deliveries, medicine & blood to hospitals, the fixed-wing drone drops boxes by parachute; now meals to homes.
+// Phrases: 0 hook | 1 מה הם מביאים | 2 הרבה מהם | 3 תרופות ומנות דם | 4 בתי חולים | 5 לא נוחת | 6 זורק | 7 מצנח | 8 והיום | 9 באמריקה | 10 ארוחות | 11 בלי פקקים | 12 בלי טיפ | 13-14 follow
+// Generic drones built in-house (no replica of a real product).
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 10,
+  sky: 'sunset',
+  hookEnd: 3.4,
+  hook: ['רחפנים הביאו כבר', '2 מיליון <span class="pill">משלוחים</span>!'],
+  // S: 0 hook flight | 1 hospital | 2 parachute drop | 3 home meal + jam | 4 follow
+  scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[8] - .25, A[13] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[3], b: A[4] - .05, y: 330, c: 'pnk', h: '💊 תרופות ומנות דם'},
+    {a: A[4], b: S[2], y: 330, c: '', h: '🏥 לבתי חולים באפריקה'},
+    {a: A[5], b: A[6] - .05, y: 330, c: 'org', h: '✈️ לא נוחת'},
+    {a: A[6], b: S[3], y: 330, c: 'org', h: '🪂 זורק עם מצנח קטן'},
+    {a: A[10], b: A[11] - .05, y: 330, c: '', h: '🍔 גם ארוחות הביתה'},
+    {a: A[11], b: S[4], y: 330, c: 'grn', h: '🚗 בלי פקקים · 💸 בלי טיפ'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(10);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .85, ...o});
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), M(0x22351f, {roughness: .95})); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const P = (n, o) => st.prop('outdoor/' + n, o);
+for (let i = 0; i < 40; i++) { const x = -60 + r() * 120, z = -50 + r() * 60; if (Math.abs(z + 6) < 5) continue; await P(['CommonTree_1', 'CommonTree_2', 'CommonTree_3', 'PalmTree_1'][i % 4], {h: 4 + r() * 3, x, z}); }
+
+// fixed-wing delivery drone (generic)
+function plane() {
+  const g = new THREE.Group(); const W = M(0xe9edf5, {roughness: .5}), D = M(0x2b3040);
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(.22, 1.6, 8, 16), W); body.rotation.z = Math.PI / 2; body.castShadow = true; g.add(body);
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(.5, .05, 3.2), W); wing.position.set(.15, .12, 0); wing.castShadow = true; g.add(wing);
+  const tail = new THREE.Mesh(new THREE.BoxGeometry(.3, .4, .05), W); tail.position.set(-.95, .25, 0); g.add(tail);
+  const tw = new THREE.Mesh(new THREE.BoxGeometry(.3, .04, 1.0), W); tw.position.set(-.95, .1, 0); g.add(tw);
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(.52, .055, .4), M(COL.cyan, {roughness: .5})); stripe.position.set(.15, .13, 1.3); g.add(stripe);
+  const s2 = stripe.clone(); s2.position.z = -1.3; g.add(s2);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(.32, 32), new THREE.MeshStandardMaterial({color: 0xcfe9f5, transparent: true, opacity: .35, side: THREE.DoubleSide, depthWrite: false})); disc.rotation.y = Math.PI / 2; disc.position.set(1.05, 0, 0); g.add(disc);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(.32, .012, 6, 40), M(COL.cyan, {roughness: .5})); rim.rotation.y = Math.PI / 2; rim.position.copy(disc.position); g.add(rim);
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(.08, 12, 8), D); nose.position.set(1.02, 0, 0); g.add(nose);
+  scene.add(g); return g;
+}
+const pl = plane();
+// box + parachute
+const box = new THREE.Mesh(new THREE.BoxGeometry(.4, .3, .3), M(0xb07a45)); box.castShadow = true; scene.add(box);
+const chute = new THREE.Mesh(new THREE.SphereGeometry(.6, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M(0xff5fd2, {roughness: .7, side: THREE.DoubleSide})); chute.castShadow = true; scene.add(chute);
+const lineM = new THREE.LineBasicMaterial({color: 0xdddddd}); const lines = new THREE.LineSegments(new THREE.BufferGeometry(), lineM); scene.add(lines);
+
+// --- hospital set (x = 80)
+const HX = 80;
+const hos = await P('3Story_Balcony', {h: 10, x: HX, z: -10});
+const sign = st.screen([5, 1.3], (c, t, W, H) => { c.fillStyle = '#f4f6fb'; c.fillRect(0, 0, W, H); c.fillStyle = '#e23b4e'; const s = H * .6, x0 = W - H * .9, y0 = H * .2; c.fillRect(x0 + s * .35, y0, s * .3, s); c.fillRect(x0, y0 + s * .35, s, s * .3);
+  c.fillStyle = '#12142e'; c.font = `700 ${H * .5}px Rubik`; c.fillText('בית חולים', W - H * 1.1, H * .68); }, {px: 1000, light: .4});
+sign.mesh.position.set(HX, 6.2, -4.6); scene.add(sign.mesh);
+const yard = new THREE.Mesh(new THREE.CircleGeometry(3, 40), M(0x3d4a36)); yard.rotation.x = -Math.PI / 2; yard.position.set(HX + 4, .01, -1); yard.receiveShadow = true; scene.add(yard);
+const ringY = new THREE.Mesh(new THREE.TorusGeometry(2.2, .06, 8, 64), M(COL.pink, {roughness: .6})); ringY.rotation.x = Math.PI / 2; ringY.position.set(HX + 4, .03, -1); scene.add(ringY);
+await st.prop('people/character-female-c', {h: 1.6, x: HX + 6.2, z: .6, ry: -2.4, anim: 'idle'});
+
+// --- suburb set (x = -80): road with a traffic jam, a house, family in the yard, small quad drone lowers a meal bag
+const UX = -80;
+const road = new THREE.Mesh(new THREE.PlaneGeometry(80, 6), M(0x2a2d36)); road.rotation.x = -Math.PI / 2; road.position.set(UX, .01, 8); road.receiveShadow = true; scene.add(road);
+const cars = [];
+for (let i = 0; i < 9; i++) cars.push(await st.prop('vehicles/' + ['car-sedan', 'car-suv', 'car-taxi'][i % 3], {h: 1.5, x: UX - 22 + i * 5.2, z: 8 + (i % 2 ? 1.4 : -1.4), ry: Math.PI / 2}));
+const house = await P('2Story_Balcony', {h: 7, x: UX, z: -6});
+const lawn = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), M(0x2f5a2c)); lawn.rotation.x = -Math.PI / 2; lawn.position.set(UX, .015, 1); lawn.receiveShadow = true; scene.add(lawn);
+await st.prop('people/character-male-e', {h: 1.6, x: UX - 1.6, z: 2.2, ry: .6, anim: 'emote-yes'}).catch(() => st.prop('people/character-male-e', {h: 1.6, x: UX - 1.6, z: 2.2, ry: .6, anim: 'idle'}));
+await st.prop('people/character-female-d', {h: 1.15, x: UX - .6, z: 2.8, ry: .2, anim: 'idle'});
+const quad = await st.prop('drone/quadcopter', {x: UX + 1, y: 8, z: 1.5, scale: 3}); const Q = quad.object;
+const qprops = [0, 1, 2, 3].map(i => Q.getObjectByName('prop' + i));
+const bag = new THREE.Mesh(new THREE.BoxGeometry(.45, .5, .3), M(0xf2e6cf)); bag.castShadow = true; scene.add(bag);
+const tether = new THREE.Mesh(new THREE.CylinderGeometry(.01, .01, 1, 6), M(0xdddddd)); scene.add(tether);
+
+// ================= ANIMATION =================
+st.frame(t => {
+  // plane path: S0 cruising over trees (main set, origin); S1/S2 over the hospital
+  let px, py = 14, pz = -6;
+  if (t < S[1]) { px = -20 + t * 9; }
+  else if (t < S[3]) { px = HX - 26 + (t - S[1]) * 6.5; py = 12; pz = -1; }
+  else { px = 60 + (t - S[3]) * 9; py = 30; }
+  if (t >= S[4]) { px = -20 - (END - t) * 9; py = 14; pz = -6; }
+  pl.position.set(px, py + Math.sin(t * 1.3) * .15, pz); pl.rotation.set(Math.sin(t * .9) * .06, 0, Math.sin(t * 1.1) * .03);
+  // drop: released at A[6] above the yard, chute opens, lands ~S[3]
+  const rel = A[6] - .1, dropX = HX + 4;
+  if (t < rel || t >= S[3]) { box.position.set(pl.position.x - .1, pl.position.y - .32, pl.position.z); chute.visible = false; }
+  else { const d = t - rel; const y = Math.max(.15, 11.6 - Math.min(d, .5) * 4 - Math.max(0, d - .5) * 3.4); box.position.set(dropX + Math.sin(d * 2) * .2, y, -1); chute.visible = d > .35; chute.scale.setScalar(sm(.35, .7, d)); chute.position.set(box.position.x, y + 1.3, -1); }
+  if (chute.visible) { const b = box.position, c = chute.position; const pts = []; for (const [dx, dz] of [[.55, 0], [-.55, 0], [0, .55], [0, -.55]]) pts.push(b.x, b.y + .15, b.z, c.x + dx, c.y, c.z + dz); lines.geometry.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); lines.visible = true; } else lines.visible = false;
+  // suburb: jam crawls, quad hovers and lowers a bag
+  cars.forEach((cr, i) => { cr.object.position.x = UX - 22 + i * 5.2 + Math.max(0, Math.sin(t * .8 + i) * .2) + (t - S[3]) * .25; });
+  qprops.forEach((p, i) => p && (p.rotation.y = t * 40 * (i % 2 ? -1 : 1)));
+  const qy = 8 - sm(S[3], A[10], t) * 2 + Math.sin(t * 1.7) * .08; Q.position.y = qy;
+  const drop = sm(A[10], A[11] + .3, t) * (qy - .5 - .3);
+  bag.position.set(UX + 1, qy - .55 - drop, 1.5); tether.scale.y = Math.max(.01, drop + .2); tether.position.set(UX + 1, qy - .45 - (drop + .2) / 2, 1.5);
+
+  let cp, ct;
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [px + 6, py + 2.5, pz + 7], [px, py, pz]], [S[1], [px + 3.5, py + 2, pz + 8], [px, py - .3, pz]]]);   // hook: chase the drone
+  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [HX + 16, 7, 18], [HX + 1, 5, -4]], [S[2], [HX + 12, 6.5, 16], [HX + 2, 5, -3]]]);            // hospital
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [HX + 12, 6, 12], [HX + 3, 6, -1]], [A[6], [HX + 11, 5.5, 11], [HX + 4, 8, -1]], [S[3], [HX + 10, 4, 10], [HX + 4, 2.5, -1]]]); // parachute drop
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [UX + 12, 10, 21], [UX, 3, 1]], [A[10], [UX + 8, 8.5, 16], [UX + .5, 3, 1.5]], [S[4], [UX + 9, 10, 20], [UX, 2, 3]]]); // meal + jam
+  else { cp = V(px + 6, py + 2.5, pz + 7 + (END - t) * .6); ct = V(px, py, pz); }
+  return {cp, ct, overlay: t2 => {
+    if (t2 < S[1]) st.counter(540, 1120, '2,000,000', ' משלוחים', '#2ee6ff', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
+    if (t2 > A[11] && t2 < S[4]) { const [x, y] = st.proj(V(UX - 4, 2.2, 8)); st.tag(x, Math.min(Math.max(y, 650), 1180), 'פקק 🚗🚗🚗', '#ff5fd2', win(t2, A[11], S[4])); }
+  }};
+});
+st.ready();
+</script></body></html>
