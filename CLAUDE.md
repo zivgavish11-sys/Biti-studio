@@ -171,6 +171,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
   **Hebrew UI inside the scene** with `st.screen(mesh|[w,h], (c,t,W,H)=>{...})` on phones/monitors/signs (matte, light .25, no glow); captions in **one big white pill**, active word in brand pink #e8338f (calm, no shake).
   Everyday Israeli props in `engine/assets/models/everyday/` (smartphone, router, cellTower, busStop — more coming). Demo: `python3 tools/render.py frames engine/props/workshop 1,5,9,13`.
 - **Testing visual/format changes (Ziv 2026-11-07):** never change two things at once. Long ep001–006 = baseline; each new change is tested on **4 videos** (later 3–4) vs the running average. Tag every episode in `state/episodes.json` with `format` (long/short) and `look` (classic-v1 / hero-v2).
+  Ziv 2026-11-07: ep011 = hero look AND the first deep-science episode (two changes at once, his choice) → in the hero test ep011 counts with lower weight and the hero test gets **one extra video** (5 instead of 4).
 
 ## Files
 - Look: `classic` is the default (Ziv's choice). The old neon look still exists only via `STYLE=neon` (→ `out-neon/`); don't use it unless Ziv asks. Reference classic episode: `episodes/ep002-walk/`.
