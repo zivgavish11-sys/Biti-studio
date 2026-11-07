@@ -1,0 +1,141 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP007-mars — SHORT format (first short). Rover drives itself on Mars: 20-min command delay → camera, 3D map, own path; off-world distance record (Oct 2026), >90% AutoNav.
+// Phrases: 0 במאדים יש רובוט | 1 אז למה אי אפשר | 2 כי פקודה מכאן | 3 אחרי 20 דקות | 4 ואין שם גרר | 5 מצלם | 6 בונה מפה | 7 בוחר דרך
+//  8 שבר שיא | 9 אף רכב לא נסע יותר | 10 וכמעט כל הדרך | 11 נהג בעצמו | 12-13 follow
+import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+const st = await studio({
+  episode: 7,
+  sky: 'night',
+  hookEnd: 3.9,
+  hook: ['במאדים יש רובוט', 'שנוהג <span class="pill">לבד</span>!'],
+  // S: 0 hook drive | 1 Earth→Mars signal | 2 stuck, no tow truck | 3 camera/map/path | 4 RE-HOOK record | 5 follow / loop
+  scenes: (A, B, END) => [0, A[2] - .25, A[4] - .1, A[5] - .25, A[8] - .25, A[12] - .25, END],
+  chips: (A, B, S) => [
+    {a: A[2], b: A[3] - .1, y: 330, c: '', h: '📡 פקודה מכדור הארץ'},
+    {a: A[3], b: S[2], y: 330, c: 'org', h: '⏳ לפעמים 20 דקות בדרך'},
+    {a: A[4] + .1, b: S[3], y: 330, c: 'pnk', h: '🚫 אין גרר במאדים'},
+    {a: A[5], b: A[6] - .05, y: 330, c: '', h: '📷 מצלם'},
+    {a: A[6], b: A[7] - .05, y: 330, c: '', h: '🗺️ בונה מפה'},
+    {a: A[7], b: S[4], y: 330, c: 'grn', h: '↪️ בוחר דרך לבד'},
+    {a: A[8] + .1, b: A[10] - .05, y: 330, c: 'org', h: '🏆 שיא<small>הכי הרבה ק״מ על כוכב לכת אחר</small>'},
+    {a: A[10], b: S[5], y: 330, c: 'grn', h: '🤖 יותר מ־90% בנהיגה עצמית'},
+  ],
+});
+const {scene, A, B, S, END} = st; const r = rng(11);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .9, ...o});
+
+// ================= MARS TERRAIN (origin) =================
+const G = new THREE.PlaneGeometry(220, 220, 160, 160); G.rotateX(-Math.PI / 2);
+const pos = G.attributes.position, cols = [];
+const hgt = (x, z) => Math.sin(x * .15) * Math.cos(z * .12) * .5 + Math.sin(x * .41 + z * .33) * .18 + Math.max(0, (Math.abs(z) - 18)) * .12;
+for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), z = pos.getZ(i); const y = hgt(x, z); pos.setY(i, y);
+  const k = .82 + r() * .18 + y * .06; cols.push(.30 * k, .12 * k, .07 * k); }
+G.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); G.computeVertexNormals();
+const ground = new THREE.Mesh(G, new THREE.MeshStandardMaterial({vertexColors: true, roughness: .97})); ground.receiveShadow = true; scene.add(ground);
+const rockM = M(0x6b3a26), rockM2 = M(0x4a2a1e);
+const rocks = [];
+const rock = (x, z, s) => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), r() > .5 ? rockM : rockM2); m.position.set(x, hgt(x, z) + s * .35, z); m.rotation.set(r() * 3, r() * 3, r() * 3); m.scale.y = .6 + r() * .3; m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+for (let i = 0; i < 140; i++) { const x = -70 + r() * 140, z = -40 + r() * 34; if (Math.abs(z + 2) < 3.5 && x < 30) continue; rock(x, z, .2 + r() * r() * 1.4); }
+// rocks the rover detects in the scan scene (around x 14..24)
+const key = [[15.5, -4.6, .9], [19.5, .9, 1.0], [23, -4.2, .8], [26.5, .6, .9]].map(([x, z, s]) => { const m = rock(x, z, s); rocks.push(m); return m; });
+// distant mesas
+for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(new THREE.CylinderGeometry(6 + r() * 6, 10 + r() * 6, 4 + r() * 5, 7), M(0x5a2f20)); m.position.set(-80 + i * 28, 1.5, -70 - r() * 10); m.receiveShadow = true; scene.add(m); }
+
+// ================= ROVER =================
+const ROV = await st.prop('space/Rover_1', {h: 2.2, x: 0, z: -2});
+const R = ROV.object; const R0 = R.position.clone(); const RY0 = R.rotation.y;
+const rover = new THREE.Group(); scene.add(rover); rover.add(R); R.position.set(R0.x, R0.y, R0.z + 2); // local: centred at origin
+// tracks behind the rover (grow with distance)
+const trackM = M(0x140a06, {roughness: 1});
+const tracks = [-.75, .75].map(dz => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, .45), trackM); m.rotation.x = -Math.PI / 2; m.receiveShadow = true; m.userData.dz = dz; scene.add(m); return m; });
+// mast camera "eye" marker (matte cyan, no glow) for the scan scene
+const eye = new THREE.Mesh(new THREE.SphereGeometry(.09, 12, 8), M(COL.cyan, {roughness: .5})); eye.position.set(0, 2.25, 0); rover.add(eye);
+
+// planned path through the key rocks (scan scene)
+const curve = new THREE.CatmullRomCurve3([V(12, 0, -2), V(15.5, 0, -1.6), V(17.5, 0, -2.4), V(19.5, 0, -2.3), V(21.5, 0, -1.5), V(23, 0, -1.6), V(26.5, 0, -2.6), V(30, 0, -2)].map(p => (p.y = hgt(p.x, p.z) + .06, p)));
+const pathGeo = new THREE.TubeGeometry(curve, 200, .07, 6, false);
+const pathMesh = new THREE.Mesh(pathGeo, M(COL.cyan, {roughness: .5})); scene.add(pathMesh); pathMesh.visible = false;
+// map points (3D scan dots)
+const dots = [];
+for (let i = 0; i < 900; i++) { const x = 13 + r() * 16, z = -7 + r() * 9; dots.push(x, hgt(x, z) + .05, z); }
+const dotGeo = new THREE.BufferGeometry(); dotGeo.setAttribute('position', new THREE.Float32BufferAttribute(dots, 3));
+const dotM = new THREE.PointsMaterial({color: COL.cyan, size: .09, transparent: true, opacity: 0, depthWrite: false}); scene.add(new THREE.Points(dotGeo, dotM));
+
+// ================= STUCK SET (x = 80) =================
+const KX = 80, KZ = -2;
+const pit = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 1.2, 1.6, 40, 1, true), M(0x2a150d, {side: THREE.DoubleSide})); pit.position.set(KX + 2.2, hgt(KX, KZ) - .7, KZ); scene.add(pit);
+const pitFloor = new THREE.Mesh(new THREE.CircleGeometry(1.2, 32), M(0x1e0f09)); pitFloor.rotation.x = -Math.PI / 2; pitFloor.position.set(KX + 2.2, hgt(KX, KZ) - 1.45, KZ); scene.add(pitFloor);
+const rim = new THREE.Mesh(new THREE.TorusGeometry(2.65, .25, 8, 48), M(0x5e321f)); rim.rotation.x = Math.PI / 2; rim.position.set(KX + 2.2, hgt(KX, KZ) + .02, KZ); rim.receiveShadow = true; scene.add(rim);
+const hole = new THREE.Mesh(new THREE.CircleGeometry(2.55, 40), new THREE.MeshBasicMaterial({color: 0x000000, colorWrite: false})); // keep ground from covering the pit
+hole.rotation.x = -Math.PI / 2; hole.position.set(KX + 2.2, hgt(KX, KZ) + .03, KZ); hole.renderOrder = -1; scene.add(hole);
+ground.material.onBeforeCompile = sh => { sh.uniforms.pc = {value: V(KX + 2.2, 0, KZ)}; sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vW;').replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvW=(modelMatrix*vec4(transformed,1.)).xyz;');
+  sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vW;uniform vec3 pc;').replace('void main() {', 'void main() {\nif(distance(vW.xz,pc.xz)<2.5) discard;'); };
+const stuck = (await st.prop('space/Rover_1', {h: 2.2, x: KX, z: KZ})).object; const SK0 = stuck.position.clone();
+
+// ================= SPACE SET (x = -300, fog off there) =================
+const SX = -300;
+const starG = new THREE.BufferGeometry(), sp = [];
+for (let i = 0; i < 1500; i++) { const u = r() * Math.PI * 2, v = Math.acos(2 * r() - 1), d = 120; sp.push(SX + d * Math.sin(v) * Math.cos(u), d * Math.cos(v), d * Math.sin(v) * Math.sin(u)); }
+starG.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3)); scene.add(new THREE.Points(starG, new THREE.PointsMaterial({color: 0xdfe6ff, size: .35, fog: false})));
+const planet = (x, rad, base, spots) => { const g = new THREE.SphereGeometry(rad, 64, 40); const c = []; const p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const n = Math.sin(p.getX(i) * 2.1 / rad * 3) * Math.cos(p.getY(i) * 1.7 / rad * 3) + Math.sin(p.getZ(i) * 2.9 / rad * 3); const col = n > .55 ? spots : base; c.push(col[0], col[1], col[2]); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(c, 3)); const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({vertexColors: true, roughness: .85, fog: false})); m.position.set(x, 0, 0); scene.add(m); return m; };
+const earth = planet(SX - 9, 3.2, [.12, .3, .7], [.2, .5, .25]);
+const mars = planet(SX + 9, 2.0, [.62, .28, .16], [.45, .2, .12]);
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(SX, 20, 40); sun.target.position.set(SX, 0, 0); scene.add(sun, sun.target);
+const sig = new THREE.Mesh(new THREE.SphereGeometry(.28, 16, 12), M(COL.cyan, {roughness: .4, fog: false})); scene.add(sig);
+const dashM = new THREE.MeshStandardMaterial({color: COL.cyan, roughness: .5, fog: false, transparent: true, opacity: .7});
+const dashes = Array.from({length: 22}, (_, i) => { const m = new THREE.Mesh(new THREE.BoxGeometry(.35, .06, .06), dashM); m.position.set(SX - 5.6 + i * .53, 0, 0); scene.add(m); return m; });
+
+// ================= ANIMATION =================
+const SPEED = .55; // m/s on the main set
+const rx = t => -8 + t * SPEED;
+const FOG = st.fog.density;
+st.frame(t => {
+  const inSpace = t >= S[1] && t < S[2];
+  st.fog.density = inSpace ? 0 : FOG * .6;
+  scene.background.set(inSpace ? 0x03040c : 0x2a1a22);
+  if (!inSpace) st.fog.color.set(0x3a2228);
+  // re-hook: warmer, brighter sky
+  if (t >= S[4] && t < S[5]) { const k = sm(S[4], S[4] + .5, t); scene.background.lerp(new THREE.Color(0x5a2c24), k * .7); st.fog.color.copy(scene.background); }
+
+  // --- main rover position per scene ---
+  let x = rx(t), z = -2, yaw = 0;
+  if (t >= S[3] && t < S[4]) { const u = sm(S[3], S[4] + 1.2, t) * .55; const p = curve.getPointAt(u), q = curve.getTangentAt(u); x = p.x; z = p.z; yaw = Math.atan2(-q.z, q.x); }
+  else if (t >= S[4]) { x = 20 + (t - S[4]) * SPEED * 1.4; z = -2; }
+  rover.position.set(x, hgt(x, z), z); rover.rotation.set(0, yaw, Math.sin(t * 3.1) * .012);
+  const tx0 = -60, tl = x - tx0; tracks.forEach(m => { m.scale.x = Math.max(.01, tl); m.position.set(tx0 + tl / 2 - 1.4, hgt(x, z) + .02, z + m.userData.dz); m.visible = t < S[3] || t >= S[4]; });
+  // scan scene: dots + path
+  dotM.opacity = .8 * win(t, A[6] - .1, S[4] + .2, .3);
+  pathMesh.visible = t >= A[7] - .1 && t < S[4] + .1;
+  pathGeo.setDrawRange(0, Math.floor(pathGeo.index.count * sm(A[7] - .1, A[7] + 1.0, t) / 6) * 6);
+  // stuck rover: nose-down rocking, wheels trying
+  stuck.position.set(SK0.x + 1.3 + Math.sin(t * 9) * .03, SK0.y - .75, SK0.z); stuck.rotation.set(0, stuck.rotation.y, -.42 + Math.sin(t * 9) * .02);
+  // signal: Earth → Mars (slow, it takes minutes)
+  const su = sm(A[2], S[2] - .2, t);
+  sig.position.set(SX - 5.6 + su * 11.4, 0, 0); sig.visible = inSpace;
+  dashes.forEach((d, i) => { d.visible = inSpace && (i / 21) <= su; });
+  earth.rotation.y = t * .25; mars.rotation.y = t * .3;
+
+  let cp, ct; const R = V(x, hgt(x, z), z);
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [x + 5.5, 2.6, 5.6], [x, 1.2, -2]], [S[1], [x + 3.2, 2.2, 6.4], [x, 1.2, -2]]]);                         // hook: tracking, rover mid-drive
+  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [SX - 2, 5, 44], [SX - 1, 0, 0]], [S[2], [SX + 2, 3, 38], [SX + 1, 0, 0]]]);                 // space: signal crawling
+  else if (t < S[3]) { const a = .7 + (t - S[2]) * .25; cp = V(KX + 2 + Math.sin(a) * 7, 3.6, KZ + Math.cos(a) * 7); ct = V(KX + 1.6, .2, KZ); } // stuck
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [x - 6, 8, z + 10], [x + 4, .4, z - 1.5]], [A[7], [x - 5, 9.5, z + 9.5], [x + 5, .2, z - 1.5]], [S[4], [x - 4, 11, z + 9], [x + 5, 0, z - 1.5]]]); // scan + path, high
+  else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [x + 5, 3.2, 7], [x, 1, -2]], [S[4] + 1.6, [x + 4, 7, 11], [x - 2, .5, -2]], [S[5], [x + 3, 11, 15], [x - 4, 0, -2]]]);    // RE-HOOK: crane up over the long trail
+  else [cp, ct] = camKF(t, [[S[5], [x + 7, 3.4, 7.2], [x, 1.2, -2]], [END, [x + 5.5, 2.6, 5.6], [x, 1.2, -2]]]);                                          // loop to frame-0 composition
+  return {cp, ct, overlay: t2 => {
+    if (t2 > S[1] && t2 < S[2]) {
+      const [ex, ey] = st.proj(earth.position.clone().add(V(0, 4.4, 0))); st.tag(ex, ey, 'כדור הארץ', '#2ee6ff', win(t2, S[1] + .1, S[2]));
+      const [mx, my] = st.proj(mars.position.clone().add(V(0, 3.0, 0))); st.tag(mx, my, 'מאדים', '#ffa53a', win(t2, S[1] + .1, S[2]));
+      st.counter(540, 1120, Math.min(20, Math.floor(su * 20.99)), ' דקות', '#ffa53a', win(t2, A[2] + .2, S[2]), 100);
+    }
+    if (t2 > S[2] + .3 && t2 < S[3]) { const [kx, ky] = st.proj(V(KX + 1.4, 2.6, KZ)); st.tag(kx, Math.max(ky - 40, 650), 'תקוע 😅', '#ff5fd2', win(t2, S[2] + .3, S[3])); }
+    if (t2 > A[5] - .1 && t2 < S[4]) key.forEach((m, i) => { const b = st.bbox(m.position.x, m.position.y - .5, m.position.z, 2.0, 1.4, 2.0); if (b) st.detBox(b, 'סלע', '#ffa53a', win(t2, A[5] + i * .15, S[4])); });
+    if (t2 > S[4] && t2 < S[5]) st.counter(540, 1120, Math.floor(45 * sm(S[4] + .2, A[10], t2)), ' ק״מ', '#2ee6ff', win(t2, S[4] + .2, S[5]), 110);
+  }};
+});
+st.ready();
+</script></body></html>
