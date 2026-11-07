@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro visual workshop 2026-11-07 — "after" test frame: one hero object on a monochrome indigo stage,
+// an everyday prop with Hebrew UI telling the story, a white caption pill with one coloured key word. Matte, no glow.
+import {studio, THREE, V, camKF} from '/engine/lib/core.js';
+import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+const st = await studio({episode: 3, hook: ['מה השואב הרובוטי', 'עושה <span class="pill">בסתר</span>?'], hookEnd: 99, scenes: (A, B, E) => [0, 45, E]});
+const {scene} = st;
+scene.background = new THREE.Color(0x0d0f2e); scene.fog = new THREE.FogExp2(0x0d0f2e, .06);
+// monochrome stage: matte indigo floor + very subtle matte grid lines (no emissive)
+const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64), new THREE.MeshStandardMaterial({color: 0x1a1c4a, roughness: .85}));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const grid = new THREE.GridHelper(4, 16, 0x2c2f6e, 0x23265c); grid.position.y = .002; scene.add(grid);
+// hero: robot vacuum (x-ray shell)
+const vac = await st.prop('home/robotVacuum', {h: .12, x: 0, z: 0, tint: 1});
+vac.object.traverse(m => { if (m.isMesh && /shell|bumper/.test(m.name + m.parent?.name)) { const n = m.material.clone(); n.transparent = true; n.opacity = .3; n.color.set(0xb7c0f0); n.depthWrite = false; m.material = n; } });
+// story prop: a phone with a Hebrew app screen (cleaning map)
+const ph = new THREE.Group(); scene.add(ph);
+const body = new THREE.Mesh(new RoundedBoxGeometry(.2, .42, .02, 6, .03), new THREE.MeshStandardMaterial({color: 0x15172e, roughness: .35, metalness: .4}));
+body.castShadow = true; ph.add(body);
+const cv = document.createElement('canvas'); cv.width = 600; cv.height = 1240; const c = cv.getContext('2d');
+c.fillStyle = '#f4f5fb'; c.fillRect(0, 0, 600, 1240); c.direction = 'rtl'; c.textAlign = 'right';
+c.fillStyle = '#12142e'; c.font = '700 54px Rubik'; c.fillText('ניקוי הבית', 560, 120);
+c.fillStyle = '#6b6f93'; c.font = '400 34px Rubik'; c.fillText('הסתיים · 42 דקות', 560, 175);
+// floor-plan map
+c.fillStyle = '#dfe3f6'; c.fillRect(40, 230, 520, 600); c.strokeStyle = '#12142e'; c.lineWidth = 8; c.strokeRect(40, 230, 520, 600);
+c.beginPath(); c.moveTo(300, 230); c.lineTo(300, 500); c.moveTo(40, 560); c.lineTo(400, 560); c.stroke();
+c.fillStyle = '#5b4bff'; [[60, 250, 220, 290], [320, 250, 220, 560], [60, 580, 320, 230]].forEach(([x, y, w, h]) => { c.globalAlpha = .28; c.fillRect(x, y, w, h); }); c.globalAlpha = 1;
+c.fillStyle = '#12142e'; c.font = '700 36px Rubik'; c.fillText('סלון', 540, 420); c.fillText('מטבח', 270, 360); c.fillText('חדר שינה', 330, 720);
+c.fillStyle = '#ff3b5c'; c.beginPath(); c.arc(180, 700, 18, 0, 7); c.fill();
+c.fillStyle = '#12142e'; c.font = '700 44px Rubik'; c.fillText('מפה נשמרה ✓', 560, 920);
+c.fillStyle = '#6b6f93'; c.font = '400 32px Rubik'; c.fillText('3 חדרים · 68 מ״ר', 560, 975);
+c.fillStyle = '#12142e'; c.beginPath(); c.roundRect(40, 1060, 520, 110, 55); c.fill(); c.fillStyle = '#fff'; c.textAlign = 'center'; c.font = '700 44px Rubik'; c.fillText('נקה שוב', 300, 1130);
+const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+const scr = new THREE.Mesh(new THREE.PlaneGeometry(.184, .38), new THREE.MeshStandardMaterial({map: tex, roughness: .5, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: .25}));
+scr.position.z = .0105; ph.add(scr);
+ph.position.set(.36, .23, -.3); ph.rotation.set(-.15, -.45, 0);
+// soft spot from above-front (real light, no bloom)
+const spot = new THREE.SpotLight(0xffffff, 18, 6, .5, .7); spot.position.set(-.6, 2.4, 1.4); spot.target.position.set(.15, 0, 0); spot.castShadow = true; scene.add(spot, spot.target);
+// caption: grouper-style big white pill, one coloured key word (pink = brand, no red/neon)
+st.extra.innerHTML = `<div style="position:absolute;top:1250px;left:0;right:0;text-align:center"><span style="display:inline-block;background:#fff;color:#0b1022;font:700 76px Rubik;padding:18px 48px;border-radius:60px;box-shadow:0 14px 34px rgba(0,0,0,.5);direction:rtl">הוא <span style="color:#e8338f">מצייר</span> לכם מפה</span></div>`;
+st.frame(t => { const lid = vac.object.getObjectByName('lidar'); if (lid) lid.rotation.y = t * 3;
+  const [cp, ct] = camKF(t, [[0, [-.6, .5, 1.25], [.1, .16, -.08]], [10, [-.4, .54, 1.3], [.1, .16, -.08]]]); return {cp, ct}; });
+st.ready();
+</script></body></html>
