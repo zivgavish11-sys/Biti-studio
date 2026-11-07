@@ -410,6 +410,131 @@ for (const p of sc.props || []) {
     const sp = new THREE.SpotLight(0xffffff, 50, 18, .6, .5); sp.position.set(1, 7, 3); sp.target.position.set(0, 1, -1); scene.add(sp, sp.target);
     await robot(.2, -1.0, -0.25, sc.anim || 'Walking', T, .5, accent);
     const carry = new THREE.Mesh(new THREE.BoxGeometry(.75, .42, .55), tote2); carry.position.set(.15, .8, -.3); carry.rotation.y = -.25; scene.add(carry); }
+  if (p === 'boulevard') { // cover: night city boulevard; a two-seat robotaxi pod on the road, a robot greeting on the sidewalk, towers behind
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.022);
+    const gnd = new THREE.Mesh(new THREE.PlaneGeometry(80, 60), mat(0x1d2244, .1, {roughness: .9, metalness: 0})); gnd.rotation.x = -Math.PI / 2; scene.add(gnd);
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(60, 5), mat(0x121530, .1, {roughness: .8, metalness: .1})); road.rotation.x = -Math.PI / 2; road.position.set(0, .01, 1.2); scene.add(road);
+    for (let k = -12; k <= 12; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.1, .12), mat(0xe8ecf7, .1, {roughness: .6, metalness: 0})); d.rotation.x = -Math.PI / 2; d.position.set(k * 2.4, .02, 1.2); scene.add(d); }
+    const walk = new THREE.Mesh(new THREE.BoxGeometry(60, .14, 3), mat(0x3a3f63, .1, {roughness: .9, metalness: 0})); walk.position.set(0, .07, -2.3); scene.add(walk);
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(60, .16, .12), mat(accent, .1, {roughness: .6})); curb.position.set(0, .08, -.78); scene.add(curb);
+    // tower skyline with lit window grids
+    const winTex = (seed) => { const cv = document.createElement('canvas'); cv.width = 128; cv.height = 512; const g = cv.getContext('2d'); g.fillStyle = '#1a1f45'; g.fillRect(0, 0, 128, 512);
+      let s = seed; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+      for (let y = 8; y < 512; y += 18) for (let x = 8; x < 128; x += 22) { g.fillStyle = rnd() < .45 ? (rnd() < .5 ? '#ffd9a0' : '#bfe9ff') : '#262c5a'; g.fillRect(x, y, 12, 9); }
+      const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; };
+    for (const [x, z, w, h, sd] of [[-14, -20, 4, 10, 3], [-8.5, -24, 3.2, 15, 7], [-3, -22, 4.5, 8, 11], [3.5, -26, 3.4, 17, 5], [9, -21, 4.2, 11, 9], [15, -24, 3.6, 13, 13], [20, -19, 4, 8, 2]]) {
+      const t = winTex(sd); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(w / 3, h / 10);
+      const tw = new THREE.Mesh(new THREE.BoxGeometry(w, h, w * .8), new THREE.MeshStandardMaterial({color: 0xffffff, map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: .35, roughness: .6}));
+      tw.position.set(x * 1.3, h / 2, z - 10); scene.add(tw);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(w * .5, 1.2, w * .4), mat(0x1a1f45, .1)); cap.position.set(x * 1.3, h + .6, z - 10); scene.add(cap); }
+    await place('outdoor/PalmTree_1', {x: -5.2, z: -2.6, h: 5, dim: .75}); await place('outdoor/PalmTree_3', {x: 6.8, z: -2.8, h: 4.6, dim: .75});
+    await place('outdoor/Streetlight_Single', {x: 5.2, z: -1.2, h: 3.8, dim: .8});
+    const lampL = new THREE.PointLight(0xffc27a, 16, 11); lampL.position.set(4.8, 3.6, -.8); scene.add(lampL);
+    // generic two-seat robotaxi pod (no wheel, no pedals) driving along the road
+    const pod = new THREE.Group(), shellM = mat(0xdfe3ee, .1, {roughness: .3, metalness: .5}), glass = mat(0x0b0f26, .1, {roughness: .1, metalness: .6}), tyre = mat(0x0c0e1c, .1, {roughness: .8});
+    const bodyP = new THREE.Mesh(new THREE.CapsuleGeometry(.75, 2.2, 8, 24), shellM); bodyP.rotation.z = Math.PI / 2; bodyP.scale.set(1, 1, 1.05); bodyP.position.y = .85; pod.add(bodyP);
+    const cab = new THREE.Mesh(new THREE.SphereGeometry(.95, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), glass); cab.scale.set(1.25, .6, .82); cab.position.set(-.1, 1.2, 0); pod.add(cab);
+    const band = new THREE.Mesh(new THREE.BoxGeometry(3.4, .08, 1.6), mat(accent, .1)); band.position.y = .62; pod.add(band);
+    for (const [x, z] of [[-1.05, .72], [1.05, .72], [-1.05, -.72], [1.05, -.72]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .22, 28), tyre); wh.rotation.x = Math.PI / 2; wh.position.set(x, .38, z); pod.add(wh); }
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(.04, .07, 1.0), mat(0xfff2d8, .1, {emissive: 0xfff2d8, emissiveIntensity: .5})); hl.position.set(1.86, .92, 0); pod.add(hl);
+    pod.position.set(.2, 0, 1.6); pod.rotation.y = .18; scene.add(pod);
+    await place('people/character-female-b', {x: -4.0, y: .14, z: -2.6, ry: .9, h: 1.6, dim: .85, anim: 'walk', t: .3});
+    const moon = new THREE.Mesh(new THREE.CircleGeometry(1.3, 48), new THREE.MeshBasicMaterial({color: 0xf2e6c8, fog: false})); moon.position.set(-12, 11, -40); moon.lookAt(0, 3, 0); scene.add(moon);
+    const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(4, 5, 5); scene.add(key);
+    await robot(2.6, -2.3, -0.5, 'Wave', T, .5, COL.purple, .14); }
+  if (p === 'showroom') { // humanoid showroom: glossy floor, robots on round podiums with price stands, shoppers, glass wall onto a tower skyline
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.018);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), mat(0x2a3060, .1, {roughness: .18, metalness: .4})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 10), mat(0x0e1230, .1, {roughness: .7, metalness: .1, transparent: true, opacity: .55})); wall.position.set(0, 5, -7); scene.add(wall);
+    for (let k = -6; k <= 6; k++) { const mul = new THREE.Mesh(new THREE.BoxGeometry(.1, 10, .1), mat(0x8a93b8, .1, {metalness: .7, roughness: .3})); mul.position.set(k * 2.2, 5, -6.95); scene.add(mul); }
+    for (const [x, w, h] of [[-9, 2.4, 9], [-5.5, 1.8, 14], [-2, 2.6, 7], [1.5, 1.6, 18], [4.5, 2.4, 11], [8, 2, 15], [11, 2.6, 8]]) {
+      const tw = new THREE.Mesh(new THREE.BoxGeometry(w, h, 1.5), new THREE.MeshStandardMaterial({color: 0x2a3170, emissive: 0x3a4390, emissiveIntensity: .25, roughness: .7, fog: false})); tw.position.set(x, h / 2 - 1, -18); scene.add(tw); }
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(30, 20), mat(0x0b0e24, .1, {roughness: .9})); ceil.rotation.x = Math.PI / 2; ceil.position.y = 7.5; scene.add(ceil);
+    const podM = mat(0xeef1f8, .1, {roughness: .25, metalness: .2});
+    const slots = [[-2.9, -3.2, .35, 'Idle', COL.orange, .5], [0, -2.2, -.15, 'Wave', COL.cyan, .58], [2.9, -3.4, -.5, 'ThumbsUp', COL.pink, .5]];
+    for (const [x, z, r, an, c, s] of slots) {
+      const pd = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.08, .3, 48), podM); pd.position.set(x, .15, z); scene.add(pd);
+      const rim2 = new THREE.Mesh(new THREE.CylinderGeometry(1.09, 1.09, .06, 48), mat(c, .1)); rim2.position.set(x, .27, z); scene.add(rim2);
+      await robot(x, z, r, an, T + x * .1, s, c, .3);
+      // price stand (blank tag, no text) in front of each podium
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, 1.0, 8), mat(0x8a93b8, .1, {metalness: .7})); pole.position.set(x + .9, .5, z + 1.0); scene.add(pole);
+      const tag = new THREE.Mesh(new THREE.BoxGeometry(.5, .32, .03), mat(0xf6f7fb, .1, {roughness: .5})); tag.position.set(x + .9, 1.05, z + 1.0); tag.rotation.x = -.3; scene.add(tag);
+      const tl = new THREE.Mesh(new THREE.BoxGeometry(.36, .06, .035), mat(c, .1)); tl.position.set(x + .9, 1.08, z + 1.012); tl.rotation.x = -.3; scene.add(tl);
+      const sp = new THREE.SpotLight(0xffffff, 30, 12, .35, .6); sp.position.set(x, 7, z + 1); sp.target.position.set(x, 1, z); scene.add(sp, sp.target); }
+    await place('people/character-male-a', {x: -4.3, z: -.4, ry: 2.3, h: 1.65, dim: .85, anim: 'idle', t: .2});
+    await place('people/character-female-c', {x: 4.6, z: -.6, ry: -2.4, h: 1.55, dim: .85, anim: 'emote-yes', t: .5});
+    await place('home/pottedPlant', {x: -5.2, z: -4.5, h: 1.6, dim: .6}); await place('home/pottedPlant', {x: 5.4, z: -4.8, h: 1.4, dim: .6}); }
+  if (p === 'podline') { // car plant: assembly line where two-seat robotaxi pods roll off; robot arms, overhead lights, the old pickup bay dark and empty
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.024);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(50, 40), mat(0x20264a, .1, {roughness: .6, metalness: .2})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    const lane = new THREE.Mesh(new THREE.PlaneGeometry(40, 3.2), mat(0x151933, .1, {roughness: .7})); lane.rotation.x = -Math.PI / 2; lane.position.set(0, .01, -1.5); lane.rotation.z = -.12; scene.add(lane);
+    for (const s of [-1, 1]) { const st = new THREE.Mesh(new THREE.PlaneGeometry(40, .12), mat(0xffa53a, .1)); st.rotation.x = -Math.PI / 2; st.rotation.z = -.12; st.position.set(-s * .19, .015, -1.5 + s * 1.6); scene.add(st); }
+    const shellM = mat(0xdfe3ee, .1, {roughness: .3, metalness: .5}), glass = mat(0x0b0f26, .1, {roughness: .1, metalness: .6}), tyre = mat(0x0c0e1c, .1, {roughness: .8});
+    function pod(x, z, ry, c, open = false) { const g = new THREE.Group();
+      const b = new THREE.Mesh(new THREE.CapsuleGeometry(.75, 2.2, 8, 24), shellM); b.rotation.z = Math.PI / 2; b.position.y = .85; g.add(b);
+      const cab = new THREE.Mesh(new THREE.SphereGeometry(.95, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), glass); cab.scale.set(1.25, .6, .82); cab.position.set(-.1, 1.2, 0); g.add(cab);
+      const band = new THREE.Mesh(new THREE.BoxGeometry(3.4, .08, 1.6), mat(c, .1)); band.position.y = .62; g.add(band);
+      for (const [wx, wz] of [[-1.05, .72], [1.05, .72], [-1.05, -.72], [1.05, -.72]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(.38, .38, .22, 28), tyre); wh.rotation.x = Math.PI / 2; wh.position.set(wx, .38, wz); g.add(wh); }
+      if (false) { const door = new THREE.Mesh(new THREE.BoxGeometry(1.3, .9, .05), shellM); door.position.set(-.1, 1.85, .62); door.rotation.x = -.9; g.add(door);
+        for (const sx of [-.45, .3]) { const seat = new THREE.Mesh(new THREE.BoxGeometry(.5, .5, .5), mat(0x2b2f45, .1, {roughness: .7})); seat.position.set(sx, 1.0, 0); g.add(seat); } }
+      g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; }
+    pod(1.0, -.6, -.12, accent, true); pod(-3.8, -1.2, -.12, COL.cyan); pod(-8.6, -1.8, -.12, COL.purple); pod(-13.4, -2.4, -.12, COL.cyan);
+    // robot arms along the line
+    arm(-6.2, -4.2, accent); arm(-1.4, -3.6, accent);
+    // empty, unlit bay on the right with a parked angular cargo trolley under a dimmed sign frame
+    const bay = new THREE.Mesh(new THREE.BoxGeometry(5, .08, 4), mat(0x161a33, .1, {roughness: .8})); bay.position.set(7.5, .04, -5); scene.add(bay);
+    const frm = new THREE.Mesh(new THREE.BoxGeometry(4.6, .2, .2), mat(0x3a4170, .1)); frm.position.set(7.5, 4, -6.8); scene.add(frm);
+    for (const x of [5.3, 9.7]) { const pl = new THREE.Mesh(new THREE.BoxGeometry(.2, 4, .2), mat(0x3a4170, .1)); pl.position.set(x, 2, -6.8); scene.add(pl); }
+    for (let k = 0; k < 5; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-10 + k * 4, 6.5, -2.5); scene.add(lamp); }
+    for (const [x, z] of [[-11, -10], [-3, -11], [5, -12]]) { const rack = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 1.2), mat(0x262c55, .1, {roughness: .8})); rack.position.set(x, 2, z); scene.add(rack); }
+    await place('people/character-male-d', {x: 4.4, z: -3.2, ry: -1.2, h: 1.7, dim: .85, anim: 'idle', t: .2});
+    const sp = new THREE.SpotLight(0xffffff, 70, 20, .55, .5); sp.position.set(2, 8, 3); sp.target.position.set(0, 1, -1); scene.add(sp, sp.target); }
+  if (p === 'teachbench') { // factory cell: a wheeled humanoid routing cables on a harness board, a human operator teaching it from a tablet, progress screen
+    grid.visible = false; ring.visible = glow.visible = false; scene.fog = new THREE.FogExp2(0x070a24, 0.028);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x22284a, .1, {roughness: .65, metalness: .15})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    const zone = new THREE.Mesh(new THREE.RingGeometry(2.3, 2.45, 64), mat(0xffa53a, .1)); zone.rotation.x = -Math.PI / 2; zone.position.set(.3, .015, -2.4); scene.add(zone);
+    const steel = mat(0x8a93b8, .1, {roughness: .35, metalness: .7}), white = mat(0xeef1f8, .1, {roughness: .35, metalness: .15}), dark = mat(0x1b1f38, .1, {roughness: .6});
+    // harness board: tilted pegboard with coloured cables between pegs
+    const bench = new THREE.Group();
+    const top = new THREE.Mesh(new THREE.BoxGeometry(3.4, .1, 1.2), mat(0x3a3f63, .1, {roughness: .6})); top.position.y = .9; bench.add(top);
+    for (const x of [-1.6, 1.6]) for (const z of [-.5, .5]) { const lg = new THREE.Mesh(new THREE.BoxGeometry(.08, .9, .08), steel); lg.position.set(x, .45, z); bench.add(lg); }
+    const board = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.6, .06), mat(0x2b3170, .1, {roughness: .7})); board.position.set(0, 1.75, -.5); board.rotation.x = -.25; bench.add(board);
+    const pegs = []; for (let r = 0; r < 4; r++) for (let c = 0; c < 7; c++) { const pg = new THREE.Vector3(-1.35 + c * .45, 1.15 + r * .38, -.5 + .1 - r * .1); pegs.push(pg);
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .1, 8), steel); m.rotation.x = Math.PI / 2 - .25; m.position.copy(pg); bench.add(m); }
+    for (const [cc, path] of [[0xff5fd2, [0, 8, 16, 24, 26]], [0x2ee6ff, [6, 12, 18, 23, 21]], [0xffa53a, [1, 9, 10, 17, 25]]]) {
+      const curve = new THREE.CatmullRomCurve3(path.map(k => pegs[k].clone().add(new THREE.Vector3(0, 0, .06))));
+      const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 60, .035, 8), mat(cc, .1, {roughness: .5})); bench.add(tube); }
+    bench.position.set(.3, 0, -3.2); scene.add(bench);
+    // wheeled humanoid: mobile base, torso column, head with visor, two arms reaching the board
+    const bot = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(.55, .62, .35, 32), dark); base.position.y = .3; bot.add(base);
+    for (const a of [0, 2.09, 4.19]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, .1, 20), mat(0x0c0e1c, .1)); w.rotation.z = Math.PI / 2; w.rotation.y = a; w.position.set(Math.sin(a) * .45, .14, Math.cos(a) * .45); bot.add(w); }
+    const colm = new THREE.Mesh(new THREE.CylinderGeometry(.14, .2, .8, 20), steel); colm.position.y = .85; bot.add(colm);
+    const torso = new THREE.Mesh(new THREE.CapsuleGeometry(.32, .45, 8, 20), white); torso.position.y = 1.55; bot.add(torso);
+    const chest = new THREE.Mesh(new THREE.BoxGeometry(.4, .06, .05), mat(accent, .1)); chest.position.set(0, 1.62, .32); bot.add(chest);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(.24, 28, 18), white); head.scale.set(1, 1.1, 1); head.position.y = 2.22; bot.add(head);
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(.245, 28, 12, -0.9, 1.8, 1.2, .55), mat(0x0b0f26, .1, {roughness: .1, metalness: .6})); visor.position.y = 2.22; visor.scale.set(1, 1.1, 1); bot.add(visor);
+    const eyes = new THREE.Mesh(new THREE.BoxGeometry(.2, .03, .02), mat(COL.cyan, .1)); eyes.position.set(0, 2.24, .245); bot.add(eyes);
+    for (const s of [-1, 1]) { const sh = new THREE.Mesh(new THREE.SphereGeometry(.12, 16, 12), mat(accent, .1)); sh.position.set(s * .42, 1.85, 0); bot.add(sh);
+      const up = new THREE.Mesh(new THREE.CylinderGeometry(.07, .07, .55, 12), white); up.position.set(s * .5, 1.7, -.22); up.rotation.x = 1.0; up.rotation.z = s * .15; bot.add(up);
+      const fo = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .5, 12), white); fo.position.set(s * .5, 1.75, -.62); fo.rotation.x = 1.75; bot.add(fo);
+      const hand = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, .14), dark); hand.position.set(s * .48, 1.82, -.88); bot.add(hand); }
+    bot.position.set(.3, 0, -1.65); bot.rotation.y = .05; scene.add(bot);
+    // human teacher with tablet + dotted "learning" link to the robot
+    await place('people/character-female-e', {x: -2.5, z: -2.1, ry: 1.45, h: 1.65, dim: .85, anim: 'holding-both', t: .2});
+    const tab = new THREE.Mesh(new THREE.BoxGeometry(.4, .28, .03), dark); tab.position.set(-2.12, 1.02, -2.0); tab.rotation.set(-.9, .9, 0); scene.add(tab);
+    const tscr = new THREE.Mesh(new THREE.PlaneGeometry(.34, .22), mat(COL.cyan, .1, {roughness: .4})); tscr.position.set(-2.1, 1.04, -1.98); tscr.rotation.set(-.9, .9, 0); scene.add(tscr);
+    { const a0 = new THREE.Vector3(-1.95, 1.25, -1.95), b0 = new THREE.Vector3(.05, 2.3, -1.65); for (let k = 2; k < 20; k += 2) { const d = new THREE.Mesh(new THREE.SphereGeometry(.045, 10, 8), mat(accent, .1)); d.position.copy(a0.clone().lerp(b0, k / 20)); d.position.y += Math.sin(k / 20 * Math.PI) * .25; scene.add(d); } }
+    // progress screen on a stand: bars rising to full
+    const cvs = document.createElement('canvas'); cvs.width = 600; cvs.height = 340; const g = cvs.getContext('2d'); g.fillStyle = '#0d1230'; g.fillRect(0, 0, 600, 340);
+    const hs = [.25, .38, .5, .62, .75, .86, .98]; hs.forEach((h, k) => { g.fillStyle = k === 6 ? '#ff5fd2' : '#2ee6ff'; g.fillRect(40 + k * 78, 300 - h * 250, 52, h * 250); });
+    const tex = new THREE.CanvasTexture(cvs); tex.colorSpace = THREE.SRGBColorSpace;
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.08), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .45, roughness: .5})); scr.position.set(-3.3, 2.3, -4.0); scr.rotation.y = .5; scene.add(scr);
+    const bz = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.18, .06), dark); bz.position.set(-3.32, 2.3, -4.04); bz.rotation.y = .5; scene.add(bz);
+    const stp = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1.8, 10), steel); stp.position.set(-3.35, .9, -4.1); scene.add(stp);
+    for (const [x, z] of [[-6, -9], [6.5, -9]]) { const rack = new THREE.Mesh(new THREE.BoxGeometry(3, 2.2, 1), mat(0x262c55, .1, {roughness: .8})); rack.position.set(x, 1.1, z); scene.add(rack); }
+    for (let k = 0; k < 3; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-3.5 + k * 3.5, 6.5, -3); scene.add(lamp); }
+    const sp = new THREE.SpotLight(0xffffff, 60, 18, .5, .5); sp.position.set(0, 7, 3); sp.target.position.set(.3, 1.4, -2.5); scene.add(sp, sp.target); }
   if (p === 'border') {
     for (let k = 0; k < 7; k++) await robot(-3 + k * 1.05 + (k % 2) * .2, -2.4 - (k % 2) * 1.1, 0, 'Idle', T + k * .2, .38, 0x6a2340);
     for (const x of [-3.8, 3.8]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.18, 2.2, .18), mat(0x2a2f55, .1)); post.position.set(x, 1.1, -1.1); scene.add(post); }
