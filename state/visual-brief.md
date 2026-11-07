@@ -18,3 +18,8 @@ Planned questions: 1) pages/creators whose look he likes · 2) Biti's look (keep
 1. Hebrew UI on in-scene screens (monitors/phones show real Hebrew text + live data instead of black screens; matte, no glow). Demo: engine/props/proposals (t 2 vs 22).
 2. X-ray view of everyday robots (shell turns see-through, insides visible: battery, motors, lidar) — the grouper "inside the object" idea, without glow. Demo: engine/props/proposals (t 6 vs 26).
 Interview: Q2+ paused until the visual workshop with Ziv on Sat 2026-11-07 (boss task), to avoid double-asking.
+
+## Visual workshop (Sat 2026-11-07) — gaps vs grouper.explains, sent to Ziv
+Gaps: 1) busy scenes vs one hero object · 2) no Hebrew text inside the 3D scene · 3) toy-like Kenney models · 4) palette jumps per episode (pink floor, orange Mars) vs one indigo world + one accent · 5) per-word caption boxes vs one big white pill with one coloured word.
+Proposals (waiting for Ziv's OK): 1) hero stage (monochrome indigo, one object, soft spot) · 2) Hebrew screen/UI helper · 3) Israeli everyday prop kit (phone, router, cell tower, bus stop, shikun, Shabbat elevator, supermarket till, coffee machine) · 4) white caption pill, one pink key word.
+Test frame: engine/props/workshop (render.py frames engine/props/workshop 1).
