@@ -15,7 +15,7 @@ const st = await studio({
     {a: A[4], b: A[5] - .05, y: 330, c: 'org', h: '〰️ רועד קצת'},
     {a: A[5], b: A[6] - .05, y: 330, c: 'org', h: '✋ עוצר'},
     {a: A[6], b: S[3], y: 330, c: 'org', h: '↩️ ומתקן'},
-    {a: A[7], b: S[4], y: 330, c: '', h: '🤖 ישר מדי, מדויק מדי'},
+    {a: A[7], b: S[4], y: 330, c: 'pnk', h: '🤖 ישר מדי, מדויק מדי'},
     {a: A[10], b: S[5], y: 330, c: 'grn', h: '✅ לא מושלמים = בני אדם'},
   ],
 });
@@ -46,7 +46,7 @@ function drawUI(c, t, W, H) {
   c.fillStyle = '#12142e'; c.font = `700 ${H * .062}px Rubik`; c.fillText('אני לא רובוט', bx - W * .03, by + bs * .72);
   // trail + cursor
   const P = UI.path, n = Math.max(1, Math.floor(UI.prog * (P.length - 1)));
-  if (UI.trail) { c.strokeStyle = UI.bad ? '#ffa53a' : '#2ee6ff'; c.lineWidth = 7; c.setLineDash([]); c.beginPath(); P.slice(0, n + 1).forEach(([x, y], i) => (i ? c.lineTo(x * W, y * H) : c.moveTo(x * W, y * H))); c.stroke(); }
+  if (UI.trail) { c.strokeStyle = UI.bad ? '#ff5fd2' : '#2ea8c7'; c.lineWidth = 7; c.setLineDash([]); c.beginPath(); P.slice(0, n + 1).forEach(([x, y], i) => (i ? c.lineTo(x * W, y * H) : c.moveTo(x * W, y * H))); c.stroke(); }
   const [mx, my] = P[n]; const X = mx * W, Y = my * H, k = H * .07;
   c.fillStyle = '#12142e'; c.strokeStyle = '#fff'; c.lineWidth = 4; c.beginPath(); c.moveTo(X, Y); c.lineTo(X, Y + k); c.lineTo(X + k * .28, Y + k * .74); c.lineTo(X + k * .62, Y + k * .7); c.closePath(); c.fill(); c.stroke();
 }
@@ -66,7 +66,7 @@ await st.prop('home/bookcaseClosedWide', {h: 2.2, x: -.5, z: -2.6});
 const BX = 30;
 const scrB = await desk(BX);
 const rob = await st.model('robot/RobotExpressive'); rob.object.scale.setScalar(.3); rob.object.position.set(BX - 1.1, 0, .8); rob.object.rotation.y = Math.PI - .55; scene.add(rob.object); rob.schedule('Idle', 0, 0);
-const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, .03, 8, 96), M(COL.cyan, {roughness: .5})); ring.rotation.x = Math.PI / 2; ring.position.set(BX, .02, .3); scene.add(ring);
+const ring = new THREE.Mesh(new THREE.TorusGeometry(2.6, .03, 8, 96), M(COL.pink, {roughness: .5})); ring.rotation.x = Math.PI / 2; ring.position.set(BX, .02, .3); scene.add(ring);
 
 st.frame(t => {
   // human screen: path progress across the hook → body; checkbox ticks at the end
@@ -74,7 +74,7 @@ st.frame(t => {
   UI.prog = t < S[1] ? .25 + sm(0, S[1], t) * .3 : t < S[2] ? sm(S[1], S[2] - .2, t) : t < S[3] ? sm(S[2], S[3] - .2, t) : 1;
   UI.check = t >= A[10] - .1 || t >= S[5] ? 1 : 0; scrH.update(t);
   UI.path = bot; UI.bad = 1; UI.trail = 1; UI.prog = sm(S[3], A[8] + .3, t); UI.check = 0; scrB.update(t);
-  const pk = win(t, S[3], S[4], .3); scene.background.lerpColors(new THREE.Color(0x0a0f22), new THREE.Color(0x0b2a3a), pk * .8); st.fog.color.copy(scene.background);
+  const pk = win(t, S[3], S[4], .3); scene.background.lerpColors(new THREE.Color(0x0a0f22), new THREE.Color(0x24164a), pk * .8); st.fog.color.copy(scene.background);
   let cp, ct;
   if (t < S[1]) [cp, ct] = camKF(t, [[0, [2.2, 2.1, 4.9], [-.45, 1.0, -.1]], [S[1], [1.6, 1.8, 4.3], [-.35, 1.1, -.15]]]);                          // hook: desk, user, screen
   else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [.5, 1.35, 1.9], [0, 1.2, -.25]], [S[2], [-.3, 1.35, 1.7], [0, 1.2, -.25]]]);                // screen close: path
@@ -83,7 +83,7 @@ st.frame(t => {
   else if (t < S[5]) [cp, ct] = camKF(t, [[S[4], [-.5, 1.4, 2.1], [0, 1.2, -.25]], [S[5], [-.1, 1.5, 2.5], [0, 1.15, -.25]]]);                 // ✓ human
   else [cp, ct] = camKF(t, [[S[5], [1.4, 1.8, 3.8], [0, 1.15, -.2]], [END, [2.2, 2.1, 4.9], [-.45, 1.0, -.1]]]);                               // loop
   return {cp, ct, overlay: t2 => {
-    if (t2 > S[3] + .3 && t2 < S[4]) { const [x, y] = st.proj(V(BX - 1.1, 2.0, .8)); st.tag(x, Math.max(y, 650), 'בוט', '#2ee6ff', win(t2, S[3] + .3, S[4])); }
+    if (t2 > S[3] + .3 && t2 < S[4]) { const [x, y] = st.proj(V(BX - 1.1, 2.0, .8)); st.tag(x, Math.max(y, 650), 'בוט', '#ff5fd2', win(t2, S[3] + .3, S[4])); }
   }};
 });
 st.ready();

@@ -13,7 +13,7 @@ const st = await studio({
   // S: 0 hook flight | 1 hospital | 2 parachute drop | 3 home meal + jam | 4 follow
   scenes: (A, B, END) => [0, A[2] - .25, A[5] - .25, A[8] - .25, A[13] - .25, END],
   chips: (A, B, S) => [
-    {a: A[3], b: A[4] - .05, y: 330, c: '', h: '💊 תרופות ומנות דם'},
+    {a: A[3], b: A[4] - .05, y: 330, c: 'pnk', h: '💊 תרופות ומנות דם'},
     {a: A[4], b: S[2], y: 330, c: '', h: '🏥 לבתי חולים באפריקה'},
     {a: A[5], b: A[6] - .05, y: 330, c: 'org', h: '✈️ לא נוחת'},
     {a: A[6], b: S[3], y: 330, c: 'org', h: '🪂 זורק עם מצנח קטן'},
@@ -44,7 +44,7 @@ function plane() {
 const pl = plane();
 // box + parachute
 const box = new THREE.Mesh(new THREE.BoxGeometry(.4, .3, .3), M(0xb07a45)); box.castShadow = true; scene.add(box);
-const chute = new THREE.Mesh(new THREE.SphereGeometry(.6, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M(0x2ee6ff, {roughness: .7, side: THREE.DoubleSide})); chute.castShadow = true; scene.add(chute);
+const chute = new THREE.Mesh(new THREE.SphereGeometry(.6, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), M(0xff5fd2, {roughness: .7, side: THREE.DoubleSide})); chute.castShadow = true; scene.add(chute);
 const lineM = new THREE.LineBasicMaterial({color: 0xdddddd}); const lines = new THREE.LineSegments(new THREE.BufferGeometry(), lineM); scene.add(lines);
 
 // --- hospital set (x = 80)
@@ -54,7 +54,7 @@ const sign = st.screen([5, 1.3], (c, t, W, H) => { c.fillStyle = '#f4f6fb'; c.fi
   c.fillStyle = '#12142e'; c.font = `700 ${H * .5}px Rubik`; c.fillText('בית חולים', W - H * 1.1, H * .68); }, {px: 1000, light: .4});
 sign.mesh.position.set(HX, 6.2, -4.6); scene.add(sign.mesh);
 const yard = new THREE.Mesh(new THREE.CircleGeometry(3, 40), M(0x3d4a36)); yard.rotation.x = -Math.PI / 2; yard.position.set(HX + 4, .01, -1); yard.receiveShadow = true; scene.add(yard);
-const ringY = new THREE.Mesh(new THREE.TorusGeometry(2.2, .06, 8, 64), M(COL.cyan, {roughness: .6})); ringY.rotation.x = Math.PI / 2; ringY.position.set(HX + 4, .03, -1); scene.add(ringY);
+const ringY = new THREE.Mesh(new THREE.TorusGeometry(2.2, .06, 8, 64), M(COL.pink, {roughness: .6})); ringY.rotation.x = Math.PI / 2; ringY.position.set(HX + 4, .03, -1); scene.add(ringY);
 await st.prop('people/character-female-c', {h: 1.6, x: HX + 6.2, z: .6, ry: -2.4, anim: 'idle'});
 
 // --- suburb set (x = -80): road with a traffic jam, a house, family in the yard, small quad drone lowers a meal bag
@@ -100,7 +100,7 @@ st.frame(t => {
   else { cp = V(px + 6, py + 2.5, pz + 7 + (END - t) * .6); ct = V(px, py, pz); }
   return {cp, ct, overlay: t2 => {
     if (t2 < S[1]) st.counter(540, 1120, '2,000,000', ' משלוחים', '#2ee6ff', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
-    if (t2 > A[11] && t2 < S[4]) { const [x, y] = st.proj(V(UX - 4, 2.2, 8)); st.tag(x, Math.min(Math.max(y, 650), 1180), 'פקק 🚗🚗🚗', '#2ee6ff', win(t2, A[11], S[4])); }
+    if (t2 > A[11] && t2 < S[4]) { const [x, y] = st.proj(V(UX - 4, 2.2, 8)); st.tag(x, Math.min(Math.max(y, 650), 1180), 'פקק 🚗🚗🚗', '#ff5fd2', win(t2, A[11], S[4])); }
   }};
 });
 st.ready();

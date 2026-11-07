@@ -148,7 +148,7 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
 Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
 
 ## Visual rules (learned the hard way — follow them)
-- Style: **classic** — dark navy 3D, matte materials, real key/rim light + soft shadows, no bloom, no glowing edges/rings/text. Accent colors cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff used as solid colors (pills, chip side stripes, rings). Same for every episode = brand. **Ziv 2026-11-07: lead with the brand cyan** — chips, tags, rings, trails in cyan (orange as the second accent); avoid pink in the classic look.
+- Style: **classic** — dark navy 3D, matte materials, real key/rim light + soft shadows, no bloom, no glowing edges/rings/text. Accent colors cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff used as solid colors (pills, chip side stripes, rings). Same for every episode = brand. **Ziv 2026-11-07: from ep012 on, lead with the brand cyan instead of pink** (chips, tags, rings, trails, caption active word; orange as the second accent). ep007–ep011 stay as built.
 - In episode code use `st.CLASSIC` and matte `MeshStandardMaterial` (not MeshBasic glow) for rings/props; add a dark floor that receives shadows.
 - **First frame is the thumbnail**: hook title visible from frame 0, scene already beautiful, nothing blown out. No white flash at the start.
 - **No glare**: never start facing headlights/bright emissives; check frame 0 and 1 s.

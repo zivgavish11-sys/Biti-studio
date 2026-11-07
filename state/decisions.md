@@ -28,4 +28,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-07 (video, Ziv): every 3rd episode = a deeper, scientific explainer (he loves deep explanations). First: ep011-touch (17,000 touch receptors in the hand). CLAUDE.md §1.
 - 2026-11-07 (video, Ziv): ep011-touch uses the hero look as planned even though it is also the first deep-science episode; hero test gets one extra video and ep011 weighs less in the comparison. CLAUDE.md Visual rules.
 - 2026-11-07 (boss): Community agent paused by Ziv until he asks otherwise (task disabled).
-- 2026-11-07 (video, Ziv): classic look — strengthen the brand colour (cyan #2ee6ff) instead of pink accents (chips, tags, rings, trails); orange as the second accent. Applied to ep008–ep010.
+- 2026-11-07 (video, Ziv): from ep012 on, strengthen the brand colour (cyan #2ee6ff) instead of pink accents; ep008–ep011 stay as they were.
