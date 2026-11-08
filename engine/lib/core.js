@@ -78,12 +78,12 @@ const CSS_CLASSIC = `
 #follow .b{box-shadow:0 12px 30px rgba(0,0,0,.45)}
 `;
 // ---------- HERO look (Ziv approved 2026-11-07, workshop vs grouper.explains): opt-in with studio({look:'hero'}) — rollout from ep011 (12.11) ----------
-// one hero object on a monochrome indigo stage, Hebrew UI inside the scene (st.screen), white caption pill with the active word in brand pink. Matte, no glow.
+// one hero object on a monochrome indigo stage, Hebrew UI inside the scene (st.screen), white caption pill with the active word on a brand-cyan pill (Ziv 2026-11-08). Matte, no glow.
 const CSS_HERO = `
 #cap{top:1250px;text-shadow:none;padding:0 24px;font:700 68px/1.25 Rubik}
 #cap .box{display:inline-block;background:#fff;border-radius:56px;padding:12px 40px 16px;box-shadow:0 14px 34px rgba(0,0,0,.5);direction:rtl}
 #cap span{color:#0b1022;padding:0 6px;margin:0}
-#cap span.on{background:none;color:#e8338f;box-shadow:none}
+#cap span.on{background:#2ee6ff;color:#0b1022;border-radius:16px;box-shadow:none}
 `;
 function el(html) { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
 

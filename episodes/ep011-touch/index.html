@@ -15,8 +15,8 @@ const st = await studio({
     {a: A[2], b: A[3] - .05, y: 330, c: '', h: '✋ לחץ'},
     {a: A[3], b: A[5] - .05, y: 330, c: 'org', h: '〰️ רטט = מתחיל להחליק'},
     {a: A[5], b: S[2], y: 330, c: 'grn', h: '⚡ המוח מהדק, לפני שהרגשתם'},
-    {a: A[7], b: A[8] - .05, y: 330, c: 'pnk', h: '🤖 רק כמה חיישנים'},
-    {a: A[8], b: S[3], y: 330, c: 'pnk', h: '🥚 מוחץ… או מפיל'},
+    {a: A[7], b: A[8] - .05, y: 330, c: '', h: '🤖 רק כמה חיישנים'},
+    {a: A[8], b: S[3], y: 330, c: '', h: '🥚 מוחץ… או מפיל'},
     {a: A[11], b: S[4], y: 330, c: 'grn', h: '🧪 עור מג׳ל: כולו חיישן'},
   ],
 });
@@ -56,7 +56,7 @@ function dots(H, n) {
   const g = new THREE.BufferGeometry(); const P = [], O = [];
   for (let i = 0; i < pts.length; i += 4) { P.push(pts[i], pts[i + 1], pts[i + 2]); O.push(pts[i + 3]); }
   g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('ord', new THREE.Float32BufferAttribute(O, 1));
-  const mat = new THREE.PointsMaterial({color: 0xe8338f, size: .045, transparent: true, depthWrite: false});
+  const mat = new THREE.PointsMaterial({color: 0x2ee6ff, size: .045, transparent: true, depthWrite: false});
   mat.onBeforeCompile = sh => { sh.uniforms.reveal = mat.userData.reveal; sh.vertexShader = 'attribute float ord;\nvarying float vO;\nuniform float reveal;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvO = ord;');
     sh.fragmentShader = 'varying float vO;\nuniform float reveal;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', 'if (vO > reveal) discard;\n#include <clipping_planes_fragment>'); };
   mat.userData.reveal = {value: 0};
@@ -79,7 +79,7 @@ const grip = new THREE.Group(); grip.position.set(X3, 1.6, 0); scene.add(grip);
 const gb = new THREE.Mesh(new THREE.BoxGeometry(.7, .3, .4), metal); gb.castShadow = true; grip.add(gb);
 const arm = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 1.6, 16), dark); arm.position.y = .9; grip.add(arm);
 const jaws = [-1, 1].map(s => { const j = new THREE.Mesh(new THREE.BoxGeometry(.08, .55, .3), metal); j.position.set(s * .3, -.4, 0); j.castShadow = true; grip.add(j);
-  const sen = new THREE.Mesh(new THREE.BoxGeometry(.02, .1, .1), M(COL.pink, {roughness: .5})); sen.position.set(-s * .05, -.15, 0); j.add(sen); return j; });
+  const sen = new THREE.Mesh(new THREE.BoxGeometry(.02, .1, .1), M(COL.cyan, {roughness: .5})); sen.position.set(-s * .05, -.15, 0); j.add(sen); return j; });
 const egg3 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM.clone()); egg3.scale.set(1, 1.28, 1); egg3.castShadow = true; egg3.position.set(X3, 1.03, 0); scene.add(egg3);
 const yolk = new THREE.Mesh(new THREE.CylinderGeometry(.35, .38, .02, 32), M(0xf2b33a, {roughness: .4})); yolk.position.set(X3, .01, 0); yolk.scale.setScalar(.01); scene.add(yolk);
 const shells = Array.from({length: 7}, () => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.06, 0), eggM); m.userData.v = V((r() - .5) * 1.6, r() * 1.2, (r() - .5) * 1.6); scene.add(m); m.visible = false; return m; });
@@ -87,7 +87,7 @@ const egg4 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM); egg4.sc
 // --- set 4 (x = 60): gel-skin hand holding an egg gently + tablet with the Hebrew touch map
 const X4 = 60; spot([X4 - 1.3, 3.2, 2.4], [X4 + .3, .8, 0], 26, 9);
 const H4 = hand(); H4.g.position.set(X4, .9, 0); H4.g.rotation.set(-.2, -1.0, 0);
-const gel = new THREE.MeshStandardMaterial({color: 0xe8338f, roughness: .35, transparent: true, opacity: .0, depthWrite: false});
+const gel = new THREE.MeshStandardMaterial({color: 0x2ee6ff, roughness: .35, transparent: true, opacity: .0, depthWrite: false});
 H4.parts.forEach(p => { const s = new THREE.Mesh(p.geometry, gel); s.scale.setScalar(1.12); p.add(s); });
 const egg5 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM); egg5.scale.set(1, 1.28, 1); egg5.castShadow = true; scene.add(egg5);
 const TK = {k: 0};
@@ -97,7 +97,7 @@ const tab = st.screen([1.1, 1.5], (c, t, W, Hh) => {
   c.fillStyle = '#6b6f93'; c.font = `400 ${W * .06}px Rubik`; c.fillText('כל נקודה בעור מרגישה', W * .92, Hh * .16);
   const k = TK.k;
   for (let i = 0; i < 14; i++) for (let j = 0; j < 18; j++) { const x = W * .1 + i * W * .058, y = Hh * .22 + j * Hh * .036;
-    const d = Math.hypot(i - 7, j - 9); const v = Math.max(0, 1 - d / 6) * k; c.fillStyle = `rgba(232,51,143,${.08 + v * .85})`; c.fillRect(x, y, W * .05, Hh * .03); }
+    const d = Math.hypot(i - 7, j - 9); const v = Math.max(0, 1 - d / 6) * k; c.fillStyle = `rgba(46,190,230,${.08 + v * .85})`; c.fillRect(x, y, W * .05, Hh * .03); }
   c.fillStyle = '#1f9e6a'; c.font = `700 ${W * .085}px Rubik`; c.fillText(k > .5 ? 'אחיזה עדינה ✓' : 'מחפש…', W * .92, Hh * .93);
 }, {px: 900, light: .35});
 tab.mesh.position.set(X4 - 1.9, 1.2, -.7); tab.mesh.rotation.y = .25; scene.add(tab.mesh);
@@ -137,8 +137,8 @@ st.frame(t => {
   else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [X4 - 2.0, 2.4, 4.4], [X4 - 1.1, .95, 0]], [S[4], [X4 - 1.5, 2.2, 4.0], [X4 - 1.05, 1.0, -.1]]]);       // gel skin + map
   else [cp, ct] = camKF(t, [[S[4], [-.4, 2.4, 3.2], [-.35, .85, .2]], [END, [-1.2, 2.6, 3.4], [-.35, .8, .2]]]);                                          // loop
   return {cp, ct, overlay: t2 => {
-    if (t2 < S[1]) st.counter(540, 1150, '17,000', ' חיישנים', '#e8338f', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
-    if (t2 > A[7] && t2 < A[8]) jaws.forEach(j => { const [x, y] = st.proj(j.localToWorld(V(0, -.15, 0))); st.tag(x, Math.max(y - 70, 650), 'חיישן', '#e8338f', win(t2, A[7], A[8])); });
+    if (t2 < S[1]) st.counter(540, 1150, '17,000', ' חיישנים', '#2ee6ff', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
+    if (t2 > A[7] && t2 < A[8]) jaws.forEach(j => { const [x, y] = st.proj(j.localToWorld(V(0, -.15, 0))); st.tag(x, Math.max(y - 70, 650), 'חיישן', '#2ee6ff', win(t2, A[7], A[8])); });
   }};
 });
 st.ready();
