@@ -25,71 +25,53 @@ const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .7
 st.stage({r: 160, grid: 0, spot: null});
 const spot = (p, tg, pw = 22, reach = 9) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .55, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
 
-// ---------- stylised hand (primitives, matte lavender) ----------
-const skin = M(0xc9c3f2, {roughness: .7});
-function hand() {
-  const g = new THREE.Group(); const parts = [];
-  const palm = new THREE.Mesh(new THREE.BoxGeometry(.9, .22, 1.0), skin); palm.position.set(0, .0, 0); palm.castShadow = true; g.add(palm); parts.push(palm);
-  const fingers = [];
-  const F = [[-.33, .55, .9], [-.11, .6, 1.0], [.11, .58, .96], [.32, .52, .82]];
-  F.forEach(([x, z, k]) => { const f = new THREE.Group(); f.position.set(x, 0, z - .1); g.add(f);
-    const a = new THREE.Mesh(new THREE.CapsuleGeometry(.09, .36 * k, 6, 12), skin); a.rotation.x = Math.PI / 2; a.position.z = .22 * k; a.castShadow = true; f.add(a);
-    const j = new THREE.Group(); j.position.z = .46 * k; f.add(j);
-    const b = new THREE.Mesh(new THREE.CapsuleGeometry(.085, .26 * k, 6, 12), skin); b.rotation.x = Math.PI / 2; b.position.z = .17 * k; b.castShadow = true; j.add(b);
-    fingers.push({f, j, k}); parts.push(a, b); });
-  const th = new THREE.Group(); th.position.set(.48, 0, -.1); th.rotation.y = -.9; g.add(th);
-  const t1 = new THREE.Mesh(new THREE.CapsuleGeometry(.1, .4, 6, 12), skin); t1.rotation.x = Math.PI / 2; t1.position.z = .25; t1.castShadow = true; th.add(t1); parts.push(t1);
-  const wrist = new THREE.Mesh(new THREE.CylinderGeometry(.34, .38, .7, 24), skin); wrist.rotation.x = Math.PI / 2; wrist.position.z = -.6; wrist.scale.set(.8, .6, .8); wrist.castShadow = true; g.add(wrist);
-  scene.add(g); return {g, fingers, th, parts};
-}
-// receptor dots sprinkled over the hand surface (dense on fingertips)
-function dots(H, n) {
-  const pts = [], tmp = new THREE.Vector3(); H.g.updateMatrixWorld(true);
-  for (let i = 0; i < n; i++) {
-    const tip = r() < .55; const fi = H.fingers[Math.floor(r() * 4)];
-    let m = tip ? fi.j.children[0] : H.parts[Math.floor(r() * H.parts.length)];
-    m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox;
-    tmp.set(bb.min.x + r() * (bb.max.x - bb.min.x), bb.max.y + .004, bb.min.z + r() * (bb.max.z - bb.min.z));
-    if (m.geometry.type === 'CapsuleGeometry') { const rad = .09; const a = (r() - .5) * 2.4; tmp.set(Math.sin(a) * rad * 1.15, bb.min.y + r() * (bb.max.y - bb.min.y), Math.cos(a) * rad * 1.15); }
-    m.localToWorld(tmp); H.g.worldToLocal(tmp); pts.push(tmp.x, tmp.y, tmp.z, r());
-  }
-  const g = new THREE.BufferGeometry(); const P = [], O = [];
-  for (let i = 0; i < pts.length; i += 4) { P.push(pts[i], pts[i + 1], pts[i + 2]); O.push(pts[i + 3]); }
-  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('ord', new THREE.Float32BufferAttribute(O, 1));
-  const mat = new THREE.PointsMaterial({color: 0x8ea6ff, size: .045, transparent: true, depthWrite: false});
-  mat.onBeforeCompile = sh => { sh.uniforms.reveal = mat.userData.reveal; sh.vertexShader = 'attribute float ord;\nvarying float vO;\nuniform float reveal;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvO = ord;');
-    sh.fragmentShader = 'varying float vO;\nuniform float reveal;\n' + sh.fragmentShader.replace('#include <clipping_planes_fragment>', 'if (vO > reveal) discard;\n#include <clipping_planes_fragment>'); };
-  mat.userData.reveal = {value: 0};
-  const p = new THREE.Points(g, mat); H.g.add(p); return mat;
-}
-// --- set 1 (origin): hero hand, palm up, receptors light up
-spot([-1.2, 3.2, 2.2], [0, 0, .2], 26, 9);
-const H1 = hand(); H1.g.position.set(0, .9, 0); H1.g.rotation.set(-.3, -1.05, 0);
-const D1 = dots(H1, 1600);
-// --- set 2 (x = 20): hand holding an egg (pinch), the egg slips → ripples → fingers tighten
-const X2 = 20; spot([X2 - 1.3, 3.2, 2.4], [X2, .8, 0], 26, 9);
-const H2 = hand(); H2.g.position.set(X2, .9, 0); H2.g.rotation.set(-.2, -1.0, 0);
+// ---------- real hand (body/hand-right, MIT WebXR generic hand, media pro 2026-11-08) ----------
+const ACC = 0x8ea6ff;
 const eggM = M(0xf1e7d6, {roughness: .55});
-const egg2 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM); egg2.scale.set(1, 1.28, 1); egg2.castShadow = true; scene.add(egg2);
-const ripM = M(0x8ea6ff, {roughness: .6, transparent: true, opacity: 0}); const rips = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.TorusGeometry(.1, .008, 6, 40), ripM); scene.add(m); return m; });
-// --- set 3 (x = 40): simple two-finger robot gripper with 3 sensors, crushes an egg, then drops a second
-const X3 = 40; spot([X3 - 1.2, 3.4, 2.4], [X3, .9, 0], 28, 10);
-const metal = M(0x8c93b8, {roughness: .5}), dark = M(0x2a2d55);
-const grip = new THREE.Group(); grip.position.set(X3, 1.6, 0); scene.add(grip);
-const gb = new THREE.Mesh(new THREE.BoxGeometry(.7, .3, .4), metal); gb.castShadow = true; grip.add(gb);
-const arm = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, 1.6, 16), dark); arm.position.y = .9; grip.add(arm);
-const jaws = [-1, 1].map(s => { const j = new THREE.Mesh(new THREE.BoxGeometry(.08, .55, .3), metal); j.position.set(s * .3, -.4, 0); j.castShadow = true; grip.add(j);
-  const sen = new THREE.Mesh(new THREE.BoxGeometry(.02, .1, .1), M(0x8ea6ff, {roughness: .5})); sen.position.set(-s * .05, -.15, 0); j.add(sen); return j; });
-const egg3 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM.clone()); egg3.scale.set(1, 1.28, 1); egg3.castShadow = true; egg3.position.set(X3, 1.03, 0); scene.add(egg3);
-const yolk = new THREE.Mesh(new THREE.CylinderGeometry(.35, .38, .02, 32), M(0xf2b33a, {roughness: .4})); yolk.position.set(X3, .01, 0); yolk.scale.setScalar(.01); scene.add(yolk);
-const shells = Array.from({length: 7}, () => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.06, 0), eggM); m.userData.v = V((r() - .5) * 1.6, r() * 1.2, (r() - .5) * 1.6); scene.add(m); m.visible = false; return m; });
-const egg4 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM); egg4.scale.set(1, 1.28, 1); egg4.castShadow = true; scene.add(egg4);
-// --- set 4 (x = 60): gel-skin hand holding an egg gently + tablet with the Hebrew touch map
-const X4 = 60; spot([X4 - 1.3, 3.2, 2.4], [X4 + .3, .8, 0], 26, 9);
-const H4 = hand(); H4.g.position.set(X4, .9, 0); H4.g.rotation.set(-.2, -1.0, 0);
-const gel = new THREE.MeshStandardMaterial({color: 0x8ea6ff, roughness: .35, transparent: true, opacity: .0, depthWrite: false});
-H4.parts.forEach(p => { const s = new THREE.Mesh(p.geometry, gel); s.scale.setScalar(1.12); p.add(s); });
-const egg5 = new THREE.Mesh(new THREE.SphereGeometry(.2, 32, 20), eggM); egg5.scale.set(1, 1.28, 1); egg5.castShadow = true; scene.add(egg5);
+const egg = (x, y, z, s = .8) => { const e = new THREE.Mesh(new THREE.SphereGeometry(.19 * s, 40, 28), eggM); e.scale.set(1, 1.3, 1); e.position.set(x, y, z); e.castShadow = true; scene.add(e); return e; };
+async function hand({x = 0, y = 0, z = 0, s = 5, mat} = {}) {
+  const m = await st.prop('body/hand-right', {tint: 1}); const o = m.object; o.scale.setScalar(s); o.position.set(x, y, z);
+  const skinM = mat || M(0xc9c3f2, {roughness: .7});
+  o.traverse(q => { if (q.isMesh) { q.material = skinM; q.castShadow = true; q.geometry.computeVertexNormals(); } });
+  const bone = n => o.getObjectByName(n); const rest = {}; o.traverse(b => { if (b.isBone || /finger|thumb|wrist/.test(b.name)) rest[b.name] = b.quaternion.clone(); });
+  const ax = new THREE.Vector3(1, 0, 0), q = new THREE.Quaternion();
+  const curl = (f, k, joints) => joints.forEach(j => { const b = bone(`${f}-${j}`); if (!b) return; b.quaternion.copy(rest[b.name]).multiply(q.setFromAxisAngle(ax, k)); });
+  const F = ['index-finger', 'middle-finger', 'ring-finger', 'pinky-finger'], J = ['phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal'];
+  let sk; o.traverse(q => { if (q.isSkinnedMesh) sk = q; });
+  return {o, sk, mat: skinM, pose(k, pinch = 0) { F.forEach((f, i) => curl(f, k * (i ? 1 + i * .25 : 1 - pinch * .4), J)); curl('thumb', k * .6 + pinch * .3, ['phalanx-proximal', 'phalanx-distal']); }};
+}
+// receptor dots glued to the skinned surface (dense on fingertips), revealed in order
+function receptors(H, all = false) {
+  const pos = H.sk.geometry.attributes.position, si = H.sk.geometry.attributes.skinIndex, names = H.sk.skeleton.bones.map(b => b.name), out = [];
+  const gT = new THREE.SphereGeometry(.0075, 8, 6), gB = new THREE.SphereGeometry(.0058, 8, 6), mT = M(ACC, {roughness: .5}), mB = M(0x6f86f0, {roughness: .5});
+  for (let i = 0; i < pos.count; i++) { const tip = /distal|tip/.test(names[si.getX(i)] || ''); if (r() > (all ? .55 : tip ? .9 : .4)) continue;
+    const d = new THREE.Mesh(tip ? gT : gB, tip ? mT : mB); d.userData.o = r(); scene.add(d); out.push([i, d]); }
+  const v = new THREE.Vector3();
+  return (reveal) => { H.o.updateMatrixWorld(true); for (const [i, d] of out) { v.fromBufferAttribute(pos, i); H.sk.applyBoneTransform(i, v); d.position.copy(v).applyMatrix4(H.sk.matrixWorld); d.visible = d.userData.o < reveal; } };
+}
+// --- set 1 (origin): open hand, palm up, 17,000 receptors light up
+spot([-1, 3.2, 2.4], [0, .4, 0], 24);
+const H1 = await hand({x: 0, y: .25, z: 0}); H1.o.rotation.set(-Math.PI / 2, 0, 0);
+const R1 = receptors(H1);
+// --- set 2 (x = 20): hand pinches an egg from above; the egg slips → ripples → fingers tighten
+const X2 = 20; spot([X2 - 1.2, 3.2, 2.2], [X2, .3, 0], 22);
+const H2 = await hand({x: X2 + .05, y: 1.05, z: .35}); H2.o.rotation.set(.35, Math.PI / 2, 0);
+const egg2 = egg(X2 - .14, .7, .17);
+const ripM = M(ACC, {roughness: .6, transparent: true, opacity: 0}); const rips = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.TorusGeometry(.06, .005, 6, 40), ripM); scene.add(m); return m; });
+// --- set 3 (x = 40): robot gripper (body/gripper, CC0) with a few sensors: crushes an egg, then drops a second
+const X3 = 40; spot([X3 - 1.2, 3.2, 2.2], [X3, .4, 0], 24);
+const Gp = await st.prop('body/gripper', {x: X3, y: .2, z: 0, scale: 3}); const G = Gp.object;
+const jaws = ['A', 'B'].map(n => G.getObjectByName('jaw' + n)); const pads = ['A', 'B'].map(n => G.getObjectByName('pad' + n) || G.getObjectByName('jaw' + n));
+const egg3 = egg(X3, .34, 0, .85);
+const yolk = new THREE.Mesh(new THREE.CylinderGeometry(.22, .24, .015, 32), M(0xf2b33a, {roughness: .4})); yolk.position.set(X3, .01, .05); yolk.scale.setScalar(.01); scene.add(yolk);
+const shells = Array.from({length: 7}, () => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.04, 0), eggM); m.userData.v = V((r() - .5) * 1.2, r() * .9, (r() - .5) * 1.2); scene.add(m); m.visible = false; return m; });
+const egg4 = egg(X3, .34, 0, .85);
+// --- set 4 (x = 60): gel e-skin hand (whole surface = sensor) holds an egg gently + tablet with the Hebrew touch map
+const X4 = 60; spot([X4 - 1.3, 3.2, 2.4], [X4 - .4, .5, 0], 26);
+const gelM = M(0xc9c3f2, {roughness: .7});
+const H4 = await hand({x: X4 + .05, y: 1.05, z: .35, mat: gelM}); H4.o.rotation.set(.35, Math.PI / 2, 0);
+const egg5 = egg(X4 - .14, .7, .17);
+const skinC = new THREE.Color(0xc9c3f2), gelC = new THREE.Color(0x5f7cff); const R4 = receptors(H4, true);
 const TK = {k: 0};
 const tab = st.screen([1.1, 1.5], (c, t, W, Hh) => {
   c.fillStyle = '#f4f5fb'; c.fillRect(0, 0, W, Hh);
@@ -100,45 +82,41 @@ const tab = st.screen([1.1, 1.5], (c, t, W, Hh) => {
     const d = Math.hypot(i - 7, j - 9); const v = Math.max(0, 1 - d / 6) * k; c.fillStyle = `rgba(142,166,255,${.08 + v * .85})`; c.fillRect(x, y, W * .05, Hh * .03); }
   c.fillStyle = '#1f9e6a'; c.font = `700 ${W * .085}px Rubik`; c.fillText(k > .5 ? 'אחיזה עדינה ✓' : 'מחפש…', W * .92, Hh * .93);
 }, {px: 900, light: .35});
-tab.mesh.position.set(X4 - 1.9, 1.2, -.7); tab.mesh.rotation.y = .25; scene.add(tab.mesh);
-const stand = new THREE.Mesh(new THREE.BoxGeometry(.2, 1.0, .1), M(0x2a2d55)); stand.position.set(X4 - 1.9, .45, -.8); scene.add(stand);
+tab.mesh.scale.setScalar(.7); tab.mesh.position.set(X4 - 1.0, .85, -.9); tab.mesh.rotation.y = .35; scene.add(tab.mesh);
+const stand = new THREE.Mesh(new THREE.BoxGeometry(.14, .5, .08), M(0x2a2d55)); stand.position.set(X4 - 1.0, .25, -.96); scene.add(stand);
 
-const pinch = (H, k) => H.fingers.forEach(({f, j}, i) => { f.rotation.x = -k * (.55 + i * .05); j.rotation.x = -k * .7; });
 st.frame(t => {
-  // set 1: receptors reveal + slow turn
-  D1.userData.reveal.value = .35 + sm(0, 3.0, t) * .65; H1.g.rotation.y = -1.05 + Math.sin(t * .6) * .15; pinch(H1, .12 + Math.sin(t * 1.4) * .04);
-  // set 2: pinch, slip (egg slides down a bit), ripples, re-grip
-  const slip = sm(A[3] + .2, A[4] + .6, t) * (1 - sm(A[5] + .1, A[5] + .5, t) * .8);
-  const tight = .3 + sm(A[5], A[5] + .35, t) * .3;
-  pinch(H2, tight); H2.g.updateMatrixWorld(true);
-  const tipW = H2.fingers[1].j.localToWorld(V(0, .1, .2));
-  const mid = H2.g.localToWorld(V(0, .32, .45 + .25 * slip)); egg2.position.copy(mid).add(V(0, -.06 * slip, 0));
+  // set 1: receptors reveal + gentle finger breathing
+  H1.o.rotation.z = Math.sin(t * .6) * .12; H1.pose(.1 + Math.sin(t * 1.3) * .03); R1(t < S[1] ? .25 + sm(0, 3.0, t) * .75 : 1);
+  // set 2: pinch, slip (egg slides down), ripples, re-grip
+  const slip = sm(A[3] + .2, A[4] + .6, t) * (1 - sm(A[5] + .1, A[5] + .5, t) * .85);
+  const tight = .3 + sm(A[5], A[5] + .35, t) * .2;
+  H2.pose(tight, 1 - slip * .5); egg2.position.set(X2 - .14, .7 - .12 * slip, .17);
   ripM.opacity = .9 * win(t, A[3], A[5] + .4, .2);
-  rips.forEach((m, i) => { const u = ((t * 1.6 + i / 3) % 1); m.scale.setScalar(.6 + u * 2.2); m.position.copy(tipW); m.lookAt(V(X2 + 2.4, 2.2, 3.0)); });
-  // set 3: gripper closes too hard on egg3 → cracks; then egg4 slips out of a too-weak grip and falls
-  const close = sm(S[2], A[8] + .2, t);
-  const crushed = t > A[8] + .15;
-  jaws.forEach((j, i) => { j.position.x = (i ? 1 : -1) * (.3 - close * (crushed ? .26 : .1)); });
-  egg3.visible = !crushed || t >= A[9] - .1 ? !crushed : false;
+  rips.forEach((m, i) => { const u = ((t * 1.6 + i / 3) % 1); m.scale.setScalar(.6 + u * 2.2); m.position.set(X2 - .1, .86, .2); m.lookAt(V(X2 - 1.6, 1.5, 2.6)); });
+  // set 3: gripper closes too hard on egg3 → cracks; then lifts egg4 with a weak grip and drops it
+  const close = sm(S[2], A[8] + .2, t), crushed = t > A[8] + .15;
+  if (t < A[9]) { G.position.y = .2; jaws.forEach((j, i) => { if (j) j.position.x = (i ? 1 : -1) * (.06 - close * (crushed ? .048 : .02)); }); }
+  egg3.visible = !crushed && t < A[9];
   const cr = t - (A[8] + .15);
-  shells.forEach(m => { m.visible = crushed && t < A[9]; if (m.visible) { const d = Math.min(cr, .6); m.position.set(X3 + m.userData.v.x * d, Math.max(.04, 1.0 + m.userData.v.y * d - 4.9 * d * d), m.userData.v.z * d); } });
-  yolk.scale.setScalar(crushed ? sm(A[8] + .2, A[8] + .7, t) : .01); yolk.visible = t < A[9] || t >= A[9] + 999; if (t >= A[9]) yolk.visible = false;
-  if (t >= A[9]) { jaws.forEach((j, i) => { j.position.x = (i ? 1 : -1) * .22; }); const d = Math.max(0, t - (A[9] + .3)); egg4.visible = true; egg4.position.set(X3, Math.max(.26, 1.03 - 4.9 * d * d), 0); egg4.rotation.z = d * 3; }
+  shells.forEach(m => { m.visible = crushed && t < A[9]; if (m.visible) { const d = Math.min(cr, .6); m.position.set(X3 + m.userData.v.x * d, Math.max(.03, .34 + m.userData.v.y * d - 4.9 * d * d), m.userData.v.z * d); } });
+  yolk.visible = crushed && t < A[9]; yolk.scale.setScalar(crushed ? sm(A[8] + .2, A[8] + .7, t) : .01);
+  if (t >= A[9]) { jaws.forEach((j, i) => { if (j) j.position.x = (i ? 1 : -1) * .042; }); const lift = sm(A[9], A[9] + .5, t) * .55; G.position.y = .2 + lift;
+    const d = Math.max(0, t - (A[9] + .55)); egg4.visible = true; egg4.position.set(X3, Math.max(.2, .34 + lift - 4.9 * d * d), 0); egg4.rotation.z = d * 2.5; }
   else egg4.visible = false;
-  // set 4: gel appears, gentle hold, touch map lights
-  gel.opacity = .45 * sm(S[3], A[11] + .2, t); pinch(H4, .45); H4.g.updateMatrixWorld(true);
-  egg5.position.copy(H4.g.localToWorld(V(0, .32, .45)));
+  // set 4: hand turns into gel skin (light blue), gentle hold, touch map lights
+  const g = sm(S[3], A[11] + .2, t); gelM.color.copy(skinC).lerp(gelC, g); gelM.roughness = .7 - g * .4; H4.pose(.4, .8); R4(t > S[3] ? sm(A[11], A[12] + .2, t) : 0);
   TK.k = sm(A[11], A[12] + .3, t); tab.update(t);
 
   let cp, ct;
-  if (t < S[1]) [cp, ct] = camKF(t, [[0, [-1.2, 2.6, 3.4], [-.35, .8, .2]], [S[1], [-.6, 2.4, 3.3], [-.35, .85, .2]]]);                                   // hero hand + dots
-  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [X2 - 1.9, 2.3, 3.5], [X2 - .45, .95, .2]], [A[5], [X2 - 1.4, 2.0, 3.0], [X2 - .45, 1.0, .25]], [S[2], [X2 - 1.7, 2.2, 3.3], [X2 - .45, .95, .2]]]); // slip + reflex
-  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [X3 + 2.2, 2.0, 3.6], [X3, 1.0, 0]], [A[9], [X3 + 1.8, 1.6, 3.4], [X3, .8, 0]], [S[3], [X3 + 2.0, 1.4, 3.4], [X3, .6, 0]]]); // crush / drop
-  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [X4 - 2.0, 2.4, 4.4], [X4 - 1.1, .95, 0]], [S[4], [X4 - 1.5, 2.2, 4.0], [X4 - 1.05, 1.0, -.1]]]);       // gel skin + map
-  else [cp, ct] = camKF(t, [[S[4], [-.4, 2.4, 3.2], [-.35, .85, .2]], [END, [-1.2, 2.6, 3.4], [-.35, .8, .2]]]);                                          // loop
+  if (t < S[1]) [cp, ct] = camKF(t, [[0, [-.7, 1.75, 2.05], [.05, .12, .3]], [S[1], [-.45, 1.7, 2.15], [.05, .12, .3]]]);                                       // hero hand + dots
+  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [X2 - 1.6, 1.5, 2.6], [X2, .6, .1]], [A[5], [X2 - 1.2, 1.3, 2.3], [X2 - .05, .65, .1]], [S[2], [X2 - 1.4, 1.4, 2.5], [X2, .6, .1]]]); // slip + reflex
+  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [X3 - 1.1, 1.1, 2.3], [X3, .55, 0]], [A[9], [X3 - .9, 1.0, 2.2], [X3, .5, 0]], [S[3], [X3 - 1.0, 1.15, 2.4], [X3, .55, 0]]]); // crush / drop
+  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [X4 - 1.1, 1.55, 3.3], [X4 - .38, .72, -.2]], [S[4], [X4 - .85, 1.5, 3.1], [X4 - .33, .74, -.2]]]);       // gel skin + map
+  else [cp, ct] = camKF(t, [[S[4], [-.45, 1.7, 2.15], [.05, .12, .3]], [END, [-.7, 1.75, 2.05], [.05, .12, .3]]]);                                          // loop
   return {cp, ct, overlay: t2 => {
     if (t2 < S[1]) st.counter(540, 1150, '17,000', ' חיישנים', '#8ea6ff', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
-    if (t2 > A[7] && t2 < A[8]) jaws.forEach(j => { const [x, y] = st.proj(j.localToWorld(V(0, -.15, 0))); st.tag(x, Math.max(y - 70, 650), 'חיישן', '#8ea6ff', win(t2, A[7], A[8])); });
+    if (t2 > A[7] && t2 < A[8]) pads.forEach(j => { if (!j) return; const [x, y] = st.proj(j.localToWorld(V(0, 0, 0))); st.tag(x, Math.max(y - 90, 650), 'חיישן', '#8ea6ff', win(t2, A[7], A[8])); });
   }};
 });
 st.ready();
