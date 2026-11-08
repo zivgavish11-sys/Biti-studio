@@ -94,7 +94,7 @@ const CSS_HERO = `
 #cap .box{display:inline-block;background:#fff;border-radius:16px;padding:10px 30px 14px;box-shadow:0 10px 26px rgba(0,0,0,.45);direction:rtl}
 #cap span{color:#0a0c1c;padding:0 4px;margin:0}
 #cap span.on{background:none;color:#0a0c1c;box-shadow:none}
-#cap span.key{color:#4a63f0}
+#cap span.key{color:#f0502a}
 .pill{background:#8ea6ff;color:#0a0c1c}
 .chip{border-right-color:#8ea6ff}
 `;
@@ -222,7 +222,7 @@ export async function studio(opts = {}) {
   function counter(x, y, value, suffix, col = '#2ee6ff', al = 1, size = 80) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillStyle = '#fff'; ctx.shadowColor = CLASSIC ? 'rgba(0,0,0,.7)' : col; ctx.shadowBlur = CLASSIC ? 12 : 30; ctx.fillText(`${value}${suffix || ''}`, x, y); if (CLASSIC) { ctx.shadowBlur = 0; ctx.fillStyle = col; ctx.fillRect(x - size * .9, y + size * .18, size * 1.8, size * .08); } ctx.restore(); }
 
   // ---------- captions / chips ----------
-  let capKey = ''; const KEYS = new Set(opts.keys || []);  // hero: key words shown in brand blue (Ziv 2026-11-08, like grouper's one coloured word)
+  let capKey = ''; const KEYS = new Set(opts.keys || []);  // hero: key words shown in grouper red #f0502a (Ziv 2026-11-08, like grouper's one coloured word)
   const CHUNKS = HERO ? TL.chunks.flatMap(c3 => { const out = [], n = c3.words.length, k = Math.ceil(n / 3); for (let i = 0; i < k; i++) { const ws = c3.words.slice(Math.round(i * n / k), Math.round((i + 1) * n / k)); out.push({a: i ? ws[0].a : c3.a, b: i < k - 1 ? c3.words[Math.round((i + 1) * n / k)].a : c3.b, words: ws}); } return out; }) : TL.chunks;
   function captions(t) {
     let ch = null; for (const c3 of CHUNKS) if (t >= c3.a && t < c3.b) { ch = c3; break; }
