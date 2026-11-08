@@ -28,3 +28,9 @@ Test frame: engine/props/workshop (render.py frames engine/props/workshop 1).
 ## Pending proposals (sent to Ziv 2026-11-08, run on the urgent ep011 hand request) — waiting for his OK
 1. ep011-touch: swap the capsule hand + box gripper for body/hand-right + body/gripper (before/after: engine/props/showcase-touch vs ep011 t 8/16).
 2. "17,000 receptors" shot: receptor dots glued to the real hand's skin (dense cyan fingertips, sparse orange palm) instead of the floating dot cloud.
+
+## Pending proposals (sent to Ziv 2026-11-08, run 4) — waiting for his OK
+1. Our own Biti: replace the yellow RobotExpressive stand-in with a Biti built from the new robots/humanoid kit (white shell, dark visor face, cyan eyes/stripe = brand colours), as a lasting brand asset.
+2. Carousels: one fitting "set" per story type instead of a generic city — factoryHall for factory/warehouse stories, real facades + traffic light for robotaxi/street stories, hero stage with one hero object for product/price stories.
+3. Hero episodes: one x-ray moment per episode (shell turns see-through, insides visible — servo gears, humanoid battery), matte, no glow (re-raises the 2026-11-04 x-ray idea).
+Image sent: engine/props/showcase-robots (sheet of t 1,5,9,13).

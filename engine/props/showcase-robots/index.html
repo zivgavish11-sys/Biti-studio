@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-08 run 4 — showcase of the new library batch (hero look).
+// Sets: x0 robots/humanoid + robotDog + deliveryBot · x20 robotArm + body/gripper + everyday/servo (x-ray) · x40 buildings/factoryHall + driveUnit/shelfPod + forklift · x80 vehicles/robotaxi + buildings/* + street/*
+// Render: python3 tools/render.py frames engine/props/showcase-robots 1,5,9,13
+import {studio, THREE, camKF} from '/engine/lib/core.js';
+const st = await studio({look: 'hero', episode: 12, hook: ['ספריית מדיה', '<span class="pill">חדשה</span>'], hookEnd: 2, fog: .012, scenes: (A, B, E) => [0, 4, 8, 12, E]});
+const {scene} = st;
+st.stage({r: 160, grid: 0, spot: null});
+const spot = (p, tg, pw = 30, reach = 14) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .55, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const P = (n, o = {}) => st.prop(n, {tint: 1, ...o});
+// set 1 — robot types
+spot([-1, 4, 3.5], [0, .8, 0], 40);
+const hu = await P('robots/humanoid', {x: -.9, z: 0, ry: .3});
+const hob = hu.object; ['shoulderR'].forEach(n => hob.getObjectByName(n).rotation.x = -.6); hob.getObjectByName('elbowR').rotation.x = -.7;
+await P('robots/robotDog', {x: .45, z: .25, ry: -.5});
+const db = await P('robots/deliveryBot', {x: 1.35, z: -.4, ry: -.4}); db.object.getObjectByName('lid').rotation.x = -.6;
+// set 2 — industrial arm + gripper + servo
+spot([19, 4, 3], [20, .8, 0], 40);
+const arm = await P('robots/robotArm', {x: 20, z: 0, ry: .6}); const ao = arm.object;
+ao.getObjectByName('j2').rotation.x = .5; ao.getObjectByName('j3').rotation.x = .9; ao.getObjectByName('j5').rotation.x = .6;
+const gr = await P('body/gripper', {tint: 1}); gr.object.position.set(0, -.3, 0); ao.getObjectByName('tool').add(gr.object);
+const sv = await P('everyday/servo', {x: 21.2, y: 0, z: .6, ry: -.6}); sv.object.scale.setScalar(12);
+sv.object.traverse(m => { if (m.isMesh && /shell|cap|tabs/.test(m.name)) { m.material = m.material.clone(); m.material.transparent = true; m.material.opacity = .25; m.material.depthWrite = false; } });
+// set 3 — warehouse
+await P('buildings/factoryHall', {x: 40, z: -1});
+spot([39, 7, 5], [40, 1, -2], 80, 20);
+await P('robots/shelfPod', {x: 39.2, z: -1.5}); const du = await P('robots/driveUnit', {x: 39.2, z: -1.5}); du.object.getObjectByName('lift').position.y = .05;
+await P('robots/shelfPod', {x: 38, z: -1.5}); await P('robots/driveUnit', {x: 37.6, z: .6, ry: .5});
+const fk = await P('vehicles/forklift', {x: 41.8, z: -.6, ry: -.7}); fk.object.getObjectByName('forks').position.y = .4;
+// set 4 — street with a robotaxi
+spot([78, 8, 8], [80, 0, 0], 120, 25);
+await P('vehicles/robotaxi', {x: 80, z: 0, ry: .5});
+for (const [n, x, z, h] of [['Building2_Large', 75, -8, 12], ['Building3_Big', 83, -9, 16], ['Building4', 89, -6, 10], ['Building1_Small', 70, -4, 7], ['Building3_Small', 93, -3, 8]]) await P('buildings/' + n, {x, z, h, tint: .9});
+await P('street/TrafficLight', {x: 83, z: 2.2, h: 3.6});
+st.frame(t => {
+  let cp, ct;
+  if (t < 4) [cp, ct] = camKF(t, [[0, [.3, 1.5, 4.2], [.2, .7, 0]], [4, [.6, 1.4, 4.0], [.2, .7, 0]]]);
+  else if (t < 8) [cp, ct] = camKF(t, [[4, [21, 1.9, 3.6], [20.4, .8, 0]], [8, [21.3, 1.8, 3.4], [20.4, .8, 0]]]);
+  else if (t < 12) [cp, ct] = camKF(t, [[8, [42, 3.2, 6.5], [39.5, 1, -1.5]], [12, [42.4, 3.1, 6.2], [39.5, 1, -1.5]]]);
+  else [cp, ct] = camKF(t, [[12, [84, 3, 9], [80, 2.5, -2]], [16, [84.5, 3, 8.6], [80, 2.5, -2]]]);
+  return {cp, ct}; });
+st.ready();
+</script></body></html>

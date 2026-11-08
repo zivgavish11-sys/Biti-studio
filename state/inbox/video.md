@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-08 [from media] New CC0 models for upcoming hero episodes: robots/humanoid (joints + x-ray battery cells → 'why humanoids last 2 hours', 'how a robot doesn't fall'), robots/robotDog, robots/deliveryBot ('crossing the road', with street/TrafficLight + Street_4Way), robots/robotArm ('tool' group takes body/gripper), everyday/servo (x-ray gears/motor/pot → 'what is a servo'), vehicles/robotaxi (roof lidar), robots/driveUnit+shelfPod, buildings/factoryHall. Nodes + tips in state/media-library.md; demo engine/props/showcase-robots.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/video.md (read it every run, and only it). Your task prompt already says so.
 - 2026-11-04 [from boss] Reference from Ziv: @grouper.explains (Hebrew 3D explainers). His Israeli-everyday question reel ('למה בישראל לא בוחרים מהאינטרנט?') got ~1,344 sends on ~3,578 likes; a generic topic (AirDrop) got 111 sends. Lesson: prefer topics with an Israeli/everyday angle that people send to a friend; put the question in the hook.
 - 2026-11-04 [from news] Idea for a Biti episode: why a home humanoid is so hard (Meta reportedly built 'Max' with Fourier for home help, research only; 1X NEO still relies on remote operators). Fits Ziv's goal: future buyers of home robots.

@@ -322,6 +322,249 @@ export function gripper() {
   return g;
 }
 
+// ================= 2026-11-12 batch (Media pro run 4): robots, autonomous machines, servo, factory hall =================
+const MAT2 = { white: M(0xe6e9ef, .42, .05), gray: M(0x8a93a3, .5, .3), graphite: M(0x3a4150, .5, .25), visor: M(0x0a0f1a, .12, .4),
+  amber: M(0xf2b134, .5, .1), wood: M(0x9a7a55, .85), fabric: M(0x4a5872, .9), concrete: M(0x6d7280, .9), panel: M(0x8c95a4, .6, .35),
+  winGlass: M(0x7f97b5, .12, .3), tire: M(0x111318, .85), pcb: M(0x1f6b4e, .6), copper: M(0xb87333, .35, .8), yellowLine: M(0xd9b23a, .7) };
+/** joint group at p with an optional child link to q (in the joint's local space) */
+const bx = (w, h, d, r, m, name) => mesh(new THREE.BoxGeometry(w, h, d), m, name);
+const joint = (name, p, ...kids) => at(grp(name, ...kids), ...p);
+const tire = (r, w, name) => { const g = grp(name); g.add(at(cyl(r, r, w, MAT2.tire, null, 28), 0, 0, 0, 0, 0, Math.PI / 2)); g.add(at(cyl(r * .62, r * .62, w + .004, MAT2.gray, null, 20), 0, 0, 0, 0, 0, Math.PI / 2)); return g; };
+
+/** generic humanoid robot, 1.70 m, faces +z. Joints (rotate .x to swing forward/back, .z sideways):
+ * pelvis, torso (.y twist), neck, head, shoulderL/R, elbowL/R, wristL/R, hipL/R, kneeL/R, ankleL/R.
+ * visor + eyeL/eyeR (solid cyan bars, no glow), chestLight. X-ray: make 'torsoShell' transparent → group 'insides' (battery = 6 cells 'cell0..5', 'computer', 'cooling'). */
+export function humanoid() {
+  const W = MAT2.white, J = MAT.joint, D = MAT2.graphite;
+  const root = grp('humanoid');
+  const pelvis = joint('pelvis', [0, .95, 0], at(rbox(.3, .14, .2, .05, D, 'pelvisShell'), 0, 0, 0));
+  root.add(pelvis);
+  const torso = joint('torso', [0, .08, 0]); pelvis.add(torso);
+  torso.add(at(rbox(.22, .12, .16, .04, J, 'waist'), 0, .06, 0));
+  const shell = at(rbox(.38, .42, .24, .09, W, 'torsoShell'), 0, .34, 0); torso.add(shell);
+  torso.add(at(rbox(.2, .18, .02, .02, D, 'chestPlate'), 0, .38, .121));
+  torso.add(at(rbox(.12, .012, .006, .004, MAT.cyan, 'chestLight'), 0, .44, .132));
+  const ins = grp('insides'); torso.add(ins);
+  for (let i = 0; i < 6; i++) ins.add(at(cyl(.022, .022, .16, MAT.cyan, 'cell' + i, 16), -.1 + i * .04, .26, -.02));
+  ins.add(at(rbox(.26, .03, .1, .01, D, 'batteryCase'), 0, .17, -.02));
+  ins.add(at(rbox(.16, .1, .03, .01, MAT2.pcb, 'computer'), 0, .45, .02));
+  ins.add(at(cyl(.035, .035, .015, MAT2.gray, 'cooling', 20), 0, .45, -.06, Math.PI / 2));
+  const neck = joint('neck', [0, .57, 0], at(cyl(.04, .05, .07, J, null, 20), 0, .03, 0)); torso.add(neck);
+  const head = joint('head', [0, .07, 0]); neck.add(head);
+  head.add(at(rbox(.22, .25, .23, .09, W, 'headShell'), 0, .12, 0));
+  head.add(at(rbox(.19, .1, .03, .04, MAT2.visor, 'visor'), 0, .13, .105));
+  head.add(at(rbox(.04, .012, .006, .005, MAT.cyan, 'eyeL'), -.045, .135, .122));
+  head.add(at(rbox(.04, .012, .006, .005, MAT.cyan, 'eyeR'), .045, .135, .122));
+  [-1, 1].forEach(s => head.add(at(cyl(.03, .03, .02, D, null, 20), s * .115, .12, 0, 0, 0, Math.PI / 2)));
+  for (const [s, k] of [[-1, 'L'], [1, 'R']]) {
+    const sh = joint('shoulder' + k, [s * .25, .5, 0]); torso.add(sh);
+    sh.add(at(mesh(new THREE.SphereGeometry(.065, 24, 16), D), 0, 0, 0));
+    sh.add(link(new THREE.Vector3(0, -.03, 0), new THREE.Vector3(0, -.24, 0), .048, W, 'upperArm' + k));
+    const el = joint('elbow' + k, [0, -.28, 0], at(mesh(new THREE.SphereGeometry(.045, 20, 14), J), 0, 0, 0)); sh.add(el);
+    el.add(link(new THREE.Vector3(0, -.02, 0), new THREE.Vector3(0, -.2, 0), .04, W, 'forearm' + k));
+    const wr = joint('wrist' + k, [0, -.25, 0]); el.add(wr);
+    wr.add(at(rbox(.05, .09, .075, .02, D, 'hand' + k), 0, -.05, .005));
+    [0, 1, 2, 3].forEach(f => wr.add(at(rbox(.012, .05, .014, .005, J), -.018 + f * .012, -.115, .03)));
+    wr.add(at(rbox(.014, .04, .014, .005, J, 'thumb' + k), -s * .03, -.07, .035, 0, 0, s * .4));
+  }
+  for (const [s, k] of [[-1, 'L'], [1, 'R']]) {
+    const hp = joint('hip' + k, [s * .1, -.05, 0], at(mesh(new THREE.SphereGeometry(.06, 20, 14), J), 0, 0, 0)); pelvis.add(hp);
+    hp.add(link(new THREE.Vector3(0, -.03, 0), new THREE.Vector3(0, -.36, 0), .06, W, 'thigh' + k));
+    const kn = joint('knee' + k, [0, -.42, 0], at(mesh(new THREE.SphereGeometry(.052, 20, 14), D), 0, 0, 0)); hp.add(kn);
+    kn.add(link(new THREE.Vector3(0, -.02, 0), new THREE.Vector3(0, -.34, 0), .05, W, 'shin' + k));
+    const an = joint('ankle' + k, [0, -.42, 0]); kn.add(an);
+    an.add(at(rbox(.1, .055, .22, .025, D, 'foot' + k), 0, -.035, .035));
+  }
+  return root;
+}
+
+/** generic quadruped robot dog, ~0.55 m to the back, 0.8 m long, faces +z.
+ * Nodes: body, head (cam0/cam1 stereo eyes), lidar (spin .y), legFL/FR/BL/BR → hip{FL..} (rotate .x), knee{FL..} (rotate .x), foot{FL..}. */
+export function robotDog() {
+  const W = MAT2.white, D = MAT2.graphite, J = MAT.joint;
+  const root = grp('robotDog'); const body = joint('body', [0, .5, 0]); root.add(body);
+  body.add(at(rbox(.3, .14, .62, .05, W, 'bodyShell'), 0, 0, 0));
+  body.add(at(rbox(.26, .03, .5, .015, D), 0, .08, 0));
+  body.add(at(rbox(.31, .015, .3, .006, MAT.cyan, 'stripe'), 0, -.02, 0));
+  const lid = joint('lidar', [0, .1, -.1], at(cyl(.045, .05, .05, D, null, 24), 0, .025, 0), at(cyl(.03, .03, .02, MAT.cyan, null, 20), 0, .055, 0)); body.add(lid);
+  const head = joint('head', [0, .02, .34], at(rbox(.2, .1, .1, .035, W, 'headShell'), 0, 0, 0), at(rbox(.17, .06, .02, .02, MAT2.visor), 0, 0, .05)); body.add(head);
+  [-1, 1].forEach((s, i) => head.add(at(cyl(.014, .014, .01, MAT.cyan, 'cam' + i, 16), s * .045, 0, .062, Math.PI / 2)));
+  for (const [x, z, k] of [[-.17, .24, 'FL'], [.17, .24, 'FR'], [-.17, -.24, 'BL'], [.17, -.24, 'BR']]) {
+    const leg = joint('leg' + k, [x, -.02, z]); body.add(leg);
+    const hip = joint('hip' + k, [0, 0, 0], at(cyl(.05, .05, .07, D, null, 20), 0, 0, 0, 0, 0, Math.PI / 2)); leg.add(hip);
+    hip.rotation.x = -.55; hip.add(link(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -.23, 0), .035, W, 'thigh' + k));
+    const kn = joint('knee' + k, [0, -.25, 0], at(cyl(.03, .03, .055, J, null, 16), 0, 0, 0, 0, 0, Math.PI / 2)); hip.add(kn);
+    kn.rotation.x = 1.1; kn.add(link(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -.22, 0), .022, D, 'shin' + k));
+    kn.add(at(mesh(new THREE.SphereGeometry(.03, 16, 12), MAT.rubber, 'foot' + k), 0, -.24, 0));
+  }
+  return root;
+}
+
+/** six-wheel sidewalk delivery robot (generic), 0.7 m long, faces +z. Nodes: wheel0..5 (spin .x), lid (open: rotation.x negative, hinge at the back),
+ * flag (orange pennant on a pole), cam0..2, screen (front plane → st.screen for a Hebrew face/status), stripe. */
+export function deliveryBot() {
+  const root = grp('deliveryBot');
+  root.add(at(rbox(.56, .34, .7, .08, MAT2.white, 'body'), 0, .33, 0));
+  root.add(at(rbox(.57, .05, .71, .02, MAT2.graphite, 'skirt'), 0, .17, 0));
+  root.add(at(rbox(.575, .03, .5, .01, MAT.cyan, 'stripe'), 0, .3, 0));
+  const lid = joint('lid', [0, .5, -.34], at(rbox(.54, .08, .68, .07, MAT2.white, 'lidShell'), 0, .03, .34)); root.add(lid);
+  const sc = mesh(new THREE.PlaneGeometry(.34, .14), MAT.screen, 'screen'); at(sc, 0, .37, .353); root.add(sc);
+  [[-.18, .42, .35], [.18, .42, .35], [0, .44, -.355]].forEach(([x, y, z], i) => root.add(at(cyl(.016, .016, .012, MAT.dark, 'cam' + i, 16), x, y, z, Math.PI / 2)));
+  const pole = at(cyl(.006, .006, .9, MAT2.gray, 'pole', 8), .22, .95, -.3); root.add(pole);
+  const fl = mesh(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -.14, 0), new THREE.Vector3(0, -.07, -.22)]), M(0xffa53a, .6), 'flag');
+  fl.geometry.computeVertexNormals(); fl.material.side = THREE.DoubleSide; at(fl, .22, 1.4, -.3); root.add(fl);
+  [-.3, 0, .3].forEach((z, i) => [-1, 1].forEach((s, j) => { const w = tire(.085, .06, 'wheel' + (i * 2 + j)); at(w, s * .3, .085, z); root.add(w); }));
+  return root;
+}
+
+/** generic 6-axis industrial robot arm on a base, reach ~1.5 m (white + graphite, no brand colours). Each joint rotates its group:
+ * j1 (.y base turn), j2 (.x shoulder), j3 (.x elbow), j4 (.z forearm roll), j5 (.x wrist pitch), j6 (.y flange) → 'tool' (empty group: attach body/gripper here, pointing −y after j5).
+ * Default pose = upright L. Base 'base' 0.5 m Ø; cable along the arm. */
+export function robotArm() {
+  const W = MAT2.white, D = MAT2.graphite, J = MAT.joint;
+  const root = grp('robotArm');
+  root.add(at(cyl(.28, .3, .06, D, 'plate', 40), 0, .03, 0));
+  root.add(at(cyl(.2, .24, .22, W, 'base', 40), 0, .17, 0));
+  const j1 = joint('j1', [0, .28, 0], at(cyl(.19, .19, .12, J, null, 36), 0, .06, 0), at(rbox(.3, .26, .3, .07, W, 'turret'), 0, .25, 0)); root.add(j1);
+  const j2 = joint('j2', [0, .32, 0], at(cyl(.13, .13, .36, D, null, 32), 0, 0, 0, 0, 0, Math.PI / 2)); j1.add(j2);
+  j2.add(at(rbox(.2, .78, .2, .08, W, 'upperArm'), .02, .39, 0));
+  j2.add(at(rbox(.06, .5, .02, .01, MAT.cyan, 'stripe'), .02, .42, .101));
+  const j3 = joint('j3', [0, .78, 0], at(cyl(.1, .1, .3, D, null, 28), 0, 0, 0, 0, 0, Math.PI / 2)); j2.add(j3);
+  j3.add(at(rbox(.16, .18, .22, .06, W, 'elbowHousing'), 0, 0, -.04));
+  const j4 = joint('j4', [0, 0, .08]); j3.add(j4); j4.rotation.x = Math.PI / 2;
+  j4.add(at(cyl(.07, .08, .62, W, 'forearm', 28), 0, .31, 0));
+  const j5 = joint('j5', [0, .64, 0], at(cyl(.06, .06, .16, D, null, 24), 0, 0, 0, 0, 0, Math.PI / 2)); j4.add(j5);
+  j5.add(at(rbox(.11, .1, .11, .04, W, 'wrist'), 0, .06, 0));
+  const j6 = joint('j6', [0, .12, 0], at(cyl(.045, .045, .03, J, 'flange', 24), 0, .015, 0)); j5.add(j6);
+  const tool = joint('tool', [0, .03, 0]); j6.add(tool);
+  // cable
+  const c = new THREE.CatmullRomCurve3([new THREE.Vector3(.17, .15, -.12), new THREE.Vector3(.2, .55, -.18), new THREE.Vector3(.14, 1.0, -.16), new THREE.Vector3(.13, 1.3, -.1)]);
+  root.add(mesh(new THREE.TubeGeometry(c, 30, .016, 8), MAT.rubber, 'cable'));
+  return root;
+}
+
+/** warehouse drive unit (generic, low square robot that lifts a shelf pod), 0.8×0.8×0.3 m. Nodes: lift (raise .position.y by ~0.05), wheelL/wheelR, led, cam. */
+export function driveUnit() {
+  const root = grp('driveUnit');
+  root.add(at(rbox(.8, .24, .8, .08, M(0x3d4a63, .55, .15), 'body'), 0, .14, 0));
+  root.add(at(rbox(.81, .03, .81, .02, MAT.cyan, 'stripe'), 0, .2, 0));
+  root.add(at(cyl(.3, .3, .02, MAT2.graphite, 'liftBase', 40), 0, .265, 0));
+  const lift = joint('lift', [0, .275, 0], at(cyl(.27, .27, .03, MAT2.gray, null, 40), 0, .015, 0)); root.add(lift);
+  [-1, 1].forEach((s, i) => { const w = tire(.07, .06, i ? 'wheelR' : 'wheelL'); at(w, s * .33, .07, 0); root.add(w); });
+  root.add(at(cyl(.012, .012, .01, MAT.cyan, 'led', 12), 0, .18, .405, Math.PI / 2));
+  root.add(at(cyl(.015, .015, .01, MAT.dark, 'cam', 12), .25, .18, .405, Math.PI / 2));
+  return root;
+}
+
+/** warehouse shelf pod (1 m square, 2.2 m tall, clearance 0.35 m for the drive unit to slide under). Nodes: shelf0..4, bin0..N (fabric bins, mixed sizes), box0.. */
+export function shelfPod() {
+  const root = grp('shelfPod'); const F = MAT2.graphite;
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([x, z]) => root.add(at(bx(.05, 2.2, .05, .01, F), x * .475, 1.1, z * .475)));
+  for (let i = 0; i < 5; i++) {
+    const y = .38 + i * .44; root.add(at(bx(1, .025, 1, .01, MAT2.gray, 'shelf' + i), 0, y, 0));
+    if (i === 4) continue;
+    let x = -.46, n = 0; const cols = [MAT2.fabric, M(0x5d6b8a, .9), M(0x6f5e8a, .9), M(0x4f6e7a, .9)];
+    while (x < .4) { const w = [.22, .3, .44][(i * 3 + n) % 3]; if (x + w > .47) break;
+      for (const z of [-.25, .25]) root.add(at(bx(w - .02, .34, .46, .02, cols[(i + n + (z > 0)) % 4], 'bin' + (i * 10 + n) + (z > 0 ? 'b' : 'a')), x + w / 2, y + .18, z));
+      x += w; n++; }
+  }
+  root.add(at(bx(1, .16, .02, .01, M(0xf1f3f7, .6), 'label'), 0, 2.27, .5));
+  return root;
+}
+
+/** generic robotaxi (no brand), 4.7 m long, faces +z. Nodes: body, cabin (glass), lidar (roof dome: spin .y), lidarHead, cam0..5 (sensor pods), radar (front),
+ * wheel0..3 (spin .x: FL FR BL BR), headL/headR + tailL/tailR (solid, light emissive), stripe. Paint the shell with .material.color if needed. */
+export function robotaxi() {
+  const W = MAT2.white, D = MAT2.graphite;
+  const root = grp('robotaxi'); const body = grp('body'); root.add(body);
+  body.add(at(rbox(1.86, .62, 4.7, .26, W, 'shell'), 0, .62, 0));
+  body.add(at(rbox(1.7, .5, 2.5, .3, MAT2.winGlass, 'cabin'), 0, 1.12, -.15));
+  body.add(at(rbox(1.66, .06, 2.0, .03, W, 'roof'), 0, 1.38, -.2));
+  body.add(at(rbox(1.88, .06, 3.2, .02, MAT.cyan, 'stripe'), 0, .55, 0));
+  body.add(at(rbox(1.9, .16, 4.72, .06, D, 'rocker'), 0, .36, 0));
+  [-1, 1].forEach(s => { body.add(at(rbox(.36, .06, .04, .02, Object.assign(M(0xf4f7ff, .3), {emissive: new THREE.Color(0xdfe8ff), emissiveIntensity: .4}), s < 0 ? 'headL' : 'headR'), s * .62, .74, 2.35));
+    body.add(at(rbox(.4, .06, .04, .02, Object.assign(M(0xb02a3a, .4), {emissive: new THREE.Color(0x6a1020), emissiveIntensity: .5}), s < 0 ? 'tailL' : 'tailR'), s * .6, .78, -2.35)); });
+  body.add(at(rbox(.5, .1, .04, .02, D, 'radar'), 0, .5, 2.36));
+  const lid = joint('lidar', [0, 1.41, -.1], at(cyl(.2, .22, .08, D, 'lidarBase', 32), 0, .04, 0)); body.add(lid);
+  const lh = joint('lidarHead', [0, .08, 0], at(cyl(.15, .15, .16, MAT2.visor, null, 32), 0, .08, 0), at(cyl(.152, .152, .02, MAT.cyan, null, 32), 0, .11, 0), at(cyl(.12, .14, .03, W, null, 32), 0, .175, 0)); lid.add(lh);
+  [[.95, 1.0, 1.15], [-.95, 1.0, 1.15], [.95, 1.0, -1.4], [-.95, 1.0, -1.4], [.7, 1.43, .75], [-.7, 1.43, .75]].forEach(([x, y, z], i) =>
+    body.add(grp('cam' + i, at(rbox(.12, .12, .16, .04, D), x, y, z), at(cyl(.03, .03, .01, MAT2.visor, null, 16), x + Math.sign(x) * .061, y, z, 0, 0, Math.PI / 2))));
+  [[-.84, 1.45], [.84, 1.45], [-.84, -1.5], [.84, -1.5]].forEach(([x, z], i) => { const w = tire(.36, .26, 'wheel' + i); at(w, x, .36, z); root.add(w); });
+  return root;
+}
+
+/** generic warehouse forklift with a pallet of boxes, ~2.2 m tall. Nodes: forks (raise .position.y 0 → 1.5; carries 'pallet'), mast, wheel0..3, seat, guard, beacon (solid amber). */
+export function forklift() {
+  const Y = MAT2.amber, D = MAT2.graphite;
+  const root = grp('forklift');
+  root.add(at(rbox(1.1, .7, 1.9, .12, Y, 'chassis'), 0, .55, -.1));
+  root.add(at(rbox(1.1, .55, .45, .14, D, 'counterweight'), 0, .62, -1.0));
+  root.add(at(rbox(.5, .12, .5, .05, D, 'seat'), 0, .98, -.35));
+  root.add(at(rbox(.45, .5, .1, .05, D), 0, 1.2, -.58));
+  const gd = grp('guard'); root.add(gd);
+  [[-.5, .25], [.5, .25], [-.5, -.75], [.5, -.75]].forEach(([x, z]) => gd.add(at(rbox(.05, 1.3, .05, .01, D), x, 1.55, z)));
+  gd.add(at(rbox(1.08, .05, 1.08, .02, D), 0, 2.2, -.25));
+  gd.add(at(cyl(.06, .06, .1, MAT.orange, 'beacon', 16), 0, 2.28, -.6));
+  const mast = joint('mast', [0, 0, .9]); root.add(mast);
+  [-1, 1].forEach(s => mast.add(at(rbox(.08, 2.1, .1, .01, MAT2.gray), s * .32, 1.12, 0)));
+  mast.add(at(rbox(.72, .06, .08, .01, MAT2.gray), 0, 2.15, 0));
+  const forks = joint('forks', [0, 0, 0]); mast.add(forks);
+  forks.add(at(rbox(.8, .4, .05, .01, D, 'carriage'), 0, .32, .08));
+  [-1, 1].forEach(s => forks.add(at(rbox(.1, .04, 1.1, .01, D), s * .25, .12, .62)));
+  const pal = grp('pallet'); forks.add(pal);
+  pal.add(at(rbox(1.0, .12, 1.1, .01, MAT2.wood), 0, .2, .66));
+  [[-.25, -.25], [.25, -.25], [-.25, .27], [.25, .27]].forEach(([x, z], i) => pal.add(at(rbox(.46, .4, .5, .02, M(0xb08a5e, .9), 'box' + i), x, .47, .66 + z)));
+  [[-.42, .9], [.42, .9], [-.42, -.75], [.42, -.75]].forEach(([x, z], i) => { const w = tire(.24, .2, 'wheel' + i); at(w, x * 1.2, .24, z); root.add(w); });
+  return root;
+}
+
+/** hobby servo motor (real size 40×20×38 mm → scale 10–20 for hero shots). Nodes: horn (output arm: rotate .y), shell (make transparent for x-ray),
+ * insides: motor, gear0..3 (rotate .y alternately), pot (position sensor), board (control chip), wires (3: brown/red/orange). */
+export function servo() {
+  const root = grp('servo'); const s = 1;
+  root.add(at(rbox(.04, .032, .02, .002, M(0x2a3040, .5, .1), 'shell'), 0, .016, 0));
+  root.add(at(rbox(.055, .0025, .02, .001, M(0x2a3040, .5, .1), 'tabs'), 0, .026, 0));
+  root.add(at(rbox(.04, .006, .02, .002, M(0x353c4e, .5, .1), 'cap'), 0, .035, 0));
+  root.add(at(cyl(.005, .005, .006, MAT2.white, null, 20), .01, .041, 0));
+  const horn = joint('horn', [.01, .044, 0], at(cyl(.006, .006, .003, MAT2.white, null, 20), 0, 0, 0), at(rbox(.032, .003, .007, .0035, MAT2.white, 'arm'), .01, 0, 0)); root.add(horn);
+  const ins = grp('insides'); root.add(ins);
+  ins.add(at(cyl(.0065, .0065, .02, MAT2.gray, 'motor', 20), -.008, .013, 0));
+  [[.01, .029, .0075], [-.002, .027, .005], [.006, .024, .0045], [-.008, .025, .004]].forEach(([x, y, r], i) => ins.add(at(cyl(r, r, .002, i % 2 ? MAT2.copper : MAT2.white, 'gear' + i, 24), x, y, 0)));
+  ins.add(at(cyl(.004, .004, .008, MAT.cyan, 'pot', 16), .01, .012, 0));
+  ins.add(at(rbox(.03, .001, .016, .0005, MAT2.pcb, 'board'), 0, .004, 0));
+  ins.add(at(rbox(.005, .001, .005, .0005, MAT.dark, 'chip'), -.005, .0048, 0));
+  [0x7a4a2a, 0xc0392b, 0xe08a2a].forEach((c, i) => { const w = new THREE.CatmullRomCurve3([new THREE.Vector3(-.02, .006, -.004 + i * .004), new THREE.Vector3(-.035, .005, -.004 + i * .004), new THREE.Vector3(-.06, .003, -.006 + i * .006)]);
+    root.add(mesh(new THREE.TubeGeometry(w, 10, .0008, 6), M(c, .7), 'wire' + i)); });
+  return root;
+}
+
+/** factory / warehouse hall backdrop (interior corner: back wall + left wall + roof trusses + floor markings), 24 × 10 m, 9 m high. Camera looks from +z.
+ * Nodes: backWall, sideWall, windows (high strip, light emissive glass), columns, trusses, crane (overhead crane beam: slide .position.x), floorLines, door (roller door). */
+export function factoryHall() {
+  const root = grp('factoryHall'); const P = MAT2.panel, St = M(0x4a5468, .5, .5);
+  const W = 24, Dp = 10, H = 9;
+  const back = grp('backWall'); root.add(back);
+  for (let x = -W / 2; x < W / 2 - .01; x += .4) back.add(at(bx(.36, H - 3, .06, .01, x % 1.2 === 0 ? P : P, null), x + .2, (H - 3) / 2, -Dp / 2));
+  back.add(at(bx(W, 3, .2, .02, MAT2.concrete, 'plinth'), 0, -1.5 + 3, -Dp / 2 - .1).translateY(-1.5));
+  const win = Object.assign(M(0xaebfd8, .2, .1), {emissive: new THREE.Color(0x7d93b8), emissiveIntensity: .35});
+  const wins = grp('windows'); root.add(wins);
+  for (let x = -W / 2 + 1.5; x < W / 2 - 1; x += 3) wins.add(at(bx(2.4, 1.2, .08, .02, win), x, H - 1.6, -Dp / 2 + .05));
+  const door = at(grp('door'), 6, 0, -Dp / 2 + .06); root.add(door);
+  for (let y = .1; y < 4.4; y += .18) door.add(at(bx(4, .16, .05, .01, MAT2.gray), 0, y, 0));
+  door.add(at(bx(4.3, .3, .1, .02, MAT2.amber), 0, 4.55, 0));
+  const side = grp('sideWall'); root.add(side);
+  for (let z = -Dp / 2; z < Dp / 2 - .01; z += .4) side.add(at(bx(.06, H - 3, .36, .01, P), -W / 2, 3 + (H - 3) / 2 - 3, z + .2));
+  const cols = grp('columns'); root.add(cols);
+  for (let x = -W / 2 + 4; x < W / 2; x += 6) cols.add(at(bx(.35, H, .35, .02, St), x, H / 2, -Dp / 2 + .4));
+  const tr = grp('trusses'); root.add(tr);
+  for (let x = -W / 2 + 4; x < W / 2; x += 6) { tr.add(at(bx(.18, .5, Dp, .02, St), x, H - .25, 0)); }
+  tr.add(at(bx(W, .3, .2, .02, St), 0, H - .8, -Dp / 2 + .5));
+  const crane = joint('crane', [0, H - 1.3, 0], at(bx(.4, .5, Dp - .6, .03, MAT2.amber, 'beam'), 0, 0, 0), at(bx(.6, .4, .6, .04, MAT2.graphite, 'trolley'), 0, -.4, 0), at(cyl(.02, .02, 3, MAT.steel, 'hook', 8), 0, -2.1, 0)); root.add(crane);
+  const fl = grp('floorLines'); root.add(fl);
+  [-3, 3].forEach(z => fl.add(at(bx(W - 2, .005, .12, .002, MAT2.yellowLine), 0, .003, z)));
+  return root;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -329,4 +572,7 @@ export const KIT = {
   'home/robotVacuum': robotVacuum, 'home/robotVacuumDock': vacuumDock,
   'drone/quadcopter': drone, 'home/trayGlasses': trayGlasses,
   'everyday/smartphone': smartphone, 'everyday/router': router, 'everyday/cellTower': cellTower, 'everyday/busStop': busStop, 'body/gripper': gripper,
+  'robots/humanoid': humanoid, 'robots/robotDog': robotDog, 'robots/deliveryBot': deliveryBot, 'robots/robotArm': robotArm,
+  'robots/driveUnit': driveUnit, 'robots/shelfPod': shelfPod, 'vehicles/robotaxi': robotaxi, 'vehicles/forklift': forklift,
+  'everyday/servo': servo, 'buildings/factoryHall': factoryHall,
 };

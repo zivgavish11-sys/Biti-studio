@@ -15,6 +15,9 @@
 
 | body/hand-left.glb, body/hand-right.glb | W3C immersive-web webxr-input-profiles, profile 'generic-hand' (github.com/immersive-web/webxr-input-profiles/packages/assets, © 2019 Amazon). Re-rigged by Media pro: finger bones re-parented into chains (were flat) so a curl bends the whole finger | MIT | No |
 | body/gripper.glb | In-house procedural kit by Media pro (engine/props/kit.js), generic 2-jaw gripper | CC0 (our own) | No |
+| robots/{humanoid,robotDog,deliveryBot,robotArm,driveUnit,shelfPod}.glb, vehicles/{robotaxi,forklift}.glb, everyday/servo.glb, buildings/factoryHall.glb | In-house procedural kit by Media pro (engine/props/kit.js), generic designs, no real brands (2026-11-08 run 4; welded with gltf-transform) | CC0 (our own) | No |
+| buildings/Building1_Small, Building2_Large, Building3_Big, Building3_Small, Building4.glb | Quaternius — Ultimate Textured Buildings Pack, via github.com/trebeljahr/quaternius-showcase (LICENSES.md: CC0-1.0); Draco decoded, textures 512 px webp | CC0 | No |
+| street/TrafficLight, TrafficLight_2, Sign_Stop, Sign_NoParking, Sign_Triangle, Street_Straight, Street_4Way, Streetlight_Double.glb | Quaternius — Modular Streets Pack, same source (CC0-1.0) | CC0 | No |
 
 # HDRI credits (engine/assets/hdri/)
 | File | Source | License |

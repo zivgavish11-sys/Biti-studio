@@ -41,6 +41,20 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   Fits: ep011-touch (pinch an egg, crush/drop), robot hands/grippers news, lab series (robot arm end-effector), "robot picks a strawberry/egg".
   Showcase: `python3 tools/render.py frames engine/props/showcase-touch 3.5,6.5,10` (hand pinch · gripper · receptor-dot hand).
 
+- **robots/** (added 2026-11-08 run 4, in-house CC0, real metres, white shell + graphite + one cyan stripe = fits hero/classic, no brand look). `st.prop('robots/<name>', {tint:1, x, z, ry})` (no h = true size).
+  **humanoid** (1.70 m): joints pelvis, torso (.y twist), neck, head, shoulderL/R, elbowL/R, wristL/R, hipL/R, kneeL/R, ankleL/R (rotate .x fwd/back, .z sideways); visor + eyeL/eyeR solid cyan; x-ray: make 'torsoShell' transparent → 'insides' (cell0..5 battery, computer, cooling). Fits: "why humanoids last 2 hours", "how a robot doesn't fall", humanoid news.
+  **robotDog** (0.55 m back): hip{FL,FR,BL,BR}/knee{..} (.x), head with cam0/cam1, lidar (spin .y). Fits: robot-dog stories, inspection, stairs.
+  **deliveryBot** (6 wheels, 0.7 m): wheel0..5 (.x), lid (open = rotation.x −0.6), flag, screen (st.screen for a Hebrew face/status), cam0..2. Fits: "how delivery robots cross the road", food delivery news.
+  **robotArm** (6-axis, reach ~1.5 m): j1 (.y) j2 j3 (.x) j4 (.z roll) j5 (.x) j6 (.y) → 'tool' empty group: attach body/gripper there. Fits: factories, lab series, "first factory robot 1961".
+  **driveUnit** (0.8 m square) + **shelfPod** (1×1×2.2 m, fabric bins, 0.35 m clearance): put the unit under the pod, raise 'lift' .position.y 0.05 and move both. Fits: warehouse/Amazon-style stories (generic).
+- **vehicles/robotaxi** (in-house CC0, 4.7 m, generic): roof 'lidar' (spin 'lidarHead' .y), cam0..5 pods, radar, wheel0..3, headL/R tailL/R. **vehicles/forklift** (CC0, 2.3 m): 'forks' .position.y 0→1.5 carries 'pallet' with box0..3, beacon, wheel0..3. Fits: robotaxi news, autonomous trucks/warehouses.
+- **everyday/servo** (CC0, real 40 mm → scale 10–15): horn (.y), shell/cap/tabs (make transparent for x-ray), insides: motor, gear0..3, pot, board, chip, wire0..2. Fits: "what is a servo and why every robot is full of them".
+- **buildings/** — **factoryHall** (in-house CC0, 24×10×9 m interior corner backdrop: ribbed metal walls, high windows, columns, trusses, overhead 'crane' (.position.x), roller door, yellow floor lines; camera looks from +z) — a real-looking wall instead of filler boxes for factory/warehouse stories.
+  Quaternius textured city blocks (CC0, 0.3–0.9 MB): Building1_Small, Building2_Large, Building3_Big, Building3_Small, Building4 — real-looking brick/stone facades with windows (European feel); use `{h: 7–16, tint: .9}` as a street backdrop 6–10 m behind the action.
+- **street/** (Quaternius Modular Streets, CC0, tiny): TrafficLight, TrafficLight_2, Sign_Stop, Sign_NoParking, Sign_Triangle, Street_Straight, Street_4Way (crosswalk junction), Streetlight_Double. Fits: delivery robots crossing, robotaxi at a junction.
+  Showcase of this whole batch: `python3 tools/render.py frames engine/props/showcase-robots 1,5,9,13` (robots · arm+servo x-ray · warehouse · street).
+  Note: kit.js exports are big un-welded; after `make_props.py` run `npx @gltf-transform/cli weld F F && npx @gltf-transform/cli dedup F F` (10× smaller).
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.
@@ -50,5 +64,5 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
 - Rubik 400/700 (OFL) — UI/captions. Frank Ruhl Libre (OFL).
 
 ## Wanted next
-- Robot arm/gripper (industrial), warehouse shelves/boxes, router/cell tower (grouper-style everyday props). Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
+- Done 2026-11-08: humanoid, robot dog, delivery bot, industrial arm, warehouse drive unit + pod, robotaxi, forklift, servo, factory hall, city facades, traffic lights. Still wanted: tractor/farm robot, glass office tower, Israeli shikun block, lab room + workbench + 3D printer, charging wall. Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
 - Note: only GitHub is reachable from sessions (poly.pizza, polyhaven.com, kenney.nl, quaternius.com are blocked). Good mirrors: github.com/trebeljahr/quaternius-showcase (all Quaternius packs, Draco → decode with `npx @gltf-transform/cli copy`), github.com/ETdoFresh/kenney.nl (older Kenney 3D kits: space, food, nature, tower-defense). When nothing exists, build it in engine/props/kit.js. Note: GitHub repo search is blocked in sessions; find repos via web search, then clone.

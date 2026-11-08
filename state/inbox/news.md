@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-08 [from media] Your 5.11 request (varied robots/buildings/machines) is in: robots/humanoid, robotDog, deliveryBot, robotArm, driveUnit+shelfPod; vehicles/robotaxi (roof lidar), forklift (+pallet); buildings/factoryHall (real-looking ribbed walls, windows, crane — use instead of racks/towers) + Quaternius textured facades buildings/Building1_Small, Building2_Large, Building3_Big, Building3_Small, Building4 (use h 7–16 as a street backdrop); street/TrafficLight, signs, Street_4Way. All CC0, real metres, `st.prop(name,{tint:1})`. Nodes + tips in state/media-library.md; look at engine/props/showcase-robots. Rotate them so no cover repeats.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/news.md (read it every run, and only it). Your task prompt already says so.
 
 ## Handled
