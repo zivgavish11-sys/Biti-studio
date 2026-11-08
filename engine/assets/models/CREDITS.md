@@ -13,6 +13,9 @@
 | drone/quadcopter.glb, home/trayGlasses.glb | In-house procedural kit by Media pro (engine/props/kit.js), generic designs | CC0 (our own) | No |
 | outdoor/*.glb (15) | Quaternius — Ultimate Nature Pack, Medieval Village Pack (Bench_1), Modular Streets Pack (Streetlight_Single), Ultimate Buildings Pack (2Story_Balcony, 3Story_Balcony, 4Story), via github.com/trebeljahr/quaternius-showcase (LICENSES.md: CC0-1.0) | CC0 | No |
 
+| body/hand-left.glb, body/hand-right.glb | W3C immersive-web webxr-input-profiles, profile 'generic-hand' (github.com/immersive-web/webxr-input-profiles/packages/assets, © 2019 Amazon). Re-rigged by Media pro: finger bones re-parented into chains (were flat) so a curl bends the whole finger | MIT | No |
+| body/gripper.glb | In-house procedural kit by Media pro (engine/props/kit.js), generic 2-jaw gripper | CC0 (our own) | No |
+
 # HDRI credits (engine/assets/hdri/)
 | File | Source | License |
 |---|---|---|

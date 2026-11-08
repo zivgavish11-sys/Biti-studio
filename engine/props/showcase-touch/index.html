@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-08 — showcase of body/hand-right (MIT, WebXR generic hand, skinned, real metres) + body/gripper (in-house CC0), hero look.
+// Sets: x0 hand pinching an egg (bones curled in code) · x20 robot gripper closing on an egg (jawA/jawB slide) · x40 hand x-ray-ish touch-receptor dots.
+// Render: python3 tools/render.py frames engine/props/showcase-touch 1,5,9
+import {studio, THREE, V, camKF, sm} from '/engine/lib/core.js';
+const st = await studio({look: 'hero', episode: 11, hook: ['ביד שלכם יש', '17,000 <span class="pill">חיישני מגע</span>!'], hookEnd: 3.6, fog: .02, scenes: (A, B, E) => [0, 4, 8, E]});
+const {scene} = st;
+st.stage({r: 120, grid: 0, spot: null});
+const spot = (p, tg, pw = 22, reach = 9) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .5, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const skinM = new THREE.MeshStandardMaterial({color: 0xc9c3f2, roughness: .7});
+const eggM = new THREE.MeshStandardMaterial({color: 0xf3ede2, roughness: .6});
+const egg = (x, y, z, s = 1) => { const e = new THREE.Mesh(new THREE.SphereGeometry(.19 * s, 40, 28), eggM); e.scale.set(1, 1.3, 1); e.position.set(x, y, z); e.castShadow = true; scene.add(e); return e; };
+
+// ---- WebXR hand helper: curl(name, k) bends every phalanx of a finger ----
+async function hand(name, {x = 0, y = 0, z = 0, s = 5} = {}) {
+  const m = await st.prop(name, {tint: 1}); const o = m.object; o.scale.setScalar(s); o.position.set(x, y, z);
+  o.traverse(q => { if (q.isMesh) { q.material = skinM; q.geometry.computeVertexNormals(); } });
+  const bone = n => o.getObjectByName(n); const rest = {}; o.traverse(b => { if (b.isBone || /finger|thumb|wrist/.test(b.name)) rest[b.name] = b.quaternion.clone(); });
+  const ax = new THREE.Vector3(1, 0, 0), q = new THREE.Quaternion();
+  const curl = (f, k, joints) => joints.forEach(j => { const b = bone(`${f}-${j}`); if (!b) return; b.quaternion.copy(rest[b.name]).multiply(q.setFromAxisAngle(ax, k)); });
+  const F = ['index-finger', 'middle-finger', 'ring-finger', 'pinky-finger'], J = ['phalanx-proximal', 'phalanx-intermediate', 'phalanx-distal'];
+  return {o, bone, axis(a) { ax.set(a == 'x' ? 1 : a == '-x' ? -1 : 0, a == 'y' ? 1 : 0, a == 'z' ? 1 : 0); }, pose(k, pinch = 0) { F.forEach((f, i) => curl(f, k * (i ? 1 + i * .25 : 1 - pinch * .4), J)); curl('thumb', k * .6 + pinch * .3, ['phalanx-proximal', 'phalanx-distal']); }};
+}
+// set 1: hand above an egg, gentle pinch
+spot([-1.2, 3.2, 2.2], [0, .3, 0]);
+const H = await hand('body/hand-right', {x: .05, y: 1.05, z: .35});
+H.o.rotation.set(.35, Math.PI / 2, 0); // hanging down over the egg, palm toward the egg
+egg(-.14, .7, .17, .8);
+// set 2: gripper on an egg
+spot([18.8, 3, 2.2], [20, .4, 0], 24);
+const G = await st.prop('body/gripper', {x: 20, y: .2, z: 0, scale: 3});
+egg(20, .34, 0, .85);
+// set 3: open hand with receptor dots (dense on fingertips)
+spot([39, 3.2, 2.4], [40, .4, 0], 24);
+const H3 = await hand('body/hand-right', {x: 40, y: .25, z: 0});
+H3.o.rotation.set(-Math.PI / 2, 0, 0);
+// receptor dots on the real skin (dense on fingertips): sample skinned vertices, keep them glued via applyBoneTransform
+const sk = (() => { let m; H3.o.traverse(q => { if (q.isSkinnedMesh) m = q; }); return m; })();
+const dots = []; { const pos = sk.geometry.attributes.position, si = sk.geometry.attributes.skinIndex; const names = sk.skeleton.bones.map(b => b.name);
+  let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < pos.count; i++) { const bn = names[si.getX(i)] || ''; const tip = /distal|tip/.test(bn); if (r() > (tip ? .9 : .28)) continue;
+    const d = new THREE.Mesh(new THREE.SphereGeometry(tip ? .006 : .0045, 8, 6), new THREE.MeshStandardMaterial({color: tip ? 0x2ee6ff : 0xffa53a, roughness: .5})); scene.add(d); dots.push([i, d]); } }
+const vtmp = new THREE.Vector3();
+st.frame(t => {
+  const k1 = sm(.5, 3, t);
+  H.pose(.1 + k1 * .35, k1);
+  const g = Math.min(1, Math.max(0, (t - 4.5) / 2)); ['A', 'B'].forEach((n, i) => { const j = G.object.getObjectByName('jaw' + n); if (j) j.position.x = (i ? 1 : -1) * (.06 - g * .022); });
+  H3.pose(.1); H3.o.updateMatrixWorld(true); for (const [i, d] of dots) { vtmp.fromBufferAttribute(sk.geometry.attributes.position, i); sk.applyBoneTransform(i, vtmp); d.position.copy(vtmp).applyMatrix4(sk.matrixWorld); d.visible = t > 8.6 + (i % 40) * .02; }
+  let cp, ct;
+  if (t < 4) [cp, ct] = camKF(t, [[0, [-1.6, 1.5, 2.6], [0, .55, .1]], [4, [-1.2, 1.4, 2.9], [0, .55, .1]]]);
+  else if (t < 8) [cp, ct] = camKF(t, [[4, [18.9, 1.1, 2.2], [20, .55, 0]], [8, [19.2, 1.05, 2.4], [20, .55, 0]]]);
+  else [cp, ct] = camKF(t, [[8, [39.5, 1.35, 1.25], [40.1, .3, .1]], [12, [39.7, 1.3, 1.35], [40.1, .3, .1]]]);
+  return {cp, ct}; });
+st.ready();
+</script></body></html>

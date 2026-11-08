@@ -297,11 +297,36 @@ export function busStop() {
   return g;
 }
 
+
+/** parallel 2-jaw robot gripper (generic), hangs DOWN from y=0.30 (flange on top) to fingertips at y=0. ~0.30 m tall, opening up to ~0.12 m.
+ * Nodes: flange, body, jawA (x<0) / jawB (x>0) → slide .position.x (closed ±0.012, open ±0.06), padA/padB (soft fingertip pads → recolour on contact),
+ * sensor0..2 (small solid force-sensor dots on each pad: sensorA0..2 / sensorB0..2), cam (wrist camera), led (solid status light). */
+export function gripper() {
+  const g = grp('gripper');
+  g.add(at(cyl(.045, .045, .03, MAT.joint, 'flange'), 0, .285, 0));
+  for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; g.add(at(cyl(.005, .005, .006, MAT.steel, null, 10), Math.cos(a) * .034, .302, Math.sin(a) * .034)); }
+  g.add(at(rbox(.15, .09, .07, .014, MAT.shell, 'body'), 0, .225, 0));
+  g.add(at(rbox(.16, .018, .06, .006, MAT.joint, 'rail'), 0, .172, 0));
+  g.add(at(rbox(.03, .012, .072, .004, MAT.cyan, 'stripe'), 0, .245, 0));
+  g.add(at(cyl(.012, .012, .02, MAT.dark, 'cam', 20), 0, .21, .04, Math.PI / 2));
+  g.add(at(cyl(.006, .006, .004, MAT.cyan, 'led', 12), .055, .245, .0355, Math.PI / 2));
+  const jaw = (sx, tag) => {
+    const j = grp('jaw' + tag);
+    j.add(at(rbox(.034, .03, .05, .006, MAT.joint), 0, .165, 0));
+    j.add(at(rbox(.018, .14, .044, .006, MAT.shell2, 'finger' + tag), sx * .004, .085, 0));
+    const pad = at(rbox(.008, .07, .04, .004, MAT.pad, 'pad' + tag), -sx * .009, .045, 0); j.add(pad);
+    [0, 1, 2].forEach(k => j.add(at(cyl(.004, .004, .003, MAT.cyan, 'sensor' + tag + k, 12), -sx * .0135, .02 + k * .025, 0, 0, 0, Math.PI / 2)));
+    j.position.x = sx * .05; return j;
+  };
+  g.add(jaw(-1, 'A'), jaw(1, 'B'));
+  return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
   'medical/instrument-grasper': grasper, 'medical/suture-needle': needle,
   'home/robotVacuum': robotVacuum, 'home/robotVacuumDock': vacuumDock,
   'drone/quadcopter': drone, 'home/trayGlasses': trayGlasses,
-  'everyday/smartphone': smartphone, 'everyday/router': router, 'everyday/cellTower': cellTower, 'everyday/busStop': busStop,
+  'everyday/smartphone': smartphone, 'everyday/router': router, 'everyday/cellTower': cellTower, 'everyday/busStop': busStop, 'body/gripper': gripper,
 };

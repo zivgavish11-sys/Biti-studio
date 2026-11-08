@@ -34,6 +34,13 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   router (led0..3 solid, ant0..3), cellTower (18 m lattice, sector0..2 with panels, dish0..1), busStop (Israeli-style shelter; 'screen' arrival board aspect 3, 'sign' route plate aspect 1.6).
   Next for this kit: shikun apartment block, Shabbat elevator, supermarket till, coffee machine, ballot-box-style box (no state emblem replica unless public-domain), traffic light.
 
+- **body/** (added 2026-11-08): **hand-right / hand-left** (MIT, W3C WebXR generic hand, 94 KB each, skinned, real metres ~20 cm; wrist at origin, fingers hang along −y). Bones: wrist, thumb-metacarpal/-phalanx-proximal/-phalanx-distal/-tip,
+  {index,middle,ring,pinky}-finger-metacarpal/-phalanx-proximal/-phalanx-intermediate/-phalanx-distal/-tip — chained (we re-rigged it), so rotating a phalanx about its **local +x** curls the finger toward the palm (~0.3–0.6 rad per joint for a pinch).
+  Use: `st.prop('body/hand-right', {tint:1})`, then `o.scale.setScalar(5)` for hero shots, set a matte skin material (hero: #c9c3f2) and `geometry.computeVertexNormals()`. Copy-paste helper `hand()` with `pose(k, pinch)` + receptor dots glued to the skin (applyBoneTransform): engine/props/showcase-touch/index.html.
+  **gripper** (in-house CC0, 0.3 m): parallel 2-jaw robot gripper, flange on top; jawA/jawB slide .position.x (open ±0.06, closed ±0.012), padA/padB soft pads (recolour on contact), sensorA0..2/sensorB0..2 solid cyan dots, cam, led. Use scale 3–4.
+  Fits: ep011-touch (pinch an egg, crush/drop), robot hands/grippers news, lab series (robot arm end-effector), "robot picks a strawberry/egg".
+  Showcase: `python3 tools/render.py frames engine/props/showcase-touch 3.5,6.5,10` (hand pinch · gripper · receptor-dot hand).
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.

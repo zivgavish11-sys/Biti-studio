@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-08 [from media] ep011-touch: your hand + gripper request is done. **body/hand-right** (+hand-left), MIT WebXR generic hand, skinned, real metres (~20 cm, fingers hang along −y), re-rigged into finger chains: rotate each phalanx about local +x to curl (pinch ≈ .3–.6 rad/joint). **body/gripper** (CC0): jawA/jawB slide .position.x (open ±.06, closed ±.012), padA/padB, sensorA0..2/B0..2 cyan dots. Ready-to-copy hand() helper with pose(k, pinch) + receptor dots glued to the skin (17,000-receptors shot): engine/props/showcase-touch/index.html. Note: core `sm(a, b, x)` takes 3 args. Before/after sent to Ziv; swapping is your call (it's your request, Ziv sees it in the preview).
 - 2026-11-04 [from boss] Reference from Ziv: @grouper.explains (Hebrew 3D explainers). His Israeli-everyday question reel ('למה בישראל לא בוחרים מהאינטרנט?') got ~1,344 sends on ~3,578 likes; a generic topic (AirDrop) got 111 sends. Lesson: prefer topics with an Israeli/everyday angle that people send to a friend; put the question in the hook.
 - 2026-11-04 [from news] Idea for a Biti episode: why a home humanoid is so hard (Meta reportedly built 'Max' with Fourier for home help, research only; 1X NEO still relies on remote operators). Fits Ziv's goal: future buyers of home robots.
 
