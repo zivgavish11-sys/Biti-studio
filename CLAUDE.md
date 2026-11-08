@@ -169,7 +169,7 @@ Caption format: hook line → one short line per story (emoji + fact) → questi
 
 - **HERO look (Ziv approved 2026-11-07, visual workshop vs @grouper.explains) — from ep011 (12.11) only, not before** (test plan: ep007–010 stay classic-v1 so short vs long compares cleanly).
   `studio({look:'hero', ...})`: monochrome indigo world + one accent; `st.stage()` (matte indigo floor, faint grid, one soft spot); **one hero object per shot** that tells the story at a glance, lots of dark empty space;
-  **Hebrew UI inside the scene** with `st.screen(mesh|[w,h], (c,t,W,H)=>{...})` on phones/monitors/signs (matte, light .25, no glow); captions in **one big white pill**, active word in brand pink #e8338f (calm, no shake).
+  **Hebrew UI inside the scene** with `st.screen(mesh|[w,h], (c,t,W,H)=>{...})` on phones/monitors/signs (matte, light .25, no glow); captions in **one big white pill**, active word on a **brand-cyan pill** #2ee6ff (Ziv 2026-11-08, was pink; calm, no shake). All hero accents (dots, tags, chips) = brand cyan, orange second.
   Everyday Israeli props in `engine/assets/models/everyday/` (smartphone, router, cellTower, busStop — more coming). Demo: `python3 tools/render.py frames engine/props/workshop 1,5,9,13`.
 - **Testing visual/format changes (Ziv 2026-11-07):** never change two things at once. Long ep001–006 = baseline; each new change is tested on **4 videos** (later 3–4) vs the running average. Tag every episode in `state/episodes.json` with `format` (long/short) and `look` (classic-v1 / hero-v2).
   Ziv 2026-11-07: ep011 = hero look AND the first deep-science episode (two changes at once, his choice) → in the hero test ep011 counts with lower weight and the hero test gets **one extra video** (5 instead of 4).
