@@ -28,6 +28,7 @@ Biti (a cute female robot, voice only) explains robotics in short vertical 3D vi
 - A chat may recommend things to another but never does its work: dated line in `state/inbox/<agent>.md` (video · news · analytics · boss · media · growth · factcheck · community · collab), format `- YYYY-MM-DD [from <you>] <recommendation>`, commit and push.
 - **At the start of every run read your own inbox**, apply what fits (tell Ziv when it changes something visible), move handled lines to "Handled" with a short note.
 - Rule changes only with Ziv's explicit OK; log them in `state/decisions.md`.
+- **Where rules go (Ziv 2026-11-08):** a new or changed rule for an agent goes ONLY into that agent's `docs/agents/<agent>.md` (e.g. visual/episode rules → `docs/agents/video.md`, carousel rules → `docs/agents/news.md`). Never add agent rules to this file — it stays a short core for everyone.
 
 ## Always
 - Factual errors are the #1 red line. Verify facts; phrase reports as reports.

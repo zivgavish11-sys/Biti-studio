@@ -16,7 +16,7 @@ Talk to Ziv in Hebrew only, short, one step at a time, plain RTL text. He is tok
 1. CLAUDE.md cut from ~30 KB to a ~3.7 KB core. Every agent's rules now live only in docs/agents/<agent>.md; task prompts read CLAUDE.md + their own doc. Frozen full copy: docs/archive/CLAUDE-full-2026-11-08.md. Your job: keep it lean, no duplicates; new agent → build its doc from the relevant rules.
 2. Cadence: carousels stay daily (Ziv insists). Fact-checker has no schedule — the reels/carousel agents fire it (fire_trigger on "סוכן בודק עובדות") after committing script/spec. Milestone watcher: days 1, 11, 21. Media: every 4 days (unchanged). Growth agent paused, role merged into you (don't delete it).
 3. Reels preview = 2 frames.
-4. **Pending Ziv's OK — models per agent** (proposal sent; change nothing before he answers): see the table in decisions/last message. Use update_trigger `model` only after his explicit approval.
+4. Models (approved and applied 2026-11-08): Opus — boss, reels, carousels, media, fact-checker; Sonnet — analytics, community, collab, growth; Haiku — milestone watcher.
 
 ## Agents & task ids (list_triggers to confirm)
 Boss trig_01KSN8WCEQckFMMNHprgndFG (weekly Sun) · Reels trig_012GFv3Sz2Uf43rmutqaZ1St (daily) · Carousels trig_0121rb7YsYdBU9dxrr8f7bXK (daily) · Analytics trig_01KJwXeJmPHL3zmWD5EHUq9U (every 4 days) · Media trig_01Szgi1iUnbsqFTPtpYW3Dbk (every 4 days) · Fact-checker trig_017YQqgPdq1RdQ6ygiCZMeSu (on demand) · Milestone trig_01F9KjHbmpoT84Q5Z214JSUW (1/11/21) · Community trig_018KJjS4Bpfr86YedbjLWuCe (paused) · Collab trig_01VU7a37pPgDSRKp7DgDHkVD (dormant) · Growth trig_01UdG75BRXqPe8c4HDRNBmVw (paused) · Efficiency trig_01VFsHimXYww1iwhkPGJZbs4 (off).
