@@ -1,5 +1,5 @@
 {
- "next_episode": 9,
+ "next_episode": 10,
  "episodes": [
   {
    "n": 1,
@@ -99,6 +99,17 @@
    "look": "classic-v1",
    "posted": "scheduled 2026-11-09T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-2846588876536984420",
    "notes": "20.8 s. Number hook (1M robots). First caption with the deep-facts block \"😳 רגע, זה לא הכל...\". Pinned: הייתם עובדים לצד רובוטים? כן / לא"
+  },
+  {
+   "n": 9,
+   "slug": "ep009-captcha",
+   "title": "איך \"אני לא רובוט\" יודע שאתם לא רובוט?",
+   "domain": "בינה מלאכותית ברובוטים",
+   "date": "2026-11-08",
+   "format": "short",
+   "look": "classic-v1",
+   "posted": "scheduled 2026-11-10T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-3361729303540317513",
+   "notes": "18.8 s. Hook: הריבוע אני לא רובוט בודק אתכם עוד לפני שלחצתם! Deep-facts block (book digitizing, 2009, 2014 checkbox, v3 score). Pinned: לחצתם פעם על \"אני לא רובוט\" ונכשלתם? כן / לא"
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
