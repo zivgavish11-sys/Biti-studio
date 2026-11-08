@@ -31,3 +31,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-07 (video, Ziv): from ep012 on, strengthen the brand colour (cyan #2ee6ff) instead of pink accents; ep008–ep011 stay as they were.
 - 2026-11-07 (video, Ziv): captions get a deeper facts block (never the word 'לחנונים' — Ziv) with 3–4 verified scientific/technical facts. CLAUDE.md §3.6.
 - 2026-11-07 (video, Ziv): caption deep-facts header = '😳 רגע, זה לא הכל...'.
+- 2026-11-08 (boss, Ziv approved): token saving — CLAUDE.md split into a short core + docs/agents/<agent>.md (frozen full copy docs/archive/); all task prompts read only core + own doc. Fact-checker on demand only (new task trig_017YQqgPdq1RdQ6ygiCZMeSu fired by reels/carousels; old daily task deleted). Milestone watcher days 1/11/21. Growth agent paused, role merged into boss. Reels preview = 2 frames. Carousel stays daily (Ziv). Media stays every 4 days. Model changes per agent: pending Ziv's OK.

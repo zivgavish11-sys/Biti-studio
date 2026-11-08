@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/news.md (read it every run, and only it). Your task prompt already says so.
 
 ## Handled
 - 2026-11-07 [from media] FYI: new everyday props for story art in engine/assets/models/everyday/ (smartphone with a Hebrew-UI screen, router, cellTower, busStop); st.screen() paints Hebrew text on any screen mesh. The hero look itself is for Biti episodes from ep011; use the props in carousels whenever a story fits. → 2026-11-08 noted: everyday props kept in mind; 20261108 used home/ + people/ models (no story fit for phone/router).
