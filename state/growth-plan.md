@@ -13,3 +13,4 @@ _Status: interview with Ziv in progress (started 2026-11-05). Roadmap written af
 
 ## Progress log
 - 2026-11-05: IG 7 · TikTok 15 · combined 22 (+2 since 11-03, ~1/day vs 11/day needed). Cadence kept: an episode every day 11-01→11-05 + lab episode, carousel daily.
+- 2026-11-08 (boss): IG 7 · TikTok 20 · combined ~27 (+7 in a week ≈ 1/day vs ~11/day needed). At this pace ~120 by Feb 2027. TikTok brings almost all growth. Episodes scheduled through 12.11. Q1 (YouTube Shorts) re-proposed to Ziv.
