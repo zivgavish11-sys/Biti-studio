@@ -4,9 +4,10 @@
 // EP011-touch — DEEP science slot + first HERO look (hero-v2). ~17,000 touch receptors in the hand; slip detection by vibration; reflex grip;
 // robot hands with few sensors crush or drop the egg; gel e-skin where the whole surface is a sensor.
 // Phrases: 0 hook | 1 למה קשה | 2 לא רק לחץ | 3 רטט | 4 להחליק | 5 המוח מהדק | 6 לפני ששמתם לב | 7 כמה חיישנים | 8 מוחצים | 9 מפילים | 10 עור | 11 ג'ל | 12 כולו חיישן | 13-14 follow
-import {studio, THREE, COL, rng, sm, win, camKF, V} from '/engine/lib/core.js';
+import {studio, THREE, COL, rng, sm, win, camPath, V} from '/engine/lib/core.js';
 const st = await studio({
-  look: 'hero', episode: 11, fog: .02,
+  look: 'hero', episode: 11, fog: .03,
+  keys: ['חיישני', 'להרגיש', 'לחץ', 'רטט', 'מהדק', 'חיישנים', 'מוחצים', 'מפילים', 'עור', "ג'ל", 'חיישן'],
   hookEnd: 5.4,
   hook: ['ביד שלכם יש', '17,000 <span class="pill">חיישני מגע</span>!'],
   // S: 0 hand + receptors | 1 egg slips: pressure / vibration / reflex | 2 robot gripper: crush / drop | 3 gel skin + touch map | 4 follow
@@ -54,12 +55,12 @@ spot([-1, 3.2, 2.4], [0, .4, 0], 24);
 const H1 = await hand({x: 0, y: .25, z: 0}); H1.o.rotation.set(-Math.PI / 2, 0, 0);
 const R1 = receptors(H1);
 // --- set 2 (x = 20): hand pinches an egg from above; the egg slips → ripples → fingers tighten
-const X2 = 20; spot([X2 - 1.2, 3.2, 2.2], [X2, .3, 0], 22);
+const X2 = 3.6; spot([X2 - 1.2, 3.2, 2.2], [X2, .3, 0], 22);
 const H2 = await hand({x: X2 + .05, y: 1.05, z: .35}); H2.o.rotation.set(.35, Math.PI / 2, 0);
 const egg2 = egg(X2 - .14, .7, .17);
 const ripM = M(ACC, {roughness: .6, transparent: true, opacity: 0}); const rips = [0, 1, 2].map(() => { const m = new THREE.Mesh(new THREE.TorusGeometry(.06, .005, 6, 40), ripM); scene.add(m); return m; });
 // --- set 3 (x = 40): robot gripper (body/gripper, CC0) with a few sensors: crushes an egg, then drops a second
-const X3 = 40; spot([X3 - 1.2, 3.2, 2.2], [X3, .4, 0], 24);
+const X3 = 7.2; spot([X3 - 1.2, 3.2, 2.2], [X3, .4, 0], 24);
 const Gp = await st.prop('body/gripper', {x: X3, y: .2, z: 0, scale: 3}); const G = Gp.object;
 const jaws = ['A', 'B'].map(n => G.getObjectByName('jaw' + n)); const pads = ['A', 'B'].map(n => G.getObjectByName('pad' + n) || G.getObjectByName('jaw' + n));
 const egg3 = egg(X3, .34, 0, .85);
@@ -67,7 +68,7 @@ const yolk = new THREE.Mesh(new THREE.CylinderGeometry(.22, .24, .015, 32), M(0x
 const shells = Array.from({length: 7}, () => { const m = new THREE.Mesh(new THREE.DodecahedronGeometry(.04, 0), eggM); m.userData.v = V((r() - .5) * 1.2, r() * .9, (r() - .5) * 1.2); scene.add(m); m.visible = false; return m; });
 const egg4 = egg(X3, .34, 0, .85);
 // --- set 4 (x = 60): gel e-skin hand (whole surface = sensor) holds an egg gently + tablet with the Hebrew touch map
-const X4 = 60; spot([X4 - 1.3, 3.2, 2.4], [X4 - .4, .5, 0], 26);
+const X4 = 10.8; spot([X4 - 1.3, 3.2, 2.4], [X4 - .4, .5, 0], 26);
 const gelM = M(0xc9c3f2, {roughness: .7});
 const H4 = await hand({x: X4 + .05, y: 1.05, z: .35, mat: gelM}); H4.o.rotation.set(.35, Math.PI / 2, 0);
 const egg5 = egg(X4 - .14, .7, .17);
@@ -82,8 +83,8 @@ const tab = st.screen([1.1, 1.5], (c, t, W, Hh) => {
     const d = Math.hypot(i - 7, j - 9); const v = Math.max(0, 1 - d / 6) * k; c.fillStyle = `rgba(142,166,255,${.08 + v * .85})`; c.fillRect(x, y, W * .05, Hh * .03); }
   c.fillStyle = '#1f9e6a'; c.font = `700 ${W * .085}px Rubik`; c.fillText(k > .5 ? 'אחיזה עדינה ✓' : 'מחפש…', W * .92, Hh * .93);
 }, {px: 900, light: .35});
-tab.mesh.scale.setScalar(.7); tab.mesh.position.set(X4 - 1.0, .85, -.9); tab.mesh.rotation.y = .35; scene.add(tab.mesh);
-const stand = new THREE.Mesh(new THREE.BoxGeometry(.14, .5, .08), M(0x2a2d55)); stand.position.set(X4 - 1.0, .25, -.96); scene.add(stand);
+tab.mesh.scale.setScalar(.7); tab.mesh.position.set(X4 - .8, .85, -.8); tab.mesh.rotation.y = .35; scene.add(tab.mesh);
+const stand = new THREE.Mesh(new THREE.BoxGeometry(.14, .5, .08), M(0x2a2d55)); stand.position.set(X4 - .8, .25, -.86); scene.add(stand);
 
 st.frame(t => {
   // set 1: receptors reveal + gentle finger breathing
@@ -108,13 +109,20 @@ st.frame(t => {
   const g = sm(S[3], A[11] + .2, t); gelM.color.copy(skinC).lerp(gelC, g); gelM.roughness = .7 - g * .4; H4.pose(.4, .8); R4(t > S[3] ? sm(A[11], A[12] + .2, t) : 0);
   TK.k = sm(A[11], A[12] + .3, t); tab.update(t);
 
-  let cp, ct;
-  if (t < S[1]) [cp, ct] = camKF(t, [[0, [-.7, 1.75, 2.05], [.05, .12, .3]], [S[1], [-.45, 1.7, 2.15], [.05, .12, .3]]]);                                       // hero hand + dots
-  else if (t < S[2]) [cp, ct] = camKF(t, [[S[1], [X2 - 1.6, 1.5, 2.6], [X2, .6, .1]], [A[5], [X2 - 1.2, 1.3, 2.3], [X2 - .05, .65, .1]], [S[2], [X2 - 1.4, 1.4, 2.5], [X2, .6, .1]]]); // slip + reflex
-  else if (t < S[3]) [cp, ct] = camKF(t, [[S[2], [X3 - 1.1, 1.1, 2.3], [X3, .55, 0]], [A[9], [X3 - .9, 1.0, 2.2], [X3, .5, 0]], [S[3], [X3 - 1.0, 1.15, 2.4], [X3, .55, 0]]]); // crush / drop
-  else if (t < S[4]) [cp, ct] = camKF(t, [[S[3], [X4 - 1.1, 1.55, 3.3], [X4 - .38, .72, -.2]], [S[4], [X4 - .85, 1.5, 3.1], [X4 - .33, .74, -.2]]]);       // gel skin + map
-  else [cp, ct] = camKF(t, [[S[4], [-.45, 1.7, 2.15], [.05, .12, .3]], [END, [-.7, 1.75, 2.05], [.05, .12, .3]]]);                                          // loop
-  return {cp, ct, overlay: t2 => {
+  // one world, continuous camera (Ziv 2026-11-08, like grouper): fly from object to object, breathing zoom in/out, no scene cuts
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const T1 = [.05, .24, .3], O1 = [-.7, 1.63, 1.75];
+  const T2 = [X2 - .05, .78, .1], O2 = [-1.5, .75, 2.7];
+  const T3 = [X3, .72, 0], O3 = [-1.1, .5, 2.5];
+  const T4 = [X4 - .55, .78, -.25], O4 = [-.5, .8, 3.5];
+  const m = (a, b) => (a + b) / 2;
+  const [cp, ct] = camPath(t, [
+    sh(0, T1, O1, 1.0), sh(m(0, S[1]), T1, [-.5, 1.6, 1.9], .92), sh(S[1] - .1, T1, O1, 1.1),
+    sh(S[1] + .35, T2, O2, 1.15), sh(A[4], T2, O2, .9), sh(A[5] + .3, T2, [-1.1, .7, 2.6], .8), sh(S[2] - .1, T2, O2, 1.05),
+    sh(S[2] + .35, T3, O3, 1.2), sh(A[8] + .2, T3, O3, .9), sh(A[9] + .3, T3, [-.7, .8, 2.3], 1.0), sh(S[3] - .1, T3, O3, 1.15),
+    sh(S[3] + .4, T4, O4, 1.15), sh(A[12], T4, O4, .9), sh(S[4] - .2, T4, O4, 1.05),
+    sh(S[4] + .5, T1, O1, 1.15), sh(END, T1, O1, 1.0)]);
+  return {cp, ct, noFlash: true, overlay: t2 => {
     if (t2 < S[1]) st.counter(540, 1150, '17,000', ' חיישנים', '#8ea6ff', Math.min(1, 1 - sm(S[1] - .3, S[1], t2)), 92);
     if (t2 > A[7] && t2 < A[8]) pads.forEach(j => { if (!j) return; const [x, y] = st.proj(j.localToWorld(V(0, 0, 0))); st.tag(x, Math.max(y - 90, 650), 'חיישן', '#8ea6ff', win(t2, A[7], A[8])); });
   }};

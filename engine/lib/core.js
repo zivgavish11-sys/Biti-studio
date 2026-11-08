@@ -27,6 +27,16 @@ export function camKF(t, kfs) {
   }
   const l = kfs[kfs.length - 1]; return [V(...l[1]), V(...l[2])];
 }
+/** camPath: smooth continuous camera through keyframes [[t,[pos],[target]],...] (Catmull-Rom, never stops at a keyframe).
+ *  Hero look (Ziv 2026-11-08, like grouper.explains): one world, the camera flies from object to object with constant zoom in/out instead of scene cuts. */
+export function camPath(t, kfs) {
+  const n = kfs.length; if (t <= kfs[0][0]) return [V(...kfs[0][1]), V(...kfs[0][2])]; if (t >= kfs[n - 1][0]) return [V(...kfs[n - 1][1]), V(...kfs[n - 1][2])];
+  let i = 0; while (i < n - 2 && t > kfs[i + 1][0]) i++;
+  const u = (t - kfs[i][0]) / (kfs[i + 1][0] - kfs[i][0]); const g = j => kfs[Math.max(0, Math.min(n - 1, j))];
+  const cr = (k) => { const p0 = V(...g(i - 1)[k]), p1 = V(...g(i)[k]), p2 = V(...g(i + 1)[k]), p3 = V(...g(i + 2)[k]); const u2 = u * u, u3 = u2 * u;
+    return p1.clone().multiplyScalar(2).add(p2.clone().sub(p0).multiplyScalar(u)).add(p0.clone().multiplyScalar(2).sub(p1.clone().multiplyScalar(5)).add(p2.clone().multiplyScalar(4)).sub(p3).multiplyScalar(u2)).add(p1.clone().multiplyScalar(3).sub(p0).sub(p2.clone().multiplyScalar(3)).add(p3).multiplyScalar(u3)).multiplyScalar(.5); };
+  return [cr(1), cr(2)];
+}
 /** deterministic pseudo random */
 export function rng(seed = 1) { let s = seed % 2147483647; if (s <= 0) s += 2147483646; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -84,6 +94,7 @@ const CSS_HERO = `
 #cap .box{display:inline-block;background:#fff;border-radius:16px;padding:10px 30px 14px;box-shadow:0 10px 26px rgba(0,0,0,.45);direction:rtl}
 #cap span{color:#0a0c1c;padding:0 4px;margin:0}
 #cap span.on{background:none;color:#0a0c1c;box-shadow:none}
+#cap span.key{color:#4a63f0}
 .pill{background:#8ea6ff;color:#0a0c1c}
 .chip{border-right-color:#8ea6ff}
 `;
@@ -211,13 +222,13 @@ export async function studio(opts = {}) {
   function counter(x, y, value, suffix, col = '#2ee6ff', al = 1, size = 80) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillStyle = '#fff'; ctx.shadowColor = CLASSIC ? 'rgba(0,0,0,.7)' : col; ctx.shadowBlur = CLASSIC ? 12 : 30; ctx.fillText(`${value}${suffix || ''}`, x, y); if (CLASSIC) { ctx.shadowBlur = 0; ctx.fillStyle = col; ctx.fillRect(x - size * .9, y + size * .18, size * 1.8, size * .08); } ctx.restore(); }
 
   // ---------- captions / chips ----------
-  let capKey = '';
+  let capKey = ''; const KEYS = new Set(opts.keys || []);  // hero: key words shown in brand blue (Ziv 2026-11-08, like grouper's one coloured word)
   const CHUNKS = HERO ? TL.chunks.flatMap(c3 => { const out = [], n = c3.words.length, k = Math.ceil(n / 3); for (let i = 0; i < k; i++) { const ws = c3.words.slice(Math.round(i * n / k), Math.round((i + 1) * n / k)); out.push({a: i ? ws[0].a : c3.a, b: i < k - 1 ? c3.words[Math.round((i + 1) * n / k)].a : c3.b, words: ws}); } return out; }) : TL.chunks;
   function captions(t) {
     let ch = null; for (const c3 of CHUNKS) if (t >= c3.a && t < c3.b) { ch = c3; break; }
     if (!ch) { capEl.innerHTML = ''; capKey = ''; return; }
-    const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { const inner = ch.words.map(x => `<span>${x.w}</span>`).join(' '); capEl.innerHTML = HERO ? `<div class="box">${inner}</div>` : inner; capKey = k; }
-    [...(HERO ? capEl.firstChild.children : capEl.children)].forEach((s, i) => { const w = ch.words[i]; s.className = (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
+    const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { const inner = ch.words.map(x => `<span${KEYS.has(x.w.replace(/[.,!?:…"']/g, '')) && HERO ? ' data-k=1' : ''}>${x.w}</span>`).join(' '); capEl.innerHTML = HERO ? `<div class="box">${inner}</div>` : inner; capKey = k; }
+    [...(HERO ? capEl.firstChild.children : capEl.children)].forEach((s, i) => { const w = ch.words[i]; s.className = s.dataset.k ? 'key' : (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
     const p = sm(ch.a, ch.a + 0.1, t); capEl.style.opacity = p; capEl.style.transform = 'none'; // calm captions: fade only (Ziv: no shake)
   }
   const CH = opts.chips ? opts.chips(A, B, S) : [];
@@ -255,7 +266,7 @@ export async function studio(opts = {}) {
   let frameFn = () => {};
   const api = {
     THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
-    model, prop, stage, screen, HERO, HERO_ACC: 0x8ea6ff, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
+    model, prop, stage, screen, HERO, HERO_ACC: 0x8ea6ff, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, camPath, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
