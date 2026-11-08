@@ -1,0 +1,129 @@
+{
+ "date_label": "חדשות היום · 8.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "כמה עולה היום<br>רובוט ל<span class=\"pill\">בית</span>?",
+   "bullets": [
+    "רובוט מהתקרה שאוסף כביסה, ב־795$",
+    "רובוט דמוי אדם קטן לילדים, ב־7,999$",
+    "סין עצרה עסקת רובוטים של 5.4 מיליארד$"
+   ],
+   "scene": {
+    "robot": false,
+    "props": [
+     "unbox"
+    ],
+    "color": "cyan",
+    "anim": "Wave",
+    "cam": [
+     3.0,
+     2.7,
+     8.2
+    ],
+    "target": [
+     0.2,
+     1.3,
+     -2.6
+    ],
+    "shift": 0.1
+   }
+  },
+  {
+   "type": "story",
+   "stat": "$795",
+   "statSub": "המחיר, לפי הדיווח",
+   "statColor": "cyan",
+   "title": "רובוט שתלוי<br>מה<span class=\"pill\">תקרה</span>",
+   "text": "סטארטאפ קטן מצפון קרוליינה מוכר, לפי הדיווח, את Stringman: זרוע אחיזה שתלויה על 4 כבלים מפינות התקרה ונעה בכל החדר. בהדגמה היא אוספת כביסה מהרצפה לסל. הוא בקוד פתוח, ועדיין ניסיוני.",
+   "source": "IEEE Spectrum, RuntimeWire",
+   "scene": {
+    "robot": false,
+    "props": [
+     "ceilingcrane"
+    ],
+    "color": "cyan",
+    "cam": [
+     3.2,
+     5.0,
+     4.8
+    ],
+    "target": [
+     -0.1,
+     0.6,
+     -3.3
+    ],
+    "shift": 0.1,
+    "noCeil": true
+   }
+  },
+  {
+   "type": "story",
+   "stat": "$7,999",
+   "statSub": "המחיר, לפי החברה",
+   "statColor": "orange",
+   "title": "רובוט דמוי אדם<br>בגובה <span class=\"pill\">90 ס״מ</span>",
+   "text": "StarBot האמריקאית השיקה את Spark: רובוט דמוי אדם קטן עם 22 צירי תנועה, לחברה לילדים, ללימוד רובוטיקה ולמפתחים. לפי החברה, הוא מיוצר כולו בארה״ב וכבר נמכר.",
+   "source": "StarBot (GlobeNewswire)",
+   "scene": {
+    "robot": false,
+    "props": [
+     "kidbot"
+    ],
+    "color": "orange",
+    "anim": "Wave",
+    "cam": [
+     1.8,
+     1.8,
+     4.6
+    ],
+    "target": [
+     -0.3,
+     0.8,
+     -3.0
+    ],
+    "shift": 0.1
+   }
+  },
+  {
+   "type": "story",
+   "stat": "$5.4B",
+   "statSub": "שווי העסקה, לפי רויטרס",
+   "statColor": "pink",
+   "title": "סין עצרה<br>עסקת <span class=\"pill\">רובוטים</span> ענקית",
+   "text": "לפי רויטרס ו־FT, סין לא תאשר לסופטבנק לקנות את חטיבת הרובוטים של ABB. לפי הדיווח, החשש הוא שמידע מהרובוטים ייצא לחו״ל וישמש לאימון בינה מלאכותית. ABB אומרת שהחברות ממשיכות לעבוד על העסקה.",
+   "source": "Reuters, Evertiq",
+   "scene": {
+    "robot": false,
+    "props": [
+     "dealblock"
+    ],
+    "color": "pink",
+    "cam": [
+     1.0,
+     3.8,
+     7.8
+    ],
+    "target": [
+     0.2,
+     1.3,
+     -4.0
+    ],
+    "shift": 0.1
+   }
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "anim": "Wave",
+    "color": "cyan",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
+  }
+ ]
+}

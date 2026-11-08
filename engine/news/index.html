@@ -544,6 +544,127 @@ for (const p of sc.props || []) {
     const fl = new THREE.PointLight(0xff2e4d, 12, 8); fl.position.set(0, 1.2, -1.6); scene.add(fl);
     await robot(1.5, 1.4, -0.45, 'ThumbsUp', T, .58, 0x37e6a0);
     const gr = new THREE.Mesh(new THREE.TorusGeometry(1.1, .05, 8, 64), glowM(0x37e6a0)); gr.rotation.x = Math.PI / 2; gr.position.set(1.5, .03, 1.4); scene.add(gr); ring.visible = glow.visible = false; }
+  if (['unbox', 'ceilingcrane', 'kidbot', 'dealblock'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  // shared helpers for 20261108 props
+  const room = (fc, wc, opt = {}) => { const fl = new THREE.Mesh(new THREE.PlaneGeometry(opt.fw ?? 16, opt.fd ?? 14), mat(fc, .1, {roughness: .85, metalness: 0})); fl.rotation.x = -Math.PI / 2; fl.position.set(0, 0, -2); scene.add(fl);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(opt.fw ?? 16, 7), mat(wc, .1, {roughness: .95, metalness: 0})); wall.position.set(0, 3.5, opt.wz ?? -6.5); scene.add(wall);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(opt.fw ?? 16, .14, .04), mat(0xd9dcea, .1, {metalness: 0})); base.position.set(0, .07, (opt.wz ?? -6.5) + .02); scene.add(base); return wall; };
+  const nightWindow = (x, y, z, w, h) => { // window with a night skyline (lit flats) seen through it
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 360; const g = cv.getContext('2d');
+    const gr = g.createLinearGradient(0, 0, 0, 360); gr.addColorStop(0, '#0b1440'); gr.addColorStop(1, '#2a2f6e'); g.fillStyle = gr; g.fillRect(0, 0, 512, 360);
+    let s = 7; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    for (let x0 = 0; x0 < 512;) { const bw = 40 + r() * 60, bh = 90 + r() * 200; g.fillStyle = r() > .5 ? '#141a45' : '#1a2152'; g.fillRect(x0, 360 - bh, bw, bh);
+      for (let yy = 360 - bh + 10; yy < 350; yy += 18) for (let xx = x0 + 6; xx < x0 + bw - 8; xx += 14) if (r() > .62) { g.fillStyle = r() > .3 ? '#ffd58a' : '#bfe3ff'; g.fillRect(xx, yy, 7, 9); }
+      x0 += bw + 3; }
+    g.fillStyle = '#f2e6c8'; g.beginPath(); g.arc(420, 60, 22, 0, 6.3); g.fill();
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const win = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .35, roughness: .5})); win.position.set(x, y, z + .01); scene.add(win);
+    const fm = mat(0xd9dcea, .1, {metalness: 0});
+    for (const [fw, fh, fx, fy] of [[w + .16, .08, 0, h / 2], [w + .16, .08, 0, -h / 2], [.08, h, -w / 2, 0], [.08, h, w / 2, 0], [.05, h, 0, 0]]) { const f = new THREE.Mesh(new THREE.BoxGeometry(fw, fh, .06), fm); f.position.set(x + fx, y + fy, z + .03); scene.add(f); } };
+  const cloth = (x, y, z, c, s = 1, ry = 0) => { const m = new THREE.Mesh(new THREE.SphereGeometry(.3, 14, 10), mat(c, .1, {roughness: 1, metalness: 0}));
+    const pos = m.geometry.attributes.position; for (let k = 0; k < pos.count; k++) pos.setXYZ(k, pos.getX(k) * (1 + .25 * Math.sin(k * 1.7)), pos.getY(k) * .22, pos.getZ(k) * (1 + .2 * Math.cos(k * 2.3)));
+    m.geometry.computeVertexNormals(); m.position.set(x, y, z); m.scale.setScalar(s); m.rotation.y = ry; scene.add(m); return m; };
+  const screenTex = (draw, w = 512, h = 320) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; draw(cv.getContext('2d'), w, h); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; };
+
+  if (p === 'unbox') { // cover: a brand-new home robot stepping out of its delivery box in a living room at night
+    scene.fog = new THREE.FogExp2(0x070a24, 0.02);
+    room(0x2b2442, 0x262c5a); nightWindow(2.8, 2.9, -6.5, 3.0, 1.9);
+    await place('home/rugRounded', {x: 0, z: -2.2, h: .03, dim: .9});
+    await place('home/loungeSofa', {x: -3.4, z: -5.0, ry: .35, h: 1.0});
+    await place('home/lampRoundFloor', {x: -5.4, z: -5.6, h: 2.2, dim: .8});
+    const warm = new THREE.PointLight(0xffc27a, 14, 10); warm.position.set(-5, 2.2, -4.9); scene.add(warm);
+    await place('home/pottedPlant', {x: 5.0, z: -5.4, h: 1.7});
+    await place('home/cardboardBoxOpen', {x: .9, z: -2.6, ry: -.35, h: .95, dim: .95});
+    await place('home/cardboardBoxClosed', {x: 2.5, z: -3.6, ry: .5, h: .6, dim: .95});
+    // price tag on a string from the box flap
+    const tag = new THREE.Mesh(new THREE.PlaneGeometry(.55, .32), new THREE.MeshStandardMaterial({map: screenTex((g, w, h) => { g.fillStyle = '#ffa53a'; g.fillRect(0, 0, w, h); g.fillStyle = '#05061a'; g.font = 'bold 150px Rubik'; g.direction = 'rtl'; g.textAlign = 'center'; g.fillText('חדש!', w / 2, 210); }, 512, 300), roughness: .7, side: 2}));
+    tag.position.set(1.55, .72, -2.0); tag.rotation.set(0, -.5, .12); scene.add(tag);
+    await robot(-.15, -2.3, .3, sc.anim || 'Wave', T, .5, accent);
+    const sp = new THREE.SpotLight(0xffffff, 55, 16, .5, .6); sp.position.set(1, 6.5, 2); sp.target.position.set(0, .8, -2.2); scene.add(sp, sp.target); }
+
+  if (p === 'ceilingcrane') { // a room-scale crane: 4 cables from the ceiling corners hold a gripper that drops a shirt into the laundry basket
+    scene.fog = new THREE.FogExp2(0x070a24, 0.018);
+    room(0x2a2440, 0x252b58);
+    const side = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), mat(0x1f2550, .1, {roughness: .95, metalness: 0})); side.rotation.y = Math.PI / 2; side.position.set(-2.8, 3.5, -1); scene.add(side);
+    const ceil = new THREE.Mesh(new THREE.PlaneGeometry(16, 14), mat(0x1a1f45, .1, {roughness: 1, metalness: 0})); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, 3.0, -2); if (!sc.noCeil) scene.add(ceil);
+    nightWindow(-0.4, 1.45, -6.5, 1.9, 1.0);
+    await place('home/bedSingle', {x: -1.3, z: -5.4, ry: 0, h: .75});
+    await place('home/bookcaseOpenLow', {x: 3.9, z: -6.1, h: 1.1});
+    await place('home/rugRectangle', {x: 0, z: -2.3, h: .03, dim: .9});
+    await place('home/bear', {x: -1.4, z: -1.5, ry: .8, h: .45, dim: .9});
+    // clutter on the floor
+    cloth(-.6, .05, -1.4, 0xff5fd2, 1.0, .4); cloth(2.4, .05, -1.0, 0x6b5cff, .9, 1.2); cloth(-1.6, .05, -3.0, 0x2ee6ff, .8, 2.1);
+    // laundry basket
+    const bk = new THREE.Mesh(new THREE.CylinderGeometry(.5, .42, .7, 28, 1, true), mat(0xe9ddc5, .1, {roughness: .9, metalness: 0, side: 2})); bk.position.set(1.4, .35, -2.9); scene.add(bk);
+    const rim2 = new THREE.Mesh(new THREE.TorusGeometry(.5, .035, 8, 32), mat(0xcfc1a5, .1)); rim2.rotation.x = Math.PI / 2; rim2.position.set(1.4, .7, -2.9); scene.add(rim2);
+    cloth(1.4, .62, -2.9, 0xffa53a, .9, .3);
+    // anchors in the 4 upper corners + cables to the gripper
+    const G = new THREE.Vector3(1.35, 1.75, -2.85);
+    const lampL = new THREE.PointLight(0xffc27a, 10, 9); lampL.position.set(2.6, 2.0, -5.0); scene.add(lampL);
+    await place('home/lampSquareFloor', {x: 2.9, z: -6.1, h: 1.9, dim: .85});
+    const dark = mat(0x1b1f38, .1, {roughness: .5}), wht = mat(0xeef1f8, .1, {roughness: .4});
+    for (const a of [[-2.62, 2.85, -6.3], [4.6, 2.85, -6.3], [-2.62, 2.85, 2.2], [4.8, 2.85, 2.6]]) { const A = new THREE.Vector3(...a);
+      const an = new THREE.Mesh(new THREE.BoxGeometry(.32, .22, .32), wht); an.position.copy(A); scene.add(an);
+      const st = new THREE.Mesh(new THREE.BoxGeometry(.33, .04, .33), mat(accent, .1)); st.position.copy(A).add(new THREE.Vector3(0, -.11, 0)); scene.add(st);
+      const d = G.clone().sub(A), L = d.length(); const cb = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, L, 6), mat(0xdfe6ff, .1, {roughness: .4}));
+      cb.position.copy(A).add(d.clone().multiplyScalar(.5)); cb.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); scene.add(cb); }
+    // gripper: hub + camera + two fingers pinching a shirt
+    const gp = new THREE.Group(); const hub = new THREE.Mesh(new THREE.CylinderGeometry(.16, .2, .22, 24), wht); gp.add(hub);
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(.205, .205, .05, 24), mat(accent, .1)); band.position.y = -.05; gp.add(band);
+    for (const s of [-1, 1]) { const f = new THREE.Mesh(new THREE.BoxGeometry(.04, .26, .08), dark); f.position.set(s * .07, -.22, 0); f.rotation.z = s * .18; gp.add(f); }
+    gp.position.copy(G); scene.add(gp);
+    const shirt = new THREE.Mesh(new THREE.PlaneGeometry(.7, .6, 6, 6), mat(0x2ee6ff, .1, {roughness: 1, metalness: 0, side: 2}));
+    { const ps = shirt.geometry.attributes.position; for (let k = 0; k < ps.count; k++) ps.setZ(k, .06 * Math.sin(ps.getX(k) * 9) + .05 * Math.cos(ps.getY(k) * 7)); shirt.geometry.computeVertexNormals(); }
+    shirt.position.set(G.x, G.y - .62, G.z); shirt.rotation.y = .5; scene.add(shirt);
+    const sp = new THREE.SpotLight(0xffffff, 50, 16, .55, .6); sp.position.set(0, 2.8, 2); sp.target.position.copy(G).setY(1); scene.add(sp, sp.target); }
+
+  if (p === 'kidbot') { // small (~90 cm) humanoid next to a child at a home desk: laptop shows the code that makes it wave
+    scene.fog = new THREE.FogExp2(0x070a24, 0.02);
+    room(0x2c2846, 0x243060); nightWindow(.3, 1.75, -6.5, 1.9, 1.1);
+    await place('home/desk', {x: 1.2, z: -4.6, h: .8});
+    await place('home/chairDesk', {x: 1.0, z: -3.6, ry: Math.PI, h: 1.0});
+    await place('home/bookcaseOpen', {x: 4.4, z: -6.0, h: 2.0});
+    await place('home/rugRound', {x: -.6, z: -2.4, h: .03, dim: .9});
+    await place('home/lampSquareTable', {x: 2.3, y: .8, z: -4.85, h: .5, dim: .9});
+    const warm = new THREE.PointLight(0xffc27a, 8, 7); warm.position.set(2.3, 1.7, -4.6); scene.add(warm);
+    // laptop with code (open, facing the child)
+    const lap = new THREE.Group(), dk = mat(0x1b1f38, .1, {roughness: .5});
+    const lb = new THREE.Mesh(new THREE.BoxGeometry(.6, .03, .42), mat(0xc9cede, .1, {metalness: .5})); lap.add(lb);
+    const tex = screenTex((g, w, h) => { g.fillStyle = '#0d1230'; g.fillRect(0, 0, w, h); const cols = ['#2ee6ff', '#ff5fd2', '#ffa53a', '#cfe0ff'];
+      for (let k = 0; k < 11; k++) { g.fillStyle = cols[k % 4]; g.fillRect(24 + (k % 3) * 26, 22 + k * 26, 120 + (k * 53 % 220), 12); } });
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(.56, .36), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .5, roughness: .5}));
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(.6, .4, .02), dk); lid.position.set(0, .2, -.21); lid.rotation.x = -.25; lap.add(lid);
+    scr.position.set(0, .2, -.195); scr.rotation.x = -.25; lap.add(scr);
+    lap.position.set(.9, .82, -4.7); lap.rotation.y = .25; scene.add(lap);
+    // child standing next to the robot, watching it wave
+    await place('people/character-female-c', {x: -1.2, z: -2.6, ry: .7, h: 1.2, dim: .85, anim: 'emote-yes', t: .4});
+    await robot(.15, -2.3, -.35, sc.anim || 'Wave', T, .23, accent);
+    const sp = new THREE.SpotLight(0xffffff, 55, 16, .5, .6); sp.position.set(0, 6, 2); sp.target.position.set(-.6, .6, -2.4); scene.add(sp, sp.target); }
+
+  if (p === 'dealblock') { // robot-arm factory behind a lowered red/white barrier + stop sign: the takeover is blocked
+    scene.fog = new THREE.FogExp2(0x070a24, 0.026);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x22284a, .1, {roughness: .65, metalness: .15})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    // corrugated factory wall with a strip of high windows
+    const wt = screenTex((g, w, h) => { g.fillStyle = '#2a3266'; g.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 16) { g.fillStyle = '#323b78'; g.fillRect(x, 0, 8, h); }
+      for (let x = 30; x < w - 60; x += 92) { g.fillStyle = '#5a6bb0'; g.fillRect(x, 40, 70, 46); g.fillStyle = '#2a3266'; g.fillRect(x + 33, 40, 4, 46); } }, 1024, 512);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(30, 15), new THREE.MeshStandardMaterial({map: wt, roughness: .85})); wall.position.set(0, 7.5, -10); scene.add(wall);
+    // yellow floor lane lines
+    for (const x of [-4.2, 4.2]) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(.12, 14), mat(0xffc93a, .1, {roughness: .8})); ln.rotation.x = -Math.PI / 2; ln.position.set(x, .01, -4); scene.add(ln); }
+    // three industrial arms on pedestals, each over a part
+    const armC = 0xffa53a;
+    for (const [x, z] of [[-2.6, -5.2], [0.2, -6.0], [3.0, -5.0]]) { arm(x, z, armC);
+      const part = new THREE.Mesh(new THREE.BoxGeometry(.8, .3, .6), mat(0x8a93b8, .1, {roughness: .35, metalness: .7})); part.position.set(x + 1.0, .15, z + .7); scene.add(part); }
+    // lowered boom barrier across the lane
+    const post = new THREE.Mesh(new THREE.BoxGeometry(.4, 1.2, .4), mat(0xeef1f8, .1)); post.position.set(-3.6, .45, -1.2); scene.add(post);
+    const bar = new THREE.Group(); for (let k = 0; k < 10; k++) { const sg = new THREE.Mesh(new THREE.BoxGeometry(.74, .14, .1), mat(k % 2 ? 0xffffff : 0xe0283c, .1, {roughness: .5})); sg.position.x = k * .74 + .37; bar.add(sg); }
+    bar.position.set(-3.4, .8, -1.2); scene.add(bar);
+    // stop sign
+    const sign = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, .05, 8), mat(0xe0283c, .1, {roughness: .5})); sign.rotation.x = Math.PI / 2; sign.rotation.y = Math.PI / 8; sign.position.set(2.6, 1.7, -1.15); scene.add(sign);
+    const sb = new THREE.Mesh(new THREE.BoxGeometry(.62, .14, .02), mat(0xffffff, .1)); sb.position.set(2.6, 1.7, -1.11); scene.add(sb);
+    const sp2 = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 2.1, 10), mat(0x8a93b8, .1, {metalness: .6})); sp2.position.set(2.6, .85, -1.2); scene.add(sp2);
+    const red = new THREE.PointLight(0xff3040, 6, 7); red.position.set(.5, 1.6, -.6); scene.add(red);
+    for (let k = 0; k < 4; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-4.5 + k * 3, 6.5, -5); scene.add(lamp); }
+    const sp = new THREE.SpotLight(0xffffff, 60, 20, .6, .5); sp.position.set(0, 7, 2); sp.target.position.set(0, 1, -4.5); scene.add(sp, sp.target); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
