@@ -32,10 +32,14 @@ export function camKF(t, kfs) {
 export function camPath(t, kfs) {
   const n = kfs.length; if (t <= kfs[0][0]) return [V(...kfs[0][1]), V(...kfs[0][2])]; if (t >= kfs[n - 1][0]) return [V(...kfs[n - 1][1]), V(...kfs[n - 1][2])];
   let i = 0; while (i < n - 2 && t > kfs[i + 1][0]) i++;
-  const u = (t - kfs[i][0]) / (kfs[i + 1][0] - kfs[i][0]); const g = j => kfs[Math.max(0, Math.min(n - 1, j))];
-  const cr = (k) => { const p0 = V(...g(i - 1)[k]), p1 = V(...g(i)[k]), p2 = V(...g(i + 1)[k]), p3 = V(...g(i + 2)[k]); const u2 = u * u, u3 = u2 * u;
-    return p1.clone().multiplyScalar(2).add(p2.clone().sub(p0).multiplyScalar(u)).add(p0.clone().multiplyScalar(2).sub(p1.clone().multiplyScalar(5)).add(p2.clone().multiplyScalar(4)).sub(p3).multiplyScalar(u2)).add(p1.clone().multiplyScalar(3).sub(p0).sub(p2.clone().multiplyScalar(3)).add(p3).multiplyScalar(u3)).multiplyScalar(.5); };
-  return [cr(1), cr(2)];
+  const h = kfs[i + 1][0] - kfs[i][0], u = (t - kfs[i][0]) / h;
+  // time-aware Hermite with clamped tangents: smooth and continuous, no overshoot after long flights
+  const tan = (j, k) => { if (j <= 0 || j >= n - 1) return V(0, 0, 0); const pa = V(...kfs[j - 1][k]), pb = V(...kfs[j][k]), pc = V(...kfs[j + 1][k]);
+    const ta = kfs[j][0] - kfs[j - 1][0], tc = kfs[j + 1][0] - kfs[j][0]; const m = pc.clone().sub(pa).divideScalar(ta + tc);
+    const lim = Math.min(pb.distanceTo(pa) / ta, pc.distanceTo(pb) / tc) * 1.5; if (m.length() > lim) m.setLength(lim); return m; };
+  const u2 = u * u, u3 = u2 * u, h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+  const hp = k => V(...kfs[i][k]).multiplyScalar(h00).add(tan(i, k).multiplyScalar(h10 * h)).add(V(...kfs[i + 1][k]).multiplyScalar(h01)).add(tan(i + 1, k).multiplyScalar(h11 * h));
+  return [hp(1), hp(2)];
 }
 /** deterministic pseudo random */
 export function rng(seed = 1) { let s = seed % 2147483647; if (s <= 0) s += 2147483646; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
@@ -218,6 +222,12 @@ export async function studio(opts = {}) {
     ctx.restore();
   }
   function tag(x, y, label, col, al = 1) { ctx.save(); ctx.globalAlpha = al; ctx.font = '700 34px Rubik'; ctx.direction = 'rtl'; const tw = ctx.measureText(label).width + 28; rr(x - tw / 2, y - 26, tw, 52, 14); ctx.fillStyle = 'rgba(10,12,30,.85)'; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.stroke(); ctx.shadowBlur = 0; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(label, x, y + 12); ctx.restore(); }
+  /** callout (hero look, like grouper): white-bordered dark label at (x,y) with a thin leader line down to the object point (tx,ty). */
+  function callout(x, y, label, tx, ty, al = 1, size = 46) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.direction = 'rtl'; const tw = ctx.measureText(label).width + 56, th = size * 1.55;
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y + th / 2); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.beginPath(); ctx.arc(tx, ty, 7, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+    rr(x - tw / 2, y - th / 2, tw, th, 18); ctx.fillStyle = 'rgba(12,14,40,.92)'; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(label, x, y + size * .36); ctx.restore(); }
   /** counter: animated number in a chip-like box at (x,y) */
   function counter(x, y, value, suffix, col = '#2ee6ff', al = 1, size = 80) { ctx.save(); ctx.globalAlpha = al; ctx.font = `700 ${size}px Rubik`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillStyle = '#fff'; ctx.shadowColor = CLASSIC ? 'rgba(0,0,0,.7)' : col; ctx.shadowBlur = CLASSIC ? 12 : 30; ctx.fillText(`${value}${suffix || ''}`, x, y); if (CLASSIC) { ctx.shadowBlur = 0; ctx.fillStyle = col; ctx.fillRect(x - size * .9, y + size * .18, size * 1.8, size * .08); } ctx.restore(); }
 
@@ -266,7 +276,7 @@ export async function studio(opts = {}) {
   let frameFn = () => {};
   const api = {
     THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
-    model, prop, stage, screen, HERO, HERO_ACC: 0x8ea6ff, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, camPath, V, COL, extra,
+    model, prop, stage, screen, HERO, HERO_ACC: 0x8ea6ff, neon, proj, bbox, detBox, tag, callout, counter, rr, sm, win, camKF, camPath, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
