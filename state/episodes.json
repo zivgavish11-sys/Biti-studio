@@ -1,5 +1,5 @@
 {
- "next_episode": 10,
+ "next_episode": 12,
  "episodes": [
   {
    "n": 1,
@@ -110,6 +110,28 @@
    "look": "classic-v1",
    "posted": "scheduled 2026-11-10T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=-3361729303540317513",
    "notes": "18.8 s. Hook: הריבוע אני לא רובוט בודק אתכם עוד לפני שלחצתם! Deep-facts block (book digitizing, 2009, 2014 checkbox, v3 score). Pinned: לחצתם פעם על \"אני לא רובוט\" ונכשלתם? כן / לא"
+  },
+  {
+   "n": 10,
+   "slug": "ep010-zipline",
+   "title": "מה רחפני משלוחים כבר מביאים היום?",
+   "domain": "רובוטים בחיי היום־יום",
+   "date": "2026-11-08",
+   "format": "short",
+   "look": "classic-v1",
+   "posted": "scheduled 2026-11-11T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=938205257482194265",
+   "notes": "~18 s. Number hook (2M deliveries). Joke: בלי טיפ. Pinned: הייתם מזמינים אוכל במשלוח ברחפן? כן / לא"
+  },
+  {
+   "n": 11,
+   "slug": "ep011-touch",
+   "title": "למה כל כך קשה לתת לרובוט חוש מגע?",
+   "domain": "איך רובוטים עובדים",
+   "date": "2026-11-08",
+   "format": "short-deep",
+   "look": "hero-v2",
+   "posted": "scheduled 2026-11-12T18:00+02:00 via Metricool (IG+TikTok), plannerUrl https://app.metricool.com/planner/calendar?blogId=7444571&openWithPostUuid=7359931532624611036",
+   "notes": "26.6 s. FIRST hero look + first deep-science (lower weight in hero test, +1 video). Grouper style: one-world camera, returns to the hand, floating vibration screen + dashed line, callout, red key words, light-blue accent, no chips. Real hand (MIT WebXR) + gripper. Pinned: הייתם נותנים לרובוט להחזיק לכם ביצה... או תינוק?"
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
