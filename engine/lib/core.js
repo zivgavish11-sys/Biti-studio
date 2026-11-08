@@ -78,12 +78,14 @@ const CSS_CLASSIC = `
 #follow .b{box-shadow:0 12px 30px rgba(0,0,0,.45)}
 `;
 // ---------- HERO look (Ziv approved 2026-11-07, workshop vs grouper.explains): opt-in with studio({look:'hero'}) — rollout from ep011 (12.11) ----------
-// one hero object on a monochrome indigo stage, Hebrew UI inside the scene (st.screen), white caption pill with the active word on a brand-cyan pill (Ziv 2026-11-08). Matte, no glow.
+// one hero object on a monochrome indigo stage, Hebrew UI inside the scene (st.screen), grouper-style captions (Ziv 2026-11-08): small white box, dark bold text, max 3 words, no highlight; accent = light blue HERO_ACC #8ea6ff. Matte, no glow.
 const CSS_HERO = `
-#cap{top:1250px;text-shadow:none;padding:0 24px;font:700 68px/1.25 Rubik}
-#cap .box{display:inline-block;background:#fff;border-radius:56px;padding:12px 40px 16px;box-shadow:0 14px 34px rgba(0,0,0,.5);direction:rtl}
-#cap span{color:#0b1022;padding:0 6px;margin:0}
-#cap span.on{background:#2ee6ff;color:#0b1022;border-radius:16px;box-shadow:none}
+#cap{top:1270px;text-shadow:none;padding:0 24px;font:700 56px/1.2 Rubik}
+#cap .box{display:inline-block;background:#fff;border-radius:16px;padding:10px 30px 14px;box-shadow:0 10px 26px rgba(0,0,0,.45);direction:rtl}
+#cap span{color:#0a0c1c;padding:0 4px;margin:0}
+#cap span.on{background:none;color:#0a0c1c;box-shadow:none}
+.pill{background:#8ea6ff;color:#0a0c1c}
+.chip{border-right-color:#8ea6ff}
 `;
 function el(html) { const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
 
@@ -210,8 +212,9 @@ export async function studio(opts = {}) {
 
   // ---------- captions / chips ----------
   let capKey = '';
+  const CHUNKS = HERO ? TL.chunks.flatMap(c3 => { const out = [], n = c3.words.length, k = Math.ceil(n / 3); for (let i = 0; i < k; i++) { const ws = c3.words.slice(Math.round(i * n / k), Math.round((i + 1) * n / k)); out.push({a: i ? ws[0].a : c3.a, b: i < k - 1 ? c3.words[Math.round((i + 1) * n / k)].a : c3.b, words: ws}); } return out; }) : TL.chunks;
   function captions(t) {
-    let ch = null; for (const c3 of TL.chunks) if (t >= c3.a && t < c3.b) { ch = c3; break; }
+    let ch = null; for (const c3 of CHUNKS) if (t >= c3.a && t < c3.b) { ch = c3; break; }
     if (!ch) { capEl.innerHTML = ''; capKey = ''; return; }
     const k = ch.words.map(x => x.w).join(' '); if (k !== capKey) { const inner = ch.words.map(x => `<span>${x.w}</span>`).join(' '); capEl.innerHTML = HERO ? `<div class="box">${inner}</div>` : inner; capKey = k; }
     [...(HERO ? capEl.firstChild.children : capEl.children)].forEach((s, i) => { const w = ch.words[i]; s.className = (t >= w.a && t < w.b + 0.08) ? 'on' : ''; });
@@ -252,7 +255,7 @@ export async function studio(opts = {}) {
   let frameFn = () => {};
   const api = {
     THREE, CLASSIC, STYLE, dl, scene, cam, renderer, composer, bloom, fog, ctx, TL, A, B, S, END,
-    model, prop, stage, screen, HERO, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
+    model, prop, stage, screen, HERO, HERO_ACC: 0x8ea6ff, neon, proj, bbox, detBox, tag, counter, rr, sm, win, camKF, V, COL, extra,
     sfx: (t, k) => SFX.push({t, k}),
     frame(fn) { frameFn = fn; },
     ready() { window.ready = true; },
