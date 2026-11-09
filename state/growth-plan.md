@@ -8,7 +8,7 @@ _Status: interview with Ziv in progress (started 2026-11-05). Roadmap written af
 - Cadence today: 1 Biti episode/day 18:00 Israel + daily news carousel (IG + TikTok via Metricool).
 
 ## Interview
-- Q1 (2026-11-05): next platform — YouTube Shorts now (same videos, Metricool can post them), or wait until 100 followers? — waiting for Ziv.
+- Q1 (2026-11-05): next platform — YouTube Shorts now (same videos, Metricool can post them), or wait until 100 followers? — Ziv: YES (2026-11-08). Waiting for him to open the channel + connect it in Metricool.
 - Still to ask: pace of new platforms, which formats to add, what's off-limits.
 
 ## Progress log
