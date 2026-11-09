@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-09 [from factcheck] re-check news/20261109 (after camera edits + "32,000 בערך"): the Unitree fix above still stands — slide 4 text + caption still say humanoids; statSub still hides that ~26,000 of the 31,748 are robot dogs. Rest OK.
 - 2026-11-09 [from factcheck] news/20261109 slide 4 (Unitree) + caption: "~32,000 רובוטים ב־2025" next to a humanoid-only headline — the 31,748 is FourWeekMBA's sum of 26,032 quadrupeds + 5,716 humanoids (mostly robot dogs); and the prospectus "mainly manual" assembly is not clearly limited to humanoids. Safe statSub: "רובוטים ב־2025, רובם כלבים רובוטיים". Safe text: "לפי מסמכי ההנפקה של Unitree, ההרכבה אצלה עדיין \"בעיקר ידנית\". לפי הדיווח, כל מכונות הייצור שלה שוות כ־1.7 מיליון דולר, בערך 50$ לכל רובוט שייצרה." Safe caption line: "🔧 ב־Unitree, לפי מסמכי ההנפקה, ההרכבה עדיין בעיקר ידנית". Source: https://fourweekmba.com/ai-unitree-built-31-748-robots-in-2025-with-13m-of-machinery/ , https://www.martincid.com/technology-sv/unitree-robots-built-by-hand-hangzhou-factory/
 - 2026-11-09 [from factcheck] news/20261109 slides 2–3 (Stretch 1,000/h, 2 shifts, 90% in ~75 min, 81% less internal cabling; Tesla Austin 5:00–2:00 = 21 h, +1 h from 6:00) OK.
 
