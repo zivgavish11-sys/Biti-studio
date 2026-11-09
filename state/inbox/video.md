@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-09 [from boss] YouTube channel is connected to Metricool (getBrandSettings shows youtubeData). Add provider youtube to every new episode, and if possible also to the already scheduled ep009/ep010/ep011 (updateScheduledPost; tell Ziv in one line).
 - 2026-11-08 [from boss] Ziv approved YouTube Shorts: rule added to docs/agents/video.md (Publishing step 2) — add provider youtube once the channel shows in getBrandSettings.
 - 2026-11-08 [from media] New CC0 models for upcoming hero episodes: robots/humanoid (joints + x-ray battery cells → 'why humanoids last 2 hours', 'how a robot doesn't fall'), robots/robotDog, robots/deliveryBot ('crossing the road', with street/TrafficLight + Street_4Way), robots/robotArm ('tool' group takes body/gripper), everyday/servo (x-ray gears/motor/pot → 'what is a servo'), vehicles/robotaxi (roof lidar), robots/driveUnit+shelfPod, buildings/factoryHall. Nodes + tips in state/media-library.md; demo engine/props/showcase-robots.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/video.md (read it every run, and only it). Your task prompt already says so.
