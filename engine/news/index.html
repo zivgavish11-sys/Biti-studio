@@ -665,6 +665,158 @@ for (const p of sc.props || []) {
     const red = new THREE.PointLight(0xff3040, 6, 7); red.position.set(.5, 1.6, -.6); scene.add(red);
     for (let k = 0; k < 4; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-4.5 + k * 3, 6.5, -5); scene.add(lamp); }
     const sp = new THREE.SpotLight(0xffffff, 60, 20, .6, .5); sp.position.set(0, 7, 2); sp.target.position.set(0, 1, -4.5); scene.add(sp, sp.target); }
+  // ---------- 20261109 props ----------
+  if (['nightdock', 'trailerunload', 'nightcab', 'handbuild'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  // library model at true size (robots/, vehicles/robotaxi, street/ are in real metres)
+  const lib = async (name, {x = 0, y = 0, z = 0, ry = 0, s = 1, dim = 1} = {}) => { const g = await load(name); const o = SkeletonUtils.clone(g.scene);
+    o.traverse(m => { if (!m.isMesh) return; m.frustumCulled = false; m.material = m.material.clone(); m.material.color?.multiplyScalar(dim); });
+    o.scale.setScalar(s); o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; };
+  const cartonM = [0xa8794a, 0x9a6d40, 0xb5875a].map(c => mat(c, .1, {roughness: .9, metalness: 0}));
+  const tapeM = mat(0xd9c39a, .1, {roughness: .7, metalness: 0});
+  const carton = (x, y, z, w = .5, h = .4, d = .45, ry = 0, k = 0, parent = scene) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), cartonM[k % 3]); b.position.set(x, y + h / 2, z); b.rotation.y = ry;
+    const t = new THREE.Mesh(new THREE.BoxGeometry(w * .18, h + .004, d + .004), tapeM); b.add(t); parent.add(b); return b; };
+  const ribTex = (base = '#2a3266', rib = '#323b78', win = true) => screenTex((g, w, h) => { g.fillStyle = base; g.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 16) { g.fillStyle = rib; g.fillRect(x, 0, 8, h); }
+    if (win) for (let x = 30; x < w - 60; x += 92) { g.fillStyle = '#5a6bb0'; g.fillRect(x, 30, 70, 40); g.fillStyle = base; g.fillRect(x + 33, 30, 4, 40); } }, 1024, 512);
+  const nightSky = () => { scene.background = new THREE.Color(0x070b2a); const moon = new THREE.Mesh(new THREE.CircleGeometry(1.4, 48), new THREE.MeshBasicMaterial({color: 0xf2e6c8, fog: false})); moon.position.set(-14, 16, -40); moon.lookAt(0, 2, 8); scene.add(moon); stars(400); };
+  // Stretch-style truck unloader: square wheeled base, perception mast, 6-axis arm with a suction pad holding a carton
+  const unloader = async (x, z, ry) => { const g = new THREE.Group(); const gr = mat(0x23283f, .1, {roughness: .5, metalness: .3}), wh = mat(0xe9ecf6, .1, {roughness: .35});
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.15, .55, 1.15), wh); base.position.y = .38; g.add(base);
+    const skirt = new THREE.Mesh(new THREE.BoxGeometry(1.2, .14, 1.2), gr); skirt.position.y = .1; g.add(skirt);
+    const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.17, .06, 1.17), mat(accent, .1)); stripe.position.y = .5; g.add(stripe);
+    const mast = new THREE.Mesh(new THREE.BoxGeometry(.16, 1.5, .16), gr); mast.position.set(-.45, 1.4, -.45); g.add(mast);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(.34, .16, .2), gr); head.position.set(-.45, 2.18, -.42); g.add(head);
+    for (const s of [-1, 1]) { const lens = new THREE.Mesh(new THREE.CircleGeometry(.04, 16), glowM(accent)); lens.position.set(-.45 + s * .09, 2.18, -.31); g.add(lens); }
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g);
+    const a = await lib('robots/robotArm'); a.position.set(0, .66, 0); a.rotation.y = Math.PI; g.add(a);
+    a.getObjectByName('j2').rotation.x = .75; a.getObjectByName('j3').rotation.x = .55; a.getObjectByName('j5').rotation.x = .3;
+    const tool = a.getObjectByName('tool'); const pad = new THREE.Mesh(new THREE.BoxGeometry(.42, .06, .32), gr); pad.position.y = -.05; tool.add(pad);
+    carton(0, -.5, 0, .5, .42, .4, 0, 1, tool).position.y = -.3;
+    return g; };
+  const conveyor = (x, z, len, ry) => { const c = new THREE.Group(), steel = mat(0x8a93b8, .1, {roughness: .35, metalness: .7});
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(len, .1, .7), mat(0x14172c, .1, {roughness: .8})); belt.position.y = .72; c.add(belt);
+    for (const zz of [-.38, .38]) { const s = new THREE.Mesh(new THREE.BoxGeometry(len, .16, .06), steel); s.position.set(0, .76, zz); c.add(s); }
+    for (let k = -len / 2 + .3; k < len / 2; k += 1.2) for (const zz of [-.32, .32]) { const l = new THREE.Mesh(new THREE.BoxGeometry(.07, .7, .07), steel); l.position.set(k, .35, zz); c.add(l); }
+    c.position.set(x, 0, z); c.rotation.y = ry; scene.add(c); return c; };
+  // open truck trailer at a dock door, back end facing the camera, stacked cartons inside (front rows already taken out)
+  const trailer = (x, z, ry, rowsLeft = 4) => { const t = new THREE.Group(), sh = mat(0xc9cede, .1, {roughness: .45, metalness: .5}), inn = mat(0x3a3f5c, .1, {roughness: .8, metalness: .2});
+    const L = 7, W = 2.5, Hh = 2.7, fy = 1.1;
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(W, .12, L), inn); floor.position.set(0, fy, -L / 2); t.add(floor);
+    for (const s of [-1, 1]) { const w = new THREE.Mesh(new THREE.BoxGeometry(.06, Hh, L), sh); w.position.set(s * W / 2, fy + Hh / 2, -L / 2); t.add(w); }
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(W, .06, L), sh); roof.position.set(0, fy + Hh, -L / 2); t.add(roof);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(W, Hh, .06), inn); back.position.set(0, fy + Hh / 2, -L); t.add(back);
+    for (const s of [-1, 1]) { const door = new THREE.Mesh(new THREE.BoxGeometry(.05, Hh, W / 2), sh); door.position.set(s * (W / 2 + .03), fy + Hh / 2, W / 4 - .02); t.add(door); }
+    const light = new THREE.PointLight(0xfff1d6, 6, 7); light.position.set(0, fy + 2.3, -1.5); t.add(light);
+    let k = 0; for (let r = 0; r < rowsLeft; r++) for (let c = 0; c < 4; c++) for (let lv = 0; lv < 5; lv++) {
+      if (r === 0 && lv > 4 - c % 3) continue; // ragged face where the robot is working
+      carton(-W / 2 + .31 + c * .6, fy + .06 + lv * .5, -L + .3 + r * .55, .56, .48, .5, (k % 5 - 2) * .02, k++, t); }
+    t.position.set(x, 0, z); t.rotation.y = ry; scene.add(t); return t; };
+  const dockWall = (z, doorX, doorW = 3.2) => { const tx = ribTex(); const wm = new THREE.MeshStandardMaterial({map: tx, roughness: .85});
+    const L = new THREE.Mesh(new THREE.PlaneGeometry(14, 9), wm); L.position.set(doorX - doorW / 2 - 7, 4.5, z); scene.add(L);
+    const R = new THREE.Mesh(new THREE.PlaneGeometry(14, 9), wm); R.position.set(doorX + doorW / 2 + 7, 4.5, z); scene.add(R);
+    const T2 = new THREE.Mesh(new THREE.PlaneGeometry(doorW, 5), wm); T2.position.set(doorX, 6.5, z); scene.add(T2);
+    const seal = mat(0x15182c, .1, {roughness: .9}); for (const s of [-1, 1]) { const b = new THREE.Mesh(new THREE.BoxGeometry(.25, 4, .3), seal); b.position.set(doorX + s * (doorW / 2 - .1), 2, z + .15); scene.add(b); }
+    const dock = new THREE.Mesh(new THREE.BoxGeometry(30, 1.1, 4), mat(0x3a4170, .1, {roughness: .8})); dock.position.set(0, .55, z + 2); scene.add(dock);
+    for (const s of [-1, 1]) { const bump = new THREE.Mesh(new THREE.BoxGeometry(.3, .4, .2), mat(0x15182c, .1)); bump.position.set(doorX + s * 1.3, .7, z + 4.05); scene.add(bump); }
+    const sl = new THREE.Mesh(new THREE.BoxGeometry(.5, .2, .2), new THREE.MeshStandardMaterial({color: 0x37e6a0, emissive: 0x37e6a0, emissiveIntensity: 1})); sl.position.set(doorX + doorW / 2 + .6, 3.6, z + .1); scene.add(sl); };
+
+  if (p === 'trailerunload') { // Stretch-style robot inside a loading dock, pulling cartons out of a truck trailer onto a conveyor
+    scene.fog = new THREE.FogExp2(0x070a24, 0.022);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x22284a, .1, {roughness: .7, metalness: .15})); fl.rotation.x = -Math.PI / 2; fl.position.y = 1.1; scene.add(fl);
+    // camera is on the warehouse side: dock floor at 1.1 m = trailer floor; trailer runs away through the door
+    const ln = new THREE.Mesh(new THREE.PlaneGeometry(.12, 10), mat(0xffc93a, .1, {roughness: .8})); ln.rotation.x = -Math.PI / 2; ln.position.set(1.9, 1.11, 0); scene.add(ln);
+    const tx = ribTex('#283062', '#30397a', false); const wm = new THREE.MeshStandardMaterial({map: tx, roughness: .85});
+    for (const [wx, ww] of [[-8.6, 14], [8.6, 14]]) { const w = new THREE.Mesh(new THREE.PlaneGeometry(ww, 9), wm); w.position.set(wx, 4.5, -4.5); scene.add(w); }
+    const top = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 5), wm); top.position.set(0, 6.5, -4.5); scene.add(top);
+    trailer(0, -4.4, 0, 6);
+    const g = new THREE.Group(); scene.add(g);
+    const u = await unloader(0, -3.3, Math.PI); u.position.y = 1.1;
+    conveyor(1.6, -1.2, 5, -1.2).position.y = 1.1;
+    { const c = carton(0, 0, 0, .5, .4, .45, .3, 0); c.position.set(.9, 1.1 + .78 + .2, -2.2); }
+    carton(-1.8, 1.1, -1.4, .55, .45, .5, .3, 2); carton(-1.75, 1.55, -1.42, .5, .42, .45, .1, 0); carton(-2.4, 1.1, -.8, .55, .45, .5, -.2, 1);
+    for (let k = 0; k < 3; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xdfe6ff, emissive: 0xdfe6ff, emissiveIntensity: .35})); lamp.position.set(-3 + k * 3, 7, -1.5); scene.add(lamp); }
+    const sp = new THREE.SpotLight(0xffffff, 70, 22, .6, .5); sp.position.set(3, 8, 3); sp.target.position.set(0, 1.5, -3.5); scene.add(sp, sp.target); }
+
+  // night street: road along x, sidewalk + facades behind, streetlights
+  const nightStreet = async (opt = {}) => { nightSky(); scene.fog = new THREE.FogExp2(0x070a24, 0.018);
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(60, 7), mat(0x171a33, .1, {roughness: .9, metalness: 0})); road.rotation.x = -Math.PI / 2; road.position.set(0, .005, 0); scene.add(road);
+    for (let k = -14; k < 15; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .14), mat(0xe8ecf7, .1, {roughness: .6})); d.rotation.x = -Math.PI / 2; d.position.set(k * 2.6, .012, 0); scene.add(d); }
+    const walk = new THREE.Mesh(new THREE.BoxGeometry(60, .16, 3.4), mat(0x3a3f62, .1, {roughness: .9, metalness: 0})); walk.position.set(0, .08, -5.2); scene.add(walk);
+    const curb = new THREE.Mesh(new THREE.BoxGeometry(60, .18, .2), mat(0x8a90b0, .1, {roughness: .8})); curb.position.set(0, .09, -3.5); scene.add(curb);
+    const names = opt.blocks ?? ['Building2_Large', 'Building1_Small', 'Building3_Big', 'Building4', 'Building3_Small'];
+    let bx = opt.bx ?? -15; for (const [k, n] of names.entries()) { const o = await place('buildings/' + n, {x: bx, z: -9.5, h: 9 + (k * 7 % 5), dim: .55});
+      const bb = new THREE.Box3().setFromObject(o); bx += (bb.max.x - bb.min.x) + .2; o.position.x += (bx - (bb.max.x + bb.min.x) / 2) - (bb.max.x - bb.min.x) / 2 - .2; }
+    for (const x of opt.lights ?? [-7, 1, 9]) { await place('street/Streetlight_Double', {x, z: -3.9, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -2.8); scene.add(l); } };
+  const cabLights = (o, c = 0xffffff) => { for (const n of ['headL', 'headR']) { const h = o.getObjectByName(n); h?.traverse(m => { if (m.isMesh) { m.material = new THREE.MeshBasicMaterial({color: 0xfff6e0}); } }); }
+    for (const n of ['tailL', 'tailR']) o.getObjectByName(n)?.traverse(m => { if (m.isMesh) m.material = new THREE.MeshBasicMaterial({color: 0xff2e3d}); });
+    const beam = new THREE.SpotLight(0xfff1d6, 40, 18, .45, .6); scene.add(beam, beam.target); return beam; };
+
+  if (p === 'nightcab') { // robotaxi driving an empty night street; the bus-stop screen shows the new 05:00–02:00 hours
+    await nightStreet({lights: [-9, 7, 15]});
+    const cab = await lib('vehicles/robotaxi', {x: .6, z: 1.2, ry: Math.PI / 2});
+    cab.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(cab);
+    const beam = cabLights(cab); beam.position.set(bb.max.x, .8, 1.2); beam.target.position.set(bb.max.x + 10, 0, 1.2);
+    const lh = cab.getObjectByName('lidarHead'); if (lh) lh.rotation.y = .8;
+    const stop = await place('everyday/busStop', {x: -2.6, y: .16, z: -5.4, h: 2.6, dim: .85});
+    // stop's timetable screen
+    const tex = screenTex((g, w, h) => { g.fillStyle = '#0b1030'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffa53a'; g.font = 'bold 120px Rubik'; g.textAlign = 'center'; g.fillText('05:00–02:00', w / 2, 150);
+      g.fillStyle = '#cfe0ff'; g.font = 'bold 74px Rubik'; g.direction = 'rtl'; g.fillText('רובוטקסי', w / 2, 270); }, 768, 320);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(1.5, .62), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .7}));
+    scr.position.set(.0, 2.05, -4.15); scene.add(scr);
+    const sp2 = new THREE.Mesh(new THREE.BoxGeometry(1.6, .72, .06), mat(0x1b1f38, .1)); sp2.position.set(0, 2.05, -4.19); scene.add(sp2);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 2.1, 10), mat(0x8a93b8, .1, {metalness: .6})); pole.position.set(0, 1.05, -4.25); scene.add(pole);
+    const key = new THREE.PointLight(0xffffff, 10, 10); key.position.set(-1.5, 3.5, 4); scene.add(key); }
+
+  if (p === 'handbuild') { // Unitree-style hand assembly: workers at benches fitting legs onto robot dogs, a humanoid on an assembly stand
+    scene.fog = new THREE.FogExp2(0x070a24, 0.02);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x262c4e, .1, {roughness: .7, metalness: .1})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    await place('buildings/factoryHall', {x: 1, z: -8, h: 9, dim: .7});
+    const bench = (x, z, ry) => { const b = new THREE.Group(), top = mat(0x8a93b8, .1, {roughness: .4, metalness: .6}), leg = mat(0x2a3060, .1);
+      const t = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, 1.0), top); t.position.y = .9; b.add(t);
+      const mt = new THREE.Mesh(new THREE.BoxGeometry(2.2, .01, .8), mat(0x1d6f6a, .1, {roughness: .9})); mt.position.y = .945; b.add(mt);
+      for (const [lx, lz] of [[-1.1, -.42], [1.1, -.42], [-1.1, .42], [1.1, .42]]) { const l = new THREE.Mesh(new THREE.BoxGeometry(.07, .9, .07), leg); l.position.set(lx, .45, lz); b.add(l); }
+      const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.8, .05, .14), new THREE.MeshStandardMaterial({color: 0xfff1d6, emissive: 0xfff1d6, emissiveIntensity: .8})); lamp.position.set(0, 2.1, 0); b.add(lamp);
+      for (const s of [-1, 1]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(.015, .015, 1.15, 6), leg); r.position.set(s * .8, 1.55, -.4); b.add(r); }
+      const pl = new THREE.PointLight(0xfff1d6, 5, 4); pl.position.set(0, 1.9, 0); b.add(pl);
+      b.position.set(x, 0, z); b.rotation.y = ry; scene.add(b); return b; };
+    bench(-.6, -2.4, 0); bench(2.6, -4.6, -.25);
+    // dog on the bench with its front legs not fitted yet; legs and parts lying next to it
+    const dog = await lib('robots/robotDog', {x: -.9, y: .95, z: -2.45, ry: .5}); for (const n of ['legFL', 'legFR']) { const lg = dog.getObjectByName(n); if (lg) lg.visible = false; }
+    const lfl = await lib('robots/robotDog', {x: 0, y: 0, z: 0}); const looseLeg = lfl.getObjectByName('legFL'); scene.remove(lfl);
+    if (looseLeg) { scene.add(looseLeg); looseLeg.position.set(.35, 1.0, -2.2); looseLeg.rotation.set(0, .3, Math.PI / 2); }
+    const dog2 = await lib('robots/robotDog', {x: 2.5, y: .95, z: -4.6, ry: -.6}); const sh = dog2.getObjectByName('headShell'); if (sh) sh.visible = false;
+    // small parts: screws tray, screwdriver
+    const tray = new THREE.Mesh(new THREE.BoxGeometry(.4, .05, .25), mat(0x2a3060, .1)); tray.position.set(.2, .97, -2.65); scene.add(tray);
+    const drv = new THREE.Group(); const hd = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .16, 12), mat(0xff5fd2, .1)); hd.rotation.z = Math.PI / 2; drv.add(hd);
+    const sft = new THREE.Mesh(new THREE.CylinderGeometry(.006, .006, .16, 8), mat(0xc9cede, .1, {metalness: .8})); sft.rotation.z = Math.PI / 2; sft.position.x = .16; drv.add(sft); drv.position.set(-.1, .98, -2.05); drv.rotation.y = .4; scene.add(drv);
+    // workers
+    await place('people/character-male-c', {x: .55, z: -3.25, ry: -.3, h: 1.75, dim: .85, anim: 'interact-right', t: .4});
+    await place('people/character-female-d', {x: 2.9, z: -5.45, ry: -.25, h: 1.65, dim: .85, anim: 'interact-left', t: .8});
+    // humanoid on an assembly stand (gantry with a lifting strap), shell open
+    const st2 = new THREE.Group(), gm = mat(0xffa53a, .1, {roughness: .5});
+    for (const s of [-1, 1]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.1, 2.6, .1), gm); post.position.set(s * .7, 1.3, 0); st2.add(post); }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(1.5, .1, .1), gm); beam.position.y = 2.6; st2.add(beam);
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(.04, .55, .04), mat(0x15182c, .1)); strap.position.y = 2.3; st2.add(strap);
+    st2.position.set(-3.6, 0, -4.4); st2.rotation.y = .35; scene.add(st2);
+    const hum = await lib('robots/humanoid', {x: -3.6, y: .3, z: -4.4, ry: .35}); const ts = hum.getObjectByName('torsoShell');
+    if (ts) ts.traverse(m => { if (m.isMesh) { m.material.transparent = true; m.material.opacity = .25; } });
+    // finished dogs lined up on a pallet
+    const pal = new THREE.Mesh(new THREE.BoxGeometry(2.6, .14, 1.2), mat(0x9a7a50, .1, {roughness: .9})); pal.position.set(5.0, .07, -2.2); scene.add(pal);
+    for (let k = 0; k < 3; k++) await lib('robots/robotDog', {x: 4.2 + k * .8, y: .14, z: -2.2, ry: -Math.PI / 2});
+    const sp = new THREE.SpotLight(0xffffff, 55, 18, .6, .5); sp.position.set(2, 7, 3); sp.target.position.set(-.4, 1, -2.8); scene.add(sp, sp.target); }
+
+  if (p === 'nightdock') { // cover: night street outside a warehouse — open dock door with the unloader at work, a robotaxi passing, a robot dog on the sidewalk
+    await nightStreet({blocks: ['Building1_Small', 'Building3_Small'], bx: 6, lights: [-11, 9]});
+    // warehouse front (left part of the street)
+    const tx = ribTex('#2b3368', '#343e80', true); const wm = new THREE.MeshStandardMaterial({map: tx, roughness: .85});
+    const wh = new THREE.Mesh(new THREE.BoxGeometry(14, 8, 6), [wm, wm, mat(0x1a1f45, .1), wm, wm, wm]); wh.position.set(-5, 4, -12); scene.add(wh);
+    const door = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.6), new THREE.MeshStandardMaterial({color: 0x6a6a7a, emissive: 0xffd69a, emissiveIntensity: .22})); door.position.set(-3.2, 1.8, -8.98); scene.add(door);
+    const inner = new THREE.PointLight(0xffe2a8, 18, 10); inner.position.set(-3.2, 2.2, -7.6); scene.add(inner);
+    const u = await unloader(-3.2, -8.2, Math.PI); u.scale.setScalar(.9);
+    for (let k = 0; k < 4; k++) carton(-4.9 + (k % 2) * .55, .16 + Math.floor(k / 2) * .42, -7.4, .5, .4, .45, .1 * k, k);
+    const cab = await lib('vehicles/robotaxi', {x: 3.6, z: -1.6, ry: -Math.PI / 2 + .12}); const bb = new THREE.Box3().setFromObject(cab);
+    const beam = cabLights(cab); beam.position.set(bb.min.x, .8, -1.6); beam.target.position.set(bb.min.x - 10, 0, -.4);
+    await lib('robots/robotDog', {x: -.6, y: .16, z: -4.6, ry: -1.2});
+    const key = new THREE.PointLight(0xffffff, 10, 12); key.position.set(4, 4, 5); scene.add(key); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));

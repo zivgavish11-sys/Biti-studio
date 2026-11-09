@@ -9,7 +9,24 @@
     "הרובוטקסי של טסלה: 21 שעות ביום",
     "ב־Unitree עדיין מרכיבים רובוטים ביד"
    ],
-   "scene": {"robot": false, "props": ["nightdock"], "color": "cyan", "cam": [4.2, 2.6, 7.6], "target": [0.2, 1.2, -2.4], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "nightdock"
+    ],
+    "color": "cyan",
+    "cam": [
+     2.2,
+     2.6,
+     8.5
+    ],
+    "target": [
+     -2.0,
+     1.4,
+     -5.0
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -19,7 +36,24 @@
    "title": "Boston Dynamics:<br><span class=\"pill\">Stretch</span> החדש",
    "text": "הדור השני של הרובוט שפורק משאיות: לפי החברה, עד 1,000 קרטונים בשעה, סוללה לשתי משמרות וטעינה ל־90% בכ־75 דקות. בפנים יש 81% פחות כבלים, כדי שיתקלקל פחות.",
    "source": "Drives & Controls, Refrigerated & Frozen Foods",
-   "scene": {"robot": false, "props": ["trailerunload"], "color": "cyan", "cam": [4.6, 2.9, 6.4], "target": [-0.2, 1.3, -2.8], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "trailerunload"
+    ],
+    "color": "cyan",
+    "cam": [
+     2.4,
+     3.4,
+     3.4
+    ],
+    "target": [
+     -0.1,
+     1.7,
+     -3.6
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -29,21 +63,64 @@
    "title": "הרובוטקסי של טסלה<br>כמעט <span class=\"pill\">לא ישן</span>",
    "text": "לפי הדיווח, שירות הרובוטקסי של טסלה באוסטין פועל עכשיו מ־5:00 בבוקר עד 2:00 בלילה, שעה יותר מקודם. נשארו רק 3 שעות עד פעילות מסביב לשעון.",
    "source": "Sawyer Merritt (X), Basenor",
-   "scene": {"robot": false, "props": ["nightcab"], "color": "orange", "cam": [-4.4, 2.2, 7.0], "target": [0.4, 1.2, -2.0], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "nightcab"
+    ],
+    "color": "orange",
+    "cam": [
+     -1.8,
+     1.7,
+     10.5
+    ],
+    "target": [
+     0.8,
+     1.3,
+     -1.0
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
-   "stat": "~32,000",
-   "statSub": "רובוטים ב־2025, לפי הדיווח",
+   "stat": "32,000",
+   "statSub": "רובוטים בערך ב־2025, לפי הדיווח",
    "statColor": "pink",
    "title": "ב־Unitree מרכיבים<br>רובוטים <span class=\"pill\">ביד</span>",
    "text": "לפי מסמכי ההנפקה של Unitree, ההרכבה של הרובוטים דמויי האדם שלה עדיין \"בעיקר ידנית\". לפי הדיווח, כל מכונות הייצור שלה שוות כ־1.7 מיליון דולר, בערך 50$ לכל רובוט שייצרה.",
    "source": "Humanoids Daily, FourWeekMBA",
-   "scene": {"robot": false, "props": ["handbuild"], "color": "pink", "cam": [3.4, 3.0, 6.0], "target": [-0.2, 1.0, -2.6], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "handbuild"
+    ],
+    "color": "pink",
+    "cam": [
+     -0.6,
+     3.3,
+     4.4
+    ],
+    "target": [
+     -1.2,
+     1.0,
+     -3.2
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "follow",
-   "scene": {"anim": "Wave", "color": "cyan", "target": [0, 1.3, 0], "shift": 0.24}
+   "scene": {
+    "anim": "Wave",
+    "color": "cyan",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
   }
  ]
 }
