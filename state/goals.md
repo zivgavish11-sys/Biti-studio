@@ -5,7 +5,7 @@
 - [Ziv] The long play: year one builds the **community**; the money comes as the robot world develops and **robots start being sold to people**.
 
 ## Targets
-- [Ziv] 3 months (Feb 2027): **1,000 followers** (IG + TikTok combined), ~11 a day. Start: 20 on 2026-11-03. (First said 5,000; lowered to 1,000 on 2026-11-04 as more realistic.)
+- [Ziv] 3 months (Feb 2027): **1,000 followers** (IG + TikTok + YouTube subscribers + Facebook page followers combined — Ziv 2026-11-10), ~11 a day. Start: 20 on 2026-11-03. (First said 5,000; lowered to 1,000 on 2026-11-04 as more realistic.)
   Agents optimise for shares/sends and follows per view, not likes.
 - [Ziv] 1 year (Nov 2027): a real community, positioned so that when consumer robots hit the market the page earns from it.
 

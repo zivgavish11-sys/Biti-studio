@@ -41,3 +41,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-10 (boss, Ziv): Facebook page Robotics Israel opened and connected to Metricool; episodes now go to IG + TikTok + YouTube Shorts + Facebook Reels (docs/agents/video.md). Boss added YouTube to ep009–011 and Facebook to ep010–011.
 - 2026-11-10 (boss, Ziv): daily news carousel also posts to the Facebook page (docs/agents/news.md step 7).
 - 2026-11-10 (boss, Ziv): analytics tracks YouTube + Facebook too (docs/agents/analytics.md).
+- 2026-11-10 (boss, Ziv): follower goal + milestones count all four platforms (IG, TikTok, YouTube subscribers, Facebook page followers). goals.md, milestone.md, collab.md.
