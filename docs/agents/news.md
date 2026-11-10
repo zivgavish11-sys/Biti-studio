@@ -14,6 +14,7 @@ The daily news carousel only (every day — Ziv insists, 2026-11-08). Never Biti
 - 2026-11-05 (Ziv, on news 20261105): "start improving" — the cover art and the city buildings look bad; story art must reflect the text literally (Xiaomi factory slide didn't). Stop reusing the same props every day: vary them — more robot types, more building types, more autonomous machines, everything. Never the same cover twice in a row. Pull new models from the media library / ask the media agent.
 - 2026-11-06 (Ziv, on news 20261106): news carousels no longer need his approval — schedule them yourself. **Put the extra effort into visuals**: keep upgrading the story art every day (new props per story, better composition, nothing over the stat/top bar, main action in the top ~55% above the text shade).
 - 2026-11-07 (Ziv, on news 20261107): every prop must belong to the story — no props that don't fit (robot arms over robotaxis) and no plain filler boxes in the background (racks, flat 'towers', blank window panels). Backgrounds = real-looking walls/skylines or nothing.
+- 2026-11-10 (Ziv): **fresh news only** — a story goes in only if the event itself happened in the last 24–36 h (judge by the event date, not the article date; an old paper/announcement that is only now reported does not count). If there aren't 3 fresh stories, post 2 rather than fill with an old one. The cover title is a clear sentence that says what happened (e.g. "טסלה בעיר חדשה, וויימו בבדיקה"), not a vague question; the caption hook says it the same way.
 
 ## Fact-check (Ziv 2026-11-08)
 The fact-checker has no schedule — you call it. Right after you commit `news/YYYYMMDD/spec.json` (before rendering), fire it:
@@ -29,7 +30,7 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
    Pick **only 2–4 genuinely interesting stories** — skip boring ones; fewer slides beat a dull slide. Verify every fact on 2 sources; phrase reports as reports ("לפי הדיווח").
    Avoid stories already posted (check `news/*/spec.json`). If one story is exceptional, ALSO propose a separate in-depth carousel (4–5 slides: what happened, why it matters, what's next).
 2. **Write** `news/YYYYMMDD/spec.json` (format: header of `engine/news/index.html`; example: `news/20261101/spec.json`):
-   cover (question title + 1 bullet per story) → 1 slide per story (big `stat`, short title with one `pill`/`pink` word, ≤ 3 lines text, `source`) → follow slide.
+   cover (clear title saying what happened + 1 bullet per story) → 1 slide per story (big `stat`, short title with one `pill`/`pink` word, ≤ 3 lines text, `source`) → follow slide.
    Hebrew, short and punchy. Latin names are fine (Tesla, Figure). Vary `scene` per slide: `anim` (Wave Idle No Yes ThumbsUp Dance Jump Running Walking Punch Sitting),
    `color` (cyan/pink/purple/orange), `decor` (city/panels), `count` (crowd), `models` (any glb under engine/assets/models — search GitHub for fitting free models per story, CC0/MIT/CC-BY only, log them in CREDITS.md).
 3. **Render** (3D only): `python3 tools/news.py render news/YYYYMMDD` → `out/slide-N.jpg` + `out/sheet.jpg`. Look at the sheet: no text overflow, no object over the top bar/stat, nothing blown out.
