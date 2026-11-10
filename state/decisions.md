@@ -38,3 +38,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-09 (boss): YouTube channel Robotics Israel connected to Metricool by Ziv; reels agent adds YouTube from now on.
 - 2026-11-10 (Ziv, news): fresh news only (event in last 24–36 h by event date; 2 stories beat an old filler); cover title = clear statement of what happened, not a vague question. → docs/agents/news.md
 - 2026-11-10 (Ziv, news, update): cover title back to the fixed "מה חדש היום בעולם הרובוטים?"; rest of the fresh-news rule stays. → docs/agents/news.md
+- 2026-11-10 (boss, Ziv): Facebook page Robotics Israel opened and connected to Metricool; episodes now go to IG + TikTok + YouTube Shorts + Facebook Reels (docs/agents/video.md). Boss added YouTube to ep009–011 and Facebook to ep010–011.
