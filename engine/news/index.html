@@ -850,7 +850,7 @@ for (const p of sc.props || []) {
     // STOP arm out on the driver side (-z side faces traffic in our layout: +z)
     if (stopOut) { const tex = screenTex((g, w, h) => { g.fillStyle = '#d61f2b'; g.beginPath(); for (let k = 0; k < 8; k++) { const a = Math.PI / 8 + k * Math.PI / 4; g.lineTo(w / 2 + Math.cos(a) * w * .48, h / 2 + Math.sin(a) * h * .48); } g.fill();
         g.strokeStyle = '#fff'; g.lineWidth = 10; g.stroke(); g.fillStyle = '#fff'; g.font = 'bold 76px Rubik'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('STOP', w / 2, h / 2 + 4); }, 256, 256);
-      const sg = new THREE.Mesh(new THREE.PlaneGeometry(.75, .75), new THREE.MeshBasicMaterial({map: tex, transparent: true, side: 2})); sg.position.set(L / 2 - 1.6, 1.85, -(W / 2 + .45)); b.add(sg);
+      const sg = new THREE.Mesh(new THREE.PlaneGeometry(.75, .75), new THREE.MeshBasicMaterial({map: tex, transparent: true, side: 2})); sg.position.set(L / 2 - 1.6, 1.85, -(W / 2 + .45)); sg.rotation.y = Math.PI; b.add(sg);
       const hinge = new THREE.Mesh(new THREE.BoxGeometry(.06, .5, .2), blk); hinge.position.set(L / 2 - 1.6, 1.85, -(W / 2 + .05)); b.add(hinge); }
     b.position.set(x, 0, z); b.rotation.y = ry; scene.add(b); return b; };
   const macMini = (parent, x, y, z, s = 1) => { const m = new THREE.Group(); const al = mat(0xc9ccd6, .1, {roughness: .3, metalness: .85});
