@@ -817,6 +817,110 @@ for (const p of sc.props || []) {
     const beam = cabLights(cab); beam.position.set(bb.min.x, .8, -1.6); beam.target.position.set(bb.min.x - 10, 0, -.4);
     await lib('robots/robotDog', {x: -.6, y: .16, z: -4.6, ry: -1.2});
     const key = new THREE.PointLight(0xffffff, 10, 12); key.position.set(4, 4, 5); scene.add(key); }
+  // ---------- 20261110 props (daylight: Tesla San Antonio, Waymo school bus, Apple HALO living room) ----------
+  if (['daycross', 'sanantonio', 'schoolbus', 'halo'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const daySky = () => { scene.background = new THREE.Color(0x26306a); scene.fog = new THREE.Fog(0x26306a, 26, 75); // dusk: keeps the top bar/stat readable
+    dl.intensity = 2.0; dl.color.set(0xffc996); dl.position.set(-12, 7, 8); scene.environmentIntensity = .7;
+    const sun = new THREE.HemisphereLight(0x9aa8e8, 0x2a2f4a, .9); scene.add(sun);
+    for (let k = 0; k < 5; k++) { const cl = new THREE.Group(); for (let j = 0; j < 4; j++) { const s = new THREE.Mesh(new THREE.SphereGeometry(1.6 + (j % 2) * .7, 16, 12), new THREE.MeshBasicMaterial({color: 0x5a5c9a, fog: false})); s.position.set(j * 1.9, (j % 2) * .6, 0); s.scale.y = .55; cl.add(s); }
+      cl.position.set(-30 + k * 15, 20 + (k % 3) * 3, -55); scene.add(cl); } };
+  const dayStreet = async (opt = {}) => { daySky();
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 80), mat(0x6f7a5a, .1, {roughness: 1, metalness: 0})); ground.rotation.x = -Math.PI / 2; ground.position.y = -.01; scene.add(ground);
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(80, 8), mat(0x3b3f4c, .1, {roughness: .95, metalness: 0})); road.rotation.x = -Math.PI / 2; road.position.set(0, .005, 0); scene.add(road);
+    for (let k = -16; k < 17; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.6, .15), mat(0xf2f2f2, .1, {roughness: .6})); d.rotation.x = -Math.PI / 2; d.position.set(k * 2.8, .012, 0); scene.add(d); }
+    for (const zz of [-3.85, 3.85]) { const e = new THREE.Mesh(new THREE.PlaneGeometry(80, .12), mat(0xf2d34a, .1, {roughness: .6})); e.rotation.x = -Math.PI / 2; e.position.set(0, .012, zz); scene.add(e); }
+    const walk = new THREE.Mesh(new THREE.BoxGeometry(80, .16, 3.4), mat(0xb7b2a6, .1, {roughness: .95, metalness: 0})); walk.position.set(0, .08, -5.7); scene.add(walk);
+    const names = opt.blocks ?? ['Building2_Large', 'Building1_Small', 'Building3_Big', 'Building4', 'Building3_Small', 'Building2_Large'];
+    let bx = opt.bx ?? -18; for (const [k, n] of names.entries()) { const o = await place('buildings/' + n, {x: bx, z: opt.bz ?? -10.5, h: 8 + (k * 7 % 6), dim: .62});
+      const bb = new THREE.Box3().setFromObject(o); const w = bb.max.x - bb.min.x; o.position.x += bx - bb.min.x; bx += w + .4; }
+    for (const x of opt.trees ?? []) { const tr = new THREE.Mesh(new THREE.CylinderGeometry(.12, .16, 2.2, 10), mat(0x5a4330, .1, {roughness: 1})); tr.position.set(x, 1.1, -6.6); scene.add(tr);
+      const cr = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 1), mat(0x4f7a3c, .1, {roughness: 1, metalness: 0})); cr.position.set(x, 2.8, -6.6); scene.add(cr); } };
+  const schoolBus = (x, z, ry, stopOut = true) => { const b = new THREE.Group(), yel = mat(0xf2b316, .1, {roughness: .45, metalness: .2}), blk = mat(0x15161c, .1, {roughness: .6}), gl = mat(0x22314f, .1, {roughness: .1, metalness: .6});
+    const L = 10.5, W = 2.5, H = 2.6;
+    const body = new THREE.Mesh(new THREE.BoxGeometry(L, H, W), yel); body.position.y = .55 + H / 2; b.add(body);
+    const hood = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.1, W - .1), yel); hood.position.set(L / 2 + .7, 1.1, 0); b.add(hood);
+    const bump = new THREE.Mesh(new THREE.BoxGeometry(.2, .3, W), blk); bump.position.set(L / 2 + 1.45, .65, 0); b.add(bump);
+    for (const s of [-1, 1]) { for (const yy of [1.45, 1.95]) { const st = new THREE.Mesh(new THREE.BoxGeometry(L, .07, .02), blk); st.position.set(0, yy, s * (W / 2 + .01)); b.add(st); }
+      for (let k = 0; k < 8; k++) { const w = new THREE.Mesh(new THREE.BoxGeometry(.95, .75, .02), gl); w.position.set(-L / 2 + .8 + k * 1.15, 2.5, s * (W / 2 + .015)); b.add(w); } }
+    const ws = new THREE.Mesh(new THREE.BoxGeometry(.02, .9, W - .3), gl); ws.position.set(L / 2 + .01, 2.45, 0); b.add(ws);
+    for (const [wx, wz] of [[L / 2 - 1, 1], [L / 2 - 1, -1], [-L / 2 + 1.8, 1], [-L / 2 + 1.8, -1]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .35, 24), blk); wh.rotation.x = Math.PI / 2; wh.position.set(wx, .5, wz * (W / 2)); b.add(wh); }
+    // flashing red lights (front + back, top corners)
+    for (const ex of [L / 2 + .02, -L / 2 - .02]) for (const s of [-1, 1]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, .05, 16), new THREE.MeshBasicMaterial({color: 0xff2030})); l.rotation.z = Math.PI / 2; l.position.set(ex, 3.0, s * .85); b.add(l); }
+    const rl = new THREE.PointLight(0xff2030, 5, 6); rl.position.set(-L / 2 - .6, 3, 0); b.add(rl);
+    // STOP arm out on the driver side (-z side faces traffic in our layout: +z)
+    if (stopOut) { const tex = screenTex((g, w, h) => { g.fillStyle = '#d61f2b'; g.beginPath(); for (let k = 0; k < 8; k++) { const a = Math.PI / 8 + k * Math.PI / 4; g.lineTo(w / 2 + Math.cos(a) * w * .48, h / 2 + Math.sin(a) * h * .48); } g.fill();
+        g.strokeStyle = '#fff'; g.lineWidth = 10; g.stroke(); g.fillStyle = '#fff'; g.font = 'bold 76px Rubik'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('STOP', w / 2, h / 2 + 4); }, 256, 256);
+      const sg = new THREE.Mesh(new THREE.PlaneGeometry(.75, .75), new THREE.MeshBasicMaterial({map: tex, transparent: true, side: 2})); sg.position.set(L / 2 - 1.6, 1.85, -(W / 2 + .45)); b.add(sg);
+      const hinge = new THREE.Mesh(new THREE.BoxGeometry(.06, .5, .2), blk); hinge.position.set(L / 2 - 1.6, 1.85, -(W / 2 + .05)); b.add(hinge); }
+    b.position.set(x, 0, z); b.rotation.y = ry; scene.add(b); return b; };
+  const macMini = (parent, x, y, z, s = 1) => { const m = new THREE.Group(); const al = mat(0xc9ccd6, .1, {roughness: .3, metalness: .85});
+    const box = new THREE.Mesh(new THREE.BoxGeometry(.2 * s, .06 * s, .2 * s), al); m.add(box);
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(.24 * s, .015, .03), mat(0x15182c, .1)); strap.position.y = .04 * s; m.add(strap);
+    m.position.set(x, y, z); parent.add(m); return m; };
+  const crouch = (h, k = 1) => { for (const sd of ['L', 'R']) { const hp = h.getObjectByName('hip' + sd), kn = h.getObjectByName('knee' + sd), an = h.getObjectByName('ankle' + sd);
+      if (hp) hp.rotation.x = -1.0 * k; if (kn) kn.rotation.x = 1.7 * k; if (an) an.rotation.x = -.7 * k; } const t = h.getObjectByName('torso'); if (t) t.rotation.x = .35 * k; };
+  const humanoidWithMini = async (x, z, ry, opt = {}) => { const h = await lib('robots/humanoid', {x, y: opt.y ?? 0, z, ry}); const t = h.getObjectByName('torso') || h;
+    t.updateMatrixWorld(true); const mm = macMini(t, 0, opt.my ?? .25, opt.mz ?? -.17, 1.3); mm.rotation.x = Math.PI / 2; return h; };
+
+  if (p === 'daycross') { // cover: sunny street — stopped school bus with STOP arm out, robotaxi waiting behind it, a humanoid with a Mac mini on the sidewalk
+    await dayStreet({trees: [-12, 11], bz: -13});
+    schoolBus(-2.5, -1.9, Math.PI, true);
+    const cab = await lib('vehicles/robotaxi', {x: 6.0, z: -1.9, ry: -Math.PI / 2}); const lh = cab.getObjectByName('lidarHead'); if (lh) lh.rotation.y = .6;
+    cabLights(cab);
+    const hum = await humanoidWithMini(10.5, -5.3, -.9, {y: .16});
+    for (const x of [-8, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
+    const key = new THREE.PointLight(0xffffff, 8, 14); key.position.set(4, 5, 6); scene.add(key); }
+
+  if (p === 'sanantonio') { // robotaxi on a wide Texas boulevard under a green road sign "San Antonio"; empty driver seat glass
+    await dayStreet({blocks: ['Building3_Big', 'Building4', 'Building2_Large', 'Building1_Small', 'Building3_Small', 'Building4'], bx: -22});
+    const cab = await lib('vehicles/robotaxi', {x: 1.5, z: 1.9, ry: -Math.PI / 2}); const lh = cab.getObjectByName('lidarHead'); if (lh) lh.rotation.y = 1.1;
+    cab.updateMatrixWorld(true); { const bb = new THREE.Box3().setFromObject(cab); const beam = cabLights(cab); beam.position.set(bb.min.x, .8, 1.9); beam.target.position.set(bb.min.x - 10, 0, 1.9); }
+    const cabB = await lib('vehicles/robotaxi', {x: -9, z: -1.9, ry: Math.PI / 2});
+    for (const x of [-12, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
+    // overhead gantry sign
+    const gm = mat(0x9aa0ae, .1, {roughness: .4, metalness: .7});
+    for (const zz of [-4.6, 4.6]) { const post = new THREE.Mesh(new THREE.CylinderGeometry(.14, .16, 5.2, 12), gm); post.position.set(-7, 2.6, zz); scene.add(post); }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(.25, .25, 9.4), gm); beam.position.set(-7, 5.1, 0); scene.add(beam);
+    const tex = screenTex((g, w, h) => { g.fillStyle = '#0d6b3a'; g.fillRect(0, 0, w, h); g.strokeStyle = '#fff'; g.lineWidth = 10; g.strokeRect(14, 14, w - 28, h - 28);
+      g.fillStyle = '#fff'; g.font = 'bold 150px Rubik'; g.textAlign = 'center'; g.fillText('San Antonio', w / 2, 200); g.font = 'bold 88px Rubik'; g.direction = 'rtl'; g.fillText('רובוטקסי ← ', w / 2, 330); }, 1024, 400);
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 2.03), new THREE.MeshStandardMaterial({map: tex, roughness: .6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .25})); sign.position.set(-6.85, 4.2, 0); sign.rotation.y = Math.PI / 2; scene.add(sign);
+  }
+
+  if (p === 'schoolbus') { // Waymo-style robotaxi stopped behind a school bus with its STOP arm out, kids crossing
+    await dayStreet({blocks: ['Building1_Small', 'Building4', 'Building3_Small', 'Building2_Large'], bx: -16, bz: -14, trees: [-10, 9]});
+    schoolBus(-3.5, -1.9, Math.PI, true);
+    const cab = await lib('vehicles/robotaxi', {x: 4.6, z: -1.7, ry: -Math.PI / 2 + .12}); const lh = cab.getObjectByName('lidarHead'); if (lh) lh.rotation.y = .3;
+    cabLights(cab);
+    await place('people/character-female-b', {x: -.6, y: .16, z: -4.9, ry: .4, h: 1.25, dim: .9, anim: 'walk', t: .3});
+    await place('people/character-male-a', {x: .4, y: .16, z: -5.4, ry: .4, h: 1.15, dim: .9, anim: 'walk', t: .7});
+    for (const x of [-12, 8]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); } }
+
+  if (p === 'halo') { // living room: humanoid with a Mac mini on its back crouching under a table; TV wall shows a grid of virtual rooms
+    scene.background = new THREE.Color(0x14172e); scene.fog = new THREE.FogExp2(0x14172e, 0.03); dl.intensity = .9; scene.environmentIntensity = .35;
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(14, 12), mat(0x8a6a4c, .1, {roughness: .7, metalness: 0})); fl.rotation.x = -Math.PI / 2; scene.add(fl);
+    for (let k = -7; k < 7; k += .5) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(.02, 12), mat(0x6f5238, .1)); ln.rotation.x = -Math.PI / 2; ln.position.set(k, .003, 0); scene.add(ln); }
+    const wm = mat(0x6e6a78, .1, {roughness: .9, metalness: 0});
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(14, 5), wm); back.position.set(0, 2.5, -4); scene.add(back);
+    const side = new THREE.Mesh(new THREE.PlaneGeometry(12, 5), mat(0x5e5a6a, .1, {roughness: .9, metalness: 0})); side.rotation.y = Math.PI / 2; side.position.set(-4.5, 2.5, 2); scene.add(side);
+    // window on the side wall with daylight
+    const win = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.6), new THREE.MeshBasicMaterial({color: 0x2a3a78})); win.rotation.y = Math.PI / 2; win.position.set(-4.48, 2.2, -1); scene.add(win);
+    await place('home/lampRoundFloor', {x: -3.7, z: -3.4, h: 1.6, dim: .8}); const wl = new THREE.PointLight(0xffc98a, 16, 9); wl.position.set(-3.6, 1.7, -3.1); scene.add(wl);
+    await place('home/rugRectangle', {x: .2, z: -1.2, h: .02, dim: .8});
+    await place('home/loungeSofa', {x: -2.6, z: -2.8, ry: .5, h: .85, dim: .7});
+    await place('home/tableCoffee', {x: .5, z: -1.4, h: .45, dim: .7});
+    await place('home/chair', {x: 2.4, z: -2.6, ry: -.6, h: .95, dim: .7});
+    await place('home/pottedPlant', {x: 3.6, z: -3.5, h: 1.3, dim: .8});
+    await place('home/doorwayOpen', {x: 4.3, z: -3.95, h: 2.4, dim: .8});
+    // TV on the back wall: a grid of tiny rooms = "1,000 virtual rooms"
+    const tv = screenTex((g, w, h) => { g.fillStyle = '#0b1030'; g.fillRect(0, 0, w, h); const cs = ['#3a4a8a', '#5a3f7a', '#2f6a6a', '#7a5a3a'];
+      for (let r = 0; r < 5; r++) for (let c = 0; c < 8; c++) { const x = 14 + c * 124, y = 14 + r * 98; g.fillStyle = cs[(r + c) % 4]; g.fillRect(x, y, 112, 86);
+        g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 10, y + 50, 40 + (r * c) % 30, 18); g.fillRect(x + 70, y + 30, 22, 38); } }, 1024, 512);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.3), new THREE.MeshStandardMaterial({map: tv, emissive: 0xffffff, emissiveMap: tv, emissiveIntensity: .55})); scr.position.set(2.1, 1.75, -3.95); scene.add(scr);
+    const bez = new THREE.Mesh(new THREE.BoxGeometry(2.7, 1.4, .05), mat(0x111320, .1)); bez.position.set(2.1, 1.75, -3.99); scene.add(bez);
+    const hum = await humanoidWithMini(-.3, -.9, 2.5);
+    hum.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(hum); hum.position.y -= bb.min.y;
+    const key = new THREE.PointLight(0xffffff, 12, 12); key.position.set(2.5, 3.5, 3); scene.add(key);
+    const sp = new THREE.SpotLight(0xffffff, 40, 14, .6, .5); sp.position.set(1, 5, 2); sp.target.position.set(.6, .8, -1); scene.add(sp, sp.target); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
