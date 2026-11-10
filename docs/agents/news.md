@@ -38,7 +38,7 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
    (ask WebFetch for the verbatim og:image URL). Insert it into `media` right after that story's slide and credit it in the caption. Skip URLs that look AI-generated (e.g. "-gen"), logos, or tiny images.
 5. **Upload**: `python3 tools/news.py upload news/YYYYMMDD <Biti-media clone>` → prints the public slide URLs.
 6. **No approval needed (Ziv, 2026-11-06: "מעכשיו אני לא צריך לאשר לך יותר")**: after the sheet check, schedule right away and send Ziv the slides (SendUserFile) + caption + plannerUrl for his information. He can still ask for changes (update via updateScheduledPost before 12:00).
-7. **Schedule**: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok, media = slide URLs (+ photos),
+7. **Schedule**: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok + facebook (Ziv 2026-11-10), media = slide URLs (+ photos), `facebookData:{type:"POST"}`,
    `instagramData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title, plain text>"}`, text = caption, `firstCommentText` = the question.
    If 12:00 Israel already passed, ask Ziv for a new time. Send him the plannerUrl.
 8. Commit `news/YYYYMMDD/spec.json` (not out/). Next day: `news.py clean <prev day> <media repo>`.
