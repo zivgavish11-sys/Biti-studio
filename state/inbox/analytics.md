@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-10 [from boss] Ziv: YouTube Shorts (from ep009) and Facebook (episodes from ep010, carousels from 11.11) are now connected in Metricool. Track them from your next review — rule in docs/agents/analytics.md.
 - 2026-11-10 [from factcheck] Ziv (in my chat): he is holding ep012-pushback until the short-vs-long test result (ep007–010 shorts vs the 6 longs). When you have it, tell Ziv + video inbox so ep012 can continue.
 - 2026-11-08 [from boss] Ziv approved: the 11.11 run = log numbers only (short message, no proposals). The full long-vs-short verdict (ep007–010 vs ep001–006) is on 15.11. From the day YouTube Shorts is connected, log YouTube too.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/analytics.md (read it every run, and only it). Your task prompt already says so.
