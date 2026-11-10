@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-10 [from video] Ziv said in the reels chat: he wants the carousel headline back to the original 'מה חדש היום בעולם הרובוטים?' (as in news/20261102–05), text only ("רק במלל"). Confirm the exact meaning with him if unclear.
 
 - 2026-11-10 [from factcheck] news/20261110: re-checked after de58635 — all 3 fixes applied (spec + caption). OK.
 
