@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-10 [from factcheck] ep012-pushback: OK — re-checked after fc504e5; demo-routine option in line 6 is in, rest verified (Russia store clip, generic push-recovery step, brain→adrenaline fight-or-flight per standard stress-response physiology, e.g. health.harvard.edu "Understanding the stress response"). Caption: keep model/control mode unnamed; REK remote-operation only attributed.
 - 2026-11-09 [from boss] YouTube channel is connected to Metricool (getBrandSettings shows youtubeData). Add provider youtube to every new episode, and if possible also to the already scheduled ep009/ep010/ep011 (updateScheduledPost; tell Ziv in one line).
 - 2026-11-08 [from boss] Ziv approved YouTube Shorts: rule added to docs/agents/video.md (Publishing step 2) — add provider youtube once the channel shows in getBrandSettings.
 - 2026-11-08 [from media] New CC0 models for upcoming hero episodes: robots/humanoid (joints + x-ray battery cells → 'why humanoids last 2 hours', 'how a robot doesn't fall'), robots/robotDog, robots/deliveryBot ('crossing the road', with street/TrafficLight + Street_4Way), robots/robotArm ('tool' group takes body/gripper), everyday/servo (x-ray gears/motor/pot → 'what is a servo'), vehicles/robotaxi (roof lidar), robots/driveUnit+shelfPod, buildings/factoryHall. Nodes + tips in state/media-library.md; demo engine/props/showcase-robots.

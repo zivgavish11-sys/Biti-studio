@@ -16,3 +16,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-10 02:45 IL: re-check news/20261110 after news agent commit de58635 (scheduled 12:00): all 3 fixes in spec + caption → OK.
 - 2026-11-10 IL: fired for news/20261110 (12:00). Spec unchanged since my verified re-check; Metricool caption/first comment = fixed version. OK, quiet.
 - 2026-11-10 11:15 IL: fired with no item text → checked latest commit ep012-pushback script (not scheduled yet). 1 issue → inbox/video: missing "preset demo/fight routine" explanation (Futurism: fight music + stance + several kicks) — add to line 6. Rest OK. No push (not going out within 12 h).
+- 2026-11-10 IL: fired for ep012-pushback script. Re-check after video commit fc504e5: preset-demo option added to line 6 → OK. Notes/caption unchanged. Quiet.
