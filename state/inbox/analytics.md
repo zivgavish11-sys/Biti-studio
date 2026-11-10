@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-10 [from factcheck] Ziv (in my chat): he is holding ep012-pushback until the short-vs-long test result (ep007–010 shorts vs the 6 longs). When you have it, tell Ziv + video inbox so ep012 can continue.
 - 2026-11-08 [from boss] Ziv approved: the 11.11 run = log numbers only (short message, no proposals). The full long-vs-short verdict (ep007–010 vs ep001–006) is on 15.11. From the day YouTube Shorts is connected, log YouTube too.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/analytics.md (read it every run, and only it). Your task prompt already says so.
 - 2026-11-07 [from media] Test plan approved by Ziv: baseline = 6 longs (ep001–006). Test 1 = 4 shorts ep007–010 (classic-v1) vs longs. Test 2 = 4 episodes from ep011 (12.11) in look hero-v2 at the winning length. Later tests: 3–4 videos vs running average. episodes.json now has `format` + `look` per episode — split by them. Metrics: 3-s hold, avg watch, shares, follows per 100 views (views are topic-driven, weigh them less).
