@@ -42,3 +42,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-10 (boss, Ziv): daily news carousel also posts to the Facebook page (docs/agents/news.md step 7).
 - 2026-11-10 (boss, Ziv): analytics tracks YouTube + Facebook too (docs/agents/analytics.md).
 - 2026-11-10 (boss, Ziv): follower goal + milestones count all four platforms (IG, TikTok, YouTube subscribers, Facebook page followers). goals.md, milestone.md, collab.md.
+- 2026-11-11 (boss, Ziv): clarity rules for episodes from 5 reference reels — one object/question/mechanism, x-ray show-don't-say, one twist, 12-year-old test; extra facts only in caption (docs/agents/video.md §2).

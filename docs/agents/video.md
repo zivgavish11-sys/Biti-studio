@@ -35,6 +35,11 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 
 ### 2) Script (after Ziv picks)
 **Read `docs/playbook.md` before writing every script and every idea set.** It is the retention playbook; follow it.
+**Clarity rules (Ziv 2026-11-11, from 5 reference reels: grouper.explains dishwasher 4,193 sends / iPhone crash 956 / aquarium hack 819 vs cell antennas 48; Amazon random-stow explainer). Ziv found our ep008-amazon hard to follow — too many ideas.**
+- **One object, one question, one mechanism.** Prefer an object the viewer owns at home or in their pocket. The episode explains ONE hidden mechanism to the end, as a cause→effect chain (A happens → so B → so C). No side facts, few names, at most 1–2 numbers. Every extra fact goes to the caption's deep-facts block, never into the video.
+- **Show it, don't say it.** The object is see-through (x-ray shell); the parts that matter glow as the narration reaches them. The object stays in frame the whole episode; the camera moves around it and zooms in.
+- **One twist** that is the reason to send it (e.g. "בכוונה!", "דרך האקווריום"), placed at the re-hook or the payoff.
+- **12-year-old test** before sending Ziv the script: could a 12-year-old explain it back to a friend after one viewing? If not, cut facts until yes. Say in one line to Ziv that the script passed it.
 - 30–45 s final length. At the 1.25× speed-up that is about **70–95 Hebrew words**.
 - **SHORT format (Ziv 2026-11-06, from ep007 on, test phase): 15–20 s ≈ 35–45 Hebrew words** — fact → question → answer (2–3 short lines) → wow fact → closing. No re-hook line needed; one chip per beat. First short posts Sun 2026-11-08 18:00; one post per day at 18:00; then analytics compares long (ep002–ep006) vs short.
 - Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
