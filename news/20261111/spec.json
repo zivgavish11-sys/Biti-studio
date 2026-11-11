@@ -9,7 +9,24 @@
     "Atlas של Boston Dynamics קופץ על גלגלים",
     "Path Robotics גייסה 300 מיליון דולר לרובוטי ריתוך"
    ],
-   "scene": {"robot": false, "props": ["mixlab"], "color": "cyan", "cam": [1.2, 3.2, 9.0], "target": [0, 1.3, -2.6], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "mixlab"
+    ],
+    "color": "cyan",
+    "cam": [
+     1.0,
+     3.6,
+     10.5
+    ],
+    "target": [
+     0,
+     2.0,
+     -2.6
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -19,7 +36,24 @@
    "title": "רחפן ששומר<br>על ה<span class=\"pill\">בית</span>",
    "text": "Ring של אמזון הכריזה על Drone Cam: רחפן קטן שעף בתוך הבית, מצלם ב־2K וחוזר לעגינה. לפי החברה, יגיע לארה״ב ב־27.1, אחרי אישור ה־FCC. לעסקים: רובוט סיור ב־$999.99.",
    "source": "Amazon, TechCrunch, Android Headlines",
-   "scene": {"robot": false, "props": ["ringhall"], "color": "cyan", "cam": [2.6, 2.0, 4.6], "target": [-0.3, 1.3, -2.0], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "ringhall"
+    ],
+    "color": "cyan",
+    "cam": [
+     2.8,
+     2.2,
+     5.0
+    ],
+    "target": [
+     -0.3,
+     1.9,
+     -2.0
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -29,7 +63,24 @@
    "title": "Atlas קיבל<br><span class=\"pill\">גלגלים</span>",
    "text": "Boston Dynamics הציגה גרסה של הרובוט Atlas עם גלגלים במקום כפות רגליים. בסרטון הוא קופץ, מסתובב 360° ומחליק הצידה. לפי החברה, זו פלטפורמת מחקר בלבד, לא מוצר.",
    "source": "The Korea Times, The Robot Report, Slashdot",
-   "scene": {"robot": false, "props": ["atlaswheel"], "color": "orange", "cam": [2.4, 1.9, 4.4], "target": [0, 1.1, -0.6], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "atlaswheel"
+    ],
+    "color": "orange",
+    "cam": [
+     3.6,
+     1.3,
+     5.4
+    ],
+    "target": [
+     -0.4,
+     0.9,
+     -0.6
+    ],
+    "shift": 0.15
+   }
   },
   {
    "type": "story",
@@ -39,11 +90,37 @@
    "title": "רובוטי ריתוך<br>שווים <span class=\"pill\">מיליארדים</span>",
    "text": "Path Robotics, שמפתחת רובוטים עם AI לריתוך במפעלים, גייסה 300 מיליון דולר. לפי בלומברג, השווי שלה גדל פי 4. הכסף ילך למשימות ייצור חדשות ולאימון מודלי AI.",
    "source": "Robotics 24/7, Bloomberg",
-   "scene": {"robot": false, "props": ["pathweld"], "color": "pink", "cam": [3.0, 2.3, 4.0], "target": [-0.3, 1.0, -1.6], "shift": 0.1}
+   "scene": {
+    "robot": false,
+    "props": [
+     "pathweld"
+    ],
+    "color": "pink",
+    "cam": [
+     3.4,
+     2.6,
+     3.9
+    ],
+    "target": [
+     -1.1,
+     1.45,
+     -1.8
+    ],
+    "shift": 0.12
+   }
   },
   {
    "type": "follow",
-   "scene": {"anim": "Wave", "color": "cyan", "target": [0, 1.3, 0], "shift": 0.24}
+   "scene": {
+    "anim": "Wave",
+    "color": "cyan",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
   }
  ]
 }

@@ -930,8 +930,9 @@ for (const p of sc.props || []) {
     const cone = new THREE.Mesh(new THREE.ConeGeometry(1.1, 3.2, 32, 1, true), new THREE.MeshBasicMaterial({color: 0xfff3d6, transparent: true, opacity: .07, side: 2, depthWrite: false}));
     cone.position.set(x, y - 1.2, z + 1.0); cone.rotation.x = -.55; scene.add(cone);
     const sp = new THREE.SpotLight(0xfff3d6, 30, 9, .5, .6); sp.position.set(x, y, z); sp.target.position.set(x, 0, z + 2.6); scene.add(sp, sp.target); return d; };
-  const weldArm = async (x, z, ry, tgt) => { const a = await lib('robots/robotArm', {x, z, ry}); const set = (n, v) => { const j = a.getObjectByName(n); if (j) j.rotation.x = v; };
-    set('j2', .62); set('j3', .7); set('j5', .55);
+  const weldArm = async (x, z, ry, opt = {}) => { const ped = opt.y ?? .7; if (ped > 0) { const pd = new THREE.Mesh(new THREE.CylinderGeometry(.45, .55, ped, 24), mat(0x3a4070, .1, {roughness: .5})); pd.position.set(x, ped / 2, z); scene.add(pd); }
+    const a = await lib('robots/robotArm', {x, y: ped, z, ry, s: opt.s ?? 1.35}); const set = (n, v) => { const j = a.getObjectByName(n); if (j) j.rotation.x = v; };
+    set('j2', opt.j2 ?? 1.0); set('j3', opt.j3 ?? 1.25); set('j5', opt.j5 ?? .7);
     const tool = a.getObjectByName('tool'); const torch = new THREE.Group(); const cu = mat(0x2a2d3a, .1, {roughness: .4, metalness: .6});
     const body = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, .32, 14), cu); body.position.y = -.16; torch.add(body);
     const nz = new THREE.Mesh(new THREE.CylinderGeometry(.018, .035, .14, 12), mat(0xc79a52, .1, {metalness: .8, roughness: .3})); nz.position.y = -.39; nz.rotation.z = .25; torch.add(nz);
@@ -984,7 +985,7 @@ for (const p of sc.props || []) {
     // dock: small white pad with a cyan ring on the side table
     const dock = new THREE.Mesh(new THREE.CylinderGeometry(.26, .3, .06, 32), mat(0xe8ebf5, .1, {metalness: 0})); dock.position.set(-1.8, .84, -2.8); scene.add(dock);
     const dr = new THREE.Mesh(new THREE.TorusGeometry(.22, .012, 6, 48), glowM(accent)); dr.rotation.x = Math.PI / 2; dr.position.set(-1.8, .875, -2.8); scene.add(dr);
-    await ringDrone(.1, 1.75, -1.3, -.35, 3.0);
+    await ringDrone(.1, 1.6, -1.4, -.35, 2.4);
     const key = new THREE.PointLight(0xbfd0ff, 6, 12); key.position.set(2.5, 3.2, 3); scene.add(key); }
 
   if (p === 'atlaswheel') { // research lab: humanoid on wheels mid-spin, a balance board and floor markers
@@ -992,7 +993,7 @@ for (const p of sc.props || []) {
     await place('buildings/factoryHall', {x: 1, z: -9, h: 9, dim: .7});
     for (let k = 0; k < 6; k++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(.5, .06), mat(0xf2d34a, .1)); m.rotation.x = -Math.PI / 2; m.rotation.z = k * Math.PI / 3; m.position.set(0, .005, -.6); scene.add(m); }
     const ringM = new THREE.Mesh(new THREE.RingGeometry(1.55, 1.62, 96), new THREE.MeshBasicMaterial({color: 0xf2d34a, side: 2})); ringM.rotation.x = -Math.PI / 2; ringM.position.set(0, .006, -.6); scene.add(ringM);
-    const h = await wheelHumanoid(0, .55, -.6, .9, {crouch: .55, arms: 1.3, twist: .5});
+    const h = await wheelHumanoid(0, .3, -.6, -.5, {crouch: .8, arms: 1.1, twist: .5});
     spinTrail(0, .35, -.6, .8);
     // skid marks from the dash
     for (let k = 0; k < 2; k++) { const s = new THREE.Mesh(new THREE.PlaneGeometry(3.2, .05), new THREE.MeshBasicMaterial({color: 0x111320, transparent: true, opacity: .6})); s.rotation.x = -Math.PI / 2; s.position.set(2.6, .007, -.3 + k * .22); s.rotation.z = .15; scene.add(s); }
@@ -1003,12 +1004,11 @@ for (const p of sc.props || []) {
     scene.fog = new THREE.FogExp2(0x070a24, 0.02); labFloor(0x2e3350);
     await place('buildings/factoryHall', {x: 1, z: -9, h: 9, dim: .7});
     fixture(0, -1.4); iBeam(0, .85, -1.4, 3.2);
-    const tip = await weldArm(-.2, -2.75, 0, null);
+    const tip = await weldArm(-.3, -2.7, 0);
     sparks(tip);
-    // second cell behind with a finished beam stack
-    fixture(4.2, -5.2, -.3); iBeam(4.2, .85, -5.2, 3.2, -.3);
-    await weldArm(4.4, -6.5, -.3);
-    for (let k = 0; k < 3; k++) iBeam(-4.4, k * .47, -5 , 3.4, .25);
+    // second cell behind
+    fixture(4.6, -5.6, -.3); iBeam(4.6, .85, -5.6, 3.2, -.3);
+    sparks(await weldArm(4.7, -6.9, -.3, {j2: .55}), 40, 9);
     // yellow safety rail
     for (const xx of [-2.4, 2.4]) { const pst = new THREE.Mesh(new THREE.BoxGeometry(.06, 1.0, .06), mat(0xf2b316, .1)); pst.position.set(xx, .5, .3); scene.add(pst); }
     const rail = new THREE.Mesh(new THREE.BoxGeometry(4.8, .05, .05), mat(0xf2b316, .1)); rail.position.set(0, 1.0, .3); scene.add(rail);
@@ -1019,7 +1019,7 @@ for (const p of sc.props || []) {
     await place('buildings/factoryHall', {x: 1, z: -10, h: 9, dim: .7});
     fixture(-3.4, -3.2, .35); iBeam(-3.4, .85, -3.2, 3.0, .35); const tip = await weldArm(-3.9, -4.5, .35); sparks(tip, 55);
     await wheelHumanoid(.4, .45, -1.6, .5, {crouch: .45, arms: 1.2, twist: .3}); spinTrail(.4, .3, -1.6, .75);
-    await ringDrone(3.3, 2.4, -2.2, -.6, 3.2);
+    await ringDrone(2.6, 2.1, -2.2, -.6, 3.0);
     const sp = new THREE.SpotLight(0xffffff, 50, 18, .6, .5); sp.position.set(0, 7, 3); sp.target.position.set(0, .8, -2); scene.add(sp, sp.target);
     const key = new THREE.PointLight(0xffffff, 8, 12); key.position.set(3, 3, 5); scene.add(key); }
 }
