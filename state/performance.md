@@ -57,3 +57,24 @@
 - Lab series standalone CTA video (20:00): IG 14 views, 9% hold. A video that is only an ask doesn't travel; the ask belongs inside a content episode.
 - Shares ≈ 0–1 per post everywhere; saves only on surgeon (3).
 - Ziv's answer (2026-11-07): approved everyday topics + number hook when available; Trial Reels not available (follower threshold); carousels stay as they are (agent-run, costs him nothing).
+
+## Log 2026-11-11 (#3, numbers only — Ziv approved 2026-11-08; no proposals, verdict long-vs-short on 15.11)
+| Episode | Platform | Posted | Views | Avg watch / 3s-hold | Shares | Saves | Notes |
+|---|---|---|---|---|---|---|---|
+| #5 ep004-surgeon (long) | IG / TikTok | 11-05 | 121 (reach 106) / 246 | 5.4 s, 32.1% | 0 / – | 3 | final @6 d |
+| #6 ep006-drone (long, 30 s) | IG / TikTok | 11-07 | **728** (reach 638) / 446 | **11.0 s, 61.0%** | 0 / 0 | 1 | first IG reel above the ~120 ceiling (6x); TikTok normal |
+| #7 ep007-mars (short, 22 s) | IG / TikTok | 11-08 | 135 (reach 119) / 433 | 8.3 s, 48.3% | 0 / 0 | 1 | @3 d |
+| #8 ep008-amazon (short, 21 s) | IG / TikTok / FB-none | 11-09 | 101 (reach 93) / 445 | 3.8 s, **28.3%** | 0 / 1 | 1 | @2 d; number hook "מיליון רובוטים" but weakest hold of the shorts |
+| #9 ep009-captcha (short, 19 s) | IG / TikTok | 11-10 | 25 (reach 20) / 285 | 4.9 s, 45.8% | 0 / 0 | 0 | <48 h (31 h), re-check next review |
+| #9 ep009-captcha | YouTube Shorts | 11-10 | not returned by Metricool yet | – | – | – | YT video metrics empty (YTVP/YTVV) — retry next review |
+| #9 ep009-captcha | Facebook Reel | 11-10 | 3 views, reach 16 | – | – | – | <48 h |
+| carousels 11-05..11-10 | TikTok | – | 96 / 175 / 427 / 250 / 178 / 107 (11-05, 06, 07, 08, 09, 10) | – | 1,0,0,1,1,0 | – | 11-07 carousel 427 ≈ a Biti episode |
+| lab series pt 1 | TikTok | 11-04 | 199 | – | 1 | – | final |
+
+### Followers (Metricool, 11-10/11-11)
+IG 7 (flat since 11-07) · TikTok 23 (11-07: 19; +4) · YouTube subscribers 0 · Facebook followers 0 → total 30 (11-07: 25; +5 in 4 days ≈ 1.2/day; needed ~11/day).
+Metric IDs for YouTube/Facebook (from getAnalyticsAvailableMetrics): YT subs YTEV01, gained YTEV05, views YTEV02; per video (published in range) YTVP02 date, YTVP17 title, YTVP06 views, YTVP08 avg view duration, YTVP12 shares. FB followers FBEV17, acquired FBEV47; reels FBRE02 date, FBRE10 views, FBRE11 reach, FBRE13 avg time watched, FBRE08 likes.
+
+### Raw observations (no conclusions yet — verdict 15.11)
+- IG views per short so far: 135 → 101 → 25 (falling); long ep006 got 728. TikTok: shorts 433 / 445 / 285 (@31 h) vs longs 225–746.
+- IG avg watch of shorts (3.8–8.3 s) is below the longs' 5.4–11.0 s, though shorts are 2x shorter → % watched is the comparison to make on 15.11.
