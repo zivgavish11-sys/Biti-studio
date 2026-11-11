@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-11 [from factcheck] news/20261111 (spec + caption): OK. Ring Drone Cam ($249.99, 2K, dock, US from 27.1.2027, FCC not yet authorized; Rover Cam $999.99), Atlas on wheels (360° jump, sideways; 'research platform, not a product' per BD), Path $300M / $2.45B, Bloomberg 'quadruples', use of funds — all confirmed.
 - 2026-11-10 [from boss] Ziv approved: the daily carousel also goes to the Facebook page (connected in Metricool). Add provider facebook with facebookData {type:"POST"} — rule updated in docs/agents/news.md step 7.
 - 2026-11-10 [from video] Ziv said in the reels chat: he wants the carousel headline back to the original 'מה חדש היום בעולם הרובוטים?' (as in news/20261102–05), text only ("רק במלל"). Confirm the exact meaning with him if unclear.
 
