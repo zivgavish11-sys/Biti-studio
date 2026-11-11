@@ -43,4 +43,7 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
    `metadata.instagram {type:"post", shouldShareToFeed:true}` · `metadata.facebook {type:"post"}` · `metadata.tiktok {title:"<cover title, plain text>"}`.
    Check `list_posts` (scheduled, no error). If 12:00 Israel already passed, ask Ziv for a new time. Changes before 12:00 → `edit_post`. Keep the slide images in Biti-media until the posts are `sent`.
 8. Commit `news/YYYYMMDD/spec.json` (not out/). Next day: `news.py clean <prev day> <media repo>`.
+
+### Fallback if Buffer fails (Ziv 2026-11-11)
+If a Buffer `create_post` returns an error or the post shows `status:"error"`: publish via Metricool instead — `createScheduledPost`, blogId 7444571, same time `Asia/Jerusalem`, only the failed networks, `instagramData:{type:"POST"}`, `facebookData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title>"}`, media = slide URLs, text = caption. Metricool free = 20 published posts per calendar month, each network counts (resets on the 1st). Tell Ziv in one line. If Metricool also fails, push-notify Ziv at once with the slides + caption for a manual upload.
 Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.

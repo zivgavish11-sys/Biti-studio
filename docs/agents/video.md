@@ -81,6 +81,9 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - Metricool (brand 7444571) is for stats only now — never schedule there.
 - Never schedule without Ziv's explicit OK on the final video and caption.
 
+### Fallback if Buffer fails (Ziv 2026-11-11)
+If a Buffer `create_post` returns an error, or the post shows `status:"error"` (queue full, channel disconnected, API limit — the API allows ~3,000 requests/month, keep calls lean): publish that post via Metricool instead — `createScheduledPost`, blogId 7444571, same time `Asia/Jerusalem`, only the failed networks, `instagramData:{type:"REEL", showReelOnFeed:true, isAiGenerated:true}`, `facebookData:{type:"REEL", title:"<TikTok title>"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", isAigc:true, title:"<TikTok title>"}`, text = caption. Metricool free = 20 published posts per calendar month, each network counts (resets on the 1st). Tell Ziv in one line. If Metricool also fails ("account limit"), push-notify Ziv at once with the mp4 + caption ready for a manual upload.
+
 ### Publishing (you upload, not Ziv)
 1. Public video URL: push the mp4 to `zivgavish11-sys/Biti-media` as `v/<slug>.mp4` (URL `https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/<slug>.mp4`). If pushing there fails, use a temporary orphan branch `media-<slug>` of Biti-studio (`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4`). Check 200 with curl. Keep the file until all 3 posts are `sent` (Buffer may fetch it at post time).
 2. Three `create_post` calls (one per channel), `schedulingType:"automatic"`, `mode:"customScheduled"`, `dueAt` = the day 18:00 `+02:00` (Israel), text = caption (question included), `assets:[{video:{url, metadata:{title:"<TikTok title>"}}}]`:
