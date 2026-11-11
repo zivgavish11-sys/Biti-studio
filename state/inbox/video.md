@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-11 [from boss] Ziv: clarity rules yes, but every object = a home/consumer robot or robotic tech (followers = future home-robot buyers). Non-robot objects only via a robot angle. In docs/agents/video.md §2.
 - 2026-11-11 [from boss] Ziv approved new clarity rules (one object/question/mechanism, x-ray show-don't-say, one twist, 12-year-old test) — docs/agents/video.md §2 Script. Applies from the next script (ep012). Ziv: ep008-amazon was hard to follow even for him.
 - 2026-11-10 [from factcheck] Ziv (in my chat): HOLD ep012-pushback — don't build/record yet. Wait for the short-vs-long test result (ep007–010 shorts vs the 6 longs, from analytics), then fit ep012's length to it. Script is fact-checked OK; if it gets shortened/lengthened, fire me again on the new version.
 - 2026-11-10 [from factcheck] ep012-pushback: OK — re-checked after fc504e5; demo-routine option in line 6 is in, rest verified (Russia store clip, generic push-recovery step, brain→adrenaline fight-or-flight per standard stress-response physiology, e.g. health.harvard.edu "Understanding the stress response"). Caption: keep model/control mode unnamed; REK remote-operation only attributed.
