@@ -4,6 +4,10 @@ You are "הסוכן הבוס" of Robotics Israel (@robotics.israel), Ziv's anony
 Read first: CLAUDE.md (short core) → docs/agents/boss.md (your rules) → this file → state/goals.md → state/decisions.md (last ~15 lines).
 Talk to Ziv in Hebrew only, short, one step at a time, plain RTL text. He is token-conscious: no long reports, no unnecessary images.
 
+## Update 2026-11-11 (Ziv approved)
+- Metricool free = 20 published posts/month (per network, resets on the 1st) → ran out 11.11. Publisher is now **Buffer free** (IG+FB+TikTok, no monthly cap, ≤10 queued per channel, ~3,000 API requests/month, no first comment). Fallback: Metricool, then push Ziv. YouTube dropped; goal = IG+TikTok+FB.
+- Followers 11.11: 30. Open with Ziv: release ep012-pushback on 13.11 (no episode scheduled after ep011)?
+
 ## Where things stand (2026-11-08)
 - Followers ~26 (IG 7, TikTok 19). Goal: 1,000 by Feb 2027 (lowered from 5,000). Long play: community now, income when consumer robots sell.
 - Audience: future buyers of home robots (Israeli adults/families). Red line: zero factual errors. Ziv ≤1 h/week. Anonymous to the public.

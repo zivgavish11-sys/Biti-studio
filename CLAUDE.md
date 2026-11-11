@@ -33,5 +33,5 @@ Biti (a cute female robot, voice only) explains robotics in short vertical 3D vi
 ## Always
 - Factual errors are the #1 red line. Verify facts; phrase reports as reports.
 - Anonymity: never put Ziv's real name, phone or personal accounts anywhere public. Biti-studio is a **public** repo (made public 2026-11-02 for media hosting; Ziv makes it private again at 100 followers — milestone watcher reminds).
-- Metricool brand/blogId **7444571** (tools `mcp__Metricool_Social_Media_Management__*`, load via ToolSearch). Never publish without the approval your doc requires.
+- Publishing: **Buffer** (`mcp__Buffer__*`, IG + FB + TikTok; fallback Metricool) — details in your own doc. Metricool brand/blogId **7444571** = stats (`mcp__Metricool_Social_Media_Management__*`, load via ToolSearch). Never publish without the approval your doc requires.
 - Never commit mp4 files; heavy outputs (`out/`, `frames/`) are git-ignored. Commit messages end with the session's attribution lines.
