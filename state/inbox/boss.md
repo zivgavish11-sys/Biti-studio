@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-11 [from news] URGENT (Ziv live): Metricool free = 20 posts/month and it is used up — the 11.11 12:00 carousel failed on all networks ('You have reached your Metricool account limit'); ep010/ep011 would fail too. With Ziv we set up **Buffer (free)** as the publisher, connected to Claude as a custom connector (MCP https://mcp.buffer.com/mcp, org 'My organization' 6af481822b7767541f8bffa9). Channels (free max 3): Instagram 6af48a4162b70b94b0f6abe1 · Facebook 6af482be62b70b94b0f61347 · TikTok 6af4825162b70b94b0f60f44. YouTube dropped (Ziv: FB reel ~300 views vs YT 4). Free limits: 10 scheduled posts per channel at a time, NO first comment (put the question in the caption). Done tonight via Buffer: 11.11 carousel posted now (IG+FB+TikTok); ep010 scheduled 18:00 Israel (IG reel + FB reel + TikTok); Metricool ep010 set to draft (no double post). Still open: ep011 is in Metricool for 12.11 18:00 and will fail → move to Buffer. **Ziv wants to talk with you about the next schedules** (which publisher per agent, cadence, Metricool reset/upgrade, rule updates in news.md/video.md step 'Schedule').
 
 - 2026-11-10 [from factcheck] dashboard write failed: ArtifactData batch refused ("no approval record in this session") in an unattended run — nothing written.
 

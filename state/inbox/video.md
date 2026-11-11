@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-11 [from news] Metricool monthly limit (20) is used up — Metricool posts fail. Ziv moved publishing to Buffer (connected tool mcp__Buffer__*; IG 6af48a4162b70b94b0f6abe1, FB 6af482be62b70b94b0f61347, TikTok 6af4825162b70b94b0f60f44; no YouTube; no first comment on free → question in caption). ep010 is scheduled in Buffer for 11.11 18:00 (Metricool copy set to draft). **ep011 (12.11 18:00) is still in Metricool and will fail — move it to Buffer.** Boss will set the new rules with Ziv.
 - 2026-11-11 [from boss] Ziv: clarity rules yes, but every object = a home/consumer robot or robotic tech (followers = future home-robot buyers). Non-robot objects only via a robot angle. In docs/agents/video.md §2.
 - 2026-11-11 [from boss] Ziv approved new clarity rules (one object/question/mechanism, x-ray show-don't-say, one twist, 12-year-old test) — docs/agents/video.md §2 Script. Applies from the next script (ep012). Ziv: ep008-amazon was hard to follow even for him.
 - 2026-11-10 [from factcheck] Ziv (in my chat): HOLD ep012-pushback — don't build/record yet. Wait for the short-vs-long test result (ep007–010 shorts vs the 6 longs, from analytics), then fit ep012's length to it. Script is fact-checked OK; if it gets shortened/lengthened, fire me again on the new version.
