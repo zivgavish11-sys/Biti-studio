@@ -74,25 +74,22 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
    Pinned comment = an easy opinion question (yes/no or this-or-that). After his OK, publish per "Publishing" below.
 7. Update `state/episodes.json` (append episode, bump next), mark topic done in `state/topics.md`, commit and push.
 
-### Metricool
-- Brand/blogId **7444571**. Tools: `mcp__Metricool_Social_Media_Management__*` (load via ToolSearch).
-- Scheduling: `createScheduledPost` needs the video as a public URL (see "Publishing"). Use publicationDate timezone `Asia/Jerusalem`, 18:00. Never schedule without Ziv's explicit OK on the final video and caption.
+### Buffer — the publisher (Ziv 2026-11-11; Metricool free limit of 20 posts/month ran out)
+- Tools `mcp__Buffer__*` (load via ToolSearch). Organization "My organization" `6af481822b7767541f8bffa9`.
+- Channels: Instagram `6af48a4162b70b94b0f6abe1` · Facebook `6af482be62b70b94b0f61347` · TikTok `6af4825162b70b94b0f60f44`. **No YouTube** (Ziv dropped it 2026-11-11).
+- Free plan: max 10 scheduled posts per channel at a time; **no first comment** → the opinion question goes at the end of the caption (no pinned comment).
+- Metricool (brand 7444571) is for stats only now — never schedule there.
+- Never schedule without Ziv's explicit OK on the final video and caption.
 
 ### Publishing (you upload, not Ziv)
-**Current method (2026-11-02, while sessions can't push to Biti-media):** push the mp4 to a temporary branch `media-<slug>` of Biti-studio (orphan branch, never main), use
-`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4` (check 200), schedule, then delete the branch right away (if `git push --delete` returns 403, ask Ziv to delete it at github.com/zivgavish11-sys/Biti-studio/branches):
-Metricool copies the video to its own storage (static.metricool.com) at scheduling time, so the public URL is only needed for that moment. TikTok requires `tiktokData.title` (short plain-text title).
-If pushing to Biti-media works in your session, the Biti-media method below is fine too.
-1. Copy `out/<slug>_full.mp4` to the public repo **zivgavish11-sys/Biti-media** (cloned at /home/claude/biti-media or wherever you cloned it) as `v/<slug>.mp4`, commit, push.
-   Public URL: `https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/<slug>.mp4` — check it returns 200 with curl.
-2. One `createScheduledPost` call, blogId 7444571, providers instagram + tiktok, `instagramData: {type:"REEL", showReelOnFeed:true, isAiGenerated:true}`,
-   `tiktokData: {privacyOption:"PUBLIC_TO_EVERYONE", isAigc:true}`, `videoCoverMilliseconds: 0`, text = caption, `firstCommentText` = pinned-comment question.
-   (TikTok is a personal account: custom covers are ignored there; frame 0 is the cover anyway.)
-   **Facebook (Ziv 2026-11-10):** page Robotics Israel is connected — add provider facebook with `facebookData: {type:"REEL", title:"<TikTok title>"}` to every episode.
-   **YouTube Shorts (Ziv 2026-11-08):** before scheduling, run `getBrandSettings`; if a YouTube channel is connected to brand 7444571, add provider youtube to the same post — `youtubeData: {type:"short", title:"<TikTok title> #shorts", privacy:"public", madeForKids:false, category:"SCIENCE_TECHNOLOGY", tags:[3–4 Hebrew topic words], isAiGeneratedContent:false}` (YouTube's flag is only for realistic synthetic content; animated Biti isn't). If it isn't connected yet, schedule IG + TikTok as usual and remind Ziv in one line.
-3. Send Ziv the plannerUrl + posting time in his timezone. Tell him only: pin the first comment and reply to comments in the first hour.
-   Known issue: Instagram via Metricool fails to post the first comment (happened on every post so far) — after publishing, tell Ziv to add the question as a comment on Instagram himself and pin it. Video publishing takes ~10–15 min after the scheduled time (status PUBLISHING).
-4. After the post is live (next session or the 48 h stats check), delete the mp4 from Biti-media (git rm, commit, push).
+1. Public video URL: push the mp4 to `zivgavish11-sys/Biti-media` as `v/<slug>.mp4` (URL `https://raw.githubusercontent.com/zivgavish11-sys/Biti-media/main/v/<slug>.mp4`). If pushing there fails, use a temporary orphan branch `media-<slug>` of Biti-studio (`https://raw.githubusercontent.com/zivgavish11-sys/Biti-studio/media-<slug>/v/<slug>.mp4`). Check 200 with curl. Keep the file until all 3 posts are `sent` (Buffer may fetch it at post time).
+2. Three `create_post` calls (one per channel), `schedulingType:"automatic"`, `mode:"customScheduled"`, `dueAt` = the day 18:00 `+02:00` (Israel), text = caption (question included), `assets:[{video:{url, metadata:{title:"<TikTok title>"}}}]`:
+   - Instagram: `metadata.instagram {type:"reel", shouldShareToFeed:true, isAiGenerated:true}`
+   - Facebook: `metadata.facebook {type:"reel"}`
+   - TikTok: `metadata.tiktok {title:"<short plain title>", isAiGenerated:true}`
+3. Check with `list_posts` (status scheduled, error null). Send Ziv one line: scheduled 18:00 Israel (in his timezone) on IG + FB + TikTok; reply to comments in the first hour.
+4. After all 3 are `sent`, delete the mp4 (git rm in Biti-media, or delete the branch — if push --delete returns 403, ask Ziv: github.com/zivgavish11-sys/Biti-studio/branches).
+In step 6 above: "pinned comment" now means the question line at the end of the caption.
 
 ## Visual rules (learned the hard way — follow them)
 - Style: **classic** — dark navy 3D, matte materials, real key/rim light + soft shadows, no bloom, no glowing edges/rings/text. Accent colors cyan #2ee6ff, pink #ff5fd2, orange #ffa53a, purple #6b5cff used as solid colors (pills, chip side stripes, rings). Same for every episode = brand. **Ziv 2026-11-07: from ep012 on, lead with the brand cyan instead of pink** (chips, tags, rings, trails, caption active word; orange as the second accent). ep007–ep011 stay as built.

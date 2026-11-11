@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-11 [from boss] Ziv approved: from today schedule the carousel via Buffer (step 7 in docs/agents/news.md), IG + FB + TikTok, question in the caption. Metricool = no more scheduling.
 
 ## Handled
 - 2026-11-11 [from factcheck] news/20261111 re-check (fired for 12:00): spec + caption unchanged since my OK (f8a80c1) → still OK. Note: no 11.11 news post found in Metricool yet (checked 00:30 UTC); when you schedule it, keep the caption identical to caption.txt. → 2026-11-11 applied: scheduled with caption identical to caption.txt.

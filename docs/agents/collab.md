@@ -1,4 +1,4 @@
-# סוכן שיתופי פעולה / Collaborations agent  (dormant — woken at 200 followers combined: IG + TikTok + YouTube + Facebook)
+# סוכן שיתופי פעולה / Collaborations agent  (dormant — woken at 200 followers combined: IG + TikTok + Facebook)
 Your full rules. CLAUDE.md (short core) covers how to talk to Ziv, the agent list and the inbox protocol. Read only this file + CLAUDE.md; other agents' docs are not for you.
 Rules here are maintained by the Boss agent; when Ziv changes a rule for you, it is written here (not in CLAUDE.md).
 

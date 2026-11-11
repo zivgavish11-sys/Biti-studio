@@ -19,10 +19,11 @@ The daily news carousel only (every day — Ziv insists, 2026-11-08). Never Biti
 ## Fact-check (Ziv 2026-11-08)
 The fact-checker has no schedule — you call it. Right after you commit `news/YYYYMMDD/spec.json` (before rendering), fire it:
 `fire_trigger` (Claude Code Remote tools, load via ToolSearch) on the task named "סוכן בודק עובדות" (id via list_triggers) with text `news: news/YYYYMMDD/spec.json + caption`.
-Before scheduling, `git pull` and apply any new lines for today from `state/inbox/news.md` (it usually finishes during your render). If nothing arrived yet, schedule anyway and fix later with updateScheduledPost if it reports a problem.
+Before scheduling, `git pull` and apply any new lines for today from `state/inbox/news.md` (it usually finishes during your render). If nothing arrived yet, schedule anyway and fix later with Buffer edit_post if it reports a problem.
 
-### Metricool
-- Brand/blogId **7444571**. Tools: `mcp__Metricool_Social_Media_Management__*` (load via ToolSearch).
+### Buffer — the publisher (Ziv 2026-11-11; Metricool free limit ran out)
+- Tools `mcp__Buffer__*` (load via ToolSearch). Organization `6af481822b7767541f8bffa9`. Channels: Instagram `6af48a4162b70b94b0f6abe1` · Facebook `6af482be62b70b94b0f61347` · TikTok `6af4825162b70b94b0f60f44`.
+- Free plan: max 10 scheduled posts per channel; **no first comment** → the question stays in the caption. Metricool (7444571) = stats only, never schedule there.
 
 ### 5) Daily news carousel ("חדשות היום") — every day, own scheduled task (08:20 Manila)
 Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 Israel); the daily news carousel is for people who already follow.
@@ -34,12 +35,12 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
    Hebrew, short and punchy. Latin names are fine (Tesla, Figure). Vary `scene` per slide: `anim` (Wave Idle No Yes ThumbsUp Dance Jump Running Walking Punch Sitting),
    `color` (cyan/pink/purple/orange), `decor` (city/panels), `count` (crowd), `models` (any glb under engine/assets/models — search GitHub for fitting free models per story, CC0/MIT/CC-BY only, log them in CREDITS.md).
 3. **Render** (3D only): `python3 tools/news.py render news/YYYYMMDD` → `out/slide-N.jpg` + `out/sheet.jpg`. Look at the sheet: no text overflow, no object over the top bar/stat, nothing blown out.
-4. **Real photos (optional, tested 2026-11-02: works)**: Metricool downloads any public image URL itself. For a story, take the `og:image` of the **official** press release / company newsroom
+4. **Real photos (optional, tested 2026-11-02: works)**: Buffer downloads any public image URL itself. For a story, take the `og:image` of the **official** press release / company newsroom
    (ask WebFetch for the verbatim og:image URL). Insert it into `media` right after that story's slide and credit it in the caption. Skip URLs that look AI-generated (e.g. "-gen"), logos, or tiny images.
 5. **Upload**: `python3 tools/news.py upload news/YYYYMMDD <Biti-media clone>` → prints the public slide URLs.
-6. **No approval needed (Ziv, 2026-11-06: "מעכשיו אני לא צריך לאשר לך יותר")**: after the sheet check, schedule right away and send Ziv the slides (SendUserFile) + caption + plannerUrl for his information. He can still ask for changes (update via updateScheduledPost before 12:00).
-7. **Schedule**: one `createScheduledPost`, blogId 7444571, date today 12:00 `Asia/Jerusalem`, providers instagram + tiktok + facebook (Ziv 2026-11-10), media = slide URLs (+ photos), `facebookData:{type:"POST"}`,
-   `instagramData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title, plain text>"}`, text = caption, `firstCommentText` = the question.
-   If 12:00 Israel already passed, ask Ziv for a new time. Send him the plannerUrl.
+6. **No approval needed (Ziv, 2026-11-06: "מעכשיו אני לא צריך לאשר לך יותר")**: after the sheet check, schedule right away and send Ziv the slides (SendUserFile) + caption for his information. He can still ask for changes (update via Buffer edit_post before 12:00).
+7. **Schedule** (Buffer): three `create_post` calls (Instagram, Facebook, TikTok), `schedulingType:"automatic"`, `mode:"customScheduled"`, `dueAt` today 12:00 `+02:00`, text = caption (question inside), assets = slide images (+ photos) in order, each `{image:{url, metadata:{altText:"<short Hebrew>"}}}`.
+   `metadata.instagram {type:"post", shouldShareToFeed:true}` · `metadata.facebook {type:"post"}` · `metadata.tiktok {title:"<cover title, plain text>"}`.
+   Check `list_posts` (scheduled, no error). If 12:00 Israel already passed, ask Ziv for a new time. Changes before 12:00 → `edit_post`. Keep the slide images in Biti-media until the posts are `sent`.
 8. Commit `news/YYYYMMDD/spec.json` (not out/). Next day: `news.py clean <prev day> <media repo>`.
 Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
