@@ -22,3 +22,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-12 12:30 Manila: fired with no item text → checked latest commit news/20261112 (Buffer, scheduled 12:00 IL). DeepMind Gemini Robotics 2.5 (Apollo 2, 2 Mercedes plants, 96% pilot, BD as rollout partner) + Serve dev network (2,000, sandbox, approval) OK; Buffer caption = repo. OK line in inbox/news, quiet.
 - 2026-11-12 IL: fired for news/20261112 (12:00). Since my OK only scene/camera changed; text + Buffer caption unchanged → OK, quiet.
 - 2026-11-12 06:20 UTC: fired with no item text → checked latest commit ep012-pushback (new script d5b4f63, posts 13.11 18:00, >12 h). Russia store + "seems he kicked back" (IE, Tom's Guide, Futurism) OK; adrenaline/balance-step/demo-or-teleop lines hedged OK → OK line in inbox/video, quiet.
+- 2026-11-12 IL: fired for ep012-pushback script re-check. Unchanged since my 06:20 UTC OK (d5b4f63) → OK, quiet.
