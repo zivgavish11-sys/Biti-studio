@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-12 run 5 — lab-series kit: buildings/labRoom + lab/workbench + lab/printer3d + lab/chargingWall (Hebrew name plates) + robots on pads; vehicles/farmRobot.
+// Render: python3 tools/render.py frames engine/props/showcase-lab 1,5,9
+import {studio, THREE, camKF} from '/engine/lib/core.js';
+const st = await studio({look: 'hero', episode: 13, hook: ['המעבדה', '<span class="pill">של העוקבים</span>'], hookEnd: 2, fog: .012, scenes: (A, B, E) => [0, 4, 8, E]});
+const {scene} = st;
+st.stage({r: 160, grid: 0, spot: null});
+const spot = (p, tg, pw = 30, reach = 14) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .6, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const P = (n, o = {}) => st.prop(n, {tint: 1, ...o});
+// set 1 — lab room
+await P('buildings/labRoom', {x: 0, z: 0});
+spot([1, 3, 3], [0, .8, -1], 45, 12); spot([-2, 3, 2], [-1.5, 1, -2], 25, 10);
+const wb = await P('lab/workbench', {x: 1.6, z: -1.8});
+st.screen(wb.object.getObjectByName('screen'), (c, t, W, H) => { c.fillStyle = '#10163a'; c.fillRect(0, 0, W, H);
+  c.fillStyle = '#8ea6ff'; c.font = `700 ${H * .13}px Rubik`; c.fillText('הדפסה: יד לביטי', W - 40, H * .25);
+  c.fillStyle = '#26305c'; c.fillRect(40, H * .45, W - 80, H * .12); c.fillStyle = '#8ea6ff'; c.fillRect(W - 40 - (W - 80) * .64, H * .45, (W - 80) * .64, H * .12);
+  c.fillStyle = '#fff'; c.font = `700 ${H * .11}px Rubik`; c.fillText('64% · עוד 38 דק׳', W - 40, H * .8); }, {light: .5});
+const pr = await P('lab/printer3d', {x: 1.25, y: .925, z: -1.85}); const po = pr.object;
+const arm = await P('robots/robotArm', {x: -.2, z: -1.3, ry: .7}); const ao = arm.object;
+ao.getObjectByName('j2').rotation.x = .5; ao.getObjectByName('j3').rotation.x = .9; ao.getObjectByName('j5').rotation.x = .6;
+const gr = await P('body/gripper'); gr.object.position.set(0, -.3, 0); ao.getObjectByName('tool').add(gr.object);
+const cw = await P('lab/chargingWall', {x: -3.3, z: .7, ry: Math.PI / 2}); const co = cw.object;
+const names = ['ביטי', 'נועה', 'רקס', 'זיפי', 'דני'];
+names.forEach((n, i) => { st.screen(co.getObjectByName('plate' + i), (c, t, W, H) => { c.fillStyle = '#f2f4f8'; c.fillRect(0, 0, W, H); c.fillStyle = '#12142e'; c.font = `700 ${H * .55}px Rubik`; c.textAlign = 'center'; c.fillText(n, W / 2, H * .72); }, {px: 600, light: .3});
+  co.getObjectByName('bar' + i).scale.x = [.9, .55, .3, .75, .15][i]; });
+await P('robots/robotDog', {x: -3.1, z: -.3, ry: Math.PI / 2});
+await P('robots/humanoid', {x: -3.1, z: 1.7, ry: Math.PI / 2});
+// set 2 — farm robot in a field
+await P('vehicles/farmRobot', {x: 30, z: 0, ry: .5});
+spot([33, 6, 6], [30, 1, 0], 120, 20);
+const soil = new THREE.MeshStandardMaterial({color: 0x3b3550, roughness: .95}), crop = new THREE.MeshStandardMaterial({color: 0x5f8f6a, roughness: .9});
+for (let i = -6; i < 6; i++) { const r = new THREE.Mesh(new THREE.BoxGeometry(30, .12, .5), soil); r.position.set(30, .06, i * 1.1); r.receiveShadow = true; scene.add(r);
+  for (let j = 0; j < 40; j++) { const c = new THREE.Mesh(new THREE.ConeGeometry(.12, .35, 6), crop); c.position.set(16 + j * .7 + (i % 2) * .35, .3, i * 1.1); c.castShadow = true; if (Math.abs(i * 1.1) > 1.3 || j * .7 + 16 < 27 || j * .7 + 16 > 33) scene.add(c); } }
+st.frame(t => {
+  const g = po.getObjectByName('gantry'), h = po.getObjectByName('head'), b = po.getObjectByName('bed'), pp = po.getObjectByName('print');
+  h.position.x = Math.sin(t * 6) * .04; b.position.z = Math.cos(t * 4.3) * .04; pp.scale.y = .2 + .6 * Math.min(1, t / 8); g.position.y = .1 + .12 * pp.scale.y + .02;
+  const fr = scene.getObjectByName('lidarHead'); if (fr) fr.rotation.y = t * 4;
+  let cp, ct;
+  if (t < 4) [cp, ct] = camKF(t, [[0, [1.6, 2.1, 2.6], [-2.4, 1.0, -.6]], [4, [1.0, 2.0, 2.9], [-2.6, 1.0, -.4]]]);
+  else if (t < 8) [cp, ct] = camKF(t, [[4, [1.9, 1.5, -.7], [1.25, 1.15, -1.85]], [8, [1.6, 1.45, -.8], [1.25, 1.15, -1.85]]]);
+  else [cp, ct] = camKF(t, [[8, [35, 3.2, 6.5], [30, 1, 0]], [12, [35.5, 3, 5.8], [30, 1, 0]]]);
+  return {cp, ct}; });
+st.ready();
+</script></body></html>

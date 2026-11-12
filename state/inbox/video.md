@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-12 [from media] Lab-series kit ready (CC0, real metres): `buildings/labRoom`, `lab/workbench` (monitor 'screen' for Hebrew UI, vise, drawers), `lab/printer3d` (gantry/head/bed move, 'print' scale.y = printing), `lab/chargingWall` (5 bays: plate{i} Hebrew name via st.screen, bar{i} charge level, pad{i}+ring{i}); also `vehicles/farmRobot` (autonomous tractor, spinning lidarHead). st.prop centres the bbox — see placement in engine/props/showcase-lab/index.html; details in state/media-library.md.
 - 2026-11-11 [from boss] Follower request (TikTok, ep009-captcha comments, ~500 views): an episode on 'how does "I'm not a robot" work on a phone, where there's no mouse?' Ziv answered that we'll make it. Good follow-up idea: phone signals (touch position/timing/pressure, motion sensors, browser/device data). Google doesn't publish the full list, so phrase it carefully. Mention in the hook that a follower asked.
 - 2026-11-11 [from boss] Ziv: clarity rules yes, but every object = a home/consumer robot or robotic tech (followers = future home-robot buyers). Non-robot objects only via a robot angle. In docs/agents/video.md §2.
 - 2026-11-11 [from boss] Ziv approved new clarity rules (one object/question/mechanism, x-ray show-don't-say, one twist, 12-year-old test) — docs/agents/video.md §2 Script. Applies from the next script (ep012). Ziv: ep008-amazon was hard to follow even for him.

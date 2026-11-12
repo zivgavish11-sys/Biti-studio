@@ -34,3 +34,9 @@ Test frame: engine/props/workshop (render.py frames engine/props/workshop 1).
 2. Carousels: one fitting "set" per story type instead of a generic city — factoryHall for factory/warehouse stories, real facades + traffic light for robotaxi/street stories, hero stage with one hero object for product/price stories.
 3. Hero episodes: one x-ray moment per episode (shell turns see-through, insides visible — servo gears, humanoid battery), matte, no glow (re-raises the 2026-11-04 x-ray idea).
 Image sent: engine/props/showcase-robots (sheet of t 1,5,9,13).
+
+## Pending proposals (sent to Ziv 2026-11-12, run 5) — waiting for his OK
+1. Lab series: one fixed lab set (labRoom + workbench + printer + charging wall) in every lab part = a recognisable "home" for Biti; followers pick the names on the charging-wall plates (comment hook).
+2. Re-ask (open since 2026-11-08): our own Biti built from robots/humanoid (white shell, dark visor, cyan eyes).
+3. Re-ask (open since 2026-11-08): carousels use one fitting set per story type (factoryHall / street / hero stage) instead of a generic city.
+Image sent: engine/props/showcase-lab (t 1,5,9).

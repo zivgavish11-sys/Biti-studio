@@ -565,6 +565,134 @@ export function factoryHall() {
   return root;
 }
 
+// ---------- lab series kit (Media pro 2026-11-12, for 'המעבדה של העוקבים') ----------
+/** workbench 1.8×0.8 m, top 0.92 m. Nodes: top, monitor + 'screen' (plane → st.screen, aspect 16:9), vise (jaw 'viseJaw' .position.x), drawer0..2 (.position.z to open), pegboard with tools, lamp (arm 'lampArm' .rotation.z), parts0..5 small bins. */
+export function workbench() {
+  const W = MAT2.white, D = MAT2.graphite, root = grp('workbench');
+  root.add(at(bx(1.8, .05, .8, .01, MAT2.wood, 'top'), 0, .9, 0));
+  [[-.85, -.35], [.85, -.35], [-.85, .35], [.85, .35]].forEach(([x, z]) => root.add(at(bx(.05, .88, .05, 0, D), x, .44, z)));
+  root.add(at(bx(1.7, .03, .7, 0, D, 'shelf'), 0, .18, 0));
+  const cab = at(grp('cabinet'), .55, 0, 0); root.add(cab);
+  cab.add(at(bx(.55, .62, .7, 0, MAT2.gray), 0, .55, 0));
+  for (let i = 0; i < 3; i++) { const d = joint('drawer' + i, [0, .75 - i * .2, .36], at(bx(.5, .17, .03, 0, W), 0, 0, 0), at(bx(.16, .02, .03, 0, D, 'handle'), 0, 0, .025)); cab.add(d); }
+  // pegboard + tools
+  const pb = at(grp('pegboard'), 0, 0, -.38); root.add(pb);
+  pb.add(at(bx(1.8, .9, .02, 0, M(0x5b6478, .8)), 0, 1.4, 0));
+  for (let x = -.85; x <= .86; x += .1) for (let y = 1.0; y < 1.84; y += .1) pb.add(at(cyl(.006, .006, .022, MAT.dark, null, 6), x, y, .005, Math.PI / 2));
+  const tool = (x, y, h, m) => pb.add(at(rbox(.03, h, .02, .008, m), x, y, .025));
+  tool(-.75, 1.5, .26, MAT.orange); tool(-.68, 1.52, .22, MAT.cyan); tool(-.61, 1.5, .24, D); tool(-.54, 1.53, .2, MAT.steel);
+  pb.add(at(mesh(new THREE.TorusGeometry(.07, .012, 8, 24), D, 'tapeRoll'), -.3, 1.55, .03));
+  pb.add(at(rbox(.18, .1, .04, .01, MAT.orange, 'drill'), -.05, 1.6, .04)); pb.add(at(rbox(.04, .14, .04, .01, D), -.1, 1.5, .04));
+  // monitor
+  const mon = at(grp('monitor'), -.45, .925, -.2); root.add(mon);
+  mon.add(at(rbox(.22, .015, .15, .005, D), 0, .008, 0)); mon.add(at(bx(.04, .25, .03, 0, D), 0, .14, -.02));
+  mon.add(at(rbox(.62, .37, .03, .01, D, 'bezel'), 0, .42, 0, -.05));
+  const scr = mesh(new THREE.PlaneGeometry(.58, .326), MAT.screen.clone(), 'screen'); mon.add(at(scr, 0, .42, .017, -.05));
+  // vise
+  const vise = at(grp('vise'), .75, .925, .2); root.add(vise);
+  vise.add(at(bx(.16, .06, .1, 0, MAT.steel), 0, .03, 0)); vise.add(at(bx(.03, .08, .1, 0, MAT2.gray, 'viseFixed'), .065, .1, 0));
+  vise.add(at(grp('viseJaw', at(bx(.03, .08, .1, 0, MAT2.gray), 0, 0, 0)), -.03, .1, 0));
+  vise.add(at(cyl(.008, .008, .16, MAT.steel, 'screw', 8), -.1, .06, 0, 0, 0, Math.PI / 2));
+  // lamp
+  const lamp = at(grp('lamp'), .85, .925, -.3); root.add(lamp);
+  lamp.add(at(cyl(.07, .08, .02, D), 0, .01, 0));
+  const la = joint('lampArm', [0, .02, 0], link(new THREE.Vector3(0, 0, 0), new THREE.Vector3(-.12, .45, 0), .012, D)); lamp.add(la);
+  la.add(at(link(new THREE.Vector3(-.12, .45, 0), new THREE.Vector3(-.35, .5, .05), .012, D), 0, 0, 0));
+  la.add(at(cyl(.03, .07, .08, W, 'lampHead', 24), -.37, .46, .06, 0, 0, .3));
+  la.add(at(cyl(.06, .06, .005, MAT.lampface, 'lampFace', 24), -.38, .42, .06, 0, 0, .3));
+  // parts bins
+  for (let i = 0; i < 6; i++) root.add(at(rbox(.1, .06, .14, .01, i % 2 ? MAT.cyan : MAT2.gray, 'parts' + i), -.85 + .1 + i * .11, .955, .28));
+  return root;
+}
+
+/** FDM 3D printer (generic cube frame, 0.5 m). Nodes: gantry (.position.y, 0.12–0.42), head (.position.x −0.17..0.17 on gantry), nozzle, bed (.position.z −0.12..0.12), print (on bed — scale .y 0→1 to "grow"), spool (.rotation.z), screen (plane, aspect 1.6). */
+export function printer3d() {
+  const D = MAT2.graphite, root = grp('printer3d');
+  const S = .5, t = .025;
+  root.add(at(rbox(S, .06, S, .01, D, 'base'), 0, .03, 0));
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => root.add(at(bx(t, S, t, 0, MAT2.gray), a * (S / 2 - t / 2), .06 + S / 2, b * (S / 2 - t / 2))));
+  [-1, 1].forEach(b => { root.add(at(bx(S, t, t, 0, MAT2.gray), 0, .06 + S, b * (S / 2 - t / 2))); root.add(at(bx(t, t, S, 0, MAT2.gray), b * (S / 2 - t / 2), .06 + S, 0)); });
+  const bed = joint('bed', [0, .1, 0], at(rbox(.36, .012, .36, .004, M(0x1d2330, .3, .4), 'bedPlate'), 0, 0, 0), at(bx(.34, .002, .34, 0, M(0x2a3346, .6), 'bedSheet'), 0, .007, 0)); root.add(bed);
+  const pr = joint('print', [0, .008, 0], at(rbox(.1, .12, .1, .015, MAT.cyan, 'printPart'), 0, .06, 0)); bed.add(pr);
+  const gan = joint('gantry', [0, .3, 0], at(bx(S - .02, .02, .03, 0, MAT.steel, 'rail'), 0, 0, 0)); root.add(gan);
+  const head = joint('head', [0, 0, .035], at(rbox(.07, .08, .06, .01, MAT2.white, 'carriage'), 0, -.01, 0), at(rbox(.02, .05, .04, .004, MAT.cyan, 'fanStripe'), .036, -.01, 0)); gan.add(head);
+  head.add(at(cyl(.004, .012, .03, MAT2.copper, 'nozzle', 12), 0, -.065, 0));
+  const sp = joint('spool', [0, .45, -.3], at(cyl(.1, .1, .06, MAT.orange, 'filament', 32), 0, 0, 0, 0, 0, Math.PI / 2), at(cyl(.11, .11, .005, D, null, 32), .033, 0, 0, 0, 0, Math.PI / 2), at(cyl(.11, .11, .005, D, null, 32), -.033, 0, 0, 0, 0, Math.PI / 2)); root.add(sp);
+  root.add(at(bx(.02, .2, .02, 0, D), 0, .35, -.27));
+  root.add(at(rbox(.12, .075, .02, .006, D, 'panel'), .15, .06, S / 2 + .005, -.4));
+  root.add(at(mesh(new THREE.PlaneGeometry(.1, .0625), MAT.screen.clone(), 'screen'), .15, .062, S / 2 + .017, -.4));
+  return root;
+}
+
+/** charging wall: 5 bays (1 m each, 2.2 m tall). Per bay i: pad{i} (floor pad, cyan ring 'ring{i}'), plate{i} (name plate plane, aspect 3 → st.screen with a Hebrew name), bar{i} (charge bar — scale .x 0..1), plug{i}. */
+export function chargingWall(n = 5) {
+  const D = MAT2.graphite, root = grp('chargingWall'), w = 1;
+  root.add(at(bx(n * w + .2, 2.4, .12, 0, M(0x2c3344, .7), 'wall'), 0, 1.2, -.06));
+  for (let i = 0; i < n; i++) {
+    const x = (i - (n - 1) / 2) * w, bay = at(grp('bay' + i), x, 0, 0); root.add(bay);
+    bay.add(at(rbox(.82, 1.9, .05, .02, M(0x3a4356, .6), 'back' + i), 0, 1.05, .03));
+    bay.add(at(mesh(new THREE.PlaneGeometry(.6, .2), MAT.screen.clone(), 'plate' + i), 0, 1.85, .06));
+    bay.add(at(rbox(.64, .24, .02, .01, D, 'plateFrame' + i), 0, 1.85, .045));
+    bay.add(at(rbox(.5, .05, .02, .01, MAT.dark, 'barBg' + i), 0, 1.6, .06));
+    const bar = joint('bar' + i, [-.24, 1.6, .072], at(bx(.48, .034, .01, 0, MAT.cyan, 'barFill' + i), .24, 0, 0)); bay.add(bar);
+    bay.add(at(rbox(.12, .18, .08, .02, MAT2.white, 'plug' + i), .3, .9, .09));
+    bay.add(at(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(.3, .82, .1), new THREE.Vector3(.32, .5, .2), new THREE.Vector3(.2, .12, .3)]), 16, .012, 6), MAT.rubber, 'cable' + i)));
+    bay.add(at(cyl(.36, .38, .03, D, 'pad' + i, 40), 0, .015, .55));
+    bay.add(at(mesh(new THREE.TorusGeometry(.3, .012, 8, 48), MAT.cyan, 'ring' + i), 0, .032, .55, Math.PI / 2));
+  }
+  return root;
+}
+
+/** lab room: corner backdrop 8×5 m, 3.2 m high (back wall + left wall), camera from +z. Nodes: backWall, sideWall, window (cool daylight panel), shelves (with boxes), whiteboard ('board' plane, aspect 2 → st.screen), ceilingLights, floor (epoxy grey + safety lines 'floorLines'). */
+export function labRoom() {
+  const root = grp('labRoom'), W = 8, Dp = 5, H = 3.2, wall = M(0x4a5266, .85), D = MAT2.graphite;
+  root.add(at(bx(W, .02, Dp, 0, M(0x3a4050, .5, .1), 'floor'), 0, -.01, 0));
+  const fl = grp('floorLines'); root.add(fl);
+  fl.add(at(bx(W - .6, .004, .08, 0, MAT2.yellowLine), 0, .002, .8));
+  root.add(at(bx(W, H, .1, 0, wall, 'backWall'), 0, H / 2, -Dp / 2));
+  root.add(at(bx(.1, H, Dp, 0, wall, 'sideWall'), -W / 2, H / 2, 0));
+  root.add(at(bx(W, .12, .02, 0, D, 'skirting'), 0, .06, -Dp / 2 + .06));
+  // window on side wall
+  const win = Object.assign(M(0xaec3e0, .2, .1), {emissive: new THREE.Color(0x8aa0c4), emissiveIntensity: .3});
+  root.add(at(bx(.04, 1.3, 2.2, 0, win, 'window'), -W / 2 + .06, 1.8, .3));
+  [-.8, .3, 1.4].forEach(z => root.add(at(bx(.06, 1.36, .05, 0, D), -W / 2 + .08, 1.8, z)));
+  // whiteboard
+  root.add(at(rbox(2.06, 1.06, .04, .01, MAT2.gray, 'boardFrame'), 1.2, 1.65, -Dp / 2 + .07));
+  root.add(at(mesh(new THREE.PlaneGeometry(2, 1), M(0xe8ecf2, .4), 'board'), 1.2, 1.65, -Dp / 2 + .095));
+  // shelves with boxes
+  const sh = at(grp('shelves'), -2.6, 0, -Dp / 2 + .25); root.add(sh);
+  [-.7, .7].forEach(x => sh.add(at(bx(.04, 2.2, .4, 0, D), x, 1.1, 0)));
+  for (let k = 0; k < 4; k++) { const y = .35 + k * .55; sh.add(at(bx(1.44, .03, .4, 0, MAT2.gray), 0, y, 0));
+    for (let j = 0; j < 3; j++) sh.add(at(rbox(.36, .26, .3, .02, [MAT2.white, MAT.cyan, MAT2.fabric, MAT.orange][(k + j) % 4], 'box' + k + j), -.45 + j * .45, y + .145, 0)); }
+  // ceiling light strips (soft, no glow halo)
+  const cl = grp('ceilingLights'); root.add(cl);
+  [-1.5, 1.5].forEach(z => cl.add(at(bx(W - 1, .04, .14, 0, MAT.lampface), .2, H - .05, z * .6)));
+  // pipes
+  root.add(at(cyl(.04, .04, W, MAT.steel, 'pipe', 12), 0, H - .3, -Dp / 2 + .15, 0, 0, Math.PI / 2));
+  return root;
+}
+
+/** autonomous electric tractor / farm robot (generic, cab-less, 3.6 m). Nodes: wheelFL/FR/BL/BR (.x), lidar ('lidarHead' .y spin), cam0..3, hitch, sprayer (boom 'boomL'/'boomR' .rotation.z to fold), beacon. */
+export function farmRobot() {
+  const W = MAT2.white, D = MAT2.graphite, root = grp('farmRobot');
+  root.add(at(rbox(2.4, .7, 1.2, .18, W, 'body'), 0, 1.15, 0));
+  root.add(at(rbox(1.6, .3, 1.0, .12, D, 'battery'), -.1, 1.62, 0));
+  root.add(at(bx(2.3, .06, .02, 0, MAT.cyan, 'stripeL'), 0, 1.05, .61)); root.add(at(bx(2.3, .06, .02, 0, MAT.cyan, 'stripeR'), 0, 1.05, -.61));
+  // tires: axis along z
+  [['wheelFL', .9, .85, .55], ['wheelFR', .9, -.85, .55], ['wheelBL', -.9, .85, .7], ['wheelBR', -.9, -.85, .7]].forEach(([n, x, z, r]) => {
+    const g = grp(n); g.add(at(cyl(r, r, .45, MAT2.tire, null, 32), 0, 0, 0, Math.PI / 2)); g.add(at(cyl(r * .42, r * .42, .46, MAT2.graphite, null, 20), 0, 0, 0, Math.PI / 2)); g.add(at(cyl(r * .14, r * .14, .48, MAT.cyan, null, 12), 0, 0, 0, Math.PI / 2));
+    for (let k = 0; k < 14; k++) { const a = k / 14 * Math.PI * 2; g.add(at(bx(.08, .04, .44, 0, MAT2.tire), Math.cos(a) * r, Math.sin(a) * r, 0, 0, 0, a)); }
+    at(g, x, r, z); root.add(g); });
+  const li = joint('lidar', [.95, 1.62, 0], at(cyl(.1, .1, .12, D, 'lidarBase', 24), 0, .06, 0)); root.add(li);
+  li.add(joint('lidarHead', [0, .16, 0], at(cyl(.08, .08, .08, MAT.cyan, null, 24), 0, 0, 0)));
+  [[1.21, 1.2, .3], [1.21, 1.2, -.3], [-1.21, 1.2, .3], [-1.21, 1.2, -.3]].forEach(([x, y, z], i) => root.add(at(rbox(.06, .08, .1, .02, MAT.dark, 'cam' + i), x, y, z)));
+  root.add(at(cyl(.05, .06, .08, MAT.orange, 'beacon', 16), -.6, 1.81, .35));
+  root.add(at(bx(.3, .1, .2, 0, D, 'hitch'), -1.3, .75, 0));
+  const sp = joint('sprayer', [-1.55, .9, 0], at(rbox(.25, .5, .9, .04, D, 'tank'), 0, .1, 0)); root.add(sp);
+  ['boomL', 'boomR'].forEach((n, k) => { const s = k ? -1 : 1; const b = joint(n, [0, -.05, s * .45], at(bx(.05, .05, 2.2, 0, MAT.steel), 0, 0, s * 1.1)); for (let j = 1; j < 6; j++) b.add(at(cyl(.015, .02, .08, MAT.cyan, null, 8), 0, -.06, s * j * .4)); sp.add(b); });
+  return root;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -575,4 +703,5 @@ export const KIT = {
   'robots/humanoid': humanoid, 'robots/robotDog': robotDog, 'robots/deliveryBot': deliveryBot, 'robots/robotArm': robotArm,
   'robots/driveUnit': driveUnit, 'robots/shelfPod': shelfPod, 'vehicles/robotaxi': robotaxi, 'vehicles/forklift': forklift,
   'everyday/servo': servo, 'buildings/factoryHall': factoryHall,
+  'lab/workbench': workbench, 'lab/printer3d': printer3d, 'lab/chargingWall': chargingWall, 'buildings/labRoom': labRoom, 'vehicles/farmRobot': farmRobot,
 };

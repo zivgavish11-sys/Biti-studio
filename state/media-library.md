@@ -55,6 +55,15 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   Showcase of this whole batch: `python3 tools/render.py frames engine/props/showcase-robots 1,5,9,13` (robots · arm+servo x-ray · warehouse · street).
   Note: kit.js exports are big un-welded; after `make_props.py` run `npx @gltf-transform/cli weld F F && npx @gltf-transform/cli dedup F F` (10× smaller).
 
+- **lab/** + **buildings/labRoom** (added 2026-11-12 run 5, in-house CC0, real metres, for the lab series 'המעבדה של העוקבים'):
+  **labRoom** (corner backdrop 8×5×3.2 m: backWall + sideWall with a daylight 'window', 'shelves' with boxes, whiteboard 'board' plane aspect 2 → st.screen, ceiling light strips, yellow floor line; camera from +z).
+  **workbench** (1.8×0.8 m, top at 0.925 m): pegboard with tools, 'monitor' with 'screen' (16:9 → st.screen), 'vise' ('viseJaw' .position.x), drawer0..2 (.position.z), desk 'lamp' ('lampArm'), parts0..5 bins.
+  **printer3d** (0.5 m cube frame, put on the bench at y .925): 'gantry' (.position.y), 'head' (.position.x ±.17), 'nozzle', 'bed' (.position.z ±.12), 'print' (scale .y 0→1 = printing), 'spool' (.rotation.z), 'screen' (aspect 1.6).
+  **chargingWall** (5 bays × 1 m, 2.4 m): per bay plate{i} (name plate, aspect 3 → st.screen with a Hebrew name), bar{i} (charge level: scale .x 0..1), plug{i}+cable, floor pad{i} with cyan ring{i} (robots stand ~0.55 m in front of the wall).
+  Note: st.prop centres the bbox on x/z — the charging wall's centre is ~0.4 m in front of its wall plane (with ry π/2 place it at wallX+0.45).
+- **vehicles/farmRobot** (in-house CC0, 3.6 m, generic cab-less electric tractor): wheelFL/FR/BL/BR (.z axis spin → rotation.z), 'lidar' → 'lidarHead' (.y spin), cam0..3, beacon, hitch, 'sprayer' with boomL/boomR (.rotation.x to fold). Fits: farm-robot news, "רובוטים בחקלאות". Crop rows: simple cones on soil strips (see showcase).
+  Showcase: `python3 tools/render.py frames engine/props/showcase-lab 1,5,9` (lab + charging wall · printer on bench · farm robot).
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.
@@ -64,5 +73,5 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
 - Rubik 400/700 (OFL) — UI/captions. Frank Ruhl Libre (OFL).
 
 ## Wanted next
-- Done 2026-11-08: humanoid, robot dog, delivery bot, industrial arm, warehouse drive unit + pod, robotaxi, forklift, servo, factory hall, city facades, traffic lights. Still wanted: tractor/farm robot, glass office tower, Israeli shikun block, lab room + workbench + 3D printer, charging wall. Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
+- Done 2026-11-08: humanoid, robot dog, delivery bot, industrial arm, warehouse drive unit + pod, robotaxi, forklift, servo, factory hall, city facades, traffic lights. Still wanted: glass office tower, Israeli shikun block. Done 2026-11-12: lab room, workbench, 3D printer, charging wall, farm robot. Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
 - Note: only GitHub is reachable from sessions (poly.pizza, polyhaven.com, kenney.nl, quaternius.com are blocked). Good mirrors: github.com/trebeljahr/quaternius-showcase (all Quaternius packs, Draco → decode with `npx @gltf-transform/cli copy`), github.com/ETdoFresh/kenney.nl (older Kenney 3D kits: space, food, nature, tower-defense). When nothing exists, build it in engine/props/kit.js. Note: GitHub repo search is blocked in sessions; find repos via web search, then clone.
