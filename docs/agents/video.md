@@ -15,6 +15,11 @@ The fact-checker has no schedule — you call it. Right after you commit `episod
 `fire_trigger` (Claude Code Remote tools, load via ToolSearch) on the task named "סוכן בודק עובדות" (find its id with list_triggers) with text `video: episodes/epNNN-slug/script.txt`.
 Then, before sending Ziv the final TTS text, `git pull` and apply any new lines from it in `state/inbox/video.md` (usually there within a few minutes). Also fire it for any caption with new facts (deep-facts block) before scheduling.
 
+## Script text: no niqqud, grouper style (Ziv 2026-11-12 — overrides the niqqud/`{tts|caption}` rules below)
+- **No niqqud** any more, in the TTS text or script.txt. script.txt = plain Hebrew (use `{tts|caption}` only when a word must read differently from its caption, e.g. digits).
+- **Write like @grouper.explains:** spoken, direct Hebrew to the viewer ("אתכם", "תחשבו על זה"), a real story or everyday moment first, then the question, then the answer as a short cause→effect chain. Short punchy sentences, no lecture tone, no "אני ביטי".
+- Punctuation for pauses (docs/tts-punctuation.md) still applies.
+
 ## Preview = 2 frames (Ziv 2026-11-08, saves tokens)
 In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not 4.
 

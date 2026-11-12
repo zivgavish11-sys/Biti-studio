@@ -1,0 +1,154 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP012-pushback — SHORT + hero look. A man shoves a store humanoid; did it hit back? Humans: blow → adrenaline → fight or flight.
+// Robot: no adrenaline, no urge, only code that says "don't fall" → it throws a leg out to balance. A kick = a human started a demo or remote control.
+// Phrases: 0 דחיפה | 1 בעט בחזרה | 2 למה להחזיר | 3 כשדוחפים אתכם | 4 אדרנלין | 5 להילחם/לברוח | 6 לרובוט אין | 7 רק קוד | 8 שאומר | 9 לא ליפול
+//          10 כשדוחפים | 11 זורק רגל | 12 ואם בעט | 13 הדגמה | 14 מרחוק | 15-16 follow (text grouper style, no niqqud — Ziv 2026-11-12)
+import {studio, THREE, rng, sm, win, camPath, V} from '/engine/lib/core.js';
+const st = await studio({
+  look: 'hero', episode: 12, fog: .03,
+  keys: ['בעט', 'להחזיר', 'אדרנלין', 'קוד', 'ליפול', 'רגל', 'הדגמה', 'מרחוק'],
+  hook: ['רובוט קיבל דחיפה...', 'ו<span class="pill">בעט</span> בחזרה?'],
+  // S: 0 store push | 1 human: adrenaline | 2 robot x-ray: code | 3 push → balance step | 4 phone: demo / remote | 5 follow
+  scenes: (A, B, END) => [0, A[3] - .25, A[6] - .25, A[10] - .25, A[12] - .25, A[15] - .25, END],
+});
+const {scene, A, B, S, END} = st; const r = rng(12);
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .75, ...o});
+const ACC = st.HERO_ACC;
+st.stage({r: 160, grid: 0, spot: null});
+const spot = (p, tg, pw = 22, reach = 9) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .55, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const dashed = (a, b) => { const g = new THREE.BufferGeometry().setFromPoints([a, b]); const l = new THREE.Line(g, new THREE.LineDashedMaterial({color: 0xffffff, dashSize: .05, gapSize: .04, transparent: true, opacity: 0})); l.computeLineDistances(); scene.add(l); return l; };
+const font = (c, w, s) => c.font = `${w} ${s}px Rubik`;
+
+// humanoid helper: joints by name, rest pose kept
+async function robot(o) { const m = await st.prop('robots/humanoid', {tint: 1, ...o}); const R = m.object; const j = n => R.getObjectByName(n);
+  const J = {}; for (const n of ['pelvis', 'torso', 'head', 'hipL', 'hipR', 'kneeL', 'kneeR', 'ankleL', 'ankleR', 'shoulderL', 'shoulderR', 'elbowL', 'elbowR']) J[n] = j(n);
+  const rest = {}; for (const n in J) if (J[n]) rest[n] = [J[n].position.clone(), J[n].rotation.clone()];
+  const reset = () => { for (const n in J) if (J[n]) { J[n].position.copy(rest[n][0]); J[n].rotation.copy(rest[n][1]); } };
+  return {R, J, reset, rest}; }
+
+// ---------- set 1 (origin): electronics store, a man shoves a humanoid sales robot ----------
+spot([-1.4, 3.6, 2.6], [.3, .8, 0], 26);
+const R1 = await robot({x: 0, z: 0});
+const man = await st.prop('people/character-male-b', {h: 1.55, x: .95, z: .12, ry: -Math.PI / 2, anim: 'idle'});
+man.schedule('interact-right', .0, .1); man.schedule('idle', .9, .3); man.schedule('interact-right', A[1] - .45, .2); man.schedule('idle', A[1] + .5, .3);
+man.schedule('interact-right', A[10] - .1, .2); man.schedule('idle', A[10] + .8, .3);
+man.schedule('idle', A[12] - .2, .2);
+// shelf behind (store) — matte blocks with boxes
+const shelfM = M(0x23265c), boxM = M(0x34387a), boxM2 = M(0x8ea6ff, {roughness: .6});
+for (let i = 0; i < 3; i++) { const sh = new THREE.Mesh(new THREE.BoxGeometry(2.6, .05, .5), shelfM); sh.position.set(.2, .45 + i * .55, -1.3); sh.receiveShadow = sh.castShadow = true; scene.add(sh);
+  for (let k = 0; k < 5; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.28 + r() * .15, .25 + r() * .15, .3), r() < .2 ? boxM2 : boxM); b.position.set(-.9 + k * .5 + r() * .1, .6 + i * .55, -1.3); b.castShadow = true; scene.add(b); } }
+const post = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.7, .4), shelfM); post.position.set(-1.1, .85, -1.3); scene.add(post); const post2 = post.clone(); post2.position.x = 1.5; scene.add(post2);
+// balance helpers (set 3 phrase 10-11): support ring on the floor + centre-of-mass dot
+const ringM = M(ACC, {roughness: .6, transparent: true, opacity: 0});
+const ring = new THREE.Mesh(new THREE.RingGeometry(.22, .26, 48), ringM); ring.rotation.x = -Math.PI / 2; ring.position.y = .012; scene.add(ring);
+const com = new THREE.Mesh(new THREE.SphereGeometry(.045, 20, 14), M(0xffffff, {roughness: .5, transparent: true, opacity: 0})); scene.add(com);
+const comLine = dashed(V(0, .95, 0), V(0, .01, 0));
+
+// ---------- set 2 (x = 3.6): a person — blow → adrenaline → fight or flight ----------
+const X2 = 3.6; spot([X2 - 1.2, 3.4, 2.4], [X2, .8, 0], 24);
+const woman = await st.prop('people/character-female-b', {h: 1.66, x: X2, z: 0, ry: .25, anim: 'idle'});
+const AD = {k: 0, fight: 0, flight: 0};
+const scr2 = st.screen([.95, .62], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.5)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'right'; c.direction = 'rtl'; c.fillStyle = '#fff'; font(c, 700, H * .15); c.fillText('אדרנלין', W * .93, H * .22);
+  c.fillStyle = 'rgba(255,255,255,.12)'; c.fillRect(W * .07, H * .32, W * .86, H * .12); c.fillStyle = '#8ea6ff'; c.fillRect(W * .93 - W * .86 * AD.k, H * .32, W * .86 * AD.k, H * .12);
+  // heartbeat line speeds up with adrenaline
+  c.beginPath(); c.strokeStyle = '#fff'; c.lineWidth = 6; const f = 4 + AD.k * 9;
+  for (let i = 0; i <= 140; i++) { const x = W * .07 + i / 140 * W * .86, ph = (i / 140 * f + t * (1 + AD.k * 2)) % 1; const y = H * .66 - (ph > .45 && ph < .52 ? Math.sin((ph - .45) / .07 * Math.PI) * H * .14 : 0); i ? c.lineTo(x, y) : c.moveTo(x, y); }
+  c.stroke(); font(c, 700, H * .12); c.textAlign = 'center';
+  c.globalAlpha = .25 + .75 * AD.fight; c.fillText('להילחם', W * .72, H * .92); c.globalAlpha = .25 + .75 * AD.flight; c.fillText('לברוח', W * .28, H * .92); c.globalAlpha = 1;
+}, {px: 800, light: .5});
+scr2.mesh.position.set(X2 - .55, 1.85, -.5); scene.add(scr2.mesh);
+const dash2 = dashed(V(X2 - .55, 1.54, -.5), V(X2, 1.45, 0));
+
+// ---------- set 3 (x = 7.2): robot x-ray — no adrenaline, no urge, only code: "don't fall" ----------
+const X3 = 7.2; spot([X3 - 1.2, 3.4, 2.4], [X3, .9, 0], 24);
+const R3 = await robot({x: X3, z: 0, ry: -.2});
+const shell3 = []; R3.R.traverse(q => { if (q.isMesh && /Shell|chestPlate/.test(q.name + (q.parent?.name || ''))) { q.material = q.material.clone(); q.material.transparent = true; shell3.push(q); } });
+const cpu = R3.R.getObjectByName('computer'); const cpuM = []; cpu?.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); cpuM.push([q.material, q.material.color.clone()]); } });
+const CD = {l: 0, ok: 0};
+const scr3 = st.screen([1.0, .78], (c, t, W, H) => { c.fillStyle = '#0d0f2e'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.5)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'right'; c.direction = 'rtl'; font(c, 700, H * .12);
+  const L = [['אדרנלין: 0', .25], ['קוד:', .5]];
+  L.forEach(([s, y], i) => { c.globalAlpha = Math.min(1, Math.max(0, CD.l - i)); c.fillStyle = '#c9cdf5'; c.fillText(s, W * .9, H * y); });
+  c.globalAlpha = Math.min(1, Math.max(0, CD.l - 2)); c.fillStyle = CD.ok > .5 ? '#8ea6ff' : '#fff'; font(c, 700, H * .15); c.fillText('לא ליפול!' + (CD.ok > .5 ? ' ✓' : ''), W * .84, H * .8);
+  c.globalAlpha = 1; if ((t * 2) % 1 < .5) { c.fillStyle = '#8ea6ff'; c.fillRect(W * .08, H * .72, W * .03, H * .1); }
+}, {px: 800, light: .5});
+scr3.mesh.position.set(X3 - .55, 1.75, -.55); scene.add(scr3.mesh);
+const dash3 = dashed(V(X3 - .55, 1.36, -.55), V(X3, 1.3, .02));
+
+// ---------- set 4 (x = -3.2): phone in a hand: "demo" button / remote control → the robot at the origin kicks ----------
+const X4 = -1.5; spot([X4 - .6, 3.2, 2.2], [X4, .9, .2], 20);
+const P = new THREE.Mesh(new THREE.BoxGeometry(.5, .9, .04), M(0x15173a, {roughness: .5})); P.position.set(X4, 1.0, .25); P.rotation.y = .25; P.castShadow = true; scene.add(P);
+const stand4 = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .55, 12), M(0x2a2d55)); stand4.position.set(X4, .28, .2); scene.add(stand4);
+const PH = {mode: 0, k: 0};
+const scr4 = st.screen([.44, .82], (c, t, W, H) => { c.fillStyle = '#f4f5fb'; c.fillRect(0, 0, W, H); c.textAlign = 'center'; c.direction = 'rtl';
+  c.fillStyle = '#12142e'; font(c, 700, W * .11); c.fillText(PH.mode ? 'שליטה מרחוק' : 'מצב הדגמה', W / 2, H * .14);
+  if (!PH.mode) { const p = .5 + .5 * Math.sin(t * 6); c.fillStyle = `rgba(142,166,255,${.6 + .4 * PH.k})`; c.beginPath(); c.arc(W / 2, H * .45, W * (.26 + .02 * p * PH.k), 0, 7); c.fill();
+    c.fillStyle = '#fff'; c.beginPath(); c.moveTo(W * .44, H * .38); c.lineTo(W * .44, H * .52); c.lineTo(W * .58, H * .45); c.fill(); c.fillStyle = '#12142e'; font(c, 700, W * .1); c.fillText('▶ בעיטה', W / 2, H * .72); }
+  else { c.strokeStyle = '#c9cdf5'; c.lineWidth = W * .02; for (const cx of [.3, .7]) { c.beginPath(); c.arc(W * cx, H * .5, W * .15, 0, 7); c.stroke(); }
+    c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(W * (.3 + .06 * Math.sin(t * 3)), H * (.5 + .04 * Math.cos(t * 3)), W * .07, 0, 7); c.fill(); c.beginPath(); c.arc(W * .7, H * (.5 - .07 * PH.k), W * .07, 0, 7); c.fill();
+    c.fillStyle = '#12142e'; font(c, 400, W * .08); c.fillText('בן אדם שולט', W / 2, H * .8); }
+}, {px: 700, light: .45});
+scr4.mesh.position.set(X4, 1.0, .275); scr4.mesh.rotation.y = .25; scene.add(scr4.mesh);
+const dash4 = dashed(V(X4 + .24, 1.0, .3), V(-.05, 1.35, 0));
+
+// ---------- poses ----------
+function push1(R, t, t0) { // shoved from the right (+x): leans, throws the left leg out to the side, recovers
+  const k = sm(t0, t0 + .25, t) * (1 - sm(t0 + .9, t0 + 1.5, t)); const step = sm(t0 + .15, t0 + .45, t) * (1 - sm(t0 + 1.0, t0 + 1.6, t));
+  if (R.J.pelvis) { R.J.pelvis.rotation.z = R.rest.pelvis[1].z + .12 * k - .05 * step; R.J.pelvis.position.x = R.rest.pelvis[0].x - .12 * step; }
+  if (R.J.hipL) R.J.hipL.rotation.z = R.rest.hipL[1].z - .45 * step; if (R.J.ankleL) R.J.ankleL.rotation.z = R.rest.ankleL[1].z + .35 * step;
+  if (R.J.hipR) R.J.hipR.rotation.z = R.rest.hipR[1].z + .1 * step;
+  if (R.J.shoulderL) R.J.shoulderL.rotation.z = R.rest.shoulderL[1].z - .9 * step; if (R.J.shoulderR) R.J.shoulderR.rotation.z = R.rest.shoulderR[1].z + .5 * step;
+  return step; }
+function kick(R, t, t0, t1) { // demo kick: turn to the man, raise the right leg forward
+  const k = win(t, t0, t1, .3); R.R.rotation.y = 0 + 1.0 * sm(t0 - .3, t0, t) * (1 - sm(t1 - .3, t1, t));
+  if (R.J.hipR) R.J.hipR.rotation.x = R.rest.hipR[1].x - 1.1 * k; if (R.J.kneeR) R.J.kneeR.rotation.x = R.rest.kneeR[1].x + .6 * k * (1 - .8 * Math.max(0, Math.sin((t - t0) * 6)));
+  if (R.J.shoulderL) R.J.shoulderL.rotation.x = R.rest.shoulderL[1].x - .5 * k; if (R.J.shoulderR) R.J.shoulderR.rotation.x = R.rest.shoulderR[1].x + .4 * k; }
+
+st.frame(t => {
+  R1.reset(); R1.R.rotation.y = 0;
+  // hook: first shove at t≈.4, leg goes out (looks like a kick at first glance)
+  const t0p = t < A[1] - .3 ? .2 : t < A[10] ? A[1] - .2 : A[10] + .25; // one shove at a time (each call sets the pose)
+  const stp = push1(R1, t, t0p); const step2 = t0p > A[10] ? stp : 0;
+  if (t > A[12] - .3) kick(R1, t, A[12] + .1, A[15] - .1);
+  // balance helpers during phrase 10-11
+  const bal = win(t, A[10], S[4] - .1, .3); ringM.opacity = .85 * bal; com.material.opacity = bal; comLine.material.opacity = bal;
+  const px = R1.J.pelvis ? R1.J.pelvis.getWorldPosition(V(0, 0, 0)) : V(0, .95, 0);
+  com.position.set(px.x, .95, px.z); comLine.geometry.setFromPoints([V(px.x, .95, px.z), V(px.x, .012, px.z)]); comLine.computeLineDistances();
+  const fl = R1.J.ankleL ? R1.J.ankleL.getWorldPosition(V(0, 0, 0)) : V(0, 0, 0); ring.position.set((fl.x + .1) / 2 + .0, .012, 0); ring.scale.setScalar(1 + 1.4 * step2);
+  // set 2: adrenaline rises, fight / flight
+  AD.k = sm(A[4] - .1, A[4] + .9, t); AD.fight = win(t, A[5] - .05, S[2] + .3, .2); AD.flight = sm(A[5] + .6, A[5] + .8, t); scr2.update(t); dash2.material.opacity = sm(A[3], A[3] + .3, t);
+  // set 3: shell fades, code lines type in, cpu pulses light blue
+  const xr = sm(S[2] + .1, A[7], t); shell3.forEach(q => q.material.opacity = 1 - .8 * xr);
+  CD.l = sm(A[6] - .1, A[6] + .4, t) + sm(A[7] - .1, A[7] + .3, t) + sm(A[9] - .2, A[9] + .1, t); CD.ok = sm(A[9] + .1, A[9] + .2, t); scr3.update(t);
+  dash3.material.opacity = sm(A[6] - .2, A[6] + .2, t);
+  const pulse = sm(A[7], A[7] + .3, t) * (.5 + .5 * Math.sin(t * 7)); cpuM.forEach(([m, c0]) => m.color.copy(c0).lerp(new THREE.Color(ACC), pulse));
+  R3.reset(); if (R3.J.head) R3.J.head.rotation.y = R3.rest.head[1].y + Math.sin(t * .8) * .15;
+  // set 4: phone: demo button (phrase 13), then remote sticks (phrase 14)
+  PH.mode = t > A[14] - .1 ? 1 : 0; PH.k = sm(A[13] + .2, A[13] + .5, t); scr4.update(t); dash4.material.opacity = win(t, A[13] + .2, A[15] + .3, .25);
+
+  // one world, continuous camera (like grouper): fly between sets, return to the store robot, breathing zoom
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const T1 = [.4, 1.25, 0], O1 = [-1.2, .75, 4.2];
+  const T2 = [X2 - .3, 1.45, -.2], O2 = [-1.0, .8, 3.4];
+  const T3 = [X3 - .3, 1.4, -.2], O3 = [-.9, .9, 2.6];
+  const T1f = [-.1, .45, .1], O1f = [-1.1, 1.5, 2.6];
+  const T4 = [-.6, 1.05, .1], O4 = [-.3, .7, 4.0];
+  const m = (a, b) => (a + b) / 2;
+  const [cp, ct] = camPath(t, [
+    sh(0, T1, O1, 1.0), sh(1.0, [.35, .9, 0], O1, .8), sh(m(1, S[1]), T1, O1, .95), sh(S[1] - .1, T1, O1, 1.15),                   // shove → leg close-up → out
+    sh(S[1] + .4, T2, O2, 1.15), sh(A[4] + .3, T2, O2, 1.0), sh(A[5] + .4, T2, O2, .95), sh(S[2] - .1, T2, O2, 1.15),             // person + adrenaline screen
+    sh(S[2] + .45, T3, O3, 1.2), sh(A[7], [X3 - .15, 1.35, 0], O3, .75), sh(A[9] + .2, T3, O3, .95), sh(S[3] - .1, T3, O3, 1.15),   // x-ray robot + code
+    sh(S[3] + .45, T1f, O1f, 1.15), sh(A[11], T1f, O1f, .8), sh(S[4] - .1, T1f, O1f, .95),                                       // back to the store robot: balance step at the feet
+    sh(S[4] + .4, T4, O4, 1.1), sh(A[13] + .4, T4, O4, .9), sh(A[14] + .2, T4, O4, .95), sh(S[5] - .1, T4, O4, 1.05),             // phone + robot kick
+    sh(S[5] + .5, T1, O1, 1.05), sh(END, T1, O1, 1.0)]);
+  scr2.mesh.lookAt(cp); scr3.mesh.lookAt(cp);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    if (t2 > A[11] - .1 && t2 < S[4]) { const [x, y] = st.proj(fl); st.callout(x - 120, Math.max(y - 380, 640), 'צעד לאיזון', x, y, win(t2, A[11] - .1, S[4])); }
+    if (t2 > A[13] && t2 < S[5]) { const [x, y] = st.proj(V(-.05, 1.35, 0)); st.callout(x + 120, Math.max(y - 360, 620), 'בן אדם', x, y, win(t2, A[13] + .1, S[5])); }
+  }};
+});
+st.ready();
+</script></body></html>
