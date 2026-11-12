@@ -20,6 +20,9 @@ Then, before sending Ziv the final TTS text, `git pull` and apply any new lines 
 - **Write like @grouper.explains:** spoken, direct Hebrew to the viewer ("אתכם", "תחשבו על זה"), a real story or everyday moment first, then the question, then the answer as a short cause→effect chain. Short punchy sentences, no lecture tone, no "אני ביטי".
 - Punctuation for pauses (docs/tts-punctuation.md) still applies.
 
+## Hooks first (Ziv 2026-11-12)
+Every new episode starts with **hook proposals**: after Ziv picks the topic, send 3–4 hook options (title on screen + first spoken line) and wait for his pick — only then write the full script. Hooks must be **explosive**: a shock fact, a number, a conflict or a "wait, what?" moment in the first 1–2 s, never a soft question or a definition.
+
 ## Preview = 2 frames (Ziv 2026-11-08, saves tokens)
 In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not 4.
 
