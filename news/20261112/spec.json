@@ -8,7 +8,24 @@
     "Google DeepMind: מוח AI חדש לרובוטים, 96% הצלחה בניסוי במרצדס",
     "Serve Robotics פתחה את רובוטי המשלוחים שלה למפתחים"
    ],
-   "scene": {"robot": false, "props": ["kitstreet"], "color": "purple", "cam": [0.6, 2.4, 8.6], "target": [0, 1.2, -1.2], "shift": 0.12}
+   "scene": {
+    "robot": false,
+    "props": [
+     "kitstreet"
+    ],
+    "color": "purple",
+    "cam": [
+     0.2,
+     2.0,
+     1.6
+    ],
+    "target": [
+     0.2,
+     1.0,
+     -5.0
+    ],
+    "shift": 0.12
+   }
   },
   {
    "type": "story",
@@ -18,7 +35,24 @@
    "title": "גוגל נתנה לרובוטים<br><span class=\"pill\">מוח</span> חדש",
    "text": "Google DeepMind הציגה את Gemini Robotics 2.5. לפי החברה, רובוט Apollo 2 של Apptronik ארז חלקי רכב במפעלי מרצדס-בנץ בהצלחה של 96% בניסוי. המודל מגיע קודם לשותפות, כמו Boston Dynamics.",
    "source": "Google DeepMind, SiliconANGLE, IoT News",
-   "scene": {"robot": false, "props": ["kitline"], "color": "cyan", "cam": [3.2, 2.2, 4.6], "target": [-0.4, 1.3, -1.6], "shift": 0.12}
+   "scene": {
+    "robot": false,
+    "props": [
+     "kitline"
+    ],
+    "color": "cyan",
+    "cam": [
+     3.9,
+     2.3,
+     3.7
+    ],
+    "target": [
+     0.1,
+     1.3,
+     -1.5
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -28,11 +62,37 @@
    "title": "רובוטי משלוחים<br>לכל <span class=\"pill\">מפתח</span>",
    "text": "Serve Robotics, שמפעילה רובוטי משלוחים על המדרכות, פתחה ממשק למפתחים עם סביבת ניסוי ורובוטים מדומים. לפי החברה, רובוטים אמיתיים רק באישורה, ובאזורים שבהם היא כבר פועלת.",
    "source": "Serve Robotics (GlobeNewswire)",
-   "scene": {"robot": false, "props": ["serveapi"], "color": "pink", "cam": [2.6, 1.5, 4.4], "target": [-0.2, 0.7, -1.0], "shift": 0.14}
+   "scene": {
+    "robot": false,
+    "props": [
+     "serveapi"
+    ],
+    "color": "pink",
+    "cam": [
+     0.2,
+     2.1,
+     3.0
+    ],
+    "target": [
+     0.1,
+     0.6,
+     -5.2
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "follow",
-   "scene": {"anim": "ThumbsUp", "color": "purple", "target": [0, 1.3, 0], "shift": 0.24}
+   "scene": {
+    "anim": "ThumbsUp",
+    "color": "purple",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
   }
  ]
 }

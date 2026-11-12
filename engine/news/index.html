@@ -1022,6 +1022,88 @@ for (const p of sc.props || []) {
     await ringDrone(2.6, 2.1, -2.2, -.6, 3.0);
     const sp = new THREE.SpotLight(0xffffff, 50, 18, .6, .5); sp.position.set(0, 7, 3); sp.target.position.set(0, .8, -2); scene.add(sp, sp.target);
     const key = new THREE.PointLight(0xffffff, 8, 12); key.position.set(3, 3, 5); scene.add(key); }
+  // ---------- 20261112 props (Gemini Robotics: humanoid kitting car parts at a car plant; Serve: sidewalk delivery bot + developer laptop + simulated bot; cover street) ----------
+  if (['kitline', 'serveapi', 'kitstreet'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const tote = (x, y, z, ry = 0, c = 0x2f6fd8, parent = scene) => { const t = new THREE.Group(), m = mat(c, .1, {roughness: .55, metalness: .05});
+    const b = new THREE.Mesh(new THREE.BoxGeometry(.6, .04, .4), m); b.position.y = .02; t.add(b);
+    for (const [w, d, px, pz] of [[.6, .03, 0, .185], [.6, .03, 0, -.185], [.03, .4, .285, 0], [.03, .4, -.285, 0]]) { const s = new THREE.Mesh(new THREE.BoxGeometry(w, .26, d), m); s.position.set(px, .13, pz); t.add(s); }
+    t.position.set(x, y, z); t.rotation.y = ry; parent.add(t); return t; };
+  const steelM = mat(0xa9aebb, .1, {roughness: .3, metalness: .85}), darkSteel = mat(0x4a4f5e, .1, {roughness: .4, metalness: .7});
+  const brakeDisc = (x, y, z, parent = scene, s = 1) => { const d = new THREE.Group(); const r = new THREE.Mesh(new THREE.CylinderGeometry(.14 * s, .14 * s, .025 * s, 32), steelM); d.add(r);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(.06 * s, .06 * s, .05 * s, 20), darkSteel); d.add(hub); d.position.set(x, y, z); parent.add(d); return d; };
+  const gear = (x, y, z, parent = scene, s = 1) => { const g = new THREE.Group(); const c = new THREE.Mesh(new THREE.CylinderGeometry(.08 * s, .08 * s, .04 * s, 24), darkSteel); g.add(c);
+    for (let k = 0; k < 12; k++) { const tth = new THREE.Mesh(new THREE.BoxGeometry(.03 * s, .04 * s, .03 * s), darkSteel); const a = k * Math.PI / 6; tth.position.set(Math.cos(a) * .09 * s, 0, Math.sin(a) * .09 * s); tth.rotation.y = -a; g.add(tth); }
+    g.position.set(x, y, z); parent.add(g); return g; };
+  const fillTote = (t, seed = 1) => { for (let k = 0; k < 4; k++) { const fn = (k + seed) % 2 ? brakeDisc : gear; const o = fn((k % 2 - .5) * .26, .1 + Math.floor(k / 2) * .05, (Math.floor(k / 2) - .5) * .14, t, .9); o.rotation.x = .2 * (k - 1.5); } };
+  // humanoid reaching forward with both hands (holding something in front of the chest)
+  const reachHumanoid = async (x, z, ry, opt = {}) => { const h = await lib('robots/humanoid', {x, y: opt.y ?? 0, z, ry});
+    const j = (n, ax, v) => { const o = h.getObjectByName(n); if (o) o.rotation[ax] = v; };
+    j('shoulderL', 'x', opt.sh ?? -1.05); j('shoulderR', 'x', opt.sh ?? -1.05); j('elbowL', 'x', opt.el ?? -.55); j('elbowR', 'x', opt.el ?? -.55);
+    j('shoulderL', 'z', .12); j('shoulderR', 'z', -.12); j('torso', 'x', opt.lean ?? .12); j('head', 'x', .25); return h; };
+  const handsPoint = (h, fwd = .55, up = 1.15) => { h.updateMatrixWorld(true); const a = h.getObjectByName('wristL'), b = h.getObjectByName('wristR');
+    if (a && b) { const pa = new THREE.Vector3(), pb = new THREE.Vector3(); a.getWorldPosition(pa); b.getWorldPosition(pb); return pa.add(pb).multiplyScalar(.5); }
+    return new THREE.Vector3(h.position.x, up, h.position.z + fwd); };
+  const carBody = async (x, z, ry, dim = .8) => { const c = await place('vehicles/car-sedan', {x, z, ry, h: 1.45, dim}); return c; };
+  const devLaptop = (x, y, z, ry = 0, s = 1) => { const lap = new THREE.Group(), dk = mat(0x1b1f38, .1, {roughness: .5});
+    const lb = new THREE.Mesh(new THREE.BoxGeometry(.6, .03, .42), mat(0xc9cede, .1, {metalness: .5})); lap.add(lb);
+    const tex = screenTex((g, w, h) => { g.fillStyle = '#0d1230'; g.fillRect(0, 0, w, h); g.font = 'bold 30px monospace'; g.textAlign = 'left';
+      const L = [['#ff5fd2', 'POST /deliveries'], ['#cfe0ff', '{'], ['#2ee6ff', '  "pickup": "cafe",'], ['#2ee6ff', '  "dropoff": "home",'], ['#ffa53a', '  "robot": "sim-01"'], ['#cfe0ff', '}'], ['#7dff9a', '200 OK  robot on the way']];
+      L.forEach(([c, t], k) => { g.fillStyle = c; g.fillText(t, 22, 44 + k * 40); }); }, 512, 320);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(.56, .36), new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .55, roughness: .5}));
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(.6, .4, .02), dk); lid.position.set(0, .2, -.21); lid.rotation.x = -.25; lap.add(lid);
+    scr.position.set(0, .2, -.199); scr.rotation.x = -.25; lap.add(scr);
+    lap.scale.setScalar(s); lap.position.set(x, y, z); lap.rotation.y = ry; scene.add(lap); return lap; };
+  const botScreen = (b, txt = 'בדרך אליך') => { const s = b.getObjectByName('screen'); if (!s) return; const tex = screenTex((g, w, h) => { g.fillStyle = '#0b1030'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#2ee6ff'; g.beginPath(); g.arc(w * .33, h * .42, 26, 0, 7); g.arc(w * .67, h * .42, 26, 0, 7); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 54px Rubik'; g.textAlign = 'center'; g.direction = 'rtl'; g.fillText(txt, w / 2, h * .85); }, 512, 256);
+    s.material = new THREE.MeshStandardMaterial({map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .6}); };
+  const ghostBot = async (x, z, ry) => { const b = await lib('robots/deliveryBot', {x, z, ry}); b.traverse(m => { if (!m.isMesh) return;
+      m.material = new THREE.MeshBasicMaterial({color: 0x2ee6ff, transparent: true, opacity: .42, depthWrite: false});
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry, 30), new THREE.LineBasicMaterial({color: 0x2ee6ff, transparent: true, opacity: .8})); m.add(e); }); return b; };
+  const cafeTable = (x, z) => { const t = new THREE.Group(), m = mat(0x2a2d3a, .1, {roughness: .5, metalness: .5});
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .03, 28), mat(0xd9d4c8, .1, {roughness: .6, metalness: 0})); top.position.y = .74; t.add(top);
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .72, 10), m); leg.position.y = .37; t.add(leg); const ft = new THREE.Mesh(new THREE.CylinderGeometry(.22, .25, .03, 20), m); t.add(ft);
+    t.position.set(x, .16, z); scene.add(t); return t; };
+
+  if (p === 'kitline') { // car plant: humanoid lifts a brake disc from the line into a blue kitting tote; car bodies on the assembly line behind
+    scene.fog = new THREE.FogExp2(0x070a24, 0.02); labFloor(0x343a56);
+    await place('buildings/factoryHall', {x: 1, z: -11, h: 9, dim: .7});
+    // floor lane markings
+    for (const zz of [-.2, -3.4]) { const l = new THREE.Mesh(new THREE.PlaneGeometry(20, .1), mat(0xf2d34a, .1)); l.rotation.x = -Math.PI / 2; l.position.set(0, .005, zz); scene.add(l); }
+    conveyor(-1.6, -1.8, 4.8, 0);
+    for (let k = 0; k < 4; k++) { const fn = k % 2 ? gear : brakeDisc; const o = fn(-3.4 + k * 1.1, .81, -1.8); }
+    // kitting cart with totes next to the robot
+    const cart = new THREE.Group(); const cm = mat(0x8a93b8, .1, {roughness: .35, metalness: .7});
+    for (const yy of [.35, .8]) { const sh = new THREE.Mesh(new THREE.BoxGeometry(1.4, .04, .7), cm); sh.position.y = yy; cart.add(sh); }
+    for (const [lx, lz] of [[-.68, -.33], [.68, -.33], [-.68, .33], [.68, .33]]) { const l = new THREE.Mesh(new THREE.BoxGeometry(.04, .9, .04), cm); l.position.set(lx, .45, lz); cart.add(l);
+      const w = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .04, 14), darkSteel); w.rotation.z = Math.PI / 2; w.position.set(lx, .06, lz); cart.add(w); }
+    cart.position.set(1.7, 0, -1.6); cart.rotation.y = -.15; scene.add(cart);
+    for (const [tx, ty, c, s] of [[-.34, .82, 0x2f6fd8, 1], [.34, .82, 0x2f6fd8, 2], [-.34, .37, 0x2f6fd8, 3], [.34, .37, 0x2f6fd8, 4]]) fillTote(tote(tx, ty, 0, 0, c, cart), s);
+    const h = await reachHumanoid(.55, -.75, -.9, {sh: -1.15, el: -.45});
+    const hp = handsPoint(h); brakeDisc(hp.x, hp.y, hp.z, scene, 1.1).rotation.x = Math.PI / 2 - .3;
+    // car bodies moving down the line behind (it's a car plant)
+    await carBody(-3.4, -7.6, Math.PI / 2, .75); await carBody(2.2, -7.8, Math.PI / 2, .7);
+    for (const xx of [-3.4, 2.2]) { const sk = new THREE.Mesh(new THREE.BoxGeometry(4.4, .25, 2.0), darkSteel); sk.position.set(xx, .12, -7.7); scene.add(sk); }
+    const sp = new THREE.SpotLight(0xffffff, 60, 18, .5, .5); sp.position.set(1, 7, 3); sp.target.position.set(.4, .9, -1.2); scene.add(sp, sp.target);
+    const key = new THREE.PointLight(0xffffff, 8, 12); key.position.set(3, 3, 4); scene.add(key); }
+
+  if (p === 'serveapi') { // sidewalk: real delivery bot rolling with its screen on; café table with a laptop sending an API call; a see-through 'simulated' bot = the sandbox
+    await dayStreet({blocks: ['Building3_Small', 'Building1_Small', 'Building4', 'Building2_Large'], bx: -14, bz: -12, trees: [-6.5, 6]});
+    const b = await lib('robots/deliveryBot', {x: .2, y: .16, z: -5.2, ry: -.5}); botScreen(b); const fl = b.getObjectByName('flag'); 
+    await ghostBot(-1.7, -5.5, -.5);
+    // dotted path from the ghost to the real bot (sandbox -> street)
+    for (let k = 1; k < 8; k++) { const d = new THREE.Mesh(new THREE.CircleGeometry(.05, 12), glowM(0x2ee6ff, .8)); d.rotation.x = -Math.PI / 2; d.position.set(-1.7 + k * .24, .17, -5.5 + k * .04); scene.add(d); }
+    cafeTable(2.0, -4.9); devLaptop(2.0, .92, -4.9, -.7, 1.15);
+    await place('home/chair', {x: 2.7, y: .16, z: -4.5, ry: -2.2, h: .95, dim: .7});
+    await place('street/TrafficLight', {x: -5, z: -4.2, h: 4.2, dim: .8});
+    const key = new THREE.PointLight(0xfff0dc, 10, 12); key.position.set(2, 3.2, -2); scene.add(key); }
+
+  if (p === 'kitstreet') { // cover: humanoid carrying a tote of car parts out of a factory gate; delivery bot rolling past on the sidewalk
+    await dayStreet({blocks: ['Building2_Large', 'Building4', 'Building1_Small', 'Building3_Big'], bx: -12, bz: -13, trees: [5.5]});
+    await place('buildings/factoryHall', {x: -6, z: -10, h: 7, dim: .65});
+    const h = await reachHumanoid(-1.3, -5.0, .45, {sh: -.85, el: -.75, lean: .05});
+    const hp = handsPoint(h); const t = tote(hp.x, hp.y - .18, hp.z + .05, .45); fillTote(t, 2);
+    const b = await lib('robots/deliveryBot', {x: 1.7, y: .16, z: -5.0, ry: -.9}); botScreen(b);
+    const key = new THREE.PointLight(0xfff0dc, 10, 12); key.position.set(1, 3.2, -1.5); scene.add(key); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
