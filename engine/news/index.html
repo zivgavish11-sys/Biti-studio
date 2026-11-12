@@ -28,6 +28,8 @@ ul{list-style:none;margin-top:6px}
 li{font-size:38px;line-height:1.35;color:#dfe5ff;margin:14px 0;padding-right:44px;position:relative}
 li:before{content:"";position:absolute;right:0;top:16px;width:20px;height:20px;border-radius:50%;background:var(--pink)}
 .src{margin-top:24px;font-size:26px;color:#8b93c9}
+.cta{display:inline-flex;align-items:center;gap:12px;margin-top:22px;font-size:30px;font-weight:700;color:#fff;background:rgba(46,230,255,.14);border:2px solid var(--cyan);padding:10px 24px;border-radius:30px}
+.cta b{color:var(--navy);background:var(--cyan);border-radius:12px;padding:0 12px}
 #swipe{position:absolute;bottom:42px;left:72px;font-size:28px;font-weight:700;color:var(--cyan);letter-spacing:1px;opacity:.9}
 .follow h1{font-size:84px;text-align:center}
 .follow p{text-align:center;font-size:40px}
@@ -73,7 +75,7 @@ if (S.type === 'follow') {
 } else {
   const num = S.type === 'story' ? `<div class="num">${storyIdx}/${nStories}</div>` : '';
   const body = S.bullets ? `<ul>${S.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : (S.text ? `<p>${S.text}</p>` : '');
-  $('bottom').innerHTML = `${num}<h1>${S.title}</h1>${body}${S.source ? `<div class="src">מקור: ${S.source}</div>` : ''}`;
+  $('bottom').innerHTML = `${num}<h1>${S.title}</h1>${body}${S.cta ? `<div class="cta">${S.cta}</div>` : ''}${S.source ? `<div class="src">מקור: ${S.source}</div>` : ''}`;
   $('swipe').textContent = i < N - 1 ? 'החליקו →' : '';
 }
 
