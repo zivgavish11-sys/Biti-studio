@@ -31,15 +31,12 @@ async function robot(o) { const m = await st.prop('robots/humanoid', {tint: 1, .
 // ---------- set 1 (origin): electronics store, a man shoves a humanoid sales robot ----------
 spot([-1.4, 3.6, 2.6], [.3, .8, 0], 26);
 const R1 = await robot({x: 0, z: 0});
-const man = await st.prop('people/character-male-b', {h: 1.55, x: .95, z: .12, ry: -Math.PI / 2, anim: 'idle'});
-man.schedule('interact-right', .0, .1); man.schedule('idle', .9, .3); man.schedule('interact-right', A[1] - .45, .2); man.schedule('idle', A[1] + .5, .3);
-man.schedule('interact-right', A[11] - .75, .2); man.schedule('idle', A[11] + .1, .3);
-man.schedule('idle', A[12] - .2, .2);
-// shelf behind (store) — matte blocks with boxes
-const shelfM = M(0x23265c), boxM = M(0x34387a), boxM2 = M(0x8ea6ff, {roughness: .6});
-for (let i = 0; i < 3; i++) { const sh = new THREE.Mesh(new THREE.BoxGeometry(2.6, .05, .5), shelfM); sh.position.set(.2, .45 + i * .55, -1.3); sh.receiveShadow = sh.castShadow = true; scene.add(sh);
-  for (let k = 0; k < 5; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.28 + r() * .15, .25 + r() * .15, .3), r() < .2 ? boxM2 : boxM); b.position.set(-.9 + k * .5 + r() * .1, .6 + i * .55, -1.3); b.castShadow = true; scene.add(b); } }
-const post = new THREE.Mesh(new THREE.BoxGeometry(.05, 1.7, .4), shelfM); post.position.set(-1.1, .85, -1.3); scene.add(post); const post2 = post.clone(); post2.position.x = 1.5; scene.add(post2);
+// people = smooth matte lilac mannequins (same sleek build as the robot, no face) — fits the hero look (Ziv 2026-11-12: no off-style characters)
+const pplM = M(0x8f93cf, {roughness: .8}), pplM2 = M(0x5a5e9e, {roughness: .8});
+async function mannequin(o) { const H = await robot(o); H.R.traverse(q => { if (q.isMesh) q.material = /visor|eye|chestLight|chestPlate/.test(q.name + (q.parent?.name || '')) ? pplM : (q.material.color.getHSL({}).l < .3 ? pplM2 : pplM); });
+  for (const n of ['visor', 'eyeL', 'eyeR', 'chestLight', 'chestPlate']) { const x = H.R.getObjectByName(n); if (x) x.visible = false; } return H; }
+const man = await mannequin({x: .95, z: .12, ry: -Math.PI / 2});
+const shove = t => Math.max(win(t, 0, .9, .25), win(t, A[1] - .5, A[1] + .4, .25), win(t, A[11] - .8, A[11] + .1, .25));
 // balance helpers (set 3 phrase 10-11): support ring on the floor + centre-of-mass dot
 const ringM = M(ACC, {roughness: .6, transparent: true, opacity: 0});
 const ring = new THREE.Mesh(new THREE.RingGeometry(.22, .26, 48), ringM); ring.rotation.x = -Math.PI / 2; ring.position.y = .012; scene.add(ring);
@@ -48,7 +45,7 @@ const comLine = dashed(V(0, .95, 0), V(0, .01, 0));
 
 // ---------- set 2 (x = 3.6): a person — blow → adrenaline → fight or flight ----------
 const X2 = 3.6; spot([X2 - 1.2, 3.4, 2.4], [X2, .8, 0], 24);
-const woman = await st.prop('people/character-female-b', {h: 1.66, x: X2, z: 0, ry: .25, anim: 'idle'});
+const woman = await mannequin({x: X2, z: 0, ry: .25});
 const AD = {k: 0, fight: 0, flight: 0};
 const scr2 = st.screen([.95, .62], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.5)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
   c.textAlign = 'right'; c.direction = 'rtl'; c.fillStyle = '#fff'; font(c, 700, H * .15); c.fillText('אדרנלין', W * .93, H * .22);
@@ -75,13 +72,12 @@ const scr3 = st.screen([1.0, .78], (c, t, W, H) => { c.fillStyle = '#0d0f2e'; c.
   c.globalAlpha = Math.min(1, Math.max(0, CD.l - 2)); c.fillStyle = CD.ok > .5 ? '#8ea6ff' : '#fff'; font(c, 700, H * .15); c.fillText('לא ליפול!' + (CD.ok > .5 ? ' ✓' : ''), W * .84, H * .8);
   c.globalAlpha = 1; if ((t * 2) % 1 < .5) { c.fillStyle = '#8ea6ff'; c.fillRect(W * .08, H * .72, W * .03, H * .1); }
 }, {px: 800, light: .5});
-scr3.mesh.position.set(X3 - .55, 1.75, -.55); scene.add(scr3.mesh);
-const dash3 = dashed(V(X3 - .55, 1.36, -.55), V(X3, 1.3, .02));
+scr3.mesh.position.set(X3 + .85, 1.75, -.2); scene.add(scr3.mesh);
+const dash3 = dashed(V(X3 + .85, 1.36, -.2), V(X3, 1.3, .02));
 
 // ---------- set 4 (x = -3.2): phone in a hand: "demo" button / remote control → the robot at the origin kicks ----------
 const X4 = -1.5; spot([X4 - .6, 3.2, 2.2], [X4, .9, .2], 20);
 const P = new THREE.Mesh(new THREE.BoxGeometry(.5, .9, .04), M(0x15173a, {roughness: .5})); P.position.set(X4, 1.0, .25); P.rotation.y = .25; P.castShadow = true; scene.add(P);
-const stand4 = new THREE.Mesh(new THREE.CylinderGeometry(.03, .03, .55, 12), M(0x2a2d55)); stand4.position.set(X4, .28, .2); scene.add(stand4);
 const PH = {mode: 0, k: 0};
 const scr4 = st.screen([.44, .82], (c, t, W, H) => { c.fillStyle = '#f4f5fb'; c.fillRect(0, 0, W, H); c.textAlign = 'center'; c.direction = 'rtl';
   c.fillStyle = '#12142e'; font(c, 700, W * .11); c.fillText(PH.mode ? 'שליטה מרחוק' : 'מצב הדגמה', W / 2, H * .14);
@@ -94,6 +90,7 @@ const scr4 = st.screen([.44, .82], (c, t, W, H) => { c.fillStyle = '#f4f5fb'; c.
 scr4.mesh.position.set(X4, 1.0, .275); scr4.mesh.rotation.y = .25; scene.add(scr4.mesh);
 const dash4 = dashed(V(X4 + .24, 1.0, .3), V(-.05, 1.35, 0));
 
+// hero look = monochrome indigo world: people become matte lilac mannequins (no Kenney orange/brown skin). No background props unless the script needs a fitting set (Ziv 2026-11-12)
 // ---------- poses ----------
 function push1(R, t, t0) { // shoved from the right (+x): leans, throws the left leg out to the side, recovers
   const k = sm(t0, t0 + .25, t) * (1 - sm(t0 + .9, t0 + 1.5, t)); const step = sm(t0 + .15, t0 + .45, t) * (1 - sm(t0 + 1.0, t0 + 1.6, t));
@@ -109,6 +106,10 @@ function kick(R, t, t0, t1) { // demo kick: turn to the man, raise the right leg
 
 st.frame(t => {
   R1.reset(); R1.R.rotation.y = 0;
+  man.reset(); const sv = shove(t); for (const n of ['shoulderL', 'shoulderR']) if (man.J[n]) man.J[n].rotation.x = man.rest[n][1].x - 1.35 * sv; for (const n of ['elbowL', 'elbowR']) if (man.J[n]) man.J[n].rotation.x = man.rest[n][1].x - .35 * (1 - sv) * sv * 4;
+  man.R.position.x = .95 - .12 * sv; if (man.J.torso) man.J.torso.rotation.x = man.rest.torso[1].x + .12 * sv;
+  woman.reset(); if (woman.J.head) woman.J.head.rotation.y = woman.rest.head[1].y + Math.sin(t * 1.7) * .25 * sm(A[5], A[5] + .3, t);
+  if (woman.J.torso) woman.J.torso.rotation.x = woman.rest.torso[1].x + .04 * Math.sin(t * 9) * sm(A[4], A[4] + .5, t);
   // hook: first shove at t≈.4, leg goes out (looks like a kick at first glance)
   const t0p = t < A[1] - .3 ? .2 : t < A[10] ? A[1] - .2 : A[11] - .45; // one shove at a time (each call sets the pose)
   const stp = push1(R1, t, t0p); const step2 = t0p > A[10] ? stp : 0;
@@ -133,14 +134,14 @@ st.frame(t => {
   const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
   const T1 = [.4, 1.25, 0], O1 = [-1.2, .75, 4.2];
   const T2 = [X2 - .3, 1.45, -.2], O2 = [-1.0, .8, 3.4];
-  const T3 = [X3 - .3, 1.4, -.2], O3 = [-.9, .9, 2.6];
+  const T3 = [X3 + .3, 1.4, -.1], O3 = [-.9, .9, 2.6];
   const T1f = [-.1, .75, .1], O1f = [-1.2, 1.7, 3.6];
-  const T4 = [-.6, 1.05, .1], O4 = [-.3, .7, 4.0];
+  const T4 = [-.25, 1.0, .1], O4 = [-.3, .75, 5.0];
   const m = (a, b) => (a + b) / 2;
   const [cp, ct] = camPath(t, [
-    sh(0, T1, O1, 1.0), sh(1.0, [.35, .9, 0], O1, .8), sh(m(1, S[1]), T1, O1, .95), sh(S[1] - .1, T1, O1, 1.15),                   // shove → leg close-up → out
+    sh(0, T1, O1, 1.0), sh(1.0, [.35, 1.1, 0], O1, .92), sh(m(1, S[1]), T1, O1, .95), sh(S[1] - .1, T1, O1, 1.15),                   // shove → leg close-up → out
     sh(S[1] + .4, T2, O2, 1.15), sh(A[4] + .3, T2, O2, 1.0), sh(A[5] + .4, T2, O2, .95), sh(S[2] - .1, T2, O2, 1.15),             // person + adrenaline screen
-    sh(S[2] + .45, T3, O3, 1.2), sh(A[7], [X3 - .15, 1.35, 0], O3, .75), sh(A[9] + .2, T3, O3, .95), sh(S[3] - .1, T3, O3, 1.15),   // x-ray robot + code
+    sh(S[2] + .45, T3, O3, 1.2), sh(A[7], [X3 + .35, 1.45, 0], O3, 1.0), sh(A[9] + .2, T3, O3, .95), sh(S[3] - .1, T3, O3, 1.15),   // x-ray robot + code
     sh(S[3] + .45, T1f, O1f, 1.15), sh(A[11], T1f, O1f, .8), sh(S[4] - .1, T1f, O1f, .95),                                       // back to the store robot: balance step at the feet
     sh(S[4] + .4, T4, O4, 1.1), sh(A[13] + .4, T4, O4, .9), sh(A[14] + .2, T4, O4, .95), sh(S[5] - .1, T4, O4, 1.05),             // phone + robot kick
     sh(S[5] + .5, T1, O1, 1.05), sh(END, T1, O1, 1.0)]);
