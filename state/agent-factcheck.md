@@ -25,3 +25,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-12 IL: fired for ep012-pushback script re-check. Unchanged since my 06:20 UTC OK (d5b4f63) → OK, quiet.
 - 2026-11-12 IL: fired with no item text → latest commits ep012-pushback (hook 1 title 918d8db, framing/timing). Only text change = hook "דחפו רובוט... והוא החזיר בעיטה?!" — question form, consistent with verified reports → OK line in inbox/video, quiet.
 - 2026-11-12 09:20 UTC: fired with no item text → checked latest commit ep012 caption draft (7ed1e59, posts 13.11 18:00 IL, >12 h). Russia store Sept OK; REK line attributed teleop to the company — only reporters say it → softening in inbox/video, quiet.
+- 2026-11-12 ~09:25 UTC: fired for ep012 caption deep-facts + hook. Unchanged since my check → same single fix (REK attribution), rest OK, posts 13.11 >12 h → quiet.
