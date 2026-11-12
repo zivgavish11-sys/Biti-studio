@@ -52,3 +52,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-12 (media, Ziv approved): carousels use one fitting set per story type (factoryHall / street facades / hero stage / farm) instead of a generic city. docs/agents/news.md → news inbox.
 - 2026-11-12 Ziv: no filler boxes/background blocks — a fitting set or none; no off-style characters (people = lilac mannequins in hero); always grouper style (docs/agents/video.md Visual rules).
 - 2026-11-12 Ziv: from ep013, every episode starts with 3–4 explosive hook proposals for Ziv to pick before the script (docs/agents/video.md).
+- 2026-11-12 Ziv: voice speed-up 1.15× instead of 1.25× (1.25 too fast). From ep012.

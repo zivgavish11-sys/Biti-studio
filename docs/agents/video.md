@@ -48,7 +48,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - **Show it, don't say it.** The object is see-through (x-ray shell); the parts that matter glow as the narration reaches them. The object stays in frame the whole episode; the camera moves around it and zooms in.
 - **One twist** that is the reason to send it (e.g. "בכוונה!", "דרך האקווריום"), placed at the re-hook or the payoff.
 - **12-year-old test** before sending Ziv the script: could a 12-year-old explain it back to a friend after one viewing? If not, cut facts until yes. Say in one line to Ziv that the script passed it.
-- 30–45 s final length. At the 1.25× speed-up that is about **70–95 Hebrew words**.
+- 30–45 s final length. At the 1.15× speed-up (Ziv 2026-11-12: 1.25 was too fast) that is about **65–85 Hebrew words**.
 - **SHORT format (Ziv 2026-11-06, from ep007 on, test phase): 15–20 s ≈ 35–45 Hebrew words** — fact → question → answer (2–3 short lines) → wow fact → closing. No re-hook line needed; one chip per beat. First short posts Sun 2026-11-08 18:00; one post per day at 18:00; then analytics compares long (ep002–ep006) vs short.
 - Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
 - Offer Ziv 2 hook variants with the script; he picks one.
@@ -61,7 +61,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - Tell him: TTSMaker, the female voice, **normal speed**, send back the mp3.
 
 ### 3) Build (after the recording arrives)
-1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.25` → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
+1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.15` (Ziv 2026-11-12: 1.15, not 1.25) → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
    Check the printed list: phrase times must look sane (no phrase longer than its words justify). If Ziv's recording differs from the script,
    fix the words in timeline.json so captions match the voice exactly.
 2. Copy `episodes/_template/` → design the episode in `index.html` (see "Visual rules"). Reference episode: `episodes/ep002-walk/` (classic look; ep001-car is standalone, old neon style).
