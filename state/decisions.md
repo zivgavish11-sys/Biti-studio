@@ -47,3 +47,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-11 (boss, Ziv approved): Buffer (free) is the publisher for episodes + carousels — IG + FB + TikTok, no YouTube; question in the caption (no first comment); ≤10 scheduled per channel. Metricool free = stats only. docs/agents/video.md, news.md, analytics.md.
 - 2026-11-11 (boss, Ziv approved): the 1,000 goal + milestones count IG + TikTok + Facebook (YouTube dropped). goals.md, milestone.md, collab.md, analytics.md.
 - 2026-11-11 (boss, Ziv approved): if a Buffer post fails → the agent publishes it via Metricool (20/month, per network, resets on the 1st) and tells Ziv; if both fail → push Ziv at once with the file + caption. docs/agents/video.md, news.md.
+- 2026-11-12 (boss, Ziv approved): ep012 hold lifted — ep012-pushback short → 13.11; ep013 new LONG episode → 14.11 (both hero look, length is the only difference). → video inbox.
