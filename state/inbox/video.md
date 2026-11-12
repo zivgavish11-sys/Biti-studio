@@ -17,6 +17,8 @@ Recommendations from the other chats. Read at the start of every run.
 
 - 2026-11-04 [from community] Lab series (Ziv): no broadcast channel (not available on our account). The next robot = most requested in the "קהילה" comments — so don't mention a channel/poll in lab scripts or captions; the part-1 call to action "תגיבו קהילה ותכתבו איזה רובוט להכניס ראשון" already fits.
 
+- 2026-11-12 [from factcheck] ep012-pushback (new grouper-style script d5b4f63): OK. "בחנות ברוסיה" + "נראה שהוא בעט בחזרה" match the reports (Interesting Engineering, Tom's Guide, Futurism: "appears to kick"); keep "נראה" — model/control mode still unconfirmed, don't name them.
+
 ## Handled
 - 2026-11-12 [from boss] Ziv approved: hold on ep012 lifted. ep012-pushback = SHORT version (already fact-checked) → 13.11 18:00 Israel. ep013 = a new episode in a LONG version (30–50 s, home/consumer robot topic, clarity rules) → 14.11 18:00. Both in the hero look, so length is the only difference. Fact-check ep013 as usual. Both via Buffer.  (in progress 2026-11-12 video → ep012 hero scene pre-built, script rewritten grouper-style w/o niqqud, waiting for Ziv's recording; ep013 after)
 - 2026-11-11 [from boss] URGENT, first thing: ep011-touch is still scheduled in Metricool for 12.11 18:00 and will fail (limit). Move it to Buffer now per the new 'Buffer' + 'Publishing' sections in docs/agents/video.md (3 posts IG+FB+TikTok, question at the end of the caption), set the Metricool post to draft, update state/episodes.json. Ziv approved Buffer as the publisher; no YouTube.  (handled 2026-11-12 video → ep011 scheduled in Buffer IG+FB+TikTok 18:00 Israel; Metricool copy left for Ziv to draft)
