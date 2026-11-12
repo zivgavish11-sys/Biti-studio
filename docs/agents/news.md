@@ -48,4 +48,9 @@ Followers come from Biti episodes / screen-recording reels (1 reel a day, 18:00 
 
 ### Fallback if Buffer fails (Ziv 2026-11-11)
 If a Buffer `create_post` returns an error or the post shows `status:"error"`: publish via Metricool instead — `createScheduledPost`, blogId 7444571, same time `Asia/Jerusalem`, only the failed networks, `instagramData:{type:"POST"}`, `facebookData:{type:"POST"}`, `tiktokData:{privacyOption:"PUBLIC_TO_EVERYONE", photoCoverIndex:0, title:"<cover title>"}`, media = slide URLs, text = caption. Metricool free = 20 published posts per calendar month, each network counts (resets on the 1st). Tell Ziv in one line. If Metricool also fails, push-notify Ziv at once with the slides + caption for a manual upload.
-Caption format: hook line → one short line per story (emoji + fact) → question → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
+Caption format: hook line → one short line per story (emoji + fact) → comment CTA (instead of the question): `איזו חדשה הכי מעניינת אתכם? כתבו את המספר שלה בתגובות ואשלח לכם את הכתבה המלאה בפרטי` → `🤖 חדשות רובוטים בעברית כל יום, עקבו @robotics.israel` → sources → 3–5 hashtags.
+
+### Comment for the full story (Ziv 2026-11-12, from 13.11)
+- Every story slide gets `"cta": "רוצים את הכתבה המלאה? כתבו <b>N</b> בתגובות"` (N = story number; no emoji — the font can't draw it). The template shows it above the source.
+- Write `news/YYYYMMDD/dms.txt`: one DM per story, ready to copy, plain Hebrew: title line (emoji + name + "הכתבה המלאה") → what happened (with date) → why it matters → the catch (who claims the numbers) → what's next → official source URL. 5–6 short lines, verified facts only, reports as reports.
+- Fire the fact-checker on spec + caption + dms.txt together. Send Ziv the DMs with the slides as plain RTL text. Ziv sends them himself and replies publicly `שלחתי לך בפרטי`. Never promise a "full video".
