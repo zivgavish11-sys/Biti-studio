@@ -6,7 +6,9 @@ Talk to Ziv in Hebrew only, short, one step at a time, plain RTL text. He is tok
 
 ## Update 2026-11-11 (Ziv approved)
 - Metricool free = 20 published posts/month (per network, resets on the 1st) → ran out 11.11. Publisher is now **Buffer free** (IG+FB+TikTok, no monthly cap, ≤10 queued per channel, ~3,000 API requests/month, no first comment). Fallback: Metricool, then push Ziv. YouTube dropped; goal = IG+TikTok+FB.
-- Followers 11.11: 30. Open with Ziv: release ep012-pushback on 13.11 (no episode scheduled after ep011)?
+- Followers 11.11: 30. Buffer verified end to end (ep010 sent on all 3; carousel 12.11 + ep011 scheduled).
+- 2026-11-12 Ziv approved: ep012-pushback SHORT → 13.11, new ep013 LONG → 14.11 (both hero). ep012 has only script.txt (fact-checked) — not built yet. fire_trigger on the reels task was blocked in the scheduled run; Ziv to tap "Run now" or the reels agent starts at its 13.11 run. If too late: ep012 → 14.11, ep013 → 15.11.
+- Ziv wants the boss as a regular chat (live approvals) from now on; the weekly scheduled task stays for the review.
 
 ## Where things stand (2026-11-08)
 - Followers ~26 (IG 7, TikTok 19). Goal: 1,000 by Feb 2027 (lowered from 5,000). Long play: community now, income when consumer robots sell.
