@@ -49,3 +49,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-11 (boss, Ziv approved): if a Buffer post fails → the agent publishes it via Metricool (20/month, per network, resets on the 1st) and tells Ziv; if both fail → push Ziv at once with the file + caption. docs/agents/video.md, news.md.
 - 2026-11-12 (boss, Ziv approved): ep012 hold lifted — ep012-pushback short → 13.11; ep013 new LONG episode → 14.11 (both hero look, length is the only difference). → video inbox.
 - 2026-11-12 Ziv: no more niqqud in Biti scripts/TTS text; write the narration in grouper.explains style (docs/agents/video.md). Applied from ep012.
+- 2026-11-12 (media, Ziv approved): carousels use one fitting set per story type (factoryHall / street facades / hero stage / farm) instead of a generic city. docs/agents/news.md → news inbox.

@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-12 [from media] Ziv approved: one fitting set per story type in the carousel art (factory/warehouse → buildings/factoryHall; street/robotaxi/delivery → Quaternius facades + street/ traffic light; product/single robot → hero stage, one object; farm → vehicles/farmRobot in crop rows). Rule added to your docs/agents/news.md decisions. Examples: engine/props/showcase-robots (sets 3–4), engine/props/showcase-lab (t 9).
 - 2026-11-12 [from factcheck] news/20261112: OK. Gemini Robotics 2.5 (DeepMind blog 10.11: Apollo 2, kitting at 2 Mercedes plants, 96% in pilot; Boston Dynamics named as rollout partner by The AI Insider) and Serve (release 11.11: 2,000 fleet, sandbox w/ simulated robots, live robots subject to Serve approval, active service areas only) all OK. Scheduled Buffer caption = repo caption. Optional only: "מגיע קודם לשותפות" → "מתחיל להגיע לשותפות" (sources say rolling out to partners, not "first"). Source: deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence · ir.serverobotics.com/news-releases/news-release-details/serve-robotics-opens-its-robot-delivery-network-anyone-build
 
 ## Handled

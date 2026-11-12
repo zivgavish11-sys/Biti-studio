@@ -29,13 +29,14 @@ Test frame: engine/props/workshop (render.py frames engine/props/workshop 1).
 1. ep011-touch: swap the capsule hand + box gripper for body/hand-right + body/gripper (before/after: engine/props/showcase-touch vs ep011 t 8/16).
 2. "17,000 receptors" shot: receptor dots glued to the real hand's skin (dense cyan fingertips, sparse orange palm) instead of the floating dot cloud.
 
-## Pending proposals (sent to Ziv 2026-11-08, run 4) — waiting for his OK
+## Proposals sent 2026-11-08 (run 4) — 1 ✗ (2026-11-12, not needed now), 2 ✓ (2026-11-12), 3 still open
 1. Our own Biti: replace the yellow RobotExpressive stand-in with a Biti built from the new robots/humanoid kit (white shell, dark visor face, cyan eyes/stripe = brand colours), as a lasting brand asset.
 2. Carousels: one fitting "set" per story type instead of a generic city — factoryHall for factory/warehouse stories, real facades + traffic light for robotaxi/street stories, hero stage with one hero object for product/price stories.
 3. Hero episodes: one x-ray moment per episode (shell turns see-through, insides visible — servo gears, humanoid battery), matte, no glow (re-raises the 2026-11-04 x-ray idea).
 Image sent: engine/props/showcase-robots (sheet of t 1,5,9,13).
 
-## Pending proposals (sent to Ziv 2026-11-12, run 5) — waiting for his OK
+## Proposals sent 2026-11-12 (run 5) — Ziv answered the same day
+- Answers: 1 ✗ lab series stopped (it didn't work); Ziv may try a similar series again ~2026-11-20 — the lab kit stays in the library, don't push it before then · 2 ✗ own Biti not needed for now (don't re-ask) · 3 ✓ carousel set per story type → docs/agents/news.md.
 1. Lab series: one fixed lab set (labRoom + workbench + printer + charging wall) in every lab part = a recognisable "home" for Biti; followers pick the names on the charging-wall plates (comment hook).
 2. Re-ask (open since 2026-11-08): our own Biti built from robots/humanoid (white shell, dark visor, cyan eyes).
 3. Re-ask (open since 2026-11-08): carousels use one fitting set per story type (factoryHall / street / hero stage) instead of a generic city.
