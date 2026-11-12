@@ -8,7 +8,7 @@
 import {studio, THREE, rng, sm, win, camPath, V} from '/engine/lib/core.js';
 const st = await studio({
   look: 'hero', episode: 12, fog: .03,
-  keys: ['בעט', 'להחזיר', 'אדרנלין', 'קוד', 'ליפול', 'רגל', 'הדגמה', 'מרחוק'],
+  keys: ['בעיטה', 'בעט', 'להחזיר', 'אדרנלין', 'קוד', 'ליפול', 'רגל', 'הדגמה', 'מרחוק'],
   hook: ['דחפו רובוט...', 'והוא החזיר <span class="pill">בעיטה</span>?!'],
   // S: 0 store push | 1 human: adrenaline | 2 robot x-ray: code | 3 push → balance step | 4 phone: demo / remote | 5 follow
   scenes: (A, B, END) => [0, A[3] - .25, A[6] - .25, A[10] - .25, A[12] - .25, A[15] - .25, END],
