@@ -1,0 +1,168 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP013-vacuumcam — LONG + hero look. One object: a robot vacuum with a front camera. Mechanism: camera → photos sent to the company → people label them → those people leaked them.
+// Phrases: 0 צילם בשירותים | 1 קבוצה סגורה | 2 איך? | 3 מצלמה מקדימה | 4 גרביים וכבלים | 5 ללמד מה זה גרב | 6 2020 | 7 שואבי ניסוי | 8 נשלחו לחברה
+//          9 עובדים שסימנו | 10 כבל | 11 גרב | 12 בן אדם | 13 טוויסט | 14 מי שהדליף | 15 לא האקר | 16 העובדים | 17 הסכמה | 18-19 לא הבינו
+//          20-21 לפני שקונים | 22 רק לייזר | 23 בלי מצלמה | 24-25 outro card (Ziv 2026-11-13)
+import {studio, THREE, rng, sm, win, camPath, V} from '/engine/lib/core.js';
+const st = await studio({
+  look: 'hero', episode: 13, fog: .03, outro: 'card',
+  keys: ['שירותים', 'סגורה', 'מצלמה', 'ללמד', 'לחברה', 'סימנו', 'הטוויסט', 'האקר', 'העובדים', 'הסכמה', 'לייזר', 'בכלל'],
+  hookEnd: 5.3, hook: ['השואב צילם אותה', 'ב<span class="pill">שירותים</span>'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .75, ...o});
+const ACC = st.HERO_ACC;
+st.stage({r: 160, grid: 0, spot: null});
+const spot = (p, tg, pw = 22, reach = 9) => { const s = new THREE.SpotLight(0xffffff, pw, reach, .55, .7); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const dashed = (a, b) => { const g = new THREE.BufferGeometry().setFromPoints([a, b]); const l = new THREE.Line(g, new THREE.LineDashedMaterial({color: 0xffffff, dashSize: .06, gapSize: .05, transparent: true, opacity: 0})); l.computeLineDistances(); scene.add(l); return l; };
+const font = (c, w, s) => c.font = `${w} ${s}px Rubik`;
+const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+// abstract "bathroom photo" (no person, ever): tiles + toilet line art + a pixelated blur block
+function photo(c, x, y, w, h, blur = 1) {
+  c.save(); rr(c, x, y, w, h, w * .06); c.clip(); c.fillStyle = '#2a2d62'; c.fillRect(x, y, w, h);
+  c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = 2; for (let i = 1; i < 6; i++) { c.beginPath(); c.moveTo(x + w * i / 6, y); c.lineTo(x + w * i / 6, y + h * .62); c.stroke(); c.beginPath(); c.moveTo(x, y + h * .62 * i / 6); c.lineTo(x + w, y + h * .62 * i / 6); c.stroke(); }
+  c.fillStyle = '#1c1f4a'; c.fillRect(x, y + h * .62, w, h * .38);
+  c.fillStyle = '#d9dcf5'; rr(c, x + w * .18, y + h * .30, w * .22, h * .36, w * .03); c.fill(); rr(c, x + w * .12, y + h * .56, w * .40, h * .14, w * .05); c.fill();
+  if (blur) { for (let i = 0; i < 4; i++) for (let j = 0; j < 5; j++) { c.fillStyle = `rgba(${150 + 20 * ((i + j) % 3)},${150 + 15 * (j % 2)},210,${.85 * blur})`; c.fillRect(x + w * (.5 + i * .09), y + h * (.22 + j * .09), w * .09, h * .09); } }
+  c.restore(); }
+
+// ---------- set 1 (origin): bathroom floor, the robot vacuum (hero object, x-ray) ----------
+spot([-1.0, 3.6, 2.4], [0, .2, 0], 26);
+const tiles = new THREE.Mesh(new THREE.PlaneGeometry(6, 4.4), st.screen([6, 4.4], (c, t, W, H) => { c.fillStyle = '#23265a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(255,255,255,.07)'; c.lineWidth = 3; for (let i = 0; i <= 20; i++) { c.beginPath(); c.moveTo(W * i / 20, 0); c.lineTo(W * i / 20, H); c.stroke(); } for (let j = 0; j <= 15; j++) { c.beginPath(); c.moveTo(0, H * j / 15); c.lineTo(W, H * j / 15); c.stroke(); } const g = c.createRadialGradient(W / 2, H / 2, W * .15, W / 2, H / 2, W * .55); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(10,12,40,1)'); c.fillStyle = g; c.fillRect(0, 0, W, H); }, {px: 900, light: 0}).mesh.material);
+tiles.rotation.x = -Math.PI / 2; tiles.position.set(-.2, .004, -.4); tiles.receiveShadow = true; scene.add(tiles);
+await st.prop('home/toilet', {x: -1.15, z: -1.05, h: 1.0, tint: 1, ry: .35});
+const vac = (await st.prop('home/robotVacuum', {x: 0, z: 0, tint: 1})).object; vac.scale.multiplyScalar(2.4); vac.rotation.y = -.5;
+const shellM = []; vac.traverse(q => { if (q.isMesh && /shell/i.test(q.name + (q.parent?.name || ''))) { q.material = q.material.clone(); q.material.transparent = true; shellM.push(q.material); } });
+const lidar = vac.getObjectByName('lidar'), brush = vac.getObjectByName('brush');
+// front camera (added): dark lens + light-blue ring on the bumper, in vacuum local space (front = +z after test)
+const cam0 = new THREE.Group(); const lens = new THREE.Mesh(new THREE.CylinderGeometry(.018, .018, .02, 24), M(0x05060f, {roughness: .2}));
+lens.rotation.x = Math.PI / 2; const lensRingM = M(ACC, {roughness: .5}); const lensRing = new THREE.Mesh(new THREE.TorusGeometry(.022, .005, 10, 28), lensRingM);
+cam0.add(lens, lensRing); cam0.position.set(0, .07, .172); vac.add(cam0);
+const camWorld = () => cam0.getWorldPosition(V(0, 0, 0));
+// view cone on the floor in front of the vacuum
+const coneM = new THREE.MeshBasicMaterial({color: ACC, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false});
+const coneG = new THREE.BufferGeometry().setFromPoints([V(0, .02, .17), V(-.55, .006, 1.25), V(.55, .006, 1.25)]); const cone = new THREE.Mesh(coneG, coneM); vac.add(cone);
+// lidar rays (end): a ring of short dashed spokes around the turret
+const rays = new THREE.Group(); const rayM = new THREE.LineBasicMaterial({color: ACC, transparent: true, opacity: 0});
+for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; rays.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(Math.cos(a) * .06, 0, Math.sin(a) * .06), V(Math.cos(a) * .6, 0, Math.sin(a) * .6)]), rayM)); }
+rays.position.set(0, .115, 0); vac.add(rays);
+// sock + cable on the floor (what the camera must recognise)
+const sock = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(0, 0, 0), V(.14, 0, .02), V(.22, 0, .1), V(.23, 0, .2)]), 24, .045, 12), M(0xc9cdf5, {roughness: .95}));
+sock.position.set(.15, .045, 1.0); sock.rotation.y = .4; sock.castShadow = true; scene.add(sock);
+const cable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(-1.1, 0, .6), V(-.7, 0, .95), V(-.35, 0, .75), V(-.1, 0, 1.15), V(-.3, 0, 1.5)]), 60, .015, 8), M(0x0e0f22, {roughness: .5}));
+cable.position.y = .016; cable.castShadow = true; scene.add(cable);
+
+// floating screen over the vacuum (photo → "?" → consent → laser-only), joined by a dashed line
+const SC = {mode: 0, k: 0, q: 0, sign: 0, doubt: 0};
+const scr1 = st.screen([.95, .72], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.5)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'center'; c.direction = 'rtl';
+  if (SC.mode === 0) { photo(c, W * .08, H * .08, W * .84, H * .72, 1); c.fillStyle = '#fff'; font(c, 700, H * .1); c.fillText('📷 צולם', W / 2, H * .93); }
+  else if (SC.mode === 1) { photo(c, W * .08, H * .08, W * .84, H * .72, 0); c.fillStyle = '#fff'; font(c, 700, H * .26); c.globalAlpha = SC.q; c.fillText('?', W * .7, H * .6); c.globalAlpha = 1; font(c, 700, H * .1); c.fillText('מה זה?', W / 2, H * .93); }
+  else if (SC.mode === 2) { c.fillStyle = '#f4f5fb'; rr(c, W * .2, H * .08, W * .6, H * .84, 18); c.fill(); c.fillStyle = '#12142e'; font(c, 700, H * .085); c.fillText('טופס הסכמה', W / 2, H * .2);
+    c.fillStyle = '#c9cdf5'; for (let i = 0; i < 5; i++) c.fillRect(W * .27, H * (.28 + i * .075), W * (.46 - (i % 2) * .1), H * .03);
+    c.strokeStyle = '#12142e'; c.lineWidth = 5; c.beginPath(); const n = 40 * SC.sign; for (let i = 0; i <= n; i++) { const x = W * .3 + i / 40 * W * .36, y = H * .76 + Math.sin(i * .9) * H * .03; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+    if (SC.sign > .95) { c.fillStyle = '#8ea6ff'; font(c, 700, H * .12); c.fillText('✓', W * .7, H * .78); }
+    c.globalAlpha = SC.doubt; c.fillStyle = '#f0502a'; font(c, 700, H * .22); c.fillText('?', W * .12, H * .45); c.fillText('?', W * .88, H * .62); c.globalAlpha = 1; }
+  else { c.fillStyle = '#fff'; font(c, 700, H * .12); c.fillText('לפני שקונים:', W / 2, H * .2); font(c, 700, H * .1);
+    c.fillText('לייזר בלבד ✓', W / 2, H * .5); c.globalAlpha = SC.k; c.fillText('בלי מצלמה ✓', W / 2, H * .75); c.globalAlpha = 1; }
+}, {px: 800, light: .5});
+scr1.mesh.position.set(.75, .95, -.75); scene.add(scr1.mesh);
+const dash1 = dashed(V(.75, .55, -.75), V(.05, .32, .05));
+
+// ---------- set 2 (x = 4.2): the company: a labeler at a desk, monitor with the labeling tool ----------
+const X2 = 3.4; spot([X2 - 1.0, 3.6, 2.4], [X2, .9, 0], 24);
+const dk = (await st.prop('home/desk', {x: X2, z: -.35, h: .78, tint: 1})).object; dk.traverse(q => { if (q.isMesh) q.material = M(0x3a3e86); });
+const pplM = M(0x8f93cf, {roughness: .8}), pplM2 = M(0x5a5e9e, {roughness: .8});
+const wk = (await st.prop('robots/humanoid', {x: X2 + 1.05, z: .05, ry: -2.2, tint: 1})).object;
+wk.traverse(q => { if (q.isMesh) q.material = q.material.color.getHSL({}).l < .3 ? pplM2 : pplM; }); for (const n of ['visor', 'eyeL', 'eyeR', 'chestLight', 'chestPlate']) { const x = wk.getObjectByName(n); if (x) x.visible = false; }
+const wkHead = wk.getObjectByName('head');
+const LB = {k: 0, n: 0, leak: 0};
+const scr2 = st.screen([1.5, .95], (c, t, W, H) => { c.fillStyle = '#0d0f2e'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.5)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'right'; c.direction = 'rtl'; c.fillStyle = '#c9cdf5'; font(c, 700, H * .065); c.fillText('תיוג תמונות · שואבי ניסוי', W * .95, H * .1);
+  // the photo being labeled: floor with a cable, a sock and a person silhouette (abstract shape)
+  const px = W * .06, py = H * .16, pw = W * .62, ph = H * .78; c.save(); rr(c, px, py, pw, ph, 14); c.clip(); c.fillStyle = '#23265a'; c.fillRect(px, py, pw, ph);
+  c.strokeStyle = '#05060f'; c.lineWidth = 8; c.beginPath(); c.moveTo(px, py + ph * .8); c.bezierCurveTo(px + pw * .2, py + ph * .55, px + pw * .3, py + ph * .95, px + pw * .45, py + ph * .75); c.stroke();
+  c.fillStyle = '#c9cdf5'; rr(c, px + pw * .5, py + ph * .72, pw * .16, ph * .1, 12); c.fill();
+  c.fillStyle = '#7a7fb8'; c.beginPath(); c.arc(px + pw * .8, py + ph * .2, ph * .07, 0, 7); c.fill(); rr(c, px + pw * .72, py + ph * .3, pw * .16, ph * .45, 20); c.fill(); c.restore();
+  const box = (i, x, y, w, h, lab) => { const a = Math.min(1, Math.max(0, LB.n - i)); if (a <= 0) return; c.globalAlpha = a; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.strokeRect(x, y, w, h);
+    font(c, 700, H * .06); const tw = c.measureText(lab).width + 24; c.fillStyle = '#8ea6ff'; c.fillRect(x + w - tw, y - H * .08, tw, H * .075); c.fillStyle = '#0a0c1c'; c.fillText(lab, x + w - 12, y - H * .022); c.globalAlpha = 1; };
+  box(0, px + pw * .02, py + ph * .52, pw * .46, ph * .42, 'כבל'); box(1, px + pw * .48, py + ph * .66, pw * .2, ph * .22, 'גרב'); box(2, px + pw * .68, py + ph * .08, pw * .24, ph * .7, 'בן אדם');
+  // queue of incoming photos (right column)
+  for (let i = 0; i < 4; i++) { const a = Math.min(1, Math.max(0, LB.k * 4 - i)); c.globalAlpha = a; photo(c, W * .72, H * (.17 + i * .2), W * .23, H * .17, 1); }
+  c.globalAlpha = 1;
+}, {px: 1000, light: .5});
+scr2.mesh.position.set(X2, 1.45, -.45); scene.add(scr2.mesh);
+
+// ---------- set 3 (x = -3.4): a phone: a closed group where the photos ended up ----------
+const X3 = X2 + 2.3; spot([X3 - .8, 3.4, 2.4], [X3, 1.1, 0], 22);
+const ph3 = (await st.prop('everyday/smartphone', {x: X3, z: 0, tint: 1})).object; ph3.scale.multiplyScalar(5.5); ph3.position.y = .35; ph3.rotation.y = -.3;
+const GR = {n: 0};
+const scrP = st.screen([.41, .85], (c, t, W, H) => { c.fillStyle = '#f4f5fb'; c.fillRect(0, 0, W, H); c.textAlign = 'center'; c.direction = 'rtl';
+  c.fillStyle = '#12142e'; font(c, 700, W * .085); c.fillText('🔒 קבוצה סגורה', W / 2, H * .08); c.fillStyle = '#c9cdf5'; c.fillRect(0, H * .11, W, 3);
+  for (let i = 0; i < 3; i++) { const a = Math.min(1, Math.max(0, GR.n - i)); if (a <= 0) continue; c.globalAlpha = a; const y = H * (.14 + i * .29);
+    c.fillStyle = '#c9cdf5'; c.beginPath(); c.arc(W * .88, y + H * .03, W * .05, 0, 7); c.fill(); c.fillRect(W * .45, y + H * .018, W * .33, H * .022);
+    photo(c, W * .08, y + H * .07, W * .84, H * .19, 1); }
+  c.globalAlpha = 1; }, {px: 700, light: .5});
+const screenNode = ph3.getObjectByName('screen'); screenNode.material = scrP.mesh.material;
+
+// photos that fly: vacuum → phone (hook), vacuum → company (phrase 8), company → phone (leak)
+const flyM = st.screen([.32, .24], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); photo(c, W * .04, H * .05, W * .92, H * .9, 1); }, {px: 320, light: .5}).mesh.material;
+const flyers = []; for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(.32, .24), flyM); m.visible = false; scene.add(m); flyers.push(m); }
+const bez = (a, b, h, u) => { const mid = a.clone().lerp(b, .5); mid.y += h; return a.clone().lerp(mid, u).lerp(mid.clone().lerp(b, u), u); };
+const fly = (t, cp, list) => { let k = 0; for (const [a, b, t0, dur, h] of list) for (let i = 0; i < 2; i++) { const f = flyers[k++]; if (!f) return; const u = (t - t0 - i * .18) / dur;
+  f.visible = u > 0 && u < 1; if (f.visible) { const e = u * u * (3 - 2 * u); f.position.copy(bez(a, b, h, e)); f.lookAt(cp); f.scale.setScalar(.6 + .5 * Math.sin(Math.PI * e)); } } };
+const lineCo = dashed(V(.2, .4, 0), V(X2, 1.0, -.45)), linePh = dashed(V(X2 + .75, 1.4, -.45), V(X3 - .3, 1.2, 0));
+
+st.frame(t => {
+  // vacuum: drives a slow arc on the tiles, brush spins; stops while we explain
+  vac.position.x = .25 * Math.sin(t * .35); vac.position.z = .1 * Math.cos(t * .35); vac.rotation.y = -.5 + .15 * Math.sin(t * .3);
+  if (brush) brush.rotation.y = t * 9; if (lidar) lidar.rotation.y = t * 6;
+  // x-ray: shell turns see-through from phrase 3, solid again at 17
+  const xr = win(t, A[3] - .2, A[17] - .1, .4); shellM.forEach(m => m.opacity = 1 - .78 * xr);
+  const camOn = win(t, A[3], A[22], .3); lensRingM.color.set(ACC).lerp(new THREE.Color(0xffffff), .3 * (.5 + .5 * Math.sin(t * 6)) * camOn);
+  coneM.opacity = .22 * win(t, A[3] + .2, A[6], .3) + .15 * win(t, .1, A[1] - .2, .3);
+  // end: camera removed, laser only
+  cam0.scale.setScalar(Math.max(.001, 1 - sm(A[22] + .6, A[22] + 1.0, t))); rayM.opacity = .9 * sm(A[22], A[22] + .3, t); rays.rotation.y = t * 4;
+  // screen 1 modes
+  SC.mode = t < A[2] ? 0 : t < A[17] ? 1 : t < A[20] ? 2 : 3; SC.q = sm(A[5], A[5] + .3, t); SC.sign = sm(A[17] + .2, A[17] + 1.2, t); SC.doubt = sm(A[19], A[19] + .4, t); SC.k = sm(A[23] - .1, A[23] + .2, t);
+  const s1 = win(t, .15, A[6], .3) + win(t, A[17] - .3, END + 1, .3); scr1.mesh.visible = s1 > .01; scr1.mesh.scale.setScalar(Math.max(.01, s1)); dash1.material.opacity = s1;
+  scr1.update(t);
+  // set 2: photos arrive (8), labels (10-12), worker looks at the phone (leak)
+  LB.k = sm(A[8], A[9], t); LB.n = sm(A[10] - .1, A[10] + .2, t) + sm(A[11] - .1, A[11] + .2, t) + sm(A[12] - .1, A[12] + .2, t); scr2.update(t);
+  if (wkHead) wkHead.rotation.y = .5 * sm(A[14], A[14] + .4, t) * (1 - sm(A[17] - .3, A[17], t)) + .08 * Math.sin(t * 1.3);
+  // set 3: group posts appear in the hook and again on the leak
+  GR.n = sm(A[1] + .2, A[1] + .6, t) * (1 - sm(A[2] + .3, A[3], t)) + sm(A[14] + .3, A[14] + .7, t) + sm(A[15] + .3, A[15] + .6, t) + sm(A[16] + .3, A[16] + .6, t); scrP.update(t);
+  lineCo.material.opacity = win(t, A[8] - .2, A[13], .3); linePh.material.opacity = win(t, A[14] - .1, A[17], .3);
+
+  // one world, continuous camera (grouper): vacuum ↔ phone ↔ company ↔ vacuum, every sentence a move with a big zoom range
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const T1 = [-.3, .55, -.45], O1 = [-.6, 1.25, 3.4];        // vacuum + toilet + screen (frame 0 = last frame)
+  const T1c = [.05, .2, .45], O1c = [-.5, .9, 1.9];         // vacuum close (camera, cone, sock)
+  const TP = [X3, 1.25, 0], OP = [-.7, .4, 2.6];             // phone
+  const T2 = [X2 + .35, 1.25, -.2], O2 = [-.9, .6, 3.2];          // company desk
+  const TM = [(X2 + X3) / 2 + .2, 1.15, -.1], OM = [-.4, 1.1, 4.4]; // wide: company → phone
+  const m = (a, b) => (a + b) / 2;
+  const [cp, ct] = camPath(t, [
+    sh(0, T1, O1, 1.0), sh(A[1] - .2, T1, O1, .85),                                                     // photo taken (hook)
+    sh(A[1] + .5, TP, OP, 1.05), sh(A[2] - .1, TP, OP, .9),                                              // closed group on a phone
+    sh(A[3] - .1, T1, O1, 1.0), sh(A[3] + .9, T1c, O1c, 1.1), sh(A[4] + .3, T1c, O1c, .9), sh(A[5] + .2, T1c, O1c, 1.05), sh(A[6] - .1, T1, O1, .9),   // x-ray: camera, cone, sock & cable, "?"
+    sh(A[8] - .1, T1, O1, 1.25), sh(A[9] - .2, T2, O2, 1.15), sh(A[10], T2, O2, .9), sh(A[12] + .3, [X2 + .2, 1.35, -.3], O2, .75),                   // photos fly to the company, labels
+    sh(A[13] + .2, T2, O2, 1.0), sh(A[15], TM, OM, 1.0), sh(A[16] + .5, TM, OM, .92), sh(A[17] - .1, TP, OP, 1.05),                                 // twist: the labelers leaked it → phone
+    sh(A[17] + .5, T1, O1, .95), sh(A[19] + .3, [.5, .9, -.45], O1, .7), sh(A[20], T1, O1, .95),                                                      // consent form over the vacuum
+    sh(A[22] + .2, T1c, O1c, 1.25), sh(A[23] + .3, T1c, O1c, 1.05), sh(A[24] - .1, T1, O1, 1.0), sh(END, T1, O1, 1.0)]);                              // laser only, back to frame 0
+  scr1.mesh.lookAt(cp); scr2.mesh.lookAt(cp.x, scr2.mesh.position.y, cp.z);
+  const VC = camWorld(); const PHP = V(X3, 1.3, .1), CO = V(X2, 1.2, -.3);
+  fly(t, cp, [[VC, PHP, A[1] - .1, 1.0, 1.0], [VC, CO, A[8] - .1, 1.3, 1.2], [CO, PHP, A[14] + .1, 1.4, 1.5]]);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
+    L(A[3] + .2, A[5], 'מצלמה', camWorld(), 150, -330);
+    L(A[4], A[5] + .3, 'גרב', sock.position.clone().add(V(.1, 0, .1)), -170, -260);
+    L(A[16] - .1, A[17] - .2, 'העובדים', V(X2 + .15, 1.55, .55), 0, -330);
+    L(A[22], A[24] - .2, 'לייזר', vac.localToWorld(V(0, .12, 0)), -160, -320);
+  }};
+});
+st.ready();
+</script></body></html>
