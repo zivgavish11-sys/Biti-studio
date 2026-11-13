@@ -71,6 +71,8 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 #follow .t{font:700 70px/1.25 Rubik;text-shadow:0 4px 24px #000}
 #follow .b{display:inline-flex;align-items:center;gap:18px;margin-top:40px;padding:22px 50px;border-radius:60px;background:#2ee6ff;color:#04121f;font:700 58px Rubik;direction:ltr;box-shadow:0 0 60px rgba(46,230,255,.7)}
 #follow .b img{width:72px;height:72px;border-radius:50%}
+#cardfr{position:absolute;left:0;top:0;width:1080px;height:1920px;border-radius:0;border:0 solid rgba(190,200,255,.35);box-sizing:border-box;pointer-events:none;opacity:0}
+#fbtn{position:absolute;left:50%;top:1110px;transform:translateX(-50%);padding:18px 64px;border-radius:60px;border:4px solid #fff;color:#fff;font:700 52px Rubik;direction:ltr;opacity:0;background:transparent}
 `;
 // ---------- CLASSIC style (default): same dark brand world, modern/classic finish — no glow, no neon edges, real lighting ----------
 export const STYLE = new URLSearchParams(location.search).get('style') || 'classic'; // 2026-11-02 Ziv: classic is the house style (?style=neon for the old look)
@@ -129,6 +131,8 @@ export async function studio(opts = {}) {
   const chipsEl = el('<div id="chips"></div>'); body.appendChild(chipsEl);
   const extra = el('<div id="extra"></div>'); body.appendChild(extra);
   const follow = el(`<div id="follow"><div class="t">עקבו לעוד תוכן<br>וחדשות על רובוטים</div><div class="b"><img src="${ROOT}assets/logo.jpg">@robotics.israel</div></div>`); body.appendChild(follow);
+  const cardfr = el('<div id="cardfr"></div>'); body.appendChild(cardfr);
+  const fbtn = el('<div id="fbtn">Follow</div>'); body.appendChild(fbtn);
   const capEl = el('<div id="cap" class="ov"></div>'); body.appendChild(capEl);
   const flash = el('<div id="flash" class="ov"></div>'); body.appendChild(flash);
 
@@ -291,7 +295,18 @@ export async function studio(opts = {}) {
     if (r.overlay) r.overlay(t);
     hook.style.opacity = 1 - sm(hookEnd - 0.4, hookEnd, t);
     let fl = 0; for (let i = 1; i < S.length - 1; i++) fl += 0.22 * Math.max(0, 1 - Math.abs(t - S[i]) * 9); flash.style.opacity = r.noFlash ? 0 : fl;
-    const fa = opts.outro === 'short' ? END - 0.9 : A[A.length - 1]; follow.style.opacity = sm(fa - 0.1, fa + 0.3, t); follow.style.transform = `scale(${0.85 + 0.15 * sm(fa - 0.1, fa + 0.4, t)})`;
+    if (opts.outro === 'card') {
+      // grouper-style ending (Ziv 2026-11-13): on the last spoken line the whole scene shrinks into a rounded card (scene keeps playing inside), a Follow button pops in (outline -> filled accent on "תעקבו")
+      const la = A[A.length - 1], lb = B[B.length - 1], k = sm(la - 0.15, la + 0.35, t), f = sm(lb - 0.45, lb - 0.2, t);
+      const sc = 1 - 0.38 * k, tf = `translateY(${-60 * k}px) scale(${sc})`, rad = `${70 * k / sc}px`;
+      for (const cv of [c, o]) { cv.style.transform = tf; cv.style.borderRadius = rad; }
+      cardfr.style.transform = tf; cardfr.style.borderRadius = rad; cardfr.style.borderWidth = `${3 * k / sc}px`; cardfr.style.opacity = k;
+      fbtn.style.opacity = sm(la + 0.15, la + 0.45, t);
+      fbtn.style.background = f > 0 ? `rgba(142,166,255,${f})` : 'transparent'; fbtn.style.borderColor = f > .5 ? '#8ea6ff' : '#fff'; fbtn.style.color = f > .5 ? '#0a0c1c' : '#fff';
+      fbtn.style.transform = `translateX(-50%) scale(${1 + 0.08 * Math.sin(Math.PI * Math.min(1, f))})`;
+      for (const id of ['vig', 'brand', 'chips', 'extra']) { const e = document.getElementById(id); if (e) e.style.opacity = 1 - k; }
+    }
+    const fa = opts.outro === 'short' ? END - 0.9 : A[A.length - 1]; if (opts.outro !== 'card') follow.style.opacity = sm(fa - 0.1, fa + 0.3, t); follow.style.transform = `scale(${0.85 + 0.15 * sm(fa - 0.1, fa + 0.4, t)})`;
     captions(t); chips(t);
     composer.render(); await new Promise(res => requestAnimationFrame(() => res())); return true;
   };

@@ -56,3 +56,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-12 Ziv: carousel "comment the story number for the full story" — CTA line on each story slide (no emoji) + caption CTA; news agent writes dms.txt daily, Ziv sends the DMs manually. From 13.11 (docs/agents/news.md).
 - 2026-11-13 Ziv: ideas come only from real questions people ask (followers' comments, surveys, Reddit/forums, viral-video comments), with emotion (fear/surprise/story); each idea shows the question, its source/how many ask, and the opening line (docs/agents/video.md).
 - 2026-11-13 Ziv: episode ending ~1 s — no spoken closing line, follow card only in the last ~0.9 s (outro:'short', align --tail 0.6). From ep013 (docs/agents/video.md).
+- 2026-11-13 Ziv: ending like grouper — short spoken line "עוד הסברים על רובוטים? תעקבו." + scene shrinks into a rounded card with a Follow button (outro:'card'). Replaces the no-line ~1 s ending decided earlier today.
