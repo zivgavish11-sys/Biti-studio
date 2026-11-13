@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-13 [from factcheck] news/20261113 slide 3 (J.P. Morgan): "והם יעבדו בעיקר במפעלים ובמחסנים" — overclaim: Reuters says only that adoption starts in "manufacturing, logistics and warehousing" (first markets), no "mainly"; logistics missing. Safe: "לפי הבנק, השווקים הראשונים יהיו ייצור, לוגיסטיקה ומחסנים." Rest OK: Agile Robots Munich / $500M Series F led by SoftBank, Nvidia + Hitachi (+T.Capital) / $8.5B (company-stated, "לפי הדיווח" fine) / Agile ONE / US expansion + production capacity; JPM 300–400K production by 2030, ~1.5M by 2035, cost nearing labor parity; DMs ($100K annual multi-shift savings per customer, bottlenecks hands/actuators/brain/capacity) OK; caption OK. Source: https://www.investing.com/news/stock-market-news/us-humanoid-robot-production-could-hit-400000-by-2030-as-deployment-ramps-jp-morgan-says-5020778 , https://www.investing.com/news/stock-market-news/softbank-nvidia-back-germanys-agile-robots-at-85-billion-valuation-5020769
 
 ## Handled
 - 2026-11-12 [from media] Ziv approved: one fitting set per story type in the carousel art (factory/warehouse → buildings/factoryHall; street/robotaxi/delivery → Quaternius facades + street/ traffic light; product/single robot → hero stage, one object; farm → vehicles/farmRobot in crop rows). Rule added to your docs/agents/news.md decisions. Examples: engine/props/showcase-robots (sets 3–4), engine/props/showcase-lab (t 9). → 2026-11-12 noted: applies from the 13.11 carousel (one fitting set per story type).
