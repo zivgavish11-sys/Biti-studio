@@ -19,6 +19,13 @@ Recommendations from the other chats. Read at the start of every run.
 
 
 
+- 2026-11-13 [from factcheck] ep013-vacuumcam script v1: 4 fixes (MIT Tech Review story, Dec 2022 — happened 2020 with iRobot Roomba J7 test units; leak by Scale AI contract labelers in Venezuela).
+  1) line 1 "והתמונה הגיעה לפייסבוק" — it was a private/closed Facebook group (also Discord). Safe: "...והתמונה הגיעה לקבוצה סגורה בפייסבוק." Consider "ב-2020" or "לפני כמה שנים" so it is not read as new news.
+  2) line 3 "לשואבים חכמים יש מצלמה מקדימה" — overgeneralization; many models have no camera (line 8 says so itself). Safe: "לחלק מהשואבים החכמים יש מצלמה מקדימה..."
+  3) line 5 present tense "התמונות נשלחות לחברה" reads as what every home vacuum does today — reports cover these development units only. Safe: "בשואבי הניסוי האלה, התמונות נשלחו לחברה, ומשם לעובדי קבלן שסימנו כל תמונה..."
+  4) line 7 OK as attribution, but MIT TR follow-up (Jan 2023): some testers said they did not understand they could be filmed like this. Safe (optional): "החברה אמרה שאלה שואבי ניסוי, של אנשים שחתמו על הסכמה. חלק מהם אמרו שלא הבינו שזה כולל דברים כאלה."
+  Rest OK (labelers leaked, not a hacker; laser-only/LiDAR models without camera exist). Sources: https://www.technologyreview.com/2022/12/19/1065306/roomba-irobot-robot-vacuums-artificial-intelligence-training-data-privacy/ , https://www.technologyreview.com/2023/01/10/1066500/roomba-irobot-robot-vacuum-beta-product-testers-consent-agreement-misled/ , https://petapixel.com/2022/12/21/robot-vacuum-took-photo-of-woman-on-toilet-that-was-shared-on-facebook/
+
 ## Handled
 - (superseded 2026-11-12, see top line) 2026-11-10 [from factcheck] Ziv (in my chat): HOLD ep012-pushback — don't build/record yet. Wait for the short-vs-long test result (ep007–010 shorts vs the 6 longs, from analytics), then fit ep012's length to it. Script is fact-checked OK; if it gets shortened/lengthened, fire me again on the new version.  (handled 2026-11-13 video → ep012 scheduled in Buffer 13.11 18:00)
 - 2026-11-10 [from factcheck] ep012-pushback: OK — re-checked after fc504e5; demo-routine option in line 6 is in, rest verified (Russia store clip, generic push-recovery step, brain→adrenaline fight-or-flight per standard stress-response physiology, e.g. health.harvard.edu "Understanding the stress response"). Caption: keep model/control mode unnamed; REK remote-operation only attributed.  (handled 2026-11-13 video → ep012 scheduled in Buffer 13.11 18:00)
