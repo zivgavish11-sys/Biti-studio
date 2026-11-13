@@ -35,7 +35,8 @@ ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=480:854 -r 24 -c:v libx2
 ls -la "$OUT"/*_full.mp4 "$OUT"/*_light.mp4
 
 echo "== QA"
-if python3 tools/qa.py "$OUT/${SLUG}_full.mp4" --light "$OUT/${SLUG}_light.mp4" --sheet "$OUT/${SLUG}_qa.jpg"; then
+OUTRO=$(grep -q "outro: *.card" "$EP/index.html" && python3 -c "import json;t=json.load(open('$EP/timeline.json'));print(round(t['end']-t['segA'][-1]+0.2,2))" || echo 0)
+if python3 tools/qa.py "$OUT/${SLUG}_full.mp4" --outro "$OUTRO" --light "$OUT/${SLUG}_light.mp4" --sheet "$OUT/${SLUG}_qa.jpg"; then
   echo "QA PASS"
 else
   echo "QA FAILED — fix the scene and rebuild before sending (see $OUT/${SLUG}_qa.jpg)"; exit 2

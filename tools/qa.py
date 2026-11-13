@@ -41,6 +41,7 @@ def main():
     ap.add_argument("--sheet")
     ap.add_argument("--min", type=float, default=14)  # short format 15-20 s (Ziv 2026-11-06)
     ap.add_argument("--max", type=float, default=46)
+    ap.add_argument("--outro", type=float, default=0)  # seconds at the end that are the grouper card outro (dark frame around the card is intended)
     a = ap.parse_args()
     v = a.video
     info = probe(v)
@@ -87,7 +88,7 @@ def main():
 
     # dark object sweeping across the lens (the ep1 v4 bug): share of fully-dark columns per frame
     worst = 0; worst_t = 0
-    for t in np.arange(0, dur, 0.1 if dur < 8 else 0.2):
+    for t in np.arange(0, dur - a.outro, 0.1 if dur < 8 else 0.2):
         rgb = frame(v, float(t), 108, 192)
         if rgb is None: continue
         L = luma(rgb)
@@ -111,7 +112,7 @@ def main():
         check("no long silence", not sil, "none" if not sil else f"silence from {', '.join(sil)}s")
 
     # loop: last frame should resemble the first (composition / colors)
-    first = frame(v, 0.0, 54, 96); last = frame(v, max(0, dur - 0.1), 54, 96)
+    first = frame(v, 0.0, 54, 96); last = frame(v, max(0, dur - 0.1 - a.outro), 54, 96)
     if first is not None and last is not None:
         diff = float(np.abs(first - last).mean())
         check("loop (last ~ first)", diff < 0.12, f"mean diff {diff:.3f} (<0.12)", warn=True)

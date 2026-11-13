@@ -160,7 +160,7 @@ st.frame(t => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
     L(A[3] + .2, A[5], 'מצלמה', camWorld(), 150, -330);
     L(A[4], A[5] + .3, 'גרב', sock.position.clone().add(V(.1, 0, .1)), -170, -260);
-    L(A[16] - .1, A[17] - .2, 'העובדים', V(X2 + .15, 1.55, .55), 0, -330);
+    L(A[16] - .1, A[17] - .2, 'העובדים', V(X2 + 1.05, 1.75, .05), 0, -300);
     L(A[22], A[24] - .2, 'לייזר', vac.localToWorld(V(0, .12, 0)), -160, -320);
   }};
 });
