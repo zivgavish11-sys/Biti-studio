@@ -1,0 +1,40 @@
+{
+ "date_label": "חדשות היום · 13.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "Agile Robots הגרמנית גייסה 500 מיליון דולר בהובלת SoftBank",
+    "J.P. Morgan צופה ייצור של 300–400 אלף רובוטים דמויי אדם בארה״ב עד 2030"
+   ],
+   "scene": {"robot": false, "props": ["agilecover"], "color": "orange", "cam": [3.2, 2.6, 4.2], "target": [-0.4, 1.2, -3.0], "shift": 0.12}
+  },
+  {
+   "type": "story",
+   "stat": "$500M",
+   "statSub": "גיוס של Agile Robots, לפי החברה",
+   "statColor": "orange",
+   "title": "SoftBank מהמרת על<br>רובוטים <span class=\"pill\">מגרמניה</span>",
+   "text": "Agile Robots ממינכן, שמפתחת את הרובוט דמוי האדם Agile ONE, גייסה כסף מ־SoftBank, Nvidia ו־Hitachi. לפי הדיווח, שוויה 8.5 מיליארד דולר. לפי החברה, הכסף ילך להתרחבות בארה״ב ולהגדלת הייצור.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Agile Robots, Forbes, Tech.eu",
+   "scene": {"robot": false, "props": ["agileline"], "color": "orange", "cam": [3.6, 2.4, 3.4], "target": [-0.6, 1.3, -2.4], "shift": 0.1}
+  },
+  {
+   "type": "story",
+   "stat": "300–400K",
+   "statSub": "רובוטים דמויי אדם בייצור בארה״ב עד 2030, לפי J.P. Morgan",
+   "statColor": "cyan",
+   "title": "וול סטריט צופה<br><span class=\"pill\">מאות אלפי</span> רובוטים",
+   "text": "לפי J.P. Morgan, ייצור הרובוטים דמויי האדם בארה״ב יגיע ל־300–400 אלף עד 2030, ולכ־1.5 מיליון עד 2035. לפי הבנק, העלות שלהם מתקרבת לעלות של עובד, והם יעבדו בעיקר במפעלים ובמחסנים.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "Reuters, FOX",
+   "scene": {"robot": false, "props": ["jpmwarehouse"], "color": "cyan", "cam": [0.4, 2.3, 4.6], "target": [0.2, 1.2, -3.5], "shift": 0.1}
+  },
+  {
+   "type": "follow",
+   "scene": {"anim": "Wave", "color": "orange", "target": [0, 1.3, 0], "shift": 0.24}
+  }
+ ]
+}
