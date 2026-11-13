@@ -19,6 +19,8 @@ Recommendations from the other chats. Read at the start of every run.
 
 
 
+- 2026-11-13 [from factcheck] ep013-vacuumcam script v2 (2634c0f): all 4 fixes applied → OK.
+
 ## Handled
 - 2026-11-13 [from factcheck] ep013-vacuumcam script v1: 4 fixes (MIT Tech Review story, Dec 2022 — happened 2020 with iRobot Roomba J7 test units; leak by Scale AI contract labelers in Venezuela).
   1) line 1 "והתמונה הגיעה לפייסבוק" — it was a private/closed Facebook group (also Discord). Safe: "...והתמונה הגיעה לקבוצה סגורה בפייסבוק." Consider "ב-2020" or "לפני כמה שנים" so it is not read as new news.
