@@ -80,7 +80,7 @@ def align(phr, segs):
     return out
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("epdir"); ap.add_argument("raw"); ap.add_argument("--speed", type=float, default=1.25)
+    ap = argparse.ArgumentParser(); ap.add_argument("epdir"); ap.add_argument("raw"); ap.add_argument("--speed", type=float, default=1.25); ap.add_argument("--tail", type=float, default=1.0)
     o = ap.parse_args()
     voice = os.path.join(o.epdir, "voice.mp3")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", o.raw, "-af", f"atempo={o.speed}", "-ar", "44100", voice], check=True)
@@ -99,7 +99,7 @@ def main():
         nb = chunks[i + 1]["a"] if i + 1 < len(chunks) else c["b"] + 1.2
         c["b"] = round(min(nb, c["b"] + 0.6), 3)
     tl = {"segA": [round(a, 3) for a, b in spans], "segB": [round(b, 3) for a, b in spans], "chunks": chunks,
-          "end": round(dur + 1.0, 2), "phrases": phr, "speed": o.speed}
+          "end": round(dur + o.tail, 2), "phrases": phr, "speed": o.speed}
     json.dump(tl, open(os.path.join(o.epdir, "timeline.json"), "w"), ensure_ascii=False, indent=1)
     print(f"voice {dur:.2f}s, {len(segs)} speech segments, {len(phr)} phrases")
     for i, (p, (a, b)) in enumerate(zip(phr, spans)): print(f"{i:2d}  {a:6.2f}-{b:6.2f}  {p}")

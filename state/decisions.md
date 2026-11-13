@@ -54,3 +54,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-12 Ziv: from ep013, every episode starts with 3–4 explosive hook proposals for Ziv to pick before the script (docs/agents/video.md).
 - 2026-11-12 Ziv: voice speed-up 1.15× instead of 1.25× (1.25 too fast). From ep012.
 - 2026-11-12 Ziv: carousel "comment the story number for the full story" — CTA line on each story slide (no emoji) + caption CTA; news agent writes dms.txt daily, Ziv sends the DMs manually. From 13.11 (docs/agents/news.md).
+- 2026-11-13 Ziv: ideas come only from real questions people ask (followers' comments, surveys, Reddit/forums, viral-video comments), with emotion (fear/surprise/story); each idea shows the question, its source/how many ask, and the opening line (docs/agents/video.md).
+- 2026-11-13 Ziv: episode ending ~1 s — no spoken closing line, follow card only in the last ~0.9 s (outro:'short', align --tail 0.6). From ep013 (docs/agents/video.md).

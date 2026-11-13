@@ -20,6 +20,15 @@ Then, before sending Ziv the final TTS text, `git pull` and apply any new lines 
 - **Write like @grouper.explains:** spoken, direct Hebrew to the viewer ("אתכם", "תחשבו על זה"), a real story or everyday moment first, then the question, then the answer as a short cause→effect chain. Short punchy sentences, no lecture tone, no "אני ביטי".
 - Punctuation for pauses (docs/tts-punctuation.md) still applies.
 
+## Finding content: real questions with emotion (Ziv 2026-11-13)
+- Every idea starts from a **real question people ask**, never from your own idea. Sources (all four): our followers' comments · surveys/studies (e.g. YouGov 2025: cost 60%, reliability 49%, privacy/hacking 48%, family safety 43%; most-wanted tasks floors/dishes/laundry) · Reddit and forums (e.g. r/RobotVacuums, humanoid question banks) · comments under viral robot videos.
+- Only questions **with emotion**: fear/danger, surprise or a real story. Then how it works inside → is it worth buying. Ziv rejected "interesting but no emotion" ideas (phone captcha, vacuum vs poop, humanoid battery).
+- Each idea you send = the question in ordinary people's words + where it comes from and how many ask ("48% in a survey", "recurring on Reddit", "a follower asked") + the episode's opening line. Short, nothing else.
+
+## Ending = ~1 second (Ziv 2026-11-13, from ep013)
+- **No spoken closing line** ("תעקבו אחריי..." is dropped). The script ends on the payoff/twist.
+- The follow card shows only for the last ~0.9 s: `studio({outro:'short', ...})`, and align with `--tail 0.6` (video ends 0.6 s after the voice). Goal: the video ends before people scroll away. Still loop to the first frame's composition.
+
 ## Hooks first (Ziv 2026-11-12)
 Every new episode starts with **hook proposals**: after Ziv picks the topic, send 3–4 hook options (title on screen + first spoken line) and wait for his pick — only then write the full script. Hooks must be **explosive**: a shock fact, a number, a conflict or a "wait, what?" moment in the first 1–2 s, never a soft question or a definition.
 
@@ -49,8 +58,8 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - **One twist** that is the reason to send it (e.g. "בכוונה!", "דרך האקווריום"), placed at the re-hook or the payoff.
 - **12-year-old test** before sending Ziv the script: could a 12-year-old explain it back to a friend after one viewing? If not, cut facts until yes. Say in one line to Ziv that the script passed it.
 - 30–45 s final length. At the 1.15× speed-up (Ziv 2026-11-12: 1.25 was too fast) that is about **65–85 Hebrew words**.
-- **SHORT format (Ziv 2026-11-06, from ep007 on, test phase): 15–20 s ≈ 35–45 Hebrew words** — fact → question → answer (2–3 short lines) → wow fact → closing. No re-hook line needed; one chip per beat. First short posts Sun 2026-11-08 18:00; one post per day at 18:00; then analytics compares long (ep002–ep006) vs short.
-- Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook → closing `תעקבו אחריי לעוד תוכן וחדשות על רובוטים.`
+- **SHORT format (Ziv 2026-11-06, from ep007 on, test phase): 15–20 s ≈ 35–45 Hebrew words** — fact → question → answer (2–3 short lines) → wow fact (no closing line). No re-hook line needed; one chip per beat. First short posts Sun 2026-11-08 18:00; one post per day at 18:00; then analytics compares long (ep002–ep006) vs short.
+- Structure (Ziv 2026-11-06: **no more "אני ביטי, והיום אני אלמד אתכם"**): **hook = a surprising fact (≤2 s)** → **a curiosity question about it** (e.g. `אז איך זה עובד?` / `אז איך הוא ...?`) → body (but/therefore) → **re-hook at 50–60%** (`אבל הנה החלק המטורף:`) + biggest wow fact → **payoff** that answers the hook (no spoken closing line since ep013 — see "Ending = ~1 second")
 - Offer Ziv 2 hook variants with the script; he picks one.
 - **Punctuation (Ziv 2026-11-06): read `docs/tts-punctuation.md` before every script** — every pause must be written (no mark = no pause), measured pause per mark, budget for `? ! ... :`, checklist.
 - Biti is curious and witty: **one** cute joke per episode (e.g. "הוא עוד ממפה"). Short sentences, commas where the voice should pause.
@@ -61,7 +70,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - Tell him: TTSMaker, the female voice, **normal speed**, send back the mp3.
 
 ### 3) Build (after the recording arrives)
-1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.15` (Ziv 2026-11-12: 1.15, not 1.25) → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
+1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.15 --tail 0.6` (Ziv 2026-11-12: 1.15, not 1.25) → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
    Check the printed list: phrase times must look sane (no phrase longer than its words justify). If Ziv's recording differs from the script,
    fix the words in timeline.json so captions match the voice exactly.
 2. Copy `episodes/_template/` → design the episode in `index.html` (see "Visual rules"). Reference episode: `episodes/ep002-walk/` (classic look; ep001-car is standalone, old neon style).

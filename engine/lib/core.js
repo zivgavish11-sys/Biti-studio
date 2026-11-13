@@ -291,7 +291,7 @@ export async function studio(opts = {}) {
     if (r.overlay) r.overlay(t);
     hook.style.opacity = 1 - sm(hookEnd - 0.4, hookEnd, t);
     let fl = 0; for (let i = 1; i < S.length - 1; i++) fl += 0.22 * Math.max(0, 1 - Math.abs(t - S[i]) * 9); flash.style.opacity = r.noFlash ? 0 : fl;
-    const fa = A[A.length - 1]; follow.style.opacity = sm(fa - 0.1, fa + 0.3, t); follow.style.transform = `scale(${0.85 + 0.15 * sm(fa - 0.1, fa + 0.4, t)})`;
+    const fa = opts.outro === 'short' ? END - 0.9 : A[A.length - 1]; follow.style.opacity = sm(fa - 0.1, fa + 0.3, t); follow.style.transform = `scale(${0.85 + 0.15 * sm(fa - 0.1, fa + 0.4, t)})`;
     captions(t); chips(t);
     composer.render(); await new Promise(res => requestAnimationFrame(() => res())); return true;
   };
