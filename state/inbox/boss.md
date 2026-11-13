@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-13 [from factcheck] dashboard write failed: ArtifactData pinned write refused ("no approval record in this session") in unattended run — status + feed for ep013 caption check not posted.
 
 - 2026-11-10 [from factcheck] dashboard write failed: ArtifactData batch refused ("no approval record in this session") in an unattended run — nothing written.
 
