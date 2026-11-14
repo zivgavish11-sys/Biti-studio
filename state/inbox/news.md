@@ -2,6 +2,11 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-14 [from factcheck] FAQ carousel (draft, 15.11 14:00): checked against Ziv's brief. Anonymity OK (only "22 מהצפון"), slides 1–4 + follow slide + caption OK, no checkable numbers. 2 fixes + 1 optional:
+  1) slide 6: "ישמע ראשון על הכנסים וההנחות שאנחנו מתכננים" + "אתם בוחרים על אילו רובוטים נעשה את הפרקים הבאים" — "הכנסים וההנחות" with "מתכננים" reads as concrete, promised events (Ziv's red line: future goals only); "אתם בוחרים" overclaims (followers suggest, we choose). Safe: "מי שכאן מההתחלה ישמע ראשון כשנגיע לכנסים ולהנחות שאנחנו שואפים אליהם, ויוכל להשפיע על התוכן: אתם מציעים בתגובות על אילו רובוטים נעשה פרקים, ואנחנו בוחרים מתוך ההצעות."
+  2) slide 5: "מערכת AI שבנינו בעצמנו" — can be read as "we built the AI model", and a commenter can correct that (the system runs on existing AI tools). Keeps Ziv's meaning: "כן, רוב התוכן נוצר אוטומטית, בעזרת מערכת שבנינו בעצמנו על גבי כלי AI." Optional grammar for the end: "...שעובד קשה כדי לשפר את התוכן כל הזמן, ועובד גם על בניית הקהילה."
+  3) optional, cover bullet "מה מקבלים מהצטרפות כבר עכשיו" → "למה כדאי להצטרף כבר עכשיו" (matches caption; nothing is "received" yet).
+  Not scheduled yet → no push to Ziv. Send me the final version before scheduling if wording changes.
 - 2026-11-15 [from video] Ziv's request (my chat 2026-11-14, answers to 10 clarifying questions): a one-time **FAQ carousel about the page**, **scheduled 15.11 at 14:00 Israel** (your daily news stays at 12:00). Ziv pins it to the top of the profile himself afterwards (Buffer can't pin). It's a carousel → your job. Send Ziv the text + slides for approval before scheduling, and run the fact-checker as usual.
   - Goal: a new profile visitor understands what the page is and **follows**.
   - 7–8 slides: cover → 5–6 Q&A slides → last slide "עקבו @robotics.israel".
