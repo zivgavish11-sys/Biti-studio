@@ -37,6 +37,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 
 ### Batch mode (Ziv 2026-11-15 — overrides "one open episode at a time" when Ziv works in a batch)
 Ziv may work on several reels at once (~40 s each): first agree topic + script for each reel, one reel at a time in the chat (fact-check each script); then Ziv sends all recordings together (save each raw mp3 at once); then build them all, send previews, and after his OK schedule each on its own day (18:00 Israel). Earliest due date first.
+Order per reel (Ziv 2026-11-15): hook (Ziv picks) → script (fact-checked, Ziv OKs) → **visual script** (shot by shot, Ziv OKs) → Ziv records. One reel at a time, step by step; repeat for the next reel. Build nothing until Ziv says the batch is done.
 
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 **One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
