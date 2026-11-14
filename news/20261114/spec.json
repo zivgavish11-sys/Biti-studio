@@ -8,7 +8,24 @@
     "ASUS חשפה את Gallop, הרובוט דמוי האדם הראשון שלה, שלומד לארוז במפעל",
     "לפי Fortune, OpenAI פירקה את צוות הרובוטיקה הנפרד שלה"
    ],
-   "scene": {"robot": false, "props": ["gallopcover"], "color": "purple", "cam": [0.2, 2.2, 3.6], "target": [0, 1.25, -1.2], "shift": 0.14}
+   "scene": {
+    "robot": false,
+    "props": [
+     "gallopcover"
+    ],
+    "color": "purple",
+    "cam": [
+     1.1,
+     2.0,
+     3.0
+    ],
+    "target": [
+     0,
+     1.2,
+     -1.2
+    ],
+    "shift": 0.1
+   }
   },
   {
    "type": "story",
@@ -16,10 +33,27 @@
    "statSub": "היעד של ASUS: הצלחה תוך 20 שניות, כמו עובד",
    "statColor": "purple",
    "title": "ASUS חושפת<br>רובוט <span class=\"pill\">למפעל</span>",
-   "text": "Gallop, הרובוט דמוי האדם הראשון של ASUS, נבחן במפעל אלקטרוניקה של הקבוצה ואורז 15 אביזרים של לוחות אם. לפי החברה, פיילוטים אצל לקוחות ב־2027 ומכירות ב־2028.",
+   "text": "Gallop, הרובוט דמוי האדם הראשון של ASUS, נבחן במפעל אלקטרוניקה של הקבוצה ואורז 15 אביזרים של לוחות אם. לפי החברה, פיילוטים אצל לקוחות ב־2027 וזמינות מסחרית מתוכננת ל־2028.",
    "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
    "source": "ASUS, Interesting Engineering",
-   "scene": {"robot": false, "props": ["gallopline"], "color": "purple", "cam": [3.4, 2.9, 3.8], "target": [-0.6, 1.0, -2.2], "shift": 0.04}
+   "scene": {
+    "robot": false,
+    "props": [
+     "gallopline"
+    ],
+    "color": "purple",
+    "cam": [
+     2.2,
+     2.5,
+     2.6
+    ],
+    "target": [
+     -0.9,
+     1.0,
+     -2.8
+    ],
+    "shift": 0.06
+   }
   },
   {
    "type": "story",
@@ -27,14 +61,40 @@
    "statSub": "היעד של OpenAI להדגמה ראשונה של רובוט דמוי אדם",
    "statColor": "cyan",
    "title": "OpenAI מפרקת את<br>צוות ה<span class=\"pill\">רובוטיקה</span>",
-   "text": "לפי Fortune, החוקרים עוברים לצוות המחקר הראשי והחומרה לארגון של גרג ברוקמן. החברה אמרה שהמטרה היא להאיץ את הרובוטיקה, לא לנטוש אותה.",
+   "text": "לפי Fortune, החוקרים עוברים לצוות המחקר הראשי והחומרה לארגון Applied, שכפוף לגרג ברוקמן. החברה אמרה שהמטרה היא להאיץ את הרובוטיקה, לא לנטוש אותה.",
    "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
    "source": "Fortune, TokenPost",
-   "scene": {"robot": false, "props": ["openaibooth"], "color": "cyan", "cam": [2.6, 2.6, 4.4], "target": [-0.4, 1.2, -2.6], "shift": 0.04}
+   "scene": {
+    "robot": false,
+    "props": [
+     "openaibooth"
+    ],
+    "color": "cyan",
+    "cam": [
+     0.4,
+     5.2,
+     10.8
+    ],
+    "target": [
+     -0.4,
+     0.7,
+     -2.6
+    ],
+    "shift": 0.05
+   }
   },
   {
    "type": "follow",
-   "scene": {"anim": "Wave", "color": "purple", "target": [0, 1.3, 0], "shift": 0.24}
+   "scene": {
+    "anim": "Wave",
+    "color": "purple",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
   }
  ]
 }
