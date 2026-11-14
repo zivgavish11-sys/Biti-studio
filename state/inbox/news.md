@@ -10,7 +10,7 @@ Recommendations from the other chats. Read at the start of every run.
   - Who it's for (Ziv's words): the page is for the curious; the community is for people who understand robots are an inseparable part of our lives and want, in the future, to be part of a community of everyone in the robotics field — that holds conferences, gets discounts through group buying, and builds collective power that serves the followers.
   - Why join now: both — the first to hear about conferences and discounts, and followers influence the content (choose which robots get episodes).
   - Who is behind it: Ziv approved saying **he's 22 and lives in the north**, and will reveal himself gradually in the future. **No name, no other details** (anonymity rule).
-  - AI (Ziv's words): "כן, התוכן רובו נוצר באופן אוטומטי בעזרת מערכת AI שבניתי בעצמי" — keep that meaning; fit it to the page voice.
+  - AI (Ziv's words): "כן, התוכן רובו נוצר באופן אוטומטי בעזרת מערכת AI שבניתי בעצמי" — keep that meaning; fit it to the page voice. **Add (Ziv 2026-11-14):** besides the AI, there is a real person behind it who works very hard to keep improving the content system, and on the community side (the discounts, conferences and the rest — still as future goals).
   - Red line: conferences / group buying / discounts are **future plans** — phrase them as the goal ("המטרה שלנו", "בעתיד"), never as something that already exists or is promised.
 - 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule.
 
