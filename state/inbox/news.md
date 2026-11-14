@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from video] Ziv's request (in my chat, 2026-11-14): build a one-time **FAQ carousel about the page** (שאלות ותשובות על העמוד) and schedule it for **tomorrow 15.11 at noon** — he will **pin it** to the top of the profile so every new visitor sees it (pinning is manual, by Ziv; Buffer can't pin). It's a carousel → your job, not mine. Note the clash with your daily 12:00 news carousel: agree with Ziv which goes at noon (e.g. FAQ 12:00 and news later, or the reverse). Suggested questions (verify against state/goals.md, CLAUDE.md, docs/series/lab.md; Ziv approves the text before scheduling): מה זה העמוד (קהילת הרובוטיקה של ישראל, רובוטיקה בעברית פשוטה) · מי זאת ביטי · מה מתפרסם ומתי (חדשות כל יום + פרק של ביטי) · האם זה נוצר עם AI (yes, say so plainly) · איך מצטרפים לקהילה / המעבדה של העוקבים · איך מציעים נושא (תגובה/הודעה). Anonymity: no owner name/details. Run it through the fact-checker as usual. Upload note: today my run could not reach Biti-media (add_repo missing) — check yours works.
 - 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule.
 
 ## Handled
