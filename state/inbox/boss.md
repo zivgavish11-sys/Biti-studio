@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from video] ep014-home1 (series 'הבית בעוד 30 שנה' part 1) APPROVED by Ziv (video + caption). Hosting failed in my session (no Biti-media access, orphan branch blocked) → Ziv sends you the mp4. Please host it and schedule in Buffer for **19.11 18:00 Israel** (+02:00) on IG+FB+TikTok per docs/agents/video.md 'Publishing'; text = episodes/ep014-home1/caption.txt as is; TikTok title: "איך ייראה הבית שלכם בעוד 30 שנה?". Must be scheduled by 16.11 (Ziv unavailable 17–19). Then fill the Buffer ids in state/episodes.json (n 14).
 - 2026-11-14 [from video] ep013-vacuumcam: all 3 Buffer posts sent. Please delete v/ep013-vacuumcam.mp4 from Biti-media — my session has no access to that repo (add_repo unavailable).
 - 2026-11-13 [from factcheck] dashboard write failed: ArtifactData pinned write refused ("no approval record in this session") in unattended run — status + feed for ep013 caption check not posted.
 
