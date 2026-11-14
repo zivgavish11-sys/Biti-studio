@@ -22,42 +22,82 @@ const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x 
 const dashRect = (x0, z0, x1, z1, y = .07) => { const g = new THREE.BufferGeometry().setFromPoints([V(x0, y, z0), V(x1, y, z0), V(x1, y, z1), V(x0, y, z1), V(x0, y, z0)]);
   const l = new THREE.Line(g, new THREE.LineDashedMaterial({color: 0xffffff, dashSize: .18, gapSize: .12, transparent: true, opacity: .35})); l.computeLineDistances(); scene.add(l); return l; };
 
-// ---------- the world (vertical-friendly): back strip (parking + garage with roof pad) · house (4 rooms) · front yard ----------
-const wallM = M(0x3b3f8a), capM = M(0x5a5fb0), fl1 = M(0x272a66), fl2 = M(0x22255c), flE = M(0x1d2052);
+// ---------- the world (Ziv 2026-11-15: bigger, crazy house, lots of furniture, hidden rooms not opened yet, a pool) ----------
+// layout (z toward camera): back strip (parking + garage with roof pad) · house 12×8 m (front: living | dining | kitchen, back: bedroom + 2 HIDDEN rooms) · front yard with pool
+const wallM = M(0x3b3f8a), capM = M(0x5a5fb0), fl1 = M(0x272a66), fl2 = M(0x22255c), fl3 = M(0x252860), roofM = M(0x2c2f72, {roughness: .9});
 const indigo = (o, k = 1) => o.traverse(q => { if (q.isMesh) { const l = q.material.color ? q.material.color.getHSL({}).l : .5; q.material = M(new THREE.Color().setHSL(.66, .42, Math.min(.62, (.16 + .5 * l) * k))); q.castShadow = q.receiveShadow = true; } });
-box(4, .06, 3.5, -2, .03, 1.75, fl1); box(4, .06, 3.5, 2, .03, 1.75, fl2); box(4, .06, 3.5, -2, .03, -1.75, flE); box(4, .06, 3.5, 2, .03, -1.75, flE);
+const P = async (n, o, k = 1) => { const r = (await st.prop(n, o)).object; indigo(r, k); return r; };
+box(4, .06, 4, -4, .03, 2, fl1); box(4, .06, 4, 0, .03, 2, fl3); box(4, .06, 4, 4, .03, 2, fl2); box(4, .06, 4, -4, .03, -2, fl2); box(8, .06, 4, 2, .03, -2, fl1);
 const WH = 1.0, WT = .12;
 const wall = (w, d, x, z) => { box(w, WH, d, x, WH / 2, z, wallM); box(w + .002, .03, d + .002, x, WH + .015, z, capM); };
-wall(8.12, WT, 0, -3.5); wall(WT, 7, -4, 0); wall(WT, 7, 4, 0);                                   // outer walls (front open = cutaway)
-wall(2.6, WT, -2.7, 0); wall(2.6, WT, 2.7, 0); wall(WT, 1.6, 0, -2.7); wall(WT, 1.6, 0, 2.7);       // inner, with doorways
-const fut = [dashRect(-3.3, -3.0, -.7, -.6), dashRect(.7, -3.0, 3.3, -.6)];                        // empty rooms = future robots
+wall(12.12, WT, 0, -4); wall(WT, 8, -6, 0); wall(WT, 8, 6, 0);                                      // outer walls (front open = cutaway)
+wall(1.4, WT, -5.3, 0); wall(1.4, WT, -2.7, 0); wall(8, WT, 2, 0);                                  // middle wall (doorway into the bedroom only)
+wall(WT, 4, -2, -2); wall(WT, 4, 2, -2);                                                            // hidden rooms: closed on all sides
+wall(WT, 1.3, -2, .65); wall(WT, 1.0, -2, 3.5); wall(WT, 1.3, 2, .65); wall(WT, 1.0, 2, 3.5);       // front dividers with wide openings
+// HIDDEN rooms (back-middle, back-right): roofed, a lock on top — they open as the page grows
+const locks = [];
+for (const hx of [0, 4]) { box(3.88, .1, 3.88, hx, WH + .08, -2, roofM);
+  const lk = st.screen([1.5, 1.5], (c, t, W, H) => { c.clearRect(0, 0, W, H); c.fillStyle = 'rgba(16,18,58,.0)'; c.fillRect(0, 0, W, H);
+    c.strokeStyle = 'rgba(142,166,255,.55)'; c.lineWidth = 8; c.setLineDash([26, 18]); rr(c, 10, 10, W - 20, H - 20, 40); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = '#fff'; c.lineWidth = W * .045; c.beginPath(); c.arc(W / 2, H * .4, W * .12, Math.PI, 0); c.stroke();
+    c.fillStyle = '#fff'; rr(c, W * .32, H * .4, W * .36, H * .28, 18); c.fill(); c.fillStyle = '#2c2f72'; c.beginPath(); c.arc(W / 2, H * .51, W * .035, 0, 7); c.fill(); c.fillRect(W * .487, H * .52, W * .026, H * .08);
+    c.fillStyle = 'rgba(255,255,255,.8)'; c.textAlign = 'center'; font(c, 700, H * .1); c.fillText('בקרוב', W / 2, H * .85); }, {px: 500, light: .5});
+  lk.mesh.material.transparent = true; lk.mesh.rotation.x = -Math.PI / 2; lk.mesh.position.set(hx, WH + .14, -2); scene.add(lk.mesh); locks.push(lk); }
 // living room (front-left)
-indigo((await st.prop('home/rugRectangle', {x: -2.0, z: 2.0, fit: [2.4, 1.6]})).object, .7);
-indigo((await st.prop('home/loungeSofa', {x: -2.0, z: .55, fit: [2.0, .9]})).object, 1.15);
-indigo((await st.prop('home/pottedPlant', {x: -3.6, z: 3.1, h: .8})).object);
-const vac = (await st.prop('home/robotVacuum', {x: -2, z: 2, tint: 1})).object; vac.scale.multiplyScalar(1.6);
+await P('home/rugRectangle', {x: -4, z: 2.3, fit: [2.6, 1.8]}, .7);
+await P('home/loungeSofaCorner', {x: -4.4, z: .75, fit: [2.4, 1.2]}, 1.15);
+await P('home/tableCoffeeGlass', {x: -4, z: 2.0, fit: [1.0, .6]}, 1.2);
+await P('home/cabinetTelevision', {x: -4, z: 3.75, fit: [1.6, .45], ry: Math.PI}, 1.0);
+await P('home/televisionModern', {x: -4, z: 3.8, h: .6, ry: Math.PI, y: .45}, .7);
+await P('home/bookcaseOpen', {x: -5.75, z: 2.0, fit: [.4, 1.4], ry: Math.PI / 2}, 1.1);
+await P('home/lampRoundFloor', {x: -5.5, z: .5, h: 1.5}, 1.3);
+await P('home/pottedPlant', {x: -5.55, z: 3.6, h: .9});
+const vac = (await st.prop('home/robotVacuum', {x: -4, z: 2.6, tint: 1})).object; vac.scale.multiplyScalar(1.6);
 const vlidar = vac.getObjectByName('lidar'), vbrush = vac.getObjectByName('brush');
-// kitchen (front-right): counter along the right wall, humanoid side-on at the sink
-for (let i = 0; i < 3; i++) indigo((await st.prop('home/kitchenCabinet', {x: 3.62, z: 1.0 + i * .75, fit: [.6, .75], ry: -Math.PI / 2})).object, 1.2);
-indigo((await st.prop('home/kitchenSink', {x: 3.62, z: 2.5 + .75 - .75, fit: [.6, .75], ry: -Math.PI / 2})).object, 1.3);
-const hum = (await st.prop('robots/humanoid', {x: 2.9, z: 2.5, ry: Math.PI / 2, tint: 1})).object;
+// dining (front-middle)
+await P('home/rugRound', {x: 0, z: 2.1, fit: [2.4, 2.4]}, .7);
+await P('home/tableRound', {x: 0, z: 2.1, fit: [1.2, 1.2]}, 1.2);
+for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2 + Math.PI / 4; await P('home/chairModernCushion', {x: .85 * Math.sin(a), z: 2.1 + .85 * Math.cos(a), h: .85, ry: a + Math.PI}, 1.15); }
+await P('home/lampSquareFloor', {x: 1.6, z: 3.6, h: 1.5}, 1.3); await P('home/plantSmall2', {x: -1.6, z: .45, h: .6});
+// kitchen (front-right): counter along the right wall, island, fridge; humanoid side-on at the sink
+await P('home/kitchenFridgeLarge', {x: 5.6, z: .45, fit: [.7, .75], ry: -Math.PI / 2}, 1.25);
+for (let i = 0; i < 2; i++) await P('home/kitchenCabinet', {x: 5.62, z: 1.2 + i * .75, fit: [.6, .75], ry: -Math.PI / 2}, 1.2);
+await P('home/kitchenSink', {x: 5.62, z: 2.7, fit: [.6, .75], ry: -Math.PI / 2}, 1.3);
+await P('home/kitchenStove', {x: 5.62, z: 3.45, fit: [.6, .75], ry: -Math.PI / 2}, 1.2);
+await P('home/kitchenBar', {x: 3.4, z: 2.6, fit: [.7, 1.6], ry: Math.PI / 2}, 1.25);
+const hum = (await st.prop('robots/humanoid', {x: 4.9, z: 2.7, ry: Math.PI / 2, tint: 1})).object;
 const J = n => hum.getObjectByName(n);
 const dish = new THREE.Mesh(new THREE.CylinderGeometry(.13, .1, .02, 28), M(0xe6e8fb, {roughness: .4})); dish.castShadow = true; scene.add(dish);
-const rack = []; for (let i = 0; i < 4; i++) { const d = new THREE.Mesh(new THREE.CylinderGeometry(.12, .09, .02, 24), M(0xe6e8fb, {roughness: .4})); d.rotation.x = Math.PI / 2; d.position.set(3.62, 1.02, 1.2 + i * .07); d.visible = false; scene.add(d); rack.push(d); }
-// front yard (z 3.6..7.6): grass, side trees only (nothing between camera and house)
-const grass = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 4.2), M(0x253872)); grass.rotation.x = -Math.PI / 2; grass.position.set(0, .012, 5.65); grass.receiveShadow = true; scene.add(grass);
-indigo((await st.prop('outdoor/CommonTree_1', {x: -4.9, z: 6.6, h: 3.0})).object, 1.1); indigo((await st.prop('outdoor/CommonTree_2', {x: 4.9, z: 4.4, h: 2.6})).object, 1.1);
-indigo((await st.prop('outdoor/Bush_1', {x: -3.6, z: 7.3, h: .5})).object, 1.1); indigo((await st.prop('outdoor/Bush_2', {x: 3.6, z: 7.3, h: .5})).object, 1.1);
-const dog = (await st.prop('robots/robotDog', {x: 0, z: 5.6, tint: 1})).object; dog.scale.multiplyScalar(1.3);
+const rack = []; for (let i = 0; i < 4; i++) { const d = new THREE.Mesh(new THREE.CylinderGeometry(.12, .09, .02, 24), M(0xe6e8fb, {roughness: .4})); d.rotation.x = Math.PI / 2; d.position.set(5.62, 1.02, 1.6 + i * .07); d.visible = false; scene.add(d); rack.push(d); }
+// bedroom (back-left, open)
+await P('home/rugRectangle', {x: -4, z: -2.0, fit: [2.6, 2.0]}, .65);
+await P('home/bedDouble', {x: -4, z: -2.7, fit: [1.8, 2.1]}, 1.25);
+await P('home/cabinetBedDrawerTable', {x: -5.4, z: -3.6, h: .5}, 1.1); await P('home/cabinetBedDrawerTable', {x: -2.6, z: -3.6, h: .5}, 1.1);
+await P('home/lampRoundTable', {x: -5.4, z: -3.6, h: .35, y: .5}, 1.4);
+// front yard (z 4.1..9): grass, pool with deck + loungers, palms at the sides (nothing tall between camera and house)
+const grass = new THREE.Mesh(new THREE.PlaneGeometry(12.2, 5), M(0x253872)); grass.rotation.x = -Math.PI / 2; grass.position.set(0, .012, 6.55); grass.receiveShadow = true; scene.add(grass);
+const deck = box(6.0, .08, 3.6, 2.6, .04, 6.6, M(0x3a3e86));
+const PW = 4.4, PD = 2.2, PX = 2.6, PZ = 6.5;
+box(PW + .3, .1, .15, PX, .1, PZ - PD / 2 - .07, capM); box(PW + .3, .1, .15, PX, .1, PZ + PD / 2 + .07, capM); box(.15, .1, PD, PX - PW / 2 - .07, .1, PZ, capM); box(.15, .1, PD, PX + PW / 2 + .07, .1, PZ, capM);
+const waterM = new THREE.MeshStandardMaterial({color: 0x6f93f0, roughness: .12, metalness: .15, transparent: true, opacity: .92});
+const water = new THREE.Mesh(new THREE.PlaneGeometry(PW, PD, 40, 20), waterM); water.rotation.x = -Math.PI / 2; water.position.set(PX, .09, PZ); water.receiveShadow = true; scene.add(water);
+const wpos = water.geometry.attributes.position, w0 = Float32Array.from(wpos.array);
+const caust = st.screen([PW, PD], (c, t, W, H) => { c.clearRect(0, 0, W, H); c.strokeStyle = 'rgba(255,255,255,.28)'; c.lineWidth = 3;
+  for (let i = 0; i < 9; i++) { c.beginPath(); for (let x = 0; x <= W; x += 12) { const y = H * (.08 + i * .11) + 7 * Math.sin(x * .02 + t * 1.6 + i); x ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke(); } }, {px: 700, light: 0});
+caust.mesh.material.transparent = true; caust.mesh.material.depthWrite = false; caust.mesh.rotation.x = -Math.PI / 2; caust.mesh.position.set(PX, .095, PZ); scene.add(caust.mesh);
+for (let i = 0; i < 2; i++) await P('home/loungeChairRelax', {x: 1.6 + i * 1.6, z: 8.15, h: .8, ry: Math.PI}, 1.3);
+await P('outdoor/PalmTree_1', {x: -6.6, z: 8.4, h: 3.6}, 1.1); await P('outdoor/PalmTree_3', {x: 6.7, z: 4.6, h: 3.2}, 1.1);
+await P('outdoor/Bush_1', {x: -6.6, z: 4.6, h: .6}, 1.1); await P('outdoor/Bush_2', {x: 5.9, z: 8.6, h: .6}, 1.1); await P('outdoor/Flowers', {x: -.4, z: 8.6, h: .3}, 1.3);
+const dog = (await st.prop('robots/robotDog', {x: -3, z: 6.5, tint: 1})).object; dog.scale.multiplyScalar(1.3);
 const dlidar = dog.getObjectByName('lidar');
-// back strip: empty parking spot (left) + a small garage with an empty drone pad on its roof (right)
-const drive = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 4.4), M(0x191b48)); drive.rotation.x = -Math.PI / 2; drive.position.set(0, .01, -5.8); drive.receiveShadow = true; scene.add(drive);
-const park = dashRect(-3.4, -7.6, -.8, -4.1, .02);
-const parkM = new THREE.MeshBasicMaterial({color: ACC, transparent: true, opacity: 0, depthWrite: false}); const parkFill = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.5), parkM); parkFill.rotation.x = -Math.PI / 2; parkFill.position.set(-2.1, .015, -5.85); scene.add(parkFill);
-const GX = 2.2, GZ = -5.9, GH = 2.2; box(2.8, GH, 2.8, GX, GH / 2, GZ, wallM); box(2.9, .1, 2.9, GX, GH + .05, GZ, capM);
-const padM = M(0x2a2d6c); const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, .04, 48), padM); pad.position.set(GX, GH + .12, GZ); pad.receiveShadow = true; scene.add(pad);
-const padRingM = M(ACC, {transparent: true, opacity: .45}); const padRing = new THREE.Mesh(new THREE.TorusGeometry(1.05, .03, 10, 64), padRingM); padRing.rotation.x = Math.PI / 2; padRing.position.set(GX, GH + .15, GZ); scene.add(padRing);
-const hM = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .45}); for (const [w, d, x] of [[.1, .9, -.28], [.1, .9, .28], [.56, .1, 0]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, .01, d), hM); b.position.set(GX + x, GH + .145, GZ); scene.add(b); }
+// back strip: empty parking spot (left) + a garage with an empty drone pad on its roof (right)
+const drive = new THREE.Mesh(new THREE.PlaneGeometry(12.2, 5), M(0x191b48)); drive.rotation.x = -Math.PI / 2; drive.position.set(0, .01, -6.6); drive.receiveShadow = true; scene.add(drive);
+const park = dashRect(-4.6, -8.7, -1.8, -4.8, .02);
+const parkM = new THREE.MeshBasicMaterial({color: ACC, transparent: true, opacity: 0, depthWrite: false}); const parkFill = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 3.9), parkM); parkFill.rotation.x = -Math.PI / 2; parkFill.position.set(-3.2, .015, -6.75); scene.add(parkFill);
+const GX = 2.6, GZ = -6.7, GH = 2.4; box(3.2, GH, 3.2, GX, GH / 2, GZ, wallM); box(3.3, .1, 3.3, GX, GH + .05, GZ, capM);
+const padM = M(0x2a2d6c); const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.3, 1.3, .04, 48), padM); pad.position.set(GX, GH + .12, GZ); pad.receiveShadow = true; scene.add(pad);
+const padRingM = M(ACC, {transparent: true, opacity: .45}); const padRing = new THREE.Mesh(new THREE.TorusGeometry(1.2, .035, 10, 64), padRingM); padRing.rotation.x = Math.PI / 2; padRing.position.set(GX, GH + .15, GZ); scene.add(padRing);
+const hM = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .45}); for (const [w, d, x] of [[.12, 1.0, -.32], [.12, 1.0, .32], [.64, .12, 0]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, .01, d), hM); b.position.set(GX + x, GH + .145, GZ); scene.add(b); }
 
 // ---------- charging stations: post + panel with 10 blank name plates (names only for followers who comment "בית") ----------
 const ST = {you: 0};
@@ -77,14 +117,14 @@ const station = (x, z, ry, title, mine = false) => {
   }, {px: 640, light: .5});
   scr.mesh.position.set(0, 1.25, -.24); g.add(scr.mesh); return {g, scr};
 };
-const stV = station(-3.35, .75, .45, 'שואב', true), stH = station(1.0, .75, -.2, 'רובוט דמוי אדם'), stD = station(3.2, 6.9, -.5, 'כלב רובוטי');
+const stV = station(-2.55, 1.9, -.35, 'שואב', true), stH = station(2.55, .75, .2, 'רובוט דמוי אדם'), stD = station(-5.3, 8.2, .5, 'כלב רובוטי');
 
 // lights: one soft spot per area + a wide fill for the whole house
-spot([-2, 6, 6], [-2, 0, 1.5], 40); spot([2.5, 6, 6], [2.6, .6, 1.8], 40); spot([0, 6, 10], [0, 0, 5.6], 34); spot([0, 8, -1], [0, 1.2, -5.8], 32); spot([0, 16, 14], [0, 0, 0], 70, 34, .75);
+spot([-4, 6, 6], [-4, 0, 2], 40); spot([0, 6, 6], [0, 0, 2], 30); spot([4, 6, 6], [4.6, .6, 2.2], 40); spot([-4, 6, 2], [-4, 0, -2], 26); spot([0, 7, 11], [0, 0, 6.5], 40, 16, .75); spot([0, 9, -2], [0, 1.2, -6.6], 34, 16, .7); spot([0, 22, 18], [0, 0, 0], 90, 45, .75);
 
 st.frame(t => {
   // vacuum: loops around the rug, back to its station
-  const va = t * .55; vac.position.set(-2.0 + 1.0 * Math.cos(va), .06, 2.1 + .55 * Math.sin(va)); vac.rotation.y = -va; if (vlidar) vlidar.rotation.y = t * 6; if (vbrush) vbrush.rotation.y = t * 10;
+  const va = t * .55; vac.position.set(-4.0 + 1.1 * Math.cos(va), .06, 2.5 + .45 * Math.sin(va)); vac.rotation.y = -va; if (vlidar) vlidar.rotation.y = t * 6; if (vbrush) vbrush.rotation.y = t * 10;
   // humanoid: washing a dish at the sink, puts it in the rack (one more per cycle)
   const w = t * 3.2;
   for (const s of ['L', 'R']) { const sh = J('shoulder' + s), el = J('elbow' + s), wr = J('wrist' + s);
@@ -93,7 +133,7 @@ st.frame(t => {
   const wR = J('wristR'); if (wR) { wR.getWorldPosition(dish.position); dish.position.y += -.04; dish.rotation.x = .5 + .3 * Math.sin(w * 2); }
   rack.forEach((d, i) => d.visible = t > 3 + i * 6);
   // robot dog: patrols a loop in the yard, legs trot
-  const da = t * .4, dx = 2.2 * Math.cos(da), dz = 5.6 + 1.0 * Math.sin(da); dog.position.set(dx, 0, dz); dog.rotation.y = -da + Math.PI;
+  const da = t * .4, dx = -3.3 + 1.7 * Math.cos(da), dz = 6.5 + 1.2 * Math.sin(da); dog.position.set(dx, 0, dz); dog.rotation.y = -da + Math.PI;
   for (const [k, ph] of [['FL', 0], ['BR', 0], ['FR', Math.PI], ['BL', Math.PI]]) { const h = dog.getObjectByName('hip' + k), kn = dog.getObjectByName('knee' + k); if (h) h.rotation.x = .35 * Math.sin(t * 7 + ph); if (kn) kn.rotation.x = -.5 + .35 * Math.max(0, Math.sin(t * 7 + ph)); }
   if (dlidar) dlidar.rotation.y = t * 5;
   // your-name plate glows on "השם שלכם" (placeholder only — never a real name)
@@ -103,32 +143,34 @@ st.frame(t => {
   const pk = win(t, A[21] - .1, END + 1, .35), dr = win(t, A[22] - .1, END + 1, .35);
   parkM.opacity = .16 * pk; park.material.opacity = .35 + .6 * pk;
   padRingM.opacity = .45 + .5 * dr; padRing.scale.setScalar(1 + .04 * dr * Math.sin(t * 5)); hM.opacity = .45 + .5 * dr;
-  fut.forEach(l => l.material.opacity = .25 + .35 * win(t, A[1], A[6], .4) + .35 * win(t, A[20] - .3, END + 1, .4));
+  const lkA = .55 + .45 * Math.max(win(t, A[1], A[6], .4), win(t, A[19] - .3, A[21], .4)) * (.7 + .3 * Math.sin(t * 5)); locks.forEach(l => { l.mesh.material.opacity = lkA; l.update(t); });
+  for (let i = 0; i < wpos.count; i++) { const x = w0[i * 3], y = w0[i * 3 + 1]; wpos.setZ(i, .012 * Math.sin(x * 3 + t * 2) + .01 * Math.sin(y * 4 - t * 1.6)); } wpos.needsUpdate = true; water.geometry.computeVertexNormals(); caust.update(t);
 
   // one world, continuous camera (grouper): whole house → rooms → stations → carport → back to the whole house
   const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
-  const TW = [0, .2, -.6], OW = [0, 14.5, 12.5];             // whole world from above (frame 0 = last frame)
-  const TV = [-2.0, .2, 1.8], OV = [0, 3.0, 3.6];            // living room / vacuum
-  const TK = [3.0, .9, 2.2], OK = [-1.6, 1.8, 2.8];          // kitchen / humanoid side-on
-  const TY = [0, .3, 5.6], OY = [0, 3.4, 4.2];               // yard / dog
-  const TS = [-3.35, 1.15, .75], OS = [.9, .7, 2.6];          // vacuum station close-up
-  const TC = [0, 1.0, -5.9], OC = [0, 7.5, 6.8];             // back strip: parking + garage pad
+  const TW = [0, .2, 0], OW = [0, 17.5, 14.0];               // whole world from above (frame 0 = last frame)
+  const TV = [-4.0, .2, 2.3], OV = [0, 3.2, 3.8];            // living room / vacuum
+  const TK = [5.0, .9, 2.6], OK = [-1.8, 1.8, 2.8];          // kitchen / humanoid side-on
+  const TY = [-1.2, .3, 6.6], OY = [0, 4.0, 4.6];            // yard / dog + pool
+  const TS = [-2.55, 1.15, 1.9], OS = [-.6, .7, 2.7];        // vacuum station close-up
+  const TH = [2, 1.0, -2.0], OH = [0, 5.2, 5.6];             // hidden rooms (locks)
+  const TC = [-.3, .8, -6.6], OC = [0, 8.0, 7.2];            // back strip: parking + garage pad
   const [cp, ct] = camPath(t, [
     sh(0, TW, OW, 1.0), sh(A[1] - .2, TW, OW, .85),                                                  // hook: the whole house, push in
-    sh(A[2], [0, .2, -1.6], OW, .6), sh(A[5] + .3, [0, .2, -1.2], OW, .66),                           // grows with you: over the empty rooms
-    sh(A[6] + .2, TW, OW, .75), sh(A[8] - .1, TV, OV, 1.25), sh(A[9] + .3, TV, OV, 1.0),               // "already three" → vacuum
+    sh(A[2], TH, OH, 1.15), sh(A[5] + .3, TH, OH, .92),                                              // grows with you: the locked hidden rooms
+    sh(A[6] + .2, TW, OW, .72), sh(A[8] - .1, TV, OV, 1.25), sh(A[9] + .3, TV, OV, 1.0),               // "already three" → vacuum
     sh(A[10] + .2, TK, OK, 1.15), sh(A[11] + .4, TK, OK, .92),                                        // humanoid washing dishes
-    sh(A[12] + .2, TY, OY, 1.2), sh(A[13] + .5, TY, OY, .95),                                        // dog in the yard
-    sh(A[14] + .3, TS, OS, 1.35), sh(A[15] + .6, TS, OS, 1.05), sh(A[16] + .6, [-3.35, 1.25, .75], OS, .85), sh(A[18] + .3, TS, OS, 1.05),   // station: 10 plates, your name
-    sh(A[19] + .2, [0, .2, -2.5], OW, .62), sh(A[21] + .1, [-.6, .6, -5.4], OC, 1.0), sh(A[22] + .3, [.4, 1.2, -5.4], OC, .92),   // vote: parking spot → roof pad
+    sh(A[12] + .2, TY, OY, 1.2), sh(A[13] + .5, TY, OY, .95),                                        // dog in the yard, pool
+    sh(A[14] + .3, TS, OS, 1.35), sh(A[15] + .6, TS, OS, 1.05), sh(A[16] + .6, [-2.55, 1.25, 1.9], OS, .85), sh(A[18] + .3, TS, OS, 1.05),   // station: 10 plates, your name
+    sh(A[19] + .2, TH, OH, 1.1), sh(A[21] + .1, [-1.6, .6, -6.4], OC, 1.0), sh(A[22] + .3, [.8, 1.2, -6.4], OC, .92),   // the 4th robot: locks → parking spot → roof pad
     sh(B[22] + .1, TW, OW, .9), sh(END, TW, OW, 1.0)]);                                               // pull back to the whole house
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
-    L(A[3] - .1, A[5] + .8, 'טיקטוק', V(-2, .1, -1.8), 0, -230); L(A[4] - .1, A[5] + .8, 'אינסטגרם', V(2, .1, -1.8), 0, -330); L(A[4] + .4, A[5] + .8, 'פייסבוק', V(0, .1, -2.9), 0, -430);
+    L(A[3] - .1, A[5] + .8, 'טיקטוק', V(0, 1.2, -2), -150, -300); L(A[4] - .1, A[5] + .8, 'אינסטגרם', V(4, 1.2, -2), 60, -420); L(A[4] + .4, A[5] + .8, 'פייסבוק', V(0, 1.2, -1.2), -120, 330);
     L(A[8], A[9] + .6, 'שואב רובוטי', vac.position.clone().add(V(0, .2, 0)), 0, -330);
-    L(A[10], A[11] + .6, 'רובוט דמוי אדם', V(2.9, 1.75, 2.5), -120, -150);
+    L(A[10], A[11] + .6, 'רובוט דמוי אדם', V(4.9, 1.75, 2.7), -120, -150);
     L(A[12], A[13] + .6, 'כלב רובוטי', dog.position.clone().add(V(0, .8, 0)), 0, -320);
-    L(A[21], END - .3, 'מכונית?', V(-2.1, .05, -5.4), -60, 300); L(A[22], END - .3, 'רחפן?', V(GX, GH + .2, GZ), 40, 330);
+    L(A[21], END - .3, 'מכונית?', V(-3.2, .05, -6.4), -60, 300); L(A[22], END - .3, 'רחפן?', V(GX, GH + .2, GZ), 40, 330);
     // counter (the series' running score), from "יותר משלושים"
     const ca = win(t2, A[6], A[8] - .1, .3) + win(t2, B[22] - .2, END + 1, .35);
     if (ca > .01) { st.counter(540, 470, '30+ עוקבים · 3 רובוטים · הבא ב־40', '', '#8ea6ff', Math.min(1, ca), 48); }
