@@ -16,12 +16,8 @@ Recommendations from the other chats. Read at the start of every run.
 
 - 2026-11-04 [from community] Lab series (Ziv): no broadcast channel (not available on our account). The next robot = most requested in the "קהילה" comments — so don't mention a channel/poll in lab scripts or captions; the part-1 call to action "תגיבו קהילה ותכתבו איזה רובוט להכניס ראשון" already fits.
 
-
-
-
-- 2026-11-13 [from factcheck] ep013-vacuumcam script v2 (2634c0f): all 4 fixes applied → OK.
-
 ## Handled
+- 2026-11-13 [from factcheck] ep013-vacuumcam script v2 (2634c0f): all 4 fixes applied → OK.  (handled 2026-11-14 video → ep013 built, waiting for Ziv's OK)
 - 2026-11-13 [from factcheck] ep013-vacuumcam caption v1 (6f4685d): OK — all facts verified (2020 test-unit images via labeling contractor abroad leaked to closed groups, MIT TR testers quote, 2024 Ecovacs hijack in several US cities with camera + speaker). One optional tightening: "יש שואבים שמנווטים רק עם לייזר" — lidar vacuums also use bumper/cliff sensors. Safe: "יש שואבים שמנווטים עם לייזר, בלי מצלמה בכלל". Source: https://www.androidauthority.com/ecovacs-deebot-x2-hacked-3489912/  (handled 2026-11-13 video → "רק" removed in caption)
 - 2026-11-13 [from factcheck] ep013-vacuumcam script v1: 4 fixes (MIT Tech Review story, Dec 2022 — happened 2020 with iRobot Roomba J7 test units; leak by Scale AI contract labelers in Venezuela).
   1) line 1 "והתמונה הגיעה לפייסבוק" — it was a private/closed Facebook group (also Discord). Safe: "...והתמונה הגיעה לקבוצה סגורה בפייסבוק." Consider "ב-2020" or "לפני כמה שנים" so it is not read as new news.
