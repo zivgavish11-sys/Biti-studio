@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP014-home1 — series "הבית בעוד 30 שנה" part 1 (docs/series/home2056.md). Hero look, one world: a dollhouse cutaway seen from above.
+// Phrases: 0 hook | 1 גדל בזכותכם | 2-5 כל 10 עוקבים... רובוט חדש | 6-7 יותר משלושים, שלושה | 8-9 שואב | 10-11 דמוי אדם, כלים | 12-13 כלב, חצר
+//          14-15 עמדת טעינה, 10 שמות | 16-18 השם שלכם, תעקבו, "בית" | 19-20 תבחרו את הרביעי | 21 מכונית בחניה | 22 רחפן עם קניות
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+const st = await studio({
+  look: 'hero', fog: .012,
+  keys: ['בזכותכם', 'עשרה', 'שלושה', 'הסלון', 'כלים', 'החצר', 'טעינה', 'השם', '"בית"', 'הרביעי', 'מכונית', 'רחפן'],
+  hookEnd: 2.9, hook: ['הבית שלכם', 'בעוד <span class="pill">30 שנה</span>'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
+const ACC = st.HERO_ACC;
+st.stage({r: 160, grid: 0, spot: null});
+const spot = (p, tg, pw = 30, reach = 14, ang = .6) => { const s = new THREE.SpotLight(0xffffff, pw, reach, ang, .8); s.position.set(...p); s.target.position.set(...tg); s.castShadow = true; s.shadow.mapSize.set(1024, 1024); scene.add(s, s.target); };
+const box = (w, h, d, x, y, z, m) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = b.receiveShadow = true; scene.add(b); return b; };
+const font = (c, w, s) => c.font = `${w} ${s}px Rubik`;
+const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+const dashRect = (x0, z0, x1, z1, y = .07) => { const g = new THREE.BufferGeometry().setFromPoints([V(x0, y, z0), V(x1, y, z0), V(x1, y, z1), V(x0, y, z1), V(x0, y, z0)]);
+  const l = new THREE.Line(g, new THREE.LineDashedMaterial({color: 0xffffff, dashSize: .18, gapSize: .12, transparent: true, opacity: .35})); l.computeLineDistances(); scene.add(l); return l; };
+
+// ---------- the world (vertical-friendly): back strip (parking + garage with roof pad) · house (4 rooms) · front yard ----------
+const wallM = M(0x3b3f8a), capM = M(0x5a5fb0), fl1 = M(0x272a66), fl2 = M(0x22255c), flE = M(0x1d2052);
+const indigo = (o, k = 1) => o.traverse(q => { if (q.isMesh) { const l = q.material.color ? q.material.color.getHSL({}).l : .5; q.material = M(new THREE.Color().setHSL(.66, .42, Math.min(.62, (.16 + .5 * l) * k))); q.castShadow = q.receiveShadow = true; } });
+box(4, .06, 3.5, -2, .03, 1.75, fl1); box(4, .06, 3.5, 2, .03, 1.75, fl2); box(4, .06, 3.5, -2, .03, -1.75, flE); box(4, .06, 3.5, 2, .03, -1.75, flE);
+const WH = 1.0, WT = .12;
+const wall = (w, d, x, z) => { box(w, WH, d, x, WH / 2, z, wallM); box(w + .002, .03, d + .002, x, WH + .015, z, capM); };
+wall(8.12, WT, 0, -3.5); wall(WT, 7, -4, 0); wall(WT, 7, 4, 0);                                   // outer walls (front open = cutaway)
+wall(2.6, WT, -2.7, 0); wall(2.6, WT, 2.7, 0); wall(WT, 1.6, 0, -2.7); wall(WT, 1.6, 0, 2.7);       // inner, with doorways
+const fut = [dashRect(-3.3, -3.0, -.7, -.6), dashRect(.7, -3.0, 3.3, -.6)];                        // empty rooms = future robots
+// living room (front-left)
+indigo((await st.prop('home/rugRectangle', {x: -2.0, z: 2.0, fit: [2.4, 1.6]})).object, .7);
+indigo((await st.prop('home/loungeSofa', {x: -2.0, z: .55, fit: [2.0, .9]})).object, 1.15);
+indigo((await st.prop('home/pottedPlant', {x: -3.6, z: 3.1, h: .8})).object);
+const vac = (await st.prop('home/robotVacuum', {x: -2, z: 2, tint: 1})).object; vac.scale.multiplyScalar(1.6);
+const vlidar = vac.getObjectByName('lidar'), vbrush = vac.getObjectByName('brush');
+// kitchen (front-right): counter along the right wall, humanoid side-on at the sink
+for (let i = 0; i < 3; i++) indigo((await st.prop('home/kitchenCabinet', {x: 3.62, z: 1.0 + i * .75, fit: [.6, .75], ry: -Math.PI / 2})).object, 1.2);
+indigo((await st.prop('home/kitchenSink', {x: 3.62, z: 2.5 + .75 - .75, fit: [.6, .75], ry: -Math.PI / 2})).object, 1.3);
+const hum = (await st.prop('robots/humanoid', {x: 2.9, z: 2.5, ry: Math.PI / 2, tint: 1})).object;
+const J = n => hum.getObjectByName(n);
+const dish = new THREE.Mesh(new THREE.CylinderGeometry(.13, .1, .02, 28), M(0xe6e8fb, {roughness: .4})); dish.castShadow = true; scene.add(dish);
+const rack = []; for (let i = 0; i < 4; i++) { const d = new THREE.Mesh(new THREE.CylinderGeometry(.12, .09, .02, 24), M(0xe6e8fb, {roughness: .4})); d.rotation.x = Math.PI / 2; d.position.set(3.62, 1.02, 1.2 + i * .07); d.visible = false; scene.add(d); rack.push(d); }
+// front yard (z 3.6..7.6): grass, side trees only (nothing between camera and house)
+const grass = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 4.2), M(0x253872)); grass.rotation.x = -Math.PI / 2; grass.position.set(0, .012, 5.65); grass.receiveShadow = true; scene.add(grass);
+indigo((await st.prop('outdoor/CommonTree_1', {x: -4.9, z: 6.6, h: 3.0})).object, 1.1); indigo((await st.prop('outdoor/CommonTree_2', {x: 4.9, z: 4.4, h: 2.6})).object, 1.1);
+indigo((await st.prop('outdoor/Bush_1', {x: -3.6, z: 7.3, h: .5})).object, 1.1); indigo((await st.prop('outdoor/Bush_2', {x: 3.6, z: 7.3, h: .5})).object, 1.1);
+const dog = (await st.prop('robots/robotDog', {x: 0, z: 5.6, tint: 1})).object; dog.scale.multiplyScalar(1.3);
+const dlidar = dog.getObjectByName('lidar');
+// back strip: empty parking spot (left) + a small garage with an empty drone pad on its roof (right)
+const drive = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 4.4), M(0x191b48)); drive.rotation.x = -Math.PI / 2; drive.position.set(0, .01, -5.8); drive.receiveShadow = true; scene.add(drive);
+const park = dashRect(-3.4, -7.6, -.8, -4.1, .02);
+const parkM = new THREE.MeshBasicMaterial({color: ACC, transparent: true, opacity: 0, depthWrite: false}); const parkFill = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 3.5), parkM); parkFill.rotation.x = -Math.PI / 2; parkFill.position.set(-2.1, .015, -5.85); scene.add(parkFill);
+const GX = 2.2, GZ = -5.9, GH = 2.2; box(2.8, GH, 2.8, GX, GH / 2, GZ, wallM); box(2.9, .1, 2.9, GX, GH + .05, GZ, capM);
+const padM = M(0x2a2d6c); const pad = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, .04, 48), padM); pad.position.set(GX, GH + .12, GZ); pad.receiveShadow = true; scene.add(pad);
+const padRingM = M(ACC, {transparent: true, opacity: .45}); const padRing = new THREE.Mesh(new THREE.TorusGeometry(1.05, .03, 10, 64), padRingM); padRing.rotation.x = Math.PI / 2; padRing.position.set(GX, GH + .15, GZ); scene.add(padRing);
+const hM = new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .45}); for (const [w, d, x] of [[.1, .9, -.28], [.1, .9, .28], [.56, .1, 0]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(w, .01, d), hM); b.position.set(GX + x, GH + .145, GZ); scene.add(b); }
+
+// ---------- charging stations: post + panel with 10 blank name plates (names only for followers who comment "בית") ----------
+const ST = {you: 0};
+const station = (x, z, ry, title, mine = false) => {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .04, 40), M(0x2e3176)); base.position.y = .08; base.receiveShadow = true; g.add(base);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(.4, .02, 8, 48), M(ACC)); ring.rotation.x = Math.PI / 2; ring.position.y = .1; g.add(ring);
+  const post = new THREE.Mesh(new THREE.BoxGeometry(.1, 1.15, .1), M(0x4a4f9c)); post.position.set(0, .62, -.3); post.castShadow = true; g.add(post);
+  const scr = st.screen([.62, .92], (c, t, W, H) => { c.fillStyle = '#10123a'; rr(c, 0, 0, W, H, 26); c.fill(); c.strokeStyle = 'rgba(142,166,255,.6)'; c.lineWidth = 6; rr(c, 4, 4, W - 8, H - 8, 22); c.stroke();
+    c.textAlign = 'center'; c.direction = 'rtl'; c.fillStyle = '#fff'; font(c, 700, H * .075); c.fillText(title, W / 2, H * .1);
+    for (let i = 0; i < 10; i++) { const col = i % 2, row = Math.floor(i / 2), px = W * (col ? .08 : .52), py = H * (.15 + row * .165), pw = W * .4, ph = H * .13;
+      const hl = mine && i === 0 ? ST.you : 0;
+      c.fillStyle = hl ? `rgba(142,166,255,${.25 + .55 * hl})` : 'rgba(255,255,255,.08)'; rr(c, px, py, pw, ph, 12); c.fill();
+      c.strokeStyle = hl ? '#8ea6ff' : 'rgba(255,255,255,.22)'; c.lineWidth = 3; rr(c, px, py, pw, ph, 12); c.stroke();
+      if (hl > .05) { c.globalAlpha = hl; c.fillStyle = '#fff'; font(c, 700, H * .045); c.fillText('השם שלך?', px + pw / 2, py + ph * .64); c.globalAlpha = 1; }
+      else { c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(px + pw * .2, py + ph * .48, pw * .6, 3); } }
+  }, {px: 640, light: .5});
+  scr.mesh.position.set(0, 1.25, -.24); g.add(scr.mesh); return {g, scr};
+};
+const stV = station(-3.35, .75, .45, 'שואב', true), stH = station(1.0, .75, -.2, 'רובוט דמוי אדם'), stD = station(3.2, 6.9, -.5, 'כלב רובוטי');
+
+// lights: one soft spot per area + a wide fill for the whole house
+spot([-2, 6, 6], [-2, 0, 1.5], 40); spot([2.5, 6, 6], [2.6, .6, 1.8], 40); spot([0, 6, 10], [0, 0, 5.6], 34); spot([0, 8, -1], [0, 1.2, -5.8], 32); spot([0, 16, 14], [0, 0, 0], 70, 34, .75);
+
+st.frame(t => {
+  // vacuum: loops around the rug, back to its station
+  const va = t * .55; vac.position.set(-2.0 + 1.0 * Math.cos(va), .06, 2.1 + .55 * Math.sin(va)); vac.rotation.y = -va; if (vlidar) vlidar.rotation.y = t * 6; if (vbrush) vbrush.rotation.y = t * 10;
+  // humanoid: washing a dish at the sink, puts it in the rack (one more per cycle)
+  const w = t * 3.2;
+  for (const s of ['L', 'R']) { const sh = J('shoulder' + s), el = J('elbow' + s), wr = J('wrist' + s);
+    if (sh) sh.rotation.x = -.95 + .12 * Math.sin(w + (s === 'L' ? 0 : 1.6)); if (el) el.rotation.x = -.9 + .25 * Math.sin(w * 1.3 + (s === 'L' ? .5 : 2)); if (wr) wr.rotation.z = .4 * Math.sin(w * 2); }
+  const torso = J('torso'); if (torso) torso.rotation.y = .06 * Math.sin(t * .8);
+  const wR = J('wristR'); if (wR) { wR.getWorldPosition(dish.position); dish.position.y += -.04; dish.rotation.x = .5 + .3 * Math.sin(w * 2); }
+  rack.forEach((d, i) => d.visible = t > 3 + i * 6);
+  // robot dog: patrols a loop in the yard, legs trot
+  const da = t * .4, dx = 2.2 * Math.cos(da), dz = 5.6 + 1.0 * Math.sin(da); dog.position.set(dx, 0, dz); dog.rotation.y = -da + Math.PI;
+  for (const [k, ph] of [['FL', 0], ['BR', 0], ['FR', Math.PI], ['BL', Math.PI]]) { const h = dog.getObjectByName('hip' + k), kn = dog.getObjectByName('knee' + k); if (h) h.rotation.x = .35 * Math.sin(t * 7 + ph); if (kn) kn.rotation.x = -.5 + .35 * Math.max(0, Math.sin(t * 7 + ph)); }
+  if (dlidar) dlidar.rotation.y = t * 5;
+  // your-name plate glows on "השם שלכם" (placeholder only — never a real name)
+  ST.you = sm(A[16], A[16] + .4, t) * (1 - sm(A[19], A[19] + .4, t)) * (.75 + .25 * Math.sin(t * 5));
+  for (const s of [stV, stH, stD]) s.scr.update(t);
+  // vote: parking spot, then the roof pad light up
+  const pk = win(t, A[21] - .1, END + 1, .35), dr = win(t, A[22] - .1, END + 1, .35);
+  parkM.opacity = .16 * pk; park.material.opacity = .35 + .6 * pk;
+  padRingM.opacity = .45 + .5 * dr; padRing.scale.setScalar(1 + .04 * dr * Math.sin(t * 5)); hM.opacity = .45 + .5 * dr;
+  fut.forEach(l => l.material.opacity = .25 + .35 * win(t, A[1], A[6], .4) + .35 * win(t, A[20] - .3, END + 1, .4));
+
+  // one world, continuous camera (grouper): whole house → rooms → stations → carport → back to the whole house
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const TW = [0, .2, -.6], OW = [0, 14.5, 12.5];             // whole world from above (frame 0 = last frame)
+  const TV = [-2.0, .2, 1.8], OV = [0, 3.0, 3.6];            // living room / vacuum
+  const TK = [3.0, .9, 2.2], OK = [-1.6, 1.8, 2.8];          // kitchen / humanoid side-on
+  const TY = [0, .3, 5.6], OY = [0, 3.4, 4.2];               // yard / dog
+  const TS = [-3.35, 1.15, .75], OS = [.9, .7, 2.6];          // vacuum station close-up
+  const TC = [0, 1.0, -5.9], OC = [0, 7.5, 6.8];             // back strip: parking + garage pad
+  const [cp, ct] = camPath(t, [
+    sh(0, TW, OW, 1.0), sh(A[1] - .2, TW, OW, .85),                                                  // hook: the whole house, push in
+    sh(A[2], [0, .2, -1.6], OW, .6), sh(A[5] + .3, [0, .2, -1.2], OW, .66),                           // grows with you: over the empty rooms
+    sh(A[6] + .2, TW, OW, .75), sh(A[8] - .1, TV, OV, 1.25), sh(A[9] + .3, TV, OV, 1.0),               // "already three" → vacuum
+    sh(A[10] + .2, TK, OK, 1.15), sh(A[11] + .4, TK, OK, .92),                                        // humanoid washing dishes
+    sh(A[12] + .2, TY, OY, 1.2), sh(A[13] + .5, TY, OY, .95),                                        // dog in the yard
+    sh(A[14] + .3, TS, OS, 1.35), sh(A[15] + .6, TS, OS, 1.05), sh(A[16] + .6, [-3.35, 1.25, .75], OS, .85), sh(A[18] + .3, TS, OS, 1.05),   // station: 10 plates, your name
+    sh(A[19] + .2, [0, .2, -2.5], OW, .62), sh(A[21] + .1, [-.6, .6, -5.4], OC, 1.0), sh(A[22] + .3, [.4, 1.2, -5.4], OC, .92),   // vote: parking spot → roof pad
+    sh(B[22] + .1, TW, OW, .9), sh(END, TW, OW, 1.0)]);                                               // pull back to the whole house
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
+    L(A[3] - .1, A[5] + .8, 'טיקטוק', V(-2, .1, -1.8), 0, -230); L(A[4] - .1, A[5] + .8, 'אינסטגרם', V(2, .1, -1.8), 0, -330); L(A[4] + .4, A[5] + .8, 'פייסבוק', V(0, .1, -2.9), 0, -430);
+    L(A[8], A[9] + .6, 'שואב רובוטי', vac.position.clone().add(V(0, .2, 0)), 0, -330);
+    L(A[10], A[11] + .6, 'רובוט דמוי אדם', V(2.9, 1.75, 2.5), -120, -150);
+    L(A[12], A[13] + .6, 'כלב רובוטי', dog.position.clone().add(V(0, .8, 0)), 0, -320);
+    L(A[21], END - .3, 'מכונית?', V(-2.1, .05, -5.4), -60, 300); L(A[22], END - .3, 'רחפן?', V(GX, GH + .2, GZ), 40, 330);
+    // counter (the series' running score), from "יותר משלושים"
+    const ca = win(t2, A[6], A[8] - .1, .3) + win(t2, B[22] - .2, END + 1, .35);
+    if (ca > .01) { st.counter(540, 470, '30+ עוקבים · 3 רובוטים · הבא ב־40', '', '#8ea6ff', Math.min(1, ca), 48); }
+  }};
+});
+document.getElementById('follow').style.display = 'none';  // series: no generic follow card (CTA is spoken + the vote)
+st.ready();
+</script></body></html>
