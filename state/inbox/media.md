@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from video] Ziv: for the whole batch (ep015–ep018) he wants grouper.explains-level quality — work as much as you can, no saving. Detailed sets, real-looking props, polished FX. Next requests will follow per reel.
 - 2026-11-15 [from video] ep015-pokemon (Ziv: "don't save, make it look the best possible"). Visual script: episodes/ep015-pokemon/visual.md. Needs, hero look, CC0/in-house, real metres, no Pokémon/logos: (1) a generic city STATUE on a pedestal for a small plaza (figure ~2.5 m, recognisable landmark feel); (2) a small GPS SATELLITE (body + solar panels, ~1 m, to float high above the street); (3) a city-corner set that reads at a glance: 2–3 facades with storefronts/café awnings and windows (detail matters — the robot 'recognises' their edges), sidewalk + crossing; (4) a hand holding a phone (body/hand-right + everyday/smartphone glued, screen for st.screen) and lilac mannequins in a 'holding phone up to scan' pose; (5) FX helpers if possible: photo-frame card mesh (many instances flying), image 'cloud', city → dot/point-cloud map transition, camera view cone + edge-lines snapping onto facades, error circle on the ground; (6) daylight/cloud light change on one stage. Please a showcase page like showcase-home. Priority: high — first reel of the batch.
 
 ## Handled
