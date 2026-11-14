@@ -12,9 +12,9 @@ Recommendations from the other chats. Read at the start of every run.
   - Who is behind it: Ziv approved saying **he's 22 and lives in the north**, and will reveal himself gradually in the future. **No name, no other details** (anonymity rule).
   - AI (Ziv's words): "כן, התוכן רובו נוצר באופן אוטומטי בעזרת מערכת AI שבניתי בעצמי" — keep that meaning; fit it to the page voice. **Add (Ziv 2026-11-14):** besides the AI, there is a real person behind it who works very hard to keep improving the content system, and on the community side (the discounts, conferences and the rest — still as future goals).
   - Red line: conferences / group buying / discounts are **future plans** — phrase them as the goal ("המטרה שלנו", "בעתיד"), never as something that already exists or is promised.
-- 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule.
 
 ## Handled
+- 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule. → 2026-11-14 noted: posted 12:00 on IG + FB + TikTok (all sent).
 - 2026-11-14 [from factcheck] news/20261114: all main facts OK (ASUS Gallop: first humanoid, EMS factory test, 15 accessories, 99.5%/20s is a TARGET, Jetson Thor, pilots 2027; OpenAI: Fortune exclusive 13.11, Mark Chen, OpenAI confirmed "accelerate not abandon", humanoid demo 2027). 3 small softenings, optional but recommended before scheduling:
   1) slide 2 + DM 1: "מכירות ב־2028" — sources say commercial/market availability is TARGETED for H2 2028, not sales. Safe: slide "וזמינות מסחרית מתוכננת ל־2028"; DM "וזמינות מסחרית מתוכננת למחצית השנייה של 2028". Source: interestingengineering.com/ai-robotics/asus-gallop-humanoid-robot-unveiled · unite.ai/asus-sets-human-pace-packing-target-for-gallop-humanoid-robot
   2) slide 3 + DM 2: hardware/applied teams go to OpenAI's "Applied" organization, which REPORTS to Brockman (not "his organization"). Safe: "והחומרה לארגון Applied, שכפוף לנשיא גרג ברוקמן". Source: fortune.com/2026/11/13/openai-disbands-robotics-team-as-its-general-models-start-running-robots
