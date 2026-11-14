@@ -70,6 +70,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 - Tell him: TTSMaker, the female voice, **normal speed**, send back the mp3.
 
 ### 3) Build (after the recording arrives)
+0. **Save the recording first (Ziv 2026-11-14):** copy Ziv's raw mp3 to `episodes/epNNN-slug/raw-voice.mp3` and commit + push it to Biti-studio right away (force-add: `git add -f`, *.mp3 is git-ignored), before aligning. If the session resets, rebuild from it — never ask Ziv to re-record.
 1. `python3 tools/align.py episodes/epNNN-slug <raw.mp3> --speed 1.15 --tail 0.6` (Ziv 2026-11-12: 1.15, not 1.25) → voice.mp3 + timeline.json + printed phrase list (indices = A[i]/B[i]).
    Check the printed list: phrase times must look sane (no phrase longer than its words justify). If Ziv's recording differs from the script,
    fix the words in timeline.json so captions match the voice exactly.
@@ -109,6 +110,7 @@ If a Buffer `create_post` returns an error, or the post shows `status:"error"` (
    - TikTok: `metadata.tiktok {title:"<short plain title>", isAiGenerated:true}`
 3. Check with `list_posts` (status scheduled, error null). Send Ziv one line: scheduled 18:00 Israel (in his timezone) on IG + FB + TikTok; reply to comments in the first hour.
 4. After all 3 are `sent`, delete the mp4 (git rm in Biti-media, or delete the branch — if push --delete returns 403, ask Ziv: github.com/zivgavish11-sys/Biti-studio/branches).
+**If the video can't be hosted (Ziv 2026-11-14):** if the push to Biti-media fails and the orphan-branch fallback is blocked too, don't retry: send Ziv the final mp4 (SendUserFile) + one line "תעביר לבוס", and add a line to `state/inbox/boss.md` (episode, approved caption path, date). The boss chat hosts it and schedules in Buffer. Then mark the episode scheduled-by-boss in state/episodes.json.
 In step 6 above: "pinned comment" now means the question line at the end of the caption.
 
 ## Visual rules (learned the hard way — follow them)
