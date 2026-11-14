@@ -41,3 +41,9 @@ Image sent: engine/props/showcase-robots (sheet of t 1,5,9,13).
 2. Re-ask (open since 2026-11-08): our own Biti built from robots/humanoid (white shell, dark visor, cyan eyes).
 3. Re-ask (open since 2026-11-08): carousels use one fitting set per story type (factoryHall / street / hero stage) instead of a generic city.
 Image sent: engine/props/showcase-lab (t 1,5,9).
+
+## Proposals sent 2026-11-14 (run 6, urgent ep014 villa request) — waiting for Ziv's OK
+1. ep014: build the house from the new home2056 villa kit (16×10 m, pool deck + hot tub + fire pit, island kitchen, garage with roof drone pad) instead of the recoloured Kenney dollhouse.
+2. Hidden rooms = frosted glass roof + padlock + sealed door; each new series part "un-frosts" one room when a robot enters (a visual payoff per 10 followers).
+3. Vote moment: show both candidates as see-through "ghosts" in their spots (car in the parking bay, drone over the roof pad) instead of only lighting empty spots.
+Image sent: engine/props/showcase-home (sheet of t 1,5,9,13).

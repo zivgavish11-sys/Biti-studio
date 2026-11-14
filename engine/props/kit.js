@@ -693,6 +693,258 @@ export function farmRobot() {
   return root;
 }
 
+// ================= 2026-11-14 batch (Media pro run 6): 'הבית בעוד 30 שנה' luxury villa kit (ep014+), hero-ready indigo palette =================
+// All pieces are already in the hero palette → use st.prop(name, {tint: 1}) and DON'T run an indigo() recolour on them (it would kill the glass transparency).
+const HM = { wall: M(0x3b3f8a, .85), cap: M(0x5a5fb0, .8), wood: M(0x34377a, .8), wood2: M(0x2c2f6e, .8), stone: M(0x2a2d68, .7, .05), dark: M(0x17193f, .8),
+  light: M(0xd9ddf7, .55), mid: M(0x6c72c6, .75), fab: M(0x4b50a0, .95), fab2: M(0x7a80d0, .95), metal: M(0x9aa0d8, .35, .6), acc: M(0x8ea6ff, .5),
+  leaf: M(0x4a6aa8, .9), soil: M(0x1d1f4a, .95), tile: M(0x5d86e0, .45), orange: M(0xffa53a, .6),
+  glass: Object.assign(M(0xa9bcff, .08, .1), {transparent: true, opacity: .22, depthWrite: false}),
+  frost: Object.assign(M(0xc9d1ff, .9), {transparent: true, opacity: .62}),
+  water: Object.assign(M(0x6f93f0, .1, .15), {transparent: true, opacity: .88}) };
+const hb = (w, h, d, m, x, y, z, name) => at(bx(w, h, d, 0, m, name), x, y, z);
+const glassPane = (w, h, name) => { const g = grp(name); g.add(at(bx(w, h, .02, 0, HM.glass), 0, h / 2, 0)); g.add(at(bx(w, .04, .05, 0, HM.metal), 0, h, 0)); g.add(at(bx(w, .04, .05, 0, HM.metal), 0, .02, 0));
+  for (const x of [-w / 2, w / 2]) g.add(at(bx(.04, h, .05, 0, HM.metal), x, h / 2, 0)); g.traverse(o => { if (o.isMesh && o.material === HM.glass) o.castShadow = false; }); return g; };
+/** padlock (3D, matte): body + shackle. ~0.5 m tall at scale 1. */
+function padlock(name = 'lock') { const g = grp(name); g.add(at(rbox(.36, .28, .12, .05, HM.light, 'lockBody'), 0, .14, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(.11, .028, 10, 32, Math.PI), HM.metal, 'shackle'), 0, .28, 0));
+  g.add(at(cyl(.03, .03, .13, HM.dark, 'keyhole', 16), 0, .15, 0, Math.PI / 2)); return g; }
+
+/** luxury villa shell, dollhouse cutaway (walls cut at 1.1 m), 16×10 m, front (+z) open with a glass railing; camera from above/front.
+ * Rooms (floor_* nodes): front row living x−8..−2, dining −2..2, kitchen 2..8; back row bedroom −8..−3, HIDDEN rooms hiddenA −3..2.5 and hiddenB 2.5..8 (z −5..0).
+ * Hidden rooms: frosted glass roofs 'hiddenRoofA/B' (hide to 'open' a room), padlocks 'lockA/lockB' on top, 'sealedDoorA/B' in the middle wall. Back wall has glass window strips (winBack0..3).
+ * Front terrace 'terrace' (z 5..7). Sliding glass doors 'slideL'/'slideR' (move .position.x). */
+export function villa() {
+  const root = grp('villa'), H = 1.1, T = .14;
+  const fl = (w, d, x, z, m, n) => root.add(hb(w, .08, d, m, x, .04, z, n));
+  fl(6, 5, -5, 2.5, HM.wood, 'floor_living'); fl(4, 5, 0, 2.5, HM.wood, 'floor_dining'); fl(6, 5, 5, 2.5, HM.stone, 'floor_kitchen');
+  fl(5, 5, -5.5, -2.5, HM.wood2, 'floor_bedroom'); fl(5.5, 5, -.25, -2.5, HM.dark, 'floor_hiddenA'); fl(5.5, 5, 5.25, -2.5, HM.dark, 'floor_hiddenB');
+  // parquet lines on wood floors (subtle)
+  for (const [x0, w] of [[-8, 10]]) for (let i = 1; i < 25; i++) root.add(hb(.01, .003, 4.9, HM.wood2, x0 + i * .4, .081, 2.5));
+  root.add(hb(16.4, .12, 2.2, HM.stone, 0, .06, 6.1, 'terrace'));
+  const wall = (w, d, x, z, n) => { root.add(hb(w, H, d, HM.wall, x, H / 2 + .08, z, n)); root.add(hb(w + .004, .03, d + .004, HM.cap, x, H + .095, z)); };
+  // back wall with 4 window strips (glass between wall pieces)
+  const segs = [[-8, -6.6], [-5.2, -3.6], [-2.2, 1.2], [2.6, 4.4], [5.8, 8]]; segs.forEach(([a, b], i) => wall(b - a, T, (a + b) / 2, -5, 'wallBack' + i));
+  [[-6.6, -5.2], [-3.6, -2.2], [1.2, 2.6], [4.4, 5.8]].forEach(([a, b], i) => { const g = at(glassPane(b - a, H, 'winBack' + i), (a + b) / 2, .08, -5); root.add(g); });
+  wall(T, 4, -8, -3); root.add(at(glassPane(3.6, H, 'winLeft'), -8, .08, 3.2)); root.children.at(-1).rotation.y = Math.PI / 2; wall(T, 1.4, -8, .2);
+  wall(T, 10, 8, 0, 'wallRight');
+  // middle wall z=0: bedroom doorway x −6.6..−5.6; sealed doors into the hidden rooms
+  [[-8, -6.6], [-5.6, -.81], [.31, 4.74], [5.86, 8]].forEach(([a, b]) => wall(b - a, T, (a + b) / 2, 0));
+  wall(T, 5, -3, -2.5); wall(T, 5, 2.5, -2.5);                        // back partitions (hidden rooms closed on all sides)
+  wall(T, 1.0, -2, .5); wall(T, .8, -2, 4.6); wall(T, 1.0, 2, .5); wall(T, .8, 2, 4.6);  // front stubs = wide openings
+  for (const [k, x] of [['A', -.25], ['B', 5.3]]) { const d = sealedDoor(); d.name = 'sealedDoor' + k; at(d, x, .08, .08); root.add(d);
+    root.add(at(bx(5.36, .08, 4.86, 0, HM.frost, 'hiddenRoof' + k), x, H + .15, -2.5));
+    const lk = padlock('lock' + k); lk.scale.setScalar(2.2); at(lk, x, H + .19, -2.5); root.add(lk); }
+  // glass railing along the open front (with gaps for the sliding doors)
+  [[-8, -5.6], [-3.4, 3.6], [5.8, 8]].forEach(([a, b]) => root.add(at(glassPane(b - a, .9, 'rail'), (a + b) / 2, .08, 5)));
+  const sl = (n, x) => root.add(at(glassPane(1.1, 2.0, n), x, .08, 5.06));
+  sl('slideL', -5.0); sl('slideR', 5.2);
+  return root;
+}
+/** sealed door in a wall (1.0×2.1 m): frosted glass panel, steel frame, diagonal 'tape' bands, padlock 'lock'. Faces +z. */
+export function sealedDoor() {
+  const g = grp('sealedDoor');
+  g.add(at(rbox(1.12, 2.16, .1, .02, HM.metal, 'frame'), 0, 1.08, 0)); g.add(at(bx(.96, 2.0, .06, 0, HM.frost, 'panel'), 0, 1.04, .03));
+  for (const s of [1, -1]) g.add(at(bx(1.25, .12, .02, 0, HM.acc, 'tape'), 0, 1.15, .08, 0, 0, s * .9));
+  const lk = padlock('lock'); lk.scale.setScalar(.6); at(lk, .33, .95, .1); g.add(lk);
+  g.add(at(rbox(.04, .3, .05, .02, HM.light, 'handle'), .38, 1.15, .07));
+  return g;
+}
+/** frosted 'locked room' cover: frosted glass box w×d×h with a padlock on top + "?" plate. For any room that isn't open yet. */
+export function frostedRoom(w = 4, d = 4, h = 1.1) {
+  const g = grp('frostedRoom'); g.add(at(bx(w, h, d, 0, HM.frost, 'box'), 0, h / 2, 0));
+  g.add(at(rbox(w + .04, .05, d + .04, .02, HM.metal, 'rim'), 0, h, 0));
+  const lk = padlock('lock'); lk.scale.setScalar(2.2); at(lk, 0, h + .03, 0); g.add(lk);
+  g.add(at(mesh(new THREE.PlaneGeometry(1.4, 1.4), HM.dark.clone(), 'plate'), 0, h + .03, d / 2 - .9, -Math.PI / 2));
+  return g;
+}
+/** raised infinity-style pool 7×3.4 m on a deck 10×6 m (deck top 0.35 m). Nodes: deck, water (40×20 segments: wave .position z of vertices), basin, steps, ladder, coping, poolLight0..3 (solid accent), edge. */
+export function pool() {
+  const g = grp('pool'), W = 7, D = 3.4, top = .35;
+  // deck = 4 slabs around the hole
+  const DW = 10, DD = 6;
+  g.add(hb(DW, top, (DD - D) / 2, HM.wood, 0, top / 2, -(D / 2 + (DD - D) / 4), 'deck'));
+  g.add(hb(DW, top, (DD - D) / 2, HM.wood, 0, top / 2, (D / 2 + (DD - D) / 4), 'deck2'));
+  g.add(hb((DW - W) / 2, top, D, HM.wood, -(W / 2 + (DW - W) / 4), top / 2, 0, 'deck3')); g.add(hb((DW - W) / 2, top, D, HM.wood, (W / 2 + (DW - W) / 4), top / 2, 0, 'deck4'));
+  for (let i = 1; i < 25; i++) { const x = -DW / 2 + i * .4; if (Math.abs(x) > W / 2 + .05) g.add(hb(.012, .004, DD, HM.wood2, x, top + .002, 0)); else for (const s of [1, -1]) g.add(hb(.012, .004, (DD - D) / 2, HM.wood2, x, top + .002, s * (D / 2 + (DD - D) / 4))); }
+  const bas = grp('basin'); g.add(bas);
+  bas.add(hb(W, .04, D, HM.tile, 0, .02, 0, 'basinFloor'));
+  for (const s of [1, -1]) { bas.add(hb(W, top, .03, HM.tile, 0, top / 2, s * (D / 2 - .015))); bas.add(hb(.03, top, D, HM.tile, s * (W / 2 - .015), top / 2, 0)); }
+  for (let i = -8; i <= 8; i++) bas.add(hb(.01, .002, D - .1, HM.light, i * .4, .045, 0));   // tile lines
+  const steps = grp('steps'); g.add(steps); for (let k = 0; k < 3; k++) steps.add(hb(.4 * (3 - k), .1 * (k + 1), D * .5, HM.light, -W / 2 + .2 * (3 - k), .05 * (k + 1), -D / 4));
+  const wat = mesh(new THREE.PlaneGeometry(W - .06, D - .06, 40, 20), HM.water, 'water'); at(wat, 0, top - .06, 0, -Math.PI / 2); wat.castShadow = false; g.add(wat);
+  const cop = grp('coping'); g.add(cop); for (const s of [1, -1]) { cop.add(hb(W + .3, .05, .15, HM.light, 0, top + .025, s * (D / 2 + .075))); cop.add(hb(.15, .05, D, HM.light, s * (W / 2 + .075), top + .025, 0)); }
+  const lad = grp('ladder'); g.add(at(lad, W / 2 - .45, 0, D / 2 - .05));
+  for (const x of [-.22, .22]) { lad.add(at(cyl(.022, .022, .6, HM.metal, null, 12), x, top + .3, 0)); lad.add(at(mesh(new THREE.TorusGeometry(.14, .022, 8, 16, Math.PI), HM.metal), x, top + .6, -.14, 0, Math.PI / 2)); lad.add(at(cyl(.022, .022, .55, HM.metal, null, 12), x, top + .3, -.28)); }
+  for (let k = 0; k < 2; k++) lad.add(at(bx(.44, .03, .08, 0, HM.metal), 0, .1 + k * .12, -.28));
+  [-2.4, -.8, .8, 2.4].forEach((x, i) => g.add(at(rbox(.18, .1, .02, .02, HM.acc, 'poolLight' + i), x, .2, -D / 2 + .035)));
+  return g;
+}
+/** round hot tub Ø2.1 m, 0.8 m high, wood cladding, water 'water', jet bubbles 'bubble0..11' (animate .position.y / scale), step 'step'. */
+export function hotTub() {
+  const g = grp('hotTub'); g.add(at(cyl(1.05, 1.05, .8, HM.wood, 'shell', 40), 0, .4, 0));
+  for (let i = 0; i < 28; i++) { const a = i / 28 * Math.PI * 2; g.add(at(bx(.02, .8, .02, 0, HM.wood2), Math.cos(a) * 1.055, .4, Math.sin(a) * 1.055)); }
+  g.add(at(mesh(new THREE.TorusGeometry(.98, .07, 10, 48), HM.light, 'rim'), 0, .8, 0, Math.PI / 2));
+  g.add(at(cyl(.92, .92, .02, HM.water, 'water', 40), 0, .72, 0)); g.getObjectByName('water').castShadow = false;
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2, r = .3 + (i % 3) * .2; g.add(at(mesh(new THREE.SphereGeometry(.035, 10, 8), HM.light, 'bubble' + i), Math.cos(a) * r, .74, Math.sin(a) * r)); }
+  g.add(at(rbox(.8, .25, .4, .05, HM.wood, 'step'), 0, .125, 1.2));
+  return g;
+}
+/** modern sun lounger 2.0 m with cushion and adjustable back 'back' (.rotation.x), side table. */
+export function lounger() {
+  const g = grp('lounger'); g.add(at(rbox(.75, .1, 1.5, .03, HM.mid, 'frame'), 0, .3, .2));
+  for (const x of [-.3, .3]) for (const z of [-.45, .85]) g.add(at(bx(.06, .25, .06, 0, HM.metal), x, .125, z));
+  g.add(at(rbox(.68, .08, 1.45, .04, HM.light, 'cushion'), 0, .39, .2));
+  const b = joint('back', [0, .35, -.55], at(rbox(.68, .08, .75, .04, HM.light, 'backCushion'), 0, 0, -.37)); b.rotation.x = .75; g.add(b);
+  g.add(at(rbox(.4, .04, .4, .02, HM.mid, 'sideTable'), .7, .42, -.2)); g.add(at(cyl(.025, .025, .4, HM.metal, null, 10), .7, .2, -.2));
+  return g;
+}
+/** patio umbrella Ø2.6 m: pole, canopy 'canopy' (8 panels), base. */
+export function umbrella() {
+  const g = grp('umbrella'); g.add(at(cyl(.3, .32, .1, HM.dark, 'base', 24), 0, .05, 0)); g.add(at(cyl(.025, .025, 2.4, HM.metal, 'pole', 12), 0, 1.2, 0));
+  g.add(at(mesh(new THREE.ConeGeometry(1.3, .45, 8, 1, true), Object.assign(HM.light.clone(), {side: THREE.DoubleSide}), 'canopy'), 0, 2.3, 0));
+  g.add(at(cyl(.04, .04, .1, HM.acc, 'cap', 12), 0, 2.56, 0)); return g;
+}
+/** outdoor kitchen 3.2 m: stone counter, built-in grill 'grill' with lid 'lid' (.rotation.x to open), sink, bar stools ×2, pergola beams. */
+export function outdoorKitchen() {
+  const g = grp('outdoorKitchen'); g.add(at(rbox(3.2, .9, .75, .03, HM.stone, 'counter'), 0, .45, 0)); g.add(at(rbox(3.26, .05, .8, .02, HM.light, 'top'), 0, .925, 0));
+  for (let i = 0; i < 4; i++) g.add(at(bx(.7, .7, .02, 0, HM.mid), -1.15 + i * .77, .45, .38));
+  const gr = grp('grill'); at(gr, -.6, .95, 0); g.add(gr); gr.add(at(bx(1.0, .06, .55, 0, HM.dark), 0, .03, 0)); for (let i = 0; i < 9; i++) gr.add(at(bx(.012, .012, .5, 0, HM.metal), -.44 + i * .11, .07, 0));
+  const lid = joint('lid', [0, .06, -.28], at(mesh(new THREE.CylinderGeometry(.28, .28, 1.0, 20, 1, false, 0, Math.PI), HM.metal), 0, 0, .28, 0, 0, Math.PI / 2)); lid.rotation.x = -1.2; gr.add(lid);
+  g.add(at(bx(.5, .04, .35, 0, HM.dark, 'sink'), .8, .93, 0)); g.add(link(new THREE.Vector3(.8, .95, -.25), new THREE.Vector3(.8, 1.2, -.12), .015, HM.metal, 'tap'));
+  for (const x of [.3, 1.2]) { const s = grp('stool'); at(s, x, 0, .85); s.add(at(cyl(.2, .2, .06, HM.fab2, null, 20), 0, .72, 0)); s.add(at(cyl(.025, .025, .7, HM.metal, null, 10), 0, .35, 0)); s.add(at(cyl(.18, .18, .02, HM.metal, null, 20), 0, .01, 0)); g.add(s); }
+  const per = grp('pergola'); g.add(per); for (const x of [-1.6, 1.6]) for (const z of [-.45, 1.3]) per.add(at(bx(.1, 2.5, .1, 0, HM.wood), x, 1.25, z));
+  for (let i = 0; i < 9; i++) per.add(at(bx(.06, .12, 1.95, 0, HM.wood), -1.6 + i * .4, 2.5, .42));
+  return g;
+}
+/** fire pit Ø1.4 m with round bench; flames 'flame0..4' are matte orange shapes (animate .scale.y, no glow). */
+export function firePit() {
+  const g = grp('firePit'); g.add(at(cyl(.7, .75, .4, HM.stone, 'bowl', 32), 0, .2, 0)); g.add(at(cyl(.55, .55, .02, HM.dark, 'coals', 28), 0, .41, 0));
+  for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; const f = mesh(new THREE.ConeGeometry(.09 + (i % 2) * .04, .45 + (i % 3) * .12, 8), HM.orange, 'flame' + i); f.geometry.translate(0, .22, 0); at(f, Math.cos(a) * .15, .42, Math.sin(a) * .15); g.add(f); }
+  const bench = mesh(new THREE.TorusGeometry(1.7, .2, 8, 48, Math.PI * 1.3), HM.wood, 'bench'); at(bench, 0, .4, 0, Math.PI / 2, 0, Math.PI * .85); g.add(bench);
+  for (let i = 0; i < 6; i++) g.add(at(rbox(.42, .12, .38, .05, HM.fab2, 'pillow' + i), Math.cos(Math.PI * (1.0 + i * .2)) * 1.7, .66, -Math.sin(Math.PI * (1.0 + i * .2)) * 1.7));
+  return g;
+}
+/** kitchen island 2.6×1.0 m with waterfall top, 3 bar stools, 3 pendant lamps 'pendant0..2' (hang from y 2.6). */
+export function kitchenIsland() {
+  const g = grp('kitchenIsland'); g.add(at(bx(2.6, .88, 1.0, 0, HM.mid, 'base'), 0, .44, 0));
+  g.add(at(bx(2.7, .05, 1.1, 0, HM.light, 'top'), 0, .905, 0)); for (const x of [-1.33, 1.33]) g.add(at(bx(.05, .93, 1.1, 0, HM.light), x, .465, 0));
+  g.add(at(bx(.6, .02, .4, 0, HM.dark, 'cooktop'), -.6, .935, -.15)); g.add(at(rbox(.35, .12, .35, .04, HM.light, 'bowl'), .5, .99, -.1));
+  for (let i = 0; i < 3; i++) { const s = grp('stool' + i); at(s, -.8 + i * .8, 0, .85); s.add(at(rbox(.42, .08, .42, .04, HM.fab2), 0, .72, 0)); s.add(at(rbox(.42, .3, .05, .02, HM.fab2), 0, .9, .2)); s.add(at(cyl(.025, .025, .7, HM.metal, null, 10), 0, .35, 0)); s.add(at(cyl(.2, .2, .02, HM.metal, null, 20), 0, .01, 0)); g.add(s); }
+  for (let i = 0; i < 3; i++) { const p = grp('pendant' + i); at(p, -.8 + i * .8, 0, 0); p.add(at(cyl(.006, .006, .9, HM.dark, null, 6), 0, 2.15, 0)); p.add(at(mesh(new THREE.SphereGeometry(.16, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), Object.assign(HM.light.clone(), {side: THREE.DoubleSide})), 0, 1.6, 0)); g.add(p); }
+  return g;
+}
+/** kitchen wall run 4 m: base cabinets, tall fridge column, oven, sink 'sink', wall shelves, plants. Faces +z. */
+export function kitchenRun() {
+  const g = grp('kitchenRun'); g.add(at(bx(3.0, .88, .65, 0, HM.mid, 'base'), -.5, .44, 0)); g.add(at(bx(3.05, .05, .68, 0, HM.light, 'top'), -.5, .905, 0));
+  for (let i = 0; i < 5; i++) g.add(at(bx(.56, .8, .02, 0, HM.fab2), -1.75 + i * .6 - .25 + .25, .45, .335));
+  g.add(at(bx(1.0, 2.3, .7, 0, HM.light, 'fridge'), 1.5, 1.15, 0)); g.add(at(bx(.02, 2.2, .02, 0, HM.dark), 1.5, 1.15, .36));
+  g.add(at(bx(.6, .5, .02, 0, HM.dark, 'oven'), -1.4, .55, .34)); g.add(at(bx(.5, .03, .4, 0, HM.dark, 'sink'), .3, .925, 0));
+  g.add(link(new THREE.Vector3(.3, .93, -.25), new THREE.Vector3(.3, 1.25, -.05), .015, HM.metal, 'tap'));
+  g.add(at(bx(2.0, .04, .3, 0, HM.wood, 'shelf'), -.9, 1.55, -.18)); for (let i = 0; i < 5; i++) g.add(at(cyl(.06, .05, .14, [HM.light, HM.acc, HM.fab2][i % 3], 'jar' + i, 14), -1.7 + i * .38, 1.64, -.18));
+  return g;
+}
+/** modern L-sofa 3.2×2.1 m with cushions, throw pillows 'pillow0..3'. Long side faces +z. */
+export function sofaModern() {
+  const g = grp('sofaModern'), F = HM.fab, C = HM.fab2;
+  g.add(at(rbox(3.2, .38, 1.0, .06, F, 'baseLong'), 0, .23, 0)); g.add(at(rbox(1.0, .38, 1.2, .06, F, 'baseShort'), -1.1, .23, 1.1));
+  g.add(at(rbox(3.2, .45, .25, .08, F, 'backLong'), 0, .6, -.38)); g.add(at(rbox(.25, .45, 2.1, .08, F, 'backShort'), -1.48, .6, .55));
+  for (let i = 0; i < 3; i++) g.add(at(rbox(.9, .14, .75, .06, C, 'seat' + i), -.75 + i * .95, .48, .07)); g.add(at(rbox(.85, .14, 1.0, .06, C, 'seatS'), -1.03, .48, 1.15));
+  g.add(at(rbox(.22, .3, 1.0, .08, F, 'armR'), 1.5, .5, 0));
+  [[-.9, -.2], [-.2, -.2], [.9, -.2], [-1.25, .8]].forEach(([x, z], i) => g.add(at(rbox(.42, .38, .14, .07, [HM.light, HM.acc, HM.light, HM.mid][i], 'pillow' + i), x, .72, z, -.25, i === 3 ? Math.PI / 2 : 0)));
+  for (const [x, z] of [[-1.5, -.45], [1.55, -.45], [1.55, .45], [-1.55, 1.65]]) g.add(at(bx(.05, .06, .05, 0, HM.metal), x, .03, z));
+  return g;
+}
+/** coffee table 1.3×0.7 + books + vase; rug 3×2.2 'rug' included (on y=0). */
+export function loungeSet() {
+  const g = grp('loungeSet'); g.add(at(rbox(3.0, .015, 2.2, .005, HM.mid, 'rug'), 0, .008, 0));
+  g.add(at(rbox(1.3, .06, .7, .03, HM.light, 'table'), 0, .38, 0)); for (const x of [-.55, .55]) g.add(at(bx(.05, .35, .6, 0, HM.metal), x, .175, 0));
+  g.add(at(bx(.3, .05, .22, 0, HM.acc, 'book0'), -.3, .435, .05)); g.add(at(bx(.28, .04, .2, 0, HM.fab2, 'book1'), -.3, .48, .05, 0, .2));
+  g.add(at(cyl(.07, .05, .22, HM.mid, 'vase', 16), .35, .52, -.05)); return g;
+}
+/** media wall 3.2 m: low cabinet + slim TV 'tv' with 'screen' plane (16:9 → st.screen) + wall shelves. Faces +z. */
+export function mediaWall() {
+  const g = grp('mediaWall'); g.add(at(rbox(3.2, .4, .45, .03, HM.mid, 'cabinet'), 0, .25, 0));
+  for (let i = 0; i < 4; i++) g.add(at(bx(.76, .32, .02, 0, HM.fab2), -1.2 + i * .8, .25, .23));
+  g.add(at(rbox(1.66, .96, .05, .01, HM.dark, 'tv'), 0, 1.35, -.1)); g.add(at(mesh(new THREE.PlaneGeometry(1.6, .9), MAT.screen.clone(), 'screen'), 0, 1.35, -.07));
+  g.add(at(rbox(.15, .5, .15, .04, HM.light, 'speakerL'), -1.3, .7, 0)); g.add(at(rbox(.15, .5, .15, .04, HM.light, 'speakerR'), 1.3, .7, 0));
+  return g;
+}
+/** dining table 2.4×1.0 m + 6 chairs (chair0..5), centre bowl. */
+export function diningSet() {
+  const g = grp('diningSet'); g.add(at(rbox(2.4, .06, 1.0, .02, HM.light, 'top'), 0, .75, 0));
+  for (const x of [-1.0, 1.0]) g.add(at(bx(.08, .72, .8, 0, HM.metal), x, .36, 0));
+  const ch = (x, z, ry, i) => { const c = grp('chair' + i); at(c, x, 0, z, 0, ry); c.add(at(rbox(.46, .07, .46, .03, HM.fab2), 0, .47, 0)); c.add(at(rbox(.46, .45, .06, .03, HM.fab2), 0, .75, -.21, -.08));
+    for (const a of [-.19, .19]) for (const b of [-.19, .19]) c.add(at(cyl(.016, .016, .45, HM.metal, null, 8), a, .225, b)); g.add(c); };
+  [-.75, 0, .75].forEach((x, i) => { ch(x, -.75, 0, i); ch(x, .75, Math.PI, i + 3); });
+  g.add(at(cyl(.2, .12, .1, HM.mid, 'bowl', 20), 0, .83, 0)); for (let i = 0; i < 3; i++) g.add(at(mesh(new THREE.SphereGeometry(.06, 12, 8), HM.orange, 'fruit' + i), -.06 + i * .06, .9, (i % 2) * .05));
+  return g;
+}
+/** king bed 2.0×2.2 m with tall headboard, duvet, pillows, 2 nightstands with lamps (lamp0/1). Faces +z. */
+export function bedModern() {
+  const g = grp('bedModern'); g.add(at(rbox(2.0, .35, 2.2, .05, HM.fab, 'base'), 0, .2, 0)); g.add(at(rbox(2.3, 1.1, .12, .04, HM.fab, 'headboard'), 0, .55, -1.12));
+  g.add(at(rbox(1.96, .16, 1.6, .07, HM.light, 'duvet'), 0, .44, .28)); g.add(at(rbox(1.96, .06, .5, .03, HM.acc, 'throw'), 0, .53, .8));
+  for (const x of [-.48, .48]) g.add(at(rbox(.8, .16, .35, .07, HM.light, 'pillow'), x, .5, -.8, -.3));
+  [-1.45, 1.45].forEach((x, i) => { g.add(at(rbox(.5, .45, .45, .03, HM.mid, 'nightstand' + i), x, .225, -.85)); const l = grp('lamp' + i); at(l, x, .45, -.85); l.add(at(cyl(.02, .02, .3, HM.metal, null, 8), 0, .15, 0)); l.add(at(cyl(.12, .15, .2, HM.light, null, 20), 0, .38, 0)); g.add(l); });
+  g.add(at(rbox(1.4, .4, .45, .05, HM.fab2, 'bench'), 0, .2, 1.4));
+  return g;
+}
+/** tall indoor plant in a planter (1.5 m). leaf0..9 (sway .rotation.z). */
+export function planterTall() {
+  const g = grp('planterTall'); g.add(at(cyl(.22, .17, .45, HM.light, 'pot', 20), 0, .225, 0)); g.add(at(cyl(.2, .2, .02, HM.soil, null, 16), 0, .44, 0));
+  g.add(at(cyl(.02, .025, .8, HM.wood2, 'stem', 8), 0, .82, 0));
+  for (let i = 0; i < 10; i++) { const a = i * 2.4, y = .7 + i * .08, L = mesh(new THREE.SphereGeometry(.18, 10, 6), HM.leaf, 'leaf' + i); L.scale.set(1.3, .18, .55); at(L, Math.cos(a) * .18, y, Math.sin(a) * .18, 0, -a, .4); g.add(L); }
+  return g;
+}
+/** arc floor lamp 2 m: base, arc, shade 'shade' (matte, no glow). */
+export function arcLamp() {
+  const g = grp('arcLamp'); g.add(at(cyl(.18, .2, .05, HM.dark, 'base', 24), 0, .025, 0));
+  const c = new THREE.CatmullRomCurve3([new THREE.Vector3(0, .05, 0), new THREE.Vector3(0, 1.4, 0), new THREE.Vector3(.4, 2.0, 0), new THREE.Vector3(1.1, 1.95, 0), new THREE.Vector3(1.4, 1.65, 0)]);
+  g.add(mesh(new THREE.TubeGeometry(c, 32, .018, 8), HM.metal, 'arc')); g.add(at(mesh(new THREE.SphereGeometry(.2, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), Object.assign(HM.light.clone(), {side: THREE.DoubleSide}), 'shade'), 1.4, 1.5, 0));
+  return g;
+}
+/** framed art 1.2×0.8 m: 'art' plane (aspect 1.5 → st.screen for an abstract or Hebrew piece). Faces +z, hangs from y 0. */
+export function artFrame() {
+  const g = grp('artFrame'); g.add(at(rbox(1.26, .86, .04, .01, HM.light, 'frame'), 0, .43, 0));
+  g.add(at(mesh(new THREE.PlaneGeometry(1.2, .8), HM.mid.clone(), 'art'), 0, .43, .021)); return g;
+}
+/** garage 4.4×6.4 m, 2.7 m high, roll door 'door' (.position.y up to open), roof drone pad 'pad' Ø2.8 with 'padRing' + H marking 'padH', driveway 'driveway' in front with a dashed parking bay 'bay'. Door faces +z. */
+export function garage() {
+  const g = grp('garage'), W = 4.4, D = 6.4, H = 2.7;
+  g.add(at(bx(W, H, D, 0, HM.wall, 'body'), 0, H / 2, 0)); g.add(at(bx(W + .2, .12, D + .2, 0, HM.cap, 'roof'), 0, H + .06, 0));
+  g.add(at(bx(W - .6, H - .3, .04, 0, HM.dark, 'opening'), 0, (H - .3) / 2, D / 2 + .01));
+  const door = grp('door'); g.add(door); for (let i = 0; i < 8; i++) door.add(at(bx(W - .7, .27, .05, 0, HM.light), 0, .17 + i * .3, D / 2 + .03));
+  g.add(at(cyl(1.4, 1.4, .04, HM.dark, 'pad', 48), 0, H + .14, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(1.25, .04, 10, 64), HM.acc, 'padRing'), 0, H + .17, 0, Math.PI / 2));
+  const h = grp('padH'); g.add(h); for (const [w, d, x] of [[.14, 1.1, -.35], [.14, 1.1, .35], [.7, .14, 0]]) h.add(at(bx(w, .012, d, 0, HM.light), x, H + .165, 0)); 
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; g.add(at(rbox(.12, .05, .12, .02, HM.acc, 'padLight' + i), Math.cos(a) * 1.55, H + .145, Math.sin(a) * 1.55)); }
+  g.add(at(bx(W, .02, 5.5, 0, HM.stone, 'driveway'), 0, .01, D / 2 + 2.75));
+  const bay = grp('bay'); g.add(bay); const dz = D / 2 + 2.9;
+  for (const [w, d, x, z] of [[.08, 4.6, -1.4, dz], [.08, 4.6, 1.4, dz]]) for (let k = 0; k < 8; k++) bay.add(at(bx(w, .006, .35, 0, HM.light), x, .025, z - 2.1 + k * .6));
+  return g;
+}
+/** generic autonomous personal car 4.5 m (no brand): sleek body, glass roof, small roof sensor 'lidar' ('lidarHead' spin .y), cam0..3, wheels wheel0..3 (.rotation.x), light bars headBar/tailBar (solid). Faces +z. */
+export function autoCar() {
+  const g = grp('autoCar'), W = HM.light;
+  g.add(at(rbox(1.9, .55, 4.5, .22, W, 'body'), 0, .55, 0));
+  const cab = mesh(new THREE.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), Object.assign(M(0x2a2e6a, .1, .3), {}), 'cabin'); cab.scale.set(.88, .55, 1.75); at(cab, 0, .8, -.15); g.add(cab);
+  g.add(at(bx(1.6, .05, .05, 0, HM.acc, 'headBar'), 0, .66, 2.25)); g.add(at(bx(1.6, .05, .05, 0, HM.orange, 'tailBar'), 0, .7, -2.25));
+  const li = joint('lidar', [0, 1.36, .2], at(cyl(.12, .14, .06, HM.dark, null, 24), 0, 0, 0)); g.add(li); li.add(joint('lidarHead', [0, .06, 0], at(cyl(.09, .09, .07, HM.acc, null, 24), 0, 0, 0)));
+  [[.96, .85, 1.6], [-.96, .85, 1.6], [.96, .85, -1.6], [-.96, .85, -1.6]].forEach(([x, y, z], i) => g.add(at(rbox(.05, .06, .1, .02, HM.dark, 'cam' + i), x, y, z)));
+  [[.86, 1.45], [-.86, 1.45], [.86, -1.45], [-.86, -1.45]].forEach(([x, z], i) => { const w = grp('wheel' + i); at(w, x, .36, z); w.add(at(cyl(.36, .36, .26, MAT2.tire, null, 28), 0, 0, 0, 0, 0, Math.PI / 2)); w.add(at(cyl(.24, .24, .27, HM.metal, null, 20), 0, 0, 0, 0, 0, Math.PI / 2)); g.add(w); });
+  return g;
+}
+/** delivery drone (~1.2 m, our quadcopter ×2.4) carrying a grocery box on a tether: 'drone' (spin prop0..3 inside), 'tether' (scale .y to lower), 'parcel' with 'box' + groceries (bread, milk, apple0..2, leaves). */
+export function deliveryDrone() {
+  const g = grp('deliveryDrone'); const d = drone(); d.name = 'drone'; d.scale.setScalar(2.4); d.position.y = .9; g.add(d);
+  const teth = grp('tether'); teth.position.y = .95; g.add(teth); teth.add(at(cyl(.008, .008, .5, HM.dark, null, 6), 0, -.25, 0));
+  const pc = grp('parcel'); pc.position.y = .45 - .02; g.add(pc);
+  pc.add(at(rbox(.5, .32, .38, .02, M(0xc9b48a, .9), 'box'), 0, -.16, 0)); pc.add(at(bx(.52, .06, .02, 0, HM.acc, 'band'), 0, -.1, .19));
+  pc.add(at(rbox(.12, .2, .12, .02, HM.light, 'milk'), -.14, .05, -.05)); pc.add(at(rbox(.3, .1, .12, .05, M(0xd29a5a, .8), 'bread'), .08, .03, .08, 0, 0, .25));
+  for (let i = 0; i < 3; i++) pc.add(at(mesh(new THREE.SphereGeometry(.05, 12, 8), M(0xe0503a, .6), 'apple' + i), .1 + i * .07, .02, -.08));
+  for (let i = 0; i < 3; i++) pc.add(at(mesh(new THREE.ConeGeometry(.03, .18, 6), HM.leaf, 'leaves' + i), -.02 + i * .03, .1, -.12, .2 * (i - 1)));
+  pc.position.y = .45; return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -704,4 +956,9 @@ export const KIT = {
   'robots/driveUnit': driveUnit, 'robots/shelfPod': shelfPod, 'vehicles/robotaxi': robotaxi, 'vehicles/forklift': forklift,
   'everyday/servo': servo, 'buildings/factoryHall': factoryHall,
   'lab/workbench': workbench, 'lab/printer3d': printer3d, 'lab/chargingWall': chargingWall, 'buildings/labRoom': labRoom, 'vehicles/farmRobot': farmRobot,
+  'home2056/villa': villa, 'home2056/sealedDoor': sealedDoor, 'home2056/frostedRoom': frostedRoom, 'home2056/pool': pool, 'home2056/hotTub': hotTub,
+  'home2056/lounger': lounger, 'home2056/umbrella': umbrella, 'home2056/outdoorKitchen': outdoorKitchen, 'home2056/firePit': firePit,
+  'home2056/kitchenIsland': kitchenIsland, 'home2056/kitchenRun': kitchenRun, 'home2056/sofaModern': sofaModern, 'home2056/loungeSet': loungeSet, 'home2056/mediaWall': mediaWall,
+  'home2056/diningSet': diningSet, 'home2056/bedModern': bedModern, 'home2056/planterTall': planterTall, 'home2056/arcLamp': arcLamp, 'home2056/artFrame': artFrame,
+  'home2056/garage': garage, 'vehicles/autoCar': autoCar, 'drone/deliveryDrone': deliveryDrone,
 };

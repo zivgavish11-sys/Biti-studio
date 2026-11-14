@@ -25,3 +25,4 @@
 | moonless_golf_1k.hdr, venice_sunset_1k.hdr | Poly Haven (polyhaven.com), via three.js examples/textures/equirectangular | CC0 |
 - everyday/smartphone, router, cellTower, busStop — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-07.
 - lab/workbench, lab/printer3d, lab/chargingWall, buildings/labRoom, vehicles/farmRobot — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-12.
+- home2056/* (villa, sealedDoor, frostedRoom, pool, hotTub, lounger, umbrella, outdoorKitchen, firePit, kitchenIsland, kitchenRun, sofaModern, loungeSet, mediaWall, diningSet, bedModern, planterTall, arcLamp, artFrame, garage), vehicles/autoCar, drone/deliveryDrone — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-14.
