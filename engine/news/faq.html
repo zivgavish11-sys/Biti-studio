@@ -21,17 +21,19 @@ html,body{width:1080px;height:1350px;overflow:hidden;font-family:Rubik,sans-seri
 .cards .w1{width:900px;height:900px;right:-420px;top:-480px;background:radial-gradient(circle at 40% 60%,#6b5cff 0,#3a2fae 45%,transparent 70%)}
 .cards .w2{width:800px;height:800px;left:-420px;bottom:-420px;background:radial-gradient(circle at 60% 40%,#ff5fd2 0,#8e2f86 40%,transparent 70%)}
 .cards .line{position:absolute;inset:0}
-.cards .hd{position:absolute;top:190px;width:100%;text-align:center;font-weight:700;font-size:150px;letter-spacing:2px;direction:ltr;
-  background:linear-gradient(90deg,var(--cyan),var(--purple) 55%,var(--pink));-webkit-background-clip:text;color:transparent}
-.cards .box{position:absolute;left:110px;right:110px;border-radius:36px;padding:70px 56px 56px;text-align:center;font-weight:700;line-height:1.35}
-.cards .q{top:470px;background:#171a4a;border:3px solid rgba(46,230,255,.5);box-shadow:0 14px 0 rgba(46,230,255,.18);font-size:54px}
-.cards .a{top:760px;background:#f2f4ff;color:var(--navy);box-shadow:0 14px 0 rgba(255,95,210,.35);font-size:36px;font-weight:400;line-height:1.45}
+.cards .hd{position:absolute;top:170px;width:100%;text-align:center;font-weight:700;font-size:160px;letter-spacing:2px;direction:ltr;color:#fff}
+.cards .hd b{color:var(--cyan)}
+.cards .stack{position:absolute;top:400px;bottom:150px;left:110px;right:110px;display:flex;flex-direction:column;justify-content:center;gap:80px}
+.cards .box{position:relative;border-radius:36px;padding:72px 56px 60px;text-align:center;font-weight:700;line-height:1.35}
+.cards .q{background:#171a4a;border:3px solid rgba(46,230,255,.5);box-shadow:0 14px 0 rgba(46,230,255,.18);font-size:62px}
+.cards .a{background:#f2f4ff;color:var(--navy);box-shadow:0 14px 0 rgba(255,95,210,.35);font-size:42px;font-weight:400;line-height:1.45}
 .cards .lab{position:absolute;top:-34px;left:50%;transform:translateX(-50%);font-size:34px;font-weight:700;padding:10px 44px;border-radius:24px}
 .cards .q .lab{background:var(--cyan);color:var(--navy)}
 .cards .a .lab{background:var(--pink);color:#fff}
 .cards .badge{background:rgba(255,255,255,.12);color:#fff}
 .cards .handle{background:#fff;color:var(--navy)}
-.cards .swipe{color:var(--cyan)}
+.cards .swipe{color:var(--cyan);left:auto;right:72px}
+.cards .ct{top:430px;font-size:130px}.cards.t-follow .ct{top:420px;font-size:110px}.cards.t-follow .cs{top:720px}.cards .cl{top:660px}.cards .cl li{font-size:48px}.cards .cs{font-size:46px}
 
 /* ---------- B: chat (DM conversation) ---------- */
 .chat{background:linear-gradient(180deg,#0b0d2e,#05061a);color:#fff}
@@ -79,7 +81,7 @@ const q = new URLSearchParams(location.search);
 const spec = await (await fetch(q.get('spec'))).json();
 const i = +(q.get('i') || 0), st = q.get('style') || 'cards', S = spec.slides[i], N = spec.slides.length;
 const nQ = spec.slides.filter(s => s.type === 'qa').length, k = spec.slides.slice(0, i + 1).filter(s => s.type === 'qa').length;
-const pg = document.getElementById('pg'); pg.className = 'pg ' + st;
+const pg = document.getElementById('pg'); pg.className = 'pg ' + st + ' t-' + S.type;
 const logo = '/engine/assets/logo.jpg';
 let h = `<div class="top"><div class="brand"><img src="${logo}">Robotics Israel</div>${S.type === 'qa' ? `<div class="badge">${k}/${nQ}</div>` : `<div class="badge">שאלות ותשובות</div>`}</div>`;
 if (st === 'cards') h += `<div class="blob w1"></div><div class="blob w2"></div>
@@ -87,12 +89,13 @@ if (st === 'cards') h += `<div class="blob w1"></div><div class="blob w2"></div>
   <path d="M1100 1080 C 900 1120, 860 1300, 640 1380" stroke="rgba(255,255,255,.35)" stroke-width="4" fill="none"/></svg>`;
 if (st === 'light') h += `<div class="strip"></div>`;
 if (S.type === 'qa') {
-  if (st === 'cards') h += `<div class="hd">Q&amp;A</div><div class="box q"><div class="lab">שאלה</div>${S.q}</div><div class="box a"><div class="lab">תשובה</div>${S.a}</div>`;
+  if (st === 'cards') h += `<div class="hd">Q<b>&amp;</b>A</div><div class="stack"><div class="box q"><div class="lab">שאלה</div>${S.q}</div><div class="box a"><div class="lab">תשובה</div>${S.a}</div></div>`;
   if (st === 'chat') h += `<div class="hd">שאלתם,<br><span>ענינו</span></div>
     <div class="row rq"><div class="av">?</div><div class="bub">${S.q}</div></div>
     <div class="row ra" style="top:${S.aTop || 640}px"><div class="av"><img src="${logo}"></div><div class="bub">${S.a}</div></div>`;
   if (st === 'light') h += `<div class="big">?</div><div class="num">שאלה ${k}</div><div class="qq"><span>${S.q}</span></div><div class="bar"></div><div class="aa">${S.a}</div>`;
 } else if (S.type === 'cover') {
+  if (st === 'cards') h += `<div class="hd">Q<b>&amp;</b>A</div>`;
   h += `<div class="ct">${S.title}</div><ul class="cl">${(S.bullets || []).map(b => `<li>${b}</li>`).join('')}</ul>`;
 } else {
   h += `<div class="ct">${S.title}</div><div class="cs">${S.text || ''}</div>`;
