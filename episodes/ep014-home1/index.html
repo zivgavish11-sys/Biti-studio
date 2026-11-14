@@ -42,7 +42,7 @@ for (const hx of [0, 4]) { box(3.88, .1, 3.88, hx, WH + .08, -2, roofM);
     c.strokeStyle = '#fff'; c.lineWidth = W * .045; c.beginPath(); c.arc(W / 2, H * .4, W * .12, Math.PI, 0); c.stroke();
     c.fillStyle = '#fff'; rr(c, W * .32, H * .4, W * .36, H * .28, 18); c.fill(); c.fillStyle = '#2c2f72'; c.beginPath(); c.arc(W / 2, H * .51, W * .035, 0, 7); c.fill(); c.fillRect(W * .487, H * .52, W * .026, H * .08);
     c.fillStyle = 'rgba(255,255,255,.8)'; c.textAlign = 'center'; font(c, 700, H * .1); c.fillText('בקרוב', W / 2, H * .85); }, {px: 500, light: .5});
-  lk.mesh.material.transparent = true; lk.mesh.rotation.x = -Math.PI / 2; lk.mesh.position.set(hx, WH + .14, -2); scene.add(lk.mesh); locks.push(lk); }
+  lk.mesh.material.transparent = true; lk.mesh.rotation.x = -Math.PI / 2; lk.mesh.scale.y = -1; lk.mesh.position.set(hx, WH + .14, -2); scene.add(lk.mesh); locks.push(lk); }
 // living room (front-left)
 await P('home/rugRectangle', {x: -4, z: 2.3, fit: [2.6, 1.8]}, .7);
 await P('home/loungeSofaCorner', {x: -4.4, z: .75, fit: [2.4, 1.2]}, 1.15);
@@ -144,14 +144,14 @@ st.frame(t => {
   parkM.opacity = .16 * pk; park.material.opacity = .35 + .6 * pk;
   padRingM.opacity = .45 + .5 * dr; padRing.scale.setScalar(1 + .04 * dr * Math.sin(t * 5)); hM.opacity = .45 + .5 * dr;
   const lkA = .55 + .45 * Math.max(win(t, A[1], A[6], .4), win(t, A[19] - .3, A[21], .4)) * (.7 + .3 * Math.sin(t * 5)); locks.forEach(l => { l.mesh.material.opacity = lkA; l.update(t); });
-  for (let i = 0; i < wpos.count; i++) { const x = w0[i * 3], y = w0[i * 3 + 1]; wpos.setZ(i, .012 * Math.sin(x * 3 + t * 2) + .01 * Math.sin(y * 4 - t * 1.6)); } wpos.needsUpdate = true; water.geometry.computeVertexNormals(); caust.update(t);
+  caust.update(t);
 
   // one world, continuous camera (grouper): whole house → rooms → stations → carport → back to the whole house
   const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
   const TW = [0, .2, 0], OW = [0, 17.5, 14.0];               // whole world from above (frame 0 = last frame)
   const TV = [-4.0, .2, 2.3], OV = [0, 3.2, 3.8];            // living room / vacuum
   const TK = [5.0, .9, 2.6], OK = [-1.8, 1.8, 2.8];          // kitchen / humanoid side-on
-  const TY = [-1.2, .3, 6.6], OY = [0, 4.0, 4.6];            // yard / dog + pool
+  const TY = [-2.6, .3, 6.5], OY = [.6, 4.2, 4.8];            // yard / dog + pool
   const TS = [-2.55, 1.15, 1.9], OS = [-.6, .7, 2.7];        // vacuum station close-up
   const TH = [2, 1.0, -2.0], OH = [0, 5.2, 5.6];             // hidden rooms (locks)
   const TC = [-.3, .8, -6.6], OC = [0, 8.0, 7.2];            // back strip: parking + garage pad
@@ -162,7 +162,7 @@ st.frame(t => {
     sh(A[10] + .2, TK, OK, 1.15), sh(A[11] + .4, TK, OK, .92),                                        // humanoid washing dishes
     sh(A[12] + .2, TY, OY, 1.2), sh(A[13] + .5, TY, OY, .95),                                        // dog in the yard, pool
     sh(A[14] + .3, TS, OS, 1.35), sh(A[15] + .6, TS, OS, 1.05), sh(A[16] + .6, [-2.55, 1.25, 1.9], OS, .85), sh(A[18] + .3, TS, OS, 1.05),   // station: 10 plates, your name
-    sh(A[19] + .2, TH, OH, 1.1), sh(A[21] + .1, [-1.6, .6, -6.4], OC, 1.0), sh(A[22] + .3, [.8, 1.2, -6.4], OC, .92),   // the 4th robot: locks → parking spot → roof pad
+    sh(A[19] + .2, TH, OH, 1.1), sh(A[21] + .1, [-.6, .6, -6.0], OC, 1.12), sh(A[22] + .3, [.2, 1.2, -6.0], OC, 1.0),   // the 4th robot: locks → parking spot → roof pad
     sh(B[22] + .1, TW, OW, .9), sh(END, TW, OW, 1.0)]);                                               // pull back to the whole house
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
