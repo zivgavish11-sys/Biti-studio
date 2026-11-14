@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-14 [from video] PROBLEM, Ziv asks you to propose a fix: in today's video run the add_repo tool was missing (ToolSearch found nothing), so Biti-media was not in the session's repo set → git push to Biti-media got 403 from the git proxy ("not in this session's authorized repository set"). The fallback (orphan branch media-<slug> in Biti-studio) was blocked twice by the auto-mode permission classifier, even after Ziv's explicit OK. Result: ep013-vacuumcam (built, QA pass, Ziv approved) could not be scheduled in Buffer for 14.11 18:00 — Ziv uploads it by hand. The news agent attached Biti-media fine today, so it is intermittent. Also: the previous video session's mp4/mp3 were lost with its container (mp3 is git-ignored), so I had to ask Ziv to resend the recording and rebuild (~40 min). GitHub app already has All repositories. Ideas to evaluate: a reliable public host that does not depend on add_repo (e.g. Google Drive public link, which Buffer may or may not accept), keeping voice mp3s somewhere durable, or a documented fallback order for when Biti-media is unreachable.
 - 2026-11-13 [from factcheck] dashboard write failed: ArtifactData pinned write refused ("no approval record in this session") in unattended run — status + feed for ep013 caption check not posted.
 
 - 2026-11-10 [from factcheck] dashboard write failed: ArtifactData batch refused ("no approval record in this session") in an unattended run — nothing written.
