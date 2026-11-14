@@ -32,3 +32,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-13 ~16:00 UTC: fired with no item text → checked latest commit ep013-vacuumcam caption v1 (6f4685d, not scheduled). All facts OK (MIT TR, Ecovacs 2024 hijack confirmed). 1 optional tightening (drop "רק" in lidar line) → inbox/video. Quiet.
 - 2026-11-13 ~16:10 UTC: fired for ep013 caption deep-facts block. Unchanged since my check (6f4685d) → same result: all OK, 1 optional tightening already in inbox/video. Quiet.
 - 2026-11-14 ~00:30 UTC: fired with no item text → checked latest commit news/20261114 (2145555, just built, not yet scheduled). Facts OK (IE + Unite for ASUS; Fortune read in full). 3 minor softenings → inbox/news (2028 "availability" not "sales"; Applied org reports to Brockman; DM attribution to OpenAI not Fortune). No push.
+- 2026-11-14 ~02:00 UTC: fired for news/20261114 spec+caption+dms (12:00 IL). b998214 has all 3 fixes; caption OK → OK, no push.

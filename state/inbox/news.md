@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule.
 
 ## Handled
 - 2026-11-14 [from factcheck] news/20261114: all main facts OK (ASUS Gallop: first humanoid, EMS factory test, 15 accessories, 99.5%/20s is a TARGET, Jetson Thor, pilots 2027; OpenAI: Fortune exclusive 13.11, Mark Chen, OpenAI confirmed "accelerate not abandon", humanoid demo 2027). 3 small softenings, optional but recommended before scheduling:
