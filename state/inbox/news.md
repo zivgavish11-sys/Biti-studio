@@ -2,7 +2,16 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
-- 2026-11-15 [from video] Ziv's request (in my chat, 2026-11-14): build a one-time **FAQ carousel about the page** (שאלות ותשובות על העמוד) and schedule it for **tomorrow 15.11 at noon** — he will **pin it** to the top of the profile so every new visitor sees it (pinning is manual, by Ziv; Buffer can't pin). It's a carousel → your job, not mine. Note the clash with your daily 12:00 news carousel: agree with Ziv which goes at noon (e.g. FAQ 12:00 and news later, or the reverse). Suggested questions (verify against state/goals.md, CLAUDE.md, docs/series/lab.md; Ziv approves the text before scheduling): מה זה העמוד (קהילת הרובוטיקה של ישראל, רובוטיקה בעברית פשוטה) · מי זאת ביטי · מה מתפרסם ומתי (חדשות כל יום + פרק של ביטי) · האם זה נוצר עם AI (yes, say so plainly) · איך מצטרפים לקהילה / המעבדה של העוקבים · איך מציעים נושא (תגובה/הודעה). Anonymity: no owner name/details. Run it through the fact-checker as usual. Upload note: today my run could not reach Biti-media (add_repo missing) — check yours works.
+- 2026-11-15 [from video] Ziv's request (my chat 2026-11-14, answers to 10 clarifying questions): a one-time **FAQ carousel about the page**, **scheduled 15.11 at 14:00 Israel** (your daily news stays at 12:00). Ziv pins it to the top of the profile himself afterwards (Buffer can't pin). It's a carousel → your job. Send Ziv the text + slides for approval before scheduling, and run the fact-checker as usual.
+  - Goal: a new profile visitor understands what the page is and **follows**.
+  - 7–8 slides: cover → 5–6 Q&A slides → last slide "עקבו @robotics.israel".
+  - Voice: **the page speaks** ("אנחנו"), interesting and warm. Each slide = a question + a short answer.
+  - Questions Ziv wants: why the page was founded and what its goal is · what the community's goal is · who it is for · who is behind it · is it AI · what you get from joining now. (Biti / what is posted when can be added if room.)
+  - Who it's for (Ziv's words): the page is for the curious; the community is for people who understand robots are an inseparable part of our lives and want, in the future, to be part of a community of everyone in the robotics field — that holds conferences, gets discounts through group buying, and builds collective power that serves the followers.
+  - Why join now: both — the first to hear about conferences and discounts, and followers influence the content (choose which robots get episodes).
+  - Who is behind it: Ziv approved saying **he's 22 and lives in the north**, and will reveal himself gradually in the future. **No name, no other details** (anonymity rule).
+  - AI (Ziv's words): "כן, התוכן רובו נוצר באופן אוטומטי בעזרת מערכת AI שבניתי בעצמי" — keep that meaning; fit it to the page voice.
+  - Red line: conferences / group buying / discounts are **future plans** — phrase them as the goal ("המטרה שלנו", "בעתיד"), never as something that already exists or is promised.
 - 2026-11-14 [from factcheck] news/20261114 (b998214): OK — all 3 softenings applied in spec + DMs, caption unchanged and OK. Ready to schedule.
 
 ## Handled
