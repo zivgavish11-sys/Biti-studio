@@ -1,0 +1,141 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP015-pokemon — LONG + hero look, one world (Israeli city corner, media kit run 7, varyCity seed 15). visual.md v1.
+// Phrases: 0 שיחקתם | 1 אימנתם | 2 איך זה קשור | 3 רובוט משלוחים | 4 בין בניינים | 5 לוויין טועה | 6 לזהות בעיניים | 7 כמו בן אדם
+//          8 ובשביל זה | 9 תמונות כל פינה | 10 מכל זווית | 11 שעות/מזג אוויר | 12 מי יצלם | 13 טוויסט | 14 אתם | 15 המשחק שלח | 16 פרסים
+//          17 עוד משחק | 18 30 מיליארד | 19 מפה | 20 משווה | 21 מוצאת | 22 לפי החברה | 23 סנטימטרים | 24-25 outro card
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {photoCards, toDots, viewCone, edgeLines, errorCircle, dashLine, daylight, handPhone, varyCity} from '/engine/props/fx-city.js';
+const st = await studio({
+  look: 'hero', episode: 15, fog: .006, outro: 'card',
+  keys: ['פוקימון', 'רובוטים', 'בדיוק', 'מטרים', 'בעיניים', 'פינה', 'זווית', 'הטוויסט', 'אתם', 'פרסים', 'מיליארד', 'מפה', 'סנטימטרים'],
+  hookEnd: 3.7, hook: ['שיחקת <span class="pill">פוקימון גו</span>?', 'אימנת אלפי רובוטים<br>בלי לדעת!'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+st.stage({r: 200, grid: 0, spot: null});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+// ---------- world: one Israeli street corner (roads cross at the origin) ----------
+const street = await P('citycorner/streetCorner');
+const bau = await P('citycorner/bauhausCorner', {x: 13.25, z: -13.25});
+const shop = await P('citycorner/storefront', {x: -12.7, z: -13});
+const cafe = await P('citycorner/cafe', {x: -21.7, z: -12.2});
+const shop2 = await P('citycorner/storefront', {x: -13, z: 13.2, ry: Math.PI});
+const statue = await P('citycorner/statue', {x: 13, y: .2, z: 13});
+[street, bau, shop, cafe, shop2].forEach((o, i) => varyCity(o, 150 + i));
+// keep the camera path clear: no trees in the NW quadrant (the photo shots fly there)
+[street, shop, cafe, bau].forEach(r => { r.updateMatrixWorld(true); r.traverse(o => { if (/tree|crown|bush|palm/i.test(o.name)) { const p = o.getWorldPosition(V(0, 0, 0)); if (p.x < 0 && p.z < 0) o.visible = false; } }); });
+const BOT0 = V(-9.5, .2, -5.6);
+const bot = await P('robots/deliveryBot', {x: BOT0.x, y: .2, z: BOT0.z, ry: Math.PI / 2});
+const sat = await P('space/gpsSatellite', {x: -4, y: 15, z: -6}); sat.rotation.set(.2, .5, .1);
+const SAT = sat.position.clone().add(V(0, -.8, 0));
+// players (lilac mannequins with phones) around the statue — appear on the twist
+const mans = []; for (let i = 0; i < 5; i++) { const a = -1.9 + i * .55; const m = await P('people/mannequin-scan', {x: 13 + Math.sin(a) * 4.6, y: .2, z: 13 + Math.cos(a) * 4.6, ry: a + Math.PI}); m.userData.s0 = m.scale.x; mans.push(m); }
+// hook player: one mannequin scanning the statue from the front from frame 0
+const hero = await P('people/mannequin-scan', {x: 9.2, y: .2, z: 9.6, ry: Math.PI * .25}); hero.userData.s0 = hero.scale.x;
+const sky = daylight(st);
+// ---------- FX ----------
+const ec = errorCircle(scene); ec.at(BOT0.x, BOT0.z);
+const dl = dashLine(scene);
+const cards = photoCards(scene, 90, 1.3);
+const vc = viewCone(scene);
+const edges = edgeLines(scene, shop, {filter: o => /window|frame|sill|lintel|shopWindow|door|balcony|slab|body|roof|awning/.test(o.name + (o.parent?.name || ''))});
+const dots = toDots(scene, [shop, cafe, bau, shop2], {n: 50000, size: .08});
+// scan rings around the statue (players scan it)
+const ringM = new THREE.MeshStandardMaterial({color: st.HERO_ACC, roughness: .6, transparent: true, opacity: 0});
+const rings = [0, 1, 2].map(i => { const r = new THREE.Mesh(new THREE.TorusGeometry(1, .035, 8, 64), ringM); r.rotation.x = Math.PI / 2; r.position.set(13, .5 + i * 1.3, 13); scene.add(r); return r; });
+// the phone in the player's hand (task screen + reward), held in front of the camera on 15–16
+const hp = await handPhone(st); hp.o.visible = false;
+const PH = {mode: 0, scan: 0, star: 0};
+const phUpd = st.screen(hp.screen, (c, t, W, H) => { c.fillStyle = '#12143a'; c.fillRect(0, 0, W, H); c.fillStyle = '#d9ddf7'; c.textAlign = 'center'; c.direction = 'rtl';
+  c.font = '700 64px Rubik'; c.fillText('משימה:', W / 2, H * .17); c.fillText('סרקו את הפסל', W / 2, H * .25);
+  c.strokeStyle = '#8ea6ff'; c.lineWidth = 10; const bx = W * .16, by = H * .32, bw = W * .68, bh = H * .4; c.strokeRect(bx, by, bw, bh);
+  c.fillStyle = 'rgba(142,166,255,.35)'; c.fillRect(bx, by + bh * PH.scan - 6, bw, 12);
+  c.globalAlpha = PH.star; c.fillStyle = '#8ea6ff'; c.font = '700 96px Rubik'; c.fillText('★ פרס!', W / 2, H * .86); c.globalAlpha = 1; });
+// robot's own screen: "איפה אני?" + pin, later a locked pin
+const BS = {lock: 0};
+const botScr = st.screen([1.1, .62], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.6)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'center'; c.direction = 'rtl'; c.fillStyle = '#fff'; c.font = `700 ${H * .2}px Rubik`;
+  c.fillText(BS.lock > .5 ? 'מצאתי ✓' : 'איפה אני?', W / 2, H * .3);
+  const px = W / 2, py = H * .66, r = H * .14; c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(px, py - r * .4, r * .7, Math.PI, 0); c.lineTo(px, py + r); c.closePath(); c.fill();
+  c.fillStyle = '#10123a'; c.beginPath(); c.arc(px, py - r * .45, r * .28, 0, 7); c.fill(); }, {px: 700, light: .5});
+scene.add(botScr.mesh);
+const botDash = dashLine(scene, {dash: .12, gap: .1});
+// cards: spec per phase
+const rnd = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+const CORNER = V(-12.7, 4, -9.5), CLOUD = V(0, 13, 0);
+st.frame(t => {
+  // robot rolls slowly along the sidewalk, wheels spin
+  const roll = .35 * Math.min(t, A[4]) + .35 * Math.max(0, t - A[20]); bot.position.x = BOT0.x + Math.min(roll, 2.4);
+  for (let i = 0; i < 6; i++) { const w = bot.getObjectByName('wheel' + i); if (w) w.rotation.x = (t < A[4] || t > A[20]) ? t * 4 : A[4] * 4; }
+  const BP = bot.position;
+  // hook player scans the statue (0–A2), then gone until the twist; twist players pop in on 14
+  const hk = 1 - sm(A[2] + .2, A[2] + .6, t) + sm(A[14] - .1, A[14] + .3, t); hero.scale.setScalar(hero.userData.s0 * Math.max(.001, Math.min(1, hk)));
+  mans.forEach((m, i) => m.scale.setScalar(m.userData.s0 * Math.max(.001, sm(A[14] + i * .08, A[14] + .35 + i * .08, t))));
+  ringM.opacity = .9 * (win(t, -1, A[2] + .4, .3) + win(t, A[15] + .4, A[18], .3)); rings.forEach((r, i) => { const s = 2.2 + .5 * Math.sin(t * 3 + i * 1.2); r.scale.setScalar(s); });
+  // robot screen (3) + dashed line, again at the end (20–23)
+  const bs = win(t, A[3] - .1, A[6], .3) + win(t, A[20] - .2, END + 1, .3); botScr.mesh.visible = bs > .01; botScr.mesh.scale.setScalar(Math.max(.01, bs));
+  botScr.mesh.position.set(BP.x, 2.4, BP.z + .2); botDash.set(V(BP.x, 2.05, BP.z + .2), V(BP.x, 1.0, BP.z), bs);
+  BS.lock = sm(A[21], A[21] + .2, t); botScr.update(t);
+  // satellite: dashed line down + error circle that jumps (4–5), shrinks to a dot at the end (21–23)
+  dl.set(SAT, V(BP.x, .25, BP.z), win(t, A[4] + .2, A[6] + .2, .4) * Math.min(1, (t - A[4]) / 1.0));
+  ec.at(BP.x + (t < A[6] ? .8 * Math.sin(t * 5) : 0), BP.z + (t < A[6] ? .6 * Math.cos(t * 4) : 0));
+  const ecIn = win(t, A[5] - .2, A[6] + .3, .3), ecEnd = win(t, A[20], END + 1, .3);
+  ec.set(ecIn ? 2.8 + .5 * Math.sin(t * 3) : 3 - 2.7 * sm(A[21], A[23], t), Math.max(ecIn, ecEnd));
+  // light: sun → cloud on 11, back to sun on 12
+  sky(sm(A[11], A[11] + 1, t) * (1 - sm(A[12] + .2, A[13], t)));
+  // camera eyes: view cone + edges (6–7) and again (20–21 snap)
+  const eye = bot.localToWorld(V(0, .55, .4)); const vcK = win(t, A[6] + .1, A[8], .3) + win(t, A[20], A[22] + .5, .3); vc.set(vcK); vc.aim(eye, V(-11.5, 4.5, -8), Math.max(.01, vcK));
+  edges.set(win(t, A[6] + .3, A[8] + .2, .3) * Math.min(1, (t - A[6]) / 1.2) + (t > A[20] ? Math.min(1, (t - A[20]) / .8) : 0), t > A[20] ? sm(A[20] + .3, A[21] + .3, t) : 1);
+  // dot map (19) stays while the robot compares (20–21), then solid city back for the outro
+  dots.set(.6 * win(t, A[19] - .1, A[22], .4));
+  // photo cards
+  cards.flock(t, i => {
+    if (t > A[9] - .2 && t < A[12] + .2) {        // 9–11: photos of THIS corner from every angle, pop around the corner building, then fade
+      if (i >= 60) return null; const a = i / 60 * Math.PI * 1.6 - .2, R = 7 + rnd(i, 1) * 3; const p = V(CORNER.x + Math.cos(a) * R, 1.5 + rnd(i, 2) * 7, CORNER.z + Math.sin(a) * R * .6 + 3);
+      const t0 = A[9] + (i % 30) * .05 + (i >= 30 ? A[10] - A[9] : 0); return t > A[12] - .1 ? {from: p, to: p.clone().add(V(0, -3, 0)), a: A[12] - .1, b: A[12] + .2, lift: 0, face: V(-4, 7, 6), shrink: 1} : {from: p.clone().lerp(CORNER, .6), to: p, a: t0, b: t0 + .5, lift: .3, face: V(-4, 7, 6)};
+    }
+    if (t > A[15] + .3 && t < A[19]) {             // 15–18: photos from the players fly up from the statue to one cloud above the city
+      const from = i % 3 ? V(13 + rnd(i, 3) * 6 - 3, 1.6, 13 + rnd(i, 4) * 6 - 3) : V(rnd(i, 5) * 30 - 15, 1.6, rnd(i, 6) * 30 - 15);
+      const to = CLOUD.clone().add(V(rnd(i, 7) * 6 - 3, rnd(i, 8) * 2.5, rnd(i, 9) * 6 - 3)); const a = A[15] + .4 + (i % 45) * .07 + (i >= 45 ? 1.2 : 0);
+      return {from, to, a, b: a + 1.4, lift: 2, face: V(0, 10, 25), shrink: t > A[18] ? 1 : 0};
+    }
+    return null; });
+  // ---------- camera: one world, every sentence a move ----------
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const bp = [BP.x, 1.0, BP.z];
+  const TW = [0, 2, 0], OW = [12, 18, 22];               // wide high 3/4 of the whole corner
+  const T0 = [10.8, 4.0, 10.8], O0 = [-7.5, 5.5, -5];      // frame 0 = last frame: player scanning the statue, scan rings, street behind
+  const TS = [12, 2.2, 12], OS = [-6, 3, -7];             // statue + hook player
+  const OB = [3, 2.2, 6];                                 // robot close
+  const TC = [-12, 4.5, -10], OC = [7, 7, 12];            // corner building (photos)
+  const [cp, ct] = camPath(t, [
+    sh(0, T0, O0, 1.0), sh(A[1] - .2, TS, OS, 1.1), sh(A[2] - .1, TS, OS, .85),                                    // hook: player scans the statue
+    sh(A[3] - .1, bp, OB, 1.4), sh(A[3] + 1.6, bp, OB, .9),                                                         // swoop to the robot: "where am I?"
+    sh(A[4] + .3, [BP.x, 4, BP.z], [6, 9, 12], 1.0), sh(A[5] + 1.2, [-6, 6, -6], [7, 6, 14], 1.0),                  // crane up: satellite, error circle
+    sh(A[6] + .3, [BP.x - .6, 1.3, BP.z - 1], [3.5, 1.6, 4], 1.0), sh(A[7] + .4, [-11, 3.5, -8.5], [6, 1.5, 9], 1.0),  // robot's eyes → facade edges
+    sh(A[9], TC, OC, 1.5), sh(A[10] + .3, TC, [-4, 3, 13], 1.45), sh(A[11] + 1.2, TC, OC, 1.7),                    // photos from every angle, sun → cloud
+    sh(A[12] + .2, TW, OW, .7), sh(A[13] - .1, TW, OW, .62),                                                         // empty street: who will shoot all this?
+    sh(A[14], TS, [-7, 5, -9], 1.0), sh(A[15] + .2, TS, [-7, 5, -9], .85),                                            // twist: you (players around the statue)
+    sh(A[16] - .2, TS, [-6, 2.5, -7], .8), sh(A[17] - .2, TS, [-6, 2.5, -7], .9),                                     // phone in hand: task + reward
+    sh(A[18] - .2, [0, 9, 0], [5, 6, 25], 1.0), sh(A[19] - .1, [0, 9, 0], [5, 6, 25], 1.1),                           // photos → one cloud, 30 billion
+    sh(A[19] + .5, TW, OW, .75), sh(A[20] - .1, TW, OW, .7),                                                          // the city becomes a dot map
+    sh(A[20] + .6, [BP.x - .6, 1.6, BP.z - 1.5], [4, 2.2, 5.5], 1.0), sh(A[22], bp, OB, 1.1), sh(A[23] + .3, bp, OB, .85), // robot compares, pin locks
+    sh(A[24] - .2, T0, O0, 1.05), sh(END, T0, O0, 1.0)]);
+  botScr.mesh.lookAt(cp);
+  // phone held in front of the camera on 16 (task + scan + reward)
+  const hold = win(t, A[16] - .3, A[17] - .1, .25); hp.o.visible = hold > .01;
+  if (hp.o.visible) { const d = ct.clone().sub(cp).normalize(), r = d.clone().cross(V(0, 1, 0)).normalize(), u = r.clone().cross(d);
+    hp.o.position.copy(cp).addScaledVector(d, 1.6).addScaledVector(r, .3).addScaledVector(u, -.42 - .4 * (1 - hold)); hp.o.lookAt(cp.clone().addScaledVector(u, -.3)); hp.o.scale.setScalar(2.2); }
+  PH.scan = (t * .9) % 1; PH.star = sm(A[16] + .6, A[16] + .9, t); phUpd.update(t);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
+    L(A[5], A[6] - .1, 'טעות של כמה מטרים', V(BP.x + 2.6, .3, BP.z), 0, -300);
+    L(A[6] + .4, A[8], 'מצלמות', bot.localToWorld(V(0, .55, .4)), 170, -280);
+    if (t2 > A[18] - .1 && t2 < A[19] + .2) { const n = Math.round(30 * sm(A[18], A[18] + 1.4, t2)); st.counter(540, 700, `${n}`, ' מיליארד', '#8ea6ff', win(t2, A[18] - .1, A[19] + .2, .2), 110); }
+    L(A[22], A[24] - .2, 'לפי החברה: סנטימטרים', V(BP.x, .3, BP.z), 0, -380);
+  }};
+});
+st.ready();
+</script></body></html>
