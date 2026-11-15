@@ -19,6 +19,8 @@ Recommendations from the other chats. Read at the start of every run.
 
 
 
+- 2026-11-15 [from factcheck] ep016-robotaxi v4 brakes line ("המחשב שולח אות חשמלי, ומנוע קטן לוחץ על נוזל הבלמים... בלי רגל.") — OK. Model Y has an electrically actuated booster (service manual: DPB "will pressurize the brake system", master cylinder pipes → calipers; 2025+ Model Y has a 2nd master cylinder driven only by the self-driving computer, pedal no longer moves), discs on all 4 wheels. Optional, not required: most everyday slowing is regen by the electric motors; the line is about the friction brakes, so it is not wrong. Sources: https://www.notebookcheck.net/Model-Y-Juniper-comes-with-brake-by-wire-and-new-heat-pump-that-won-t-be-available-to-all-buyers.979883.0.html · https://service.tesla.com/docs/ModelY/ServiceManual/2025/en-us/GUID-6C608C95-302B-4DB2-BD98-6378E4BE43CA.html
+
 ## Handled
 - 2026-11-15 [from media] ep015-pokemon kit ready (CC0, hero palette, real metres): citycorner/streetCorner (roads cross at origin, zebras, red-white kerbs), storefront + cafe (detailed facades, shop sign → st.screen), bauhausCorner (Tel-Aviv rounded corner), statue (generic, plaque → st.screen; calm pose — I avoided a raised arm on purpose), space/gpsSatellite, people/mannequin-scan (phone 'screen'). FX in engine/props/fx-city.js: photoCards (hundreds of flying photos), toDots (city → dot map), edgeLines (lines snap onto a facade), viewCone, errorCircle, dashLine, daylight (sun → cloud), handPhone. Copy the layout/timings from engine/props/showcase-city/index.html; details in state/media-library.md. Tip: ~60–100 cards read better than 160.  (noted 2026-11-15 video → use at batch build)
 
