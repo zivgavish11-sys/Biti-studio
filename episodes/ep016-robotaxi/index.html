@@ -1,0 +1,169 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP016-robotaxi — LONG + hero look, one world (Israeli street kit, varyCity seed 16). visual.md v2. X-ray brake shot on 25–27 (Ziv's request).
+// Phrases: 0 ילד קופץ | 1-3 מי בולם מהר יותר אתם או רכב אוטונומי | 4 רובוטקסי | 5 אין לייזר ואין רדאר | 6 רק מצלמות | 7 איך מצלמה יודעת
+//          8-9 מצלמות מכל הצדדים, עשרות פעמים בשנייה | 10-11 מוח אחד, רשת עצבית | 12-13 למדה מסרטונים, רגע מסוכן | 14-15 מרחק, כמו העיניים
+//          16-18 ילד קופץ, תנועה קטנה, מנחשת | 19-22 ההבדל: אף אחד לא כתב חוק | 23-24 למדה לבד, תמונה → החלטה
+//          25-27 אות חשמלי, מנוע קטן, נוזל הבלמים, בלי רגל (x-ray) | 28-29 נהג אנושי: בערך שנייה | 30-31 outro card
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {viewCone, dashLine, varyCity, photoCards} from '/engine/props/fx-city.js';
+import {xray, brakePulse} from '/engine/props/fx-car.js';
+const st = await studio({
+  look: 'hero', episode: 16, fog: .006, outro: 'card',
+  keys: ['בולם', 'מצלמות', 'לעצור', 'עשרות', 'מוח', 'מסוכן', 'מרחק', 'ילד', 'ההבדל', 'חוק', 'לבד', 'חשמלי', 'הבלמים', 'רגל', 'שנייה'],
+  hookEnd: 4.2, hook: ['מי <span class="pill">בולם</span> מהר יותר?', 'אתם או רכב אוטונומי'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+const ACC = st.HERO_ACC, M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .75, ...o});
+st.stage({r: 200, grid: 0, spot: null});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+// ---------- world: Israeli street, road along x (z −4..4), parked cars on the north kerb ----------
+const street = await P('citycorner/streetCorner');
+const shop = await P('citycorner/storefront', {x: -12.7, z: -13});
+const cafe = await P('citycorner/cafe', {x: -21.7, z: -12.2});
+const bau = await P('citycorner/bauhausCorner', {x: 13.25, z: -13.25});
+const shop2 = await P('citycorner/storefront', {x: 12.7, z: 13.2, ry: Math.PI});
+[street, shop, cafe, bau, shop2].forEach((o, i) => varyCity(o, 160 + i));
+[street, shop, cafe, bau, shop2].forEach(r => { r.updateMatrixWorld(true); r.traverse(o => { if (/tree|crown|bush|palm/i.test(o.name)) { const p = o.getWorldPosition(V(0, 0, 0)); if (Math.abs(p.z) < 9 && p.x > -14 && p.x < 16) o.visible = false; } }); });
+const indigo = (o, body = 0x4a4f9e) => o.traverse(q => { if (q.isMesh) { const l = q.material.color.getHSL({}).l; q.material = M(l < .18 ? 0x14163a : l > .7 ? 0x9ea3dc : body); } });
+const LANE = -1.2, KERB = -3.25;
+const suv = await P('vehicles/car-suv', {h: 1.75, x: -2.4, z: KERB, ry: -Math.PI / 2}); indigo(suv, 0x3d4290);
+const sedan = await P('vehicles/car-sedan', {h: 1.45, x: -8.6, z: KERB, ry: -Math.PI / 2}); indigo(sedan, 0x55599f);
+// human-driven car in the other lane (28–29), with a driver
+const hcar = await P('vehicles/car-sedan', {h: 1.45, x: 30, z: 1.6, ry: -Math.PI / 2}); indigo(hcar, 0x6a5a9e);
+const driver = await P('people/mannequin-scan', {h: .9, x: 30, y: .55, z: 1.95}); driver.rotation.y = -Math.PI / 2;
+// hero: the robotaxi (x-ray capable), drives −x in the south lane
+const car = (await st.prop('vehicles/robotaxiXray', {tint: 1, x: 14, z: LANE, ry: -Math.PI / 2})).object;
+const xr = xray(car), bp = brakePulse(car);
+const lidar = car.getObjectByName('lidar'), radar = car.getObjectByName('radar');
+const cams = [0, 1, 2, 3, 4, 5].map(i => car.getObjectByName('cam' + i)).filter(Boolean);
+const camM = cams.map(c => { const ms = []; c.traverse(q => { if (q.isMesh) { q.material = q.material.clone(); ms.push(q.material); } }); return ms; });
+const wc = o => new THREE.Box3().setFromObject(o).getCenter(V(0, 0, 0));   // node origins sit at the car origin → use bbox centres
+const wheels = [0, 1, 2, 3].map(i => car.getObjectByName('wheel' + i));
+// the child (small mannequin) + ball, hidden behind the SUV
+const kid = await P('people/mannequin-walk', {h: 1.15, x: -4.6, y: .2, z: -5.0}); kid.rotation.y = Math.PI * .1;
+const J = n => kid.getObjectByName(n);
+const ball = new THREE.Mesh(new THREE.SphereGeometry(.13, 24, 16), M(0xd9ddf7, {roughness: .55})); ball.castShadow = true; scene.add(ball);
+// ghost lidar/radar outlines (5): an X over each
+const xM = M(ACC, {transparent: true, opacity: 0});
+const mkX = () => { const g = new THREE.Group(); for (const s of [1, -1]) { const b = new THREE.Mesh(new THREE.BoxGeometry(.7, .07, .07), xM); b.rotation.z = s * Math.PI / 4; g.add(b); } scene.add(g); return g; };
+const xL = mkX(), xR = mkX();
+// 6 camera view cones (8–9) + photos flying in (10)
+const cones = cams.map(() => viewCone(scene, {fov: .9}));
+const cards = photoCards(scene, 36, .5);
+// the neural network inside the car (10–11): nodes + links, pulses run through it
+const net = new THREE.Group(); scene.add(net);
+const nodeM = M(ACC, {roughness: .5}), linkM = new THREE.LineBasicMaterial({color: ACC, transparent: true, opacity: .55});
+const NODES = []; const layers = [6, 8, 8, 4];
+layers.forEach((n, L) => { for (let i = 0; i < n; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(.05, 12, 8), nodeM.clone()); m.position.set((L - 1.5) * .42, (i - (n - 1) / 2) * .13, 0); net.add(m); NODES.push({m, L}); } });
+const lp = []; NODES.forEach(a => NODES.forEach(b => { if (b.L === a.L + 1) lp.push(a.m.position.clone(), b.m.position.clone()); }));
+net.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp), linkM));
+// floating screen (12–13 driving clips · 20–24 the rule that nobody wrote)
+const SC = {mode: 0, scroll: 0, mark: 0, cross: 0, arrow: 0};
+const rr = (c, x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const scr = st.screen([1.7, 1.0], (c, t, W, H) => { c.fillStyle = '#10123a'; c.fillRect(0, 0, W, H); c.strokeStyle = 'rgba(142,166,255,.6)'; c.lineWidth = 6; c.strokeRect(3, 3, W - 6, H - 6);
+  c.textAlign = 'center'; c.direction = 'rtl'; c.fillStyle = '#fff';
+  if (SC.mode === 0) { c.font = `700 ${H * .09}px Rubik`; c.fillText('סרטוני נהיגה אמיתית', W / 2, H * .14);
+    for (let i = 0; i < 9; i++) { const x = W * .06 + ((i * W * .3 - SC.scroll * W * .3) % (W * 2.7) + W * 2.7) % (W * 2.7) - W * .3, y = H * .26, w = W * .26, h = H * .4;
+      c.fillStyle = '#2a2d62'; rr(c, x, y, w, h, 14); c.fill(); c.fillStyle = '#1a1c45'; c.fillRect(x, y + h * .6, w, h * .4); c.strokeStyle = '#d9ddf7'; c.lineWidth = 3; c.beginPath(); c.moveTo(x + w * .5, y + h * .6); c.lineTo(x + w * .5, y + h); c.stroke();
+      c.fillStyle = '#7a7fb8'; c.fillRect(x + w * .2, y + h * .45, w * .22, h * .16); if (i === 4) { c.globalAlpha = SC.mark; c.strokeStyle = '#f0502a'; c.lineWidth = 8; rr(c, x - 4, y - 4, w + 8, h + 8, 16); c.stroke(); c.globalAlpha = 1; } }
+    c.globalAlpha = SC.mark; c.fillStyle = '#f0502a'; c.font = `700 ${H * .1}px Rubik`; c.fillText('רגע מסוכן!', W / 2, H * .86); c.globalAlpha = 1; }
+  else { c.font = `700 ${H * .13}px Rubik`; c.globalAlpha = 1 - .5 * SC.arrow; c.fillText('אם ילד ← תבלמי', W / 2, H * .34);
+    if (SC.cross > 0) { c.strokeStyle = '#f0502a'; c.lineWidth = 10; c.beginPath(); c.moveTo(W * .14, H * .3); c.lineTo(W * .14 + W * .72 * SC.cross, H * .3); c.stroke(); }
+    c.globalAlpha = SC.arrow; c.fillStyle = '#8ea6ff'; c.font = `700 ${H * .15}px Rubik`; c.fillText('תמונה ← החלטה', W / 2, H * .72); c.globalAlpha = 1; }
+}, {px: 1000, light: .5});
+scene.add(scr.mesh); const scrDash = dashLine(scene, {dash: .1, gap: .08});
+const dD = [dashLine(scene, {dash: .25, gap: .18}), dashLine(scene, {dash: .25, gap: .18})];   // distance lines (14–15)
+const pred = dashLine(scene, {dash: .2, gap: .14});                                              // predicted path (18)
+// ---------- motion ----------
+const carX = t => { if (t < A[4]) return 14 - 1.2 * t;                          // rolling in
+  const x1 = 14 - 1.2 * A[4]; if (t < A[16]) return x1;                         // frozen while we explain
+  const x2 = x1 - 3.4; if (t < A[19]) return x1 - 3.4 * sm(A[16], A[19], t);    // drives on, the child appears
+  if (t < A[25]) return x2;                                                     // freeze frame: the decision
+  return x2 - (x2 + 1.1) * Math.sin(Math.PI / 2 * Math.min(1, (t - A[25]) / (B[27] - A[25]))); };   // brakes, stops short of the child
+const kidRun = t => sm(A[16] - .1, A[17] + .4, t) * .55 + sm(A[25], A[27], t) * .45;  // 0 = hidden behind the SUV, 1 = in the lane edge
+st.frame(t => {
+  const cx = carX(t); car.position.x = cx; const vx = Math.abs(carX(t + .03) - cx);
+  wheels.forEach(w => { if (w) w.rotation.x = -cx / .36; });
+  // lidar + radar ghosts → X → gone (5–6); cameras light up (6)
+  const gone = sm(A[5] + .6, A[6], t); [lidar, radar].forEach(o => { if (o) o.scale.setScalar(Math.max(.001, 1 - gone)); });
+  xM.opacity = win(t, A[5] + .1, A[6] + .3, .2);
+  if (lidar && gone < .99) xL.position.copy(wc(lidar)).add(V(0, .3, 0)); if (radar && gone < .99) xR.position.copy(wc(radar)).add(V(0, .1, 0));
+  xL.lookAt(st.cam.position); xR.lookAt(st.cam.position);
+  camM.forEach((ms, i) => { const on = sm(A[6] + i * .08, A[6] + .2 + i * .08, t); ms.forEach(m => m.color.set(0x2a2d62).lerp(new THREE.Color(ACC), on)); });
+  // view cones (8–9)
+  const cK = win(t, A[8] - .1, A[10] + .3, .3); cams.forEach((c, i) => { const p = wc(c); const dir = p.clone().sub(car.position).setY(0).normalize(); cones[i].set(cK); cones[i].aim(p, p.clone().addScaledVector(dir, 4.5).setY(.6), Math.max(.01, cK)); });
+  // photos fly from the cones into the car (9–10)
+  const CC = car.position.clone().add(V(0, 1.0, 0));
+  cards.flock(t, i => { if (t < A[9] - .1 || t > A[11]) return null; const c = wc(cams[i % cams.length]); const dir = c.clone().sub(car.position).setY(0).normalize(); const a = A[9] + (i % 18) * .1 + (i >= 18 ? .5 : 0);
+    return {from: c.clone().addScaledVector(dir, 3).setY(1.2), to: CC, a, b: a + .7, lift: .4, face: st.cam.position, shrink: 1}; });
+  // x-ray: 10–13 (the brain) and 25–27 (the brake path)
+  const xk = win(t, A[10] - .2, A[14], .35) + win(t, A[25] - .3, A[28] + .2, .35); xr.set(xk);
+  net.visible = win(t, A[10], A[14], .3) > .01; net.position.copy(car.position).add(V(0, 1.05, 0)); net.rotation.y = car.rotation.y + Math.PI / 2;
+  net.scale.setScalar(Math.max(.01, win(t, A[10], A[14], .3)));
+  NODES.forEach((n, k) => { const ph = (t * 2.2 - n.L * .35) % 1.6; n.m.material.color.set(ACC).lerp(new THREE.Color(0xffffff), ph > 0 && ph < .3 ? .8 : 0); });
+  bp.set(sm(A[25], B[26], t) * (t < A[28] + .3 ? 1 : 0));
+  // screen (12–13, 19–24) over the car, joined by a dashed line
+  SC.mode = t < A[16] ? 0 : 1; SC.scroll = (t - A[12]) * .7; SC.mark = sm(A[13], A[13] + .3, t); SC.cross = sm(A[22] + .2, A[23], t); SC.arrow = sm(A[24] - .1, A[24] + .3, t);
+  const sk = win(t, A[12] - .2, A[14] + .2, .3) + win(t, A[20] - .2, A[25] - .1, .3); scr.mesh.visible = sk > .01; scr.mesh.scale.setScalar(Math.max(.01, sk));
+  scr.mesh.position.set(car.position.x + .2, 3.4, car.position.z - .2); scrDash.set(V(car.position.x + .2, 2.88, car.position.z - .2), V(car.position.x, 1.5, car.position.z), sk); scr.update(t);
+  // child: hidden, peeks (0–3), runs out (16–18), freeze, final steps on the brake (25–27); ball rolls ahead of him
+  const kr = kidRun(t) + .25 * win(t, -1, A[4], .3); kid.position.z = -5.0 + 3.4 * kr; kid.position.x = -4.6 + .2 * kr;
+  const run = (t > A[16] && t < A[19]) || (t > A[25] && t < A[27]); const ph = run ? t * 9 : 0;
+  for (const [n, s] of [['hipL', 1], ['hipR', -1]]) { const j = J(n); if (j) j.rotation.x = .55 * Math.sin(ph) * s; }
+  for (const [n, s] of [['kneeL', 1], ['kneeR', -1]]) { const j = J(n); if (j) j.rotation.x = .5 + .4 * Math.sin(ph + s); }
+  for (const [n, s] of [['shoulderL', -1], ['shoulderR', 1]]) { const j = J(n); if (j) j.rotation.x = .5 * Math.sin(ph) * s; }
+  const bz = -4.6 + 3.6 * kidRun(t) + 3.5 * sm(A[25] + .4, END, t); ball.position.set(-4.2, .33 + (bz < -3.9 ? .2 : 0), bz); ball.rotation.x = bz * 3;
+  // distance lines (14–15) + predicted path (17–18)
+  const dk = win(t, A[14] + .2, A[16], .3); const front = car.localToWorld(V(0, .8, 2.3));
+  dD[0].set(front, suv.position.clone().add(V(1.8, .8, 0)), dk); dD[1].set(front, kid.position.clone().add(V(0, .6, 0)), dk * sm(A[15], A[15] + .4, t));
+  pred.set(kid.position.clone().add(V(0, .05, .3)), V(-4.4, .05, 2.5), win(t, A[18] - .2, A[20], .3) * Math.min(1, (t - A[18] + .2) / .7));
+  // human car rolls in beside it (28–29)
+  hcar.position.x = 30 - (30 - (car.position.x + .4)) * sm(A[28] - .9, A[28] + .1, t); driver.position.x = hcar.position.x + .1;
+  // ---------- camera: one world, every sentence a move ----------
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const C = [car.position.x, .9, car.position.z], CR = [car.position.x, 1.5, car.position.z];
+  const T0 = [3, 1.0, -1.5], O0 = [-12, 4.5, -5.5];                 // frame 0 = last frame: the robotaxi coming, the SUV, the child peeking
+  const KID = [-4.4, .8, -3.8];
+  const cf = car.localToWorld(V(0, 1.0, 2.25)), CF = [cf.x, cf.y, cf.z];
+  const BPp = bp.point(Math.min(1, sm(A[25], B[26], t))); const BPP = [BPp.x, BPp.y, BPp.z];
+  const [cp, ct] = camPath(t, [
+    sh(0, T0, O0, 1.0), sh(A[1] - .2, KID, [3, 2.6, 5], 1.0), sh(A[3] - .1, C, [-5, 3, 6], 1.2),                       // hook: child peeks · who brakes faster
+    sh(A[4] + .3, CR, [-3, 2.4, 3.2], 1.6), sh(A[5] + .6, CR, [2, 1.8, 3], 1.4), sh(A[6] + .5, CR, [-1, 2.8, 2.8], 1.6),  // roof: no lidar, no radar, cameras
+    sh(A[7] + .2, CF, [-2.6, 1.0, 1.4], 1.2), sh(A[7] + 1.4, CF, [-2.6, 1.0, 1.4], 1.0),                                      // close on the front camera
+    sh(A[8] + .3, C, [1.5, 10, 4], 1.5), sh(A[9] + .6, C, [1.5, 10, 4], 1.7),                                         // top-down: 6 cones, photos
+    sh(A[10] + .3, CR, [-3.5, 2, 3.5], 1.0), sh(A[11] + .6, CR, [-2.4, 1.2, 2.4], .9),                                   // x-ray: the network
+    sh(A[12] + .2, [C[0] + .2, 2.6, C[2]], [-2, 1.2, 6], 1.0), sh(A[13] + .6, [C[0] + .2, 3.0, C[2]], [-2, 1, 5], .95),  // the screen: driving clips
+    sh(A[14] + .2, [2, .9, -2.6], [2, 8, 11], 1.0), sh(A[15] + .6, [2, .9, -2.6], [1.5, 7.5, 10], .95),        // distance lines
+    sh(A[16] + .2, KID, [-2.6, .9, 3.6], 1.0), sh(A[17] + .3, KID, [-1.4, .7, 3.6], .9), sh(A[18] + .5, [-4.4, .5, -1], [-3, 4, 6], 1.0),  // child runs out, predicted path
+    sh(A[19] + .3, [C[0] - 1, 1.5, C[2]], [5, 4, 8], 1.0), sh(A[20] + .4, [C[0] + .2, 3.2, C[2]], [-1.5, .6, 4.5], 1.0), sh(A[24] + .2, [C[0] + .2, 3.2, C[2]], [-1.5, .6, 4.5], .9),  // the rule nobody wrote
+    sh(A[25] - .1, CR, [-4, 3.2, 4], 1.0), sh(A[25] + .6, BPP, [-1.6, 1.4, 2.2], 1.0), sh(B[26] - .3, BPP, [-1.8, 1.2, 2.0], 1.0),        // x-ray: follow the pulse
+    sh(A[27], [C[0] - 1.5, .7, C[2] - .5], [-4, 2.2, 4], 1.0),                                                                             // stops short of the child, no foot
+    sh(A[28] + .2, [C[0] + .2, 1.1, .3], [-2, 5, 9], 1.0), sh(A[29] + .8, [C[0] + .2, 1.1, .3], [-2, 5, 9], .9),                              // human driver beside it
+    sh(A[30] - .2, T0, O0, 1.05), sh(END, T0, O0, 1.0)]);
+  scr.mesh.lookAt(cp.x, scr.mesh.position.y, cp.z);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const cx2 = st.ctx;
+    const box = (x, y, lab, col, al) => { if (al <= .01) return; cx2.save(); cx2.globalAlpha = al; cx2.font = '700 44px Rubik'; cx2.direction = 'rtl'; const tw = cx2.measureText(lab).width + 50, th = 72;
+      cx2.beginPath(); cx2.roundRect(x - tw / 2, y - th / 2, tw, th, 18); cx2.fillStyle = 'rgba(12,14,40,.92)'; cx2.fill(); cx2.lineWidth = 4; cx2.strokeStyle = col; cx2.stroke();
+      cx2.fillStyle = '#fff'; cx2.textAlign = 'center'; cx2.fillText(lab, x, y + 15); cx2.restore(); };
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    // hook: two timers
+    if (t2 < A[4]) { const al = win(t2, A[1] - .1, A[4], .2); box(300, 1080, 'אתם: ?', '#ffffff', al); box(740, 1080, 'רכב אוטונומי: ?', '#8ea6ff', al); }
+    L(A[6], A[7], 'רק מצלמות', wc(cams[0]), 140, -330);
+    if (lidar) L(A[5], A[6] - .1, 'לייזר ✕', wc(lidar), -150, -300); if (radar) L(A[5] + .3, A[6] - .1, 'רדאר ✕', wc(radar), 170, -240);
+    L(A[7] + .2, A[8] - .1, 'מצלמה', wc(cams[0]), 0, -300);
+    L(A[11] - .2, A[12], 'רשת עצבית', car.position.clone().add(V(0, 1.05, 0)), 0, -360);
+    L(A[14] + .4, A[16], 'מרחק', kid.position.clone().add(V(.6, .6, 1)), -120, -300);
+    if (t2 > A[17] - .1 && t2 < A[19]) { const bb = st.bbox(kid.position.x, kid.position.y, kid.position.z, .7, 1.2, .6); if (bb) { const [x0, y0, x1, y1] = bb, al = win(t2, A[17] - .1, A[19], .2); cx2.save(); cx2.globalAlpha = al; cx2.strokeStyle = '#8ea6ff'; cx2.lineWidth = 6; const Lc = Math.min(x1 - x0, y1 - y0) * .3;
+      for (const [x, y, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) { cx2.beginPath(); cx2.moveTo(x + sx * Lc, y); cx2.lineTo(x, y); cx2.lineTo(x, y + sy * Lc); cx2.stroke(); } cx2.restore(); box((x0 + x1) / 2, y0 - 50, 'ילד', '#8ea6ff', al); } }
+    L(A[27] - .1, A[28], 'בלי רגל', car.localToWorld(V(.35, .35, 1.0)), -180, -320);
+    if (t2 > A[28] - .1 && t2 < A[30]) { const al = win(t2, A[28] - .1, A[30], .2), k = Math.min(1, (t2 - A[28]) / 1.6);
+      box(300, 1080, 'נהג: בערך שנייה', '#ffffff', al); box(760, 1080, 'רובוטקסי: בלם ✓', '#8ea6ff', al);
+      cx2.save(); cx2.globalAlpha = al; cx2.fillStyle = 'rgba(255,255,255,.25)'; cx2.fillRect(140, 1130, 320, 14); cx2.fillStyle = '#fff'; cx2.fillRect(460 - 320 * k, 1130, 320 * k, 14); cx2.restore(); }
+  }};
+});
+st.ready();
+</script></body></html>
