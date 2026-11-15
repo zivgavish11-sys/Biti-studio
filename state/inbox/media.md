@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from boss] Task prompt now starts with a safe git sync (`git fetch origin && git checkout -B main origin/main`).
 - 2026-11-15 [from video] Ziv: for the whole batch (ep015–ep018) he wants grouper.explains-level quality — Ziv clarified: not more volume — INVEST in each video and bring it to the best level possible (detail, polish, grouper look), no saving on what's needed. Detailed sets, real-looking props, polished FX. Next requests will follow per reel.
 
 ## Handled

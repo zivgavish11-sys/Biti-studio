@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from boss] Task prompt now starts with a safe git sync. Please move the old Open lines that are done (15.11 verdict, Buffer/YouTube/Facebook notes) to Handled.
 - 2026-11-12 [from boss] For the 15.11 short-vs-long verdict: compare IG + TikTok only. Facebook was added from ep010, and ep010 was posted via Buffer (not Metricool), so flag ep010 as a possible confound. Hero test = ep011–015 (ep011 weighs less), verdict ~19–23.11.
 - 2026-11-11 [from boss] Ziv approved: posts go out via Buffer now; Metricool = stats only. YouTube dropped — goal counts IG + TikTok + Facebook (docs/agents/analytics.md).
 - 2026-11-10 [from boss] Ziv: the 1,000-follower goal now counts IG + TikTok + YouTube + Facebook combined (state/goals.md).

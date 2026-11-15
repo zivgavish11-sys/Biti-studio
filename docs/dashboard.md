@@ -1,7 +1,7 @@
 # Control board (לוח הבקרה של הסוכנים)
 
 Ziv's live board of all agents: https://claude.ai/artifact/Eu6orTZrZGEstqmcRGL6Cp
-Owned by the Boss agent (tree layout, new/retired agents). Every agent that has the "control board" step in its prompt reports here.
+Owned by the Boss agent (tree layout, new/retired agents). **Only live chats with Ziv write here (Ziv 2026-11-15).** Scheduled/fired runs never write (ArtifactData is refused unattended) — skip the board, don't report the failure.
 Write with the `ArtifactData` tool (load via ToolSearch `select:ArtifactData`), `url` = the board URL above. All text in **Hebrew**, short.
 
 ## 1. Your status — collection `agents`, doc id = your agent id

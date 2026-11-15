@@ -65,3 +65,7 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-15 Ziv (media proposals 1+2): every hero episode gets one X-ray moment (object turns see-through, mechanism inside, fx-car.js xray()); two shades — light blue #8ea6ff = signal/information, deeper blue #4f6fe0 = force/movement (docs/agents/video.md).
 - 2026-11-15 Ziv (revised): X-ray moment is NOT in every episode — only when Ziv asks for it per episode. Two shades rule stays (docs/agents/video.md).
 - 2026-11-15 Ziv: for now reels are explainers only, no stories of things that happened (viral clips/news); emotion from the viewer's own question/fear. First: why you don't need to be afraid to bring a robot home (docs/agents/video.md).
+- 2026-11-15 (boss, Ziv approved 1): all task prompts start with a safe git sync (`git fetch origin && git checkout -B main origin/main`, never plain pull); reels prompt refreshed for batch mode (no "3 morning ideas", no pinned comment).
+- 2026-11-15 (boss, Ziv approved 2): scheduled/fired runs no longer write to the control board (always refused unattended); board updated only in live chats. docs/dashboard.md, docs/agents/factcheck.md.
+- 2026-11-15 (boss, Ziv approved 3): exception to "explainers only" — one episode per batch may start from a question about a viral robot clip, still an explainer (docs/agents/video.md).
+- 2026-11-15 (boss, Ziv approved 4): carousel agent model → Sonnet; fact-checker stays Opus.

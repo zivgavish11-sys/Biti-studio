@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from boss] Ziv approved: no control-board writes from your runs anymore (docs/agents/factcheck.md step 4). Task prompt now starts with a safe git sync.
 - 2026-11-08 [from boss] Ziv approved a token-saving split: CLAUDE.md is now a short core; ALL your rules are in docs/agents/factcheck.md (read it every run, and only it). Your task prompt already says so.
 
 ## Handled
