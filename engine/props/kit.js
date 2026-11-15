@@ -1207,6 +1207,147 @@ export function robotaxiXray() {
   return root;
 }
 
+
+// ---------- ep017-safehome: safe home humanoid (Media pro 2026-11-15 run 9) ----------
+const SM = { motor: M(0xd9ddf7, .45, .35), rotor: M(0x8ea6ff, .45, .2), dark: M(0x23265a, .6, .3), wire: M(0x8ea6ff, .45, .1), pcb: M(0x2c3a7a, .55, .2),
+  chip: M(0x17193f, .5, .3), led: M(0x8ea6ff, .4), knit: M(0xc4c9ee, .98, 0), knit2: M(0xaab1e6, .98, 0) };
+/** small electric joint motor: can along x (joint swing axis), flange, spinning 'rotor{name}' (spin .rotation.x) with a marker so the spin reads, 'can{name}' = mesh to colour. */
+function jointMotor(name, r = .042, L = .07) {
+  const g = grp('motor' + name); g.userData.ins = 1;
+  g.add(at(cyl(r, r, L, SM.motor.clone(), 'can' + name, 28), 0, 0, 0, 0, 0, Math.PI / 2));
+  for (const s of [-1, 1]) g.add(at(cyl(r * 1.08, r * 1.08, .008, SM.dark, null, 28), s * L / 2, 0, 0, 0, 0, Math.PI / 2));
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; g.add(at(bx(L * .8, .006, .004, 0, SM.dark), 0, Math.sin(a) * r * 1.001, Math.cos(a) * r * 1.001, a)); }
+  const ro = grp('rotor' + name); at(ro, L / 2 + .008, 0, 0); g.add(ro);
+  ro.add(at(cyl(r * .8, r * .8, .012, SM.rotor, null, 28), 0, 0, 0, 0, 0, Math.PI / 2));
+  ro.add(at(bx(.014, r * 1.3, .012, 0, SM.dark, null), .007, r * .2, 0));
+  return g;
+}
+/** generic home humanoid with the safety story built in (same shape/metres/joints as robots/humanoid, faces +z):
+ *  INSIDES (every inside mesh has userData.ins; engine/props/fx-arm.js xray() ghosts the rest):
+ *   'brain' = computer in the chest (board 'brainBoard', chips, 'brainLed0..4'), on top of the battery cells.
+ *   motor{Shoulder,Elbow,Wrist}{L,R} = a motor inside each arm joint (moves with the joint), 'can..' to colour, 'rotor..' spin .x.
+ *   wires: brain → each motor, split per arm segment so they bend with the arm: 'wire_<joint>_<i>' (i = 0 torso, 1 upper arm, 2 forearm), userData.path + .chain.
+ *  SOFT COVER: 'softCover_*' knit sleeves (upper arm, forearm, hand pad) on both arms + chest pad, userData.cover → fx-arm.js cover().set(k).
+ *  'touchR' / 'touchL' = empty node on the outer forearm where a child's hand lands. */
+export function humanoidSafe() {
+  const root = humanoid(); root.name = 'humanoidSafe';
+  const N = n => root.getObjectByName(n), torso = N('torso');
+  // replace the old chest computer with a bigger, readable 'brain'
+  const old = N('computer'); old.parent.remove(old); const cool = N('cooling'); cool.parent.remove(cool);
+  const brain = grp('brain'); brain.userData.ins = 1; at(brain, 0, .43, .03); torso.add(brain);
+  brain.add(at(rbox(.2, .12, .025, .006, SM.pcb, 'brainBoard'), 0, 0, 0));
+  brain.add(at(rbox(.06, .05, .012, .004, SM.chip, 'brainChip'), -.03, .01, .016)); brain.add(at(rbox(.03, .03, .01, .003, SM.chip), .045, .025, .015));
+  brain.add(at(rbox(.04, .02, .01, .003, SM.chip), .05, -.025, .015));
+  for (let i = 0; i < 5; i++) brain.add(at(cyl(.006, .006, .005, SM.led.clone(), 'brainLed' + i, 10), -.07 + i * .035, -.045, .016, Math.PI / 2));
+  for (let i = 0; i < 12; i++) brain.add(at(bx(.012, .003, .002, 0, SM.wire), -.03 + (i % 6) * .012 - .006 * 3 + .006, (i < 6 ? .042 : -.022), .0135));
+  const ins = N('insides'); ins.userData.ins = 1;
+  for (let i = 0; i < 6; i++) N('cell' + i).material = M(0x5a5fb0, .6, .1);   // battery muted: motors + wires are the story
+  const wires = [];
+  for (const [s, k] of [[1, 'R'], [-1, 'L']]) {
+    const sh = N('shoulder' + k), el = N('elbow' + k), wr = N('wrist' + k);
+    sh.add(jointMotor('Shoulder' + k, .045, .08)); el.add(jointMotor('Elbow' + k, .036, .065)); wr.add(jointMotor('Wrist' + k, .026, .05));
+    const tch = grp('touch' + k); at(tch, s * .045, -.13, .0); el.add(tch);
+    // wire routes (local coords of each parent). slight offsets so the 3 wires of an arm run side by side.
+    const B = [0, .43, .03];
+    ['Shoulder', 'Elbow', 'Wrist'].forEach((j, n) => {
+      const o = (n - 1) * .012, id = j + k, segs = [];
+      const p0 = n === 0 ? [[B[0] + s * .07, B[1] - .012, B[2] + .012], [s * .12, .488, .02], [s * .17, .5, .01], [s * (.25 - .045), .5, 0]]
+                         : [[B[0] + s * .07, B[1] + o, B[2] + .012], [s * .12, .5 + o, .02], [s * .2, .5 + o * .5, .01], [s * (.25 - .045), .5, o * .6]];
+      segs.push(tubeAlong(p0, .0045, SM.wire, `wire_${id}_0`, 40));
+      if (n >= 1) segs.push(tubeAlong([[o * .8, -.01, .045], [o, -.12, .05], [o * .6, -.25, .04], [0, -.28 + .036, .0]], .0045, SM.wire, `wire_${id}_1`, 32));
+      if (n >= 2) segs.push(tubeAlong([[o * .5, -.01, .038], [o * .5, -.12, .042], [0, -.25 + .026, .0]], .0045, SM.wire, `wire_${id}_2`, 28));
+      [torso, sh, el].slice(0, segs.length).forEach((p, i) => { segs[i].userData.ins = 1; segs[i].userData.chain = id; segs[i].userData.seg = i; segs[i].castShadow = false; p.add(segs[i]); });
+    });
+  }
+  ins.traverse(o => { o.userData.ins = 1; });
+  root.traverse(o => { if (o.userData.ins && o.isMesh) o.castShadow = false; let p = o; while (p) { if (p.userData.ins) { o.userData.ins = 1; break; } p = p.parent; } });
+  // soft knit cover (vertical ribs like a knit sleeve)
+  const knit = (r, L, ribs, name, m = SM.knit) => { const geo = new THREE.CylinderGeometry(r, r, L, ribs * 4, 18, true); const p = geo.attributes.position, v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); const a = Math.atan2(v.z, v.x), yy = v.y / L + .5; const taper = Math.min(1, Math.sin(Math.PI * Math.min(1, Math.max(0, yy))) * 3.2);
+      const rr = r * (.86 + .14 * taper) + .0028 * Math.cos(a * ribs) + .0015 * Math.sin(yy * Math.PI * 9); v.x = Math.cos(a) * rr; v.z = Math.sin(a) * rr; p.setXYZ(i, v.x, v.y, v.z); }
+    geo.computeVertexNormals(); const o = mesh(geo, m.clone(), name); o.material.side = THREE.DoubleSide; o.userData.cover = 1; return o; };
+  for (const k of ['R', 'L']) {
+    N('shoulder' + k).add(at(knit(.066, .28, 22, 'softCover_upper' + k), 0, -.15, 0));
+    N('elbow' + k).add(at(knit(.058, .24, 20, 'softCover_fore' + k), 0, -.12, 0));
+    const pad = at(rbox(.064, .07, .09, .028, SM.knit2.clone(), 'softCover_hand' + k), 0, -.04, .005); pad.userData.cover = 1; N('wrist' + k).add(pad);
+    const cuff = at(mesh(new THREE.TorusGeometry(.06, .012, 10, 32), SM.knit2.clone(), 'softCover_cuff' + k), 0, -.245, 0, Math.PI / 2); cuff.userData.cover = 1; N('elbow' + k).add(cuff);
+  }
+  const chest = at(rbox(.34, .3, .05, .045, SM.knit.clone(), 'softCover_chest'), 0, .34, .125); chest.userData.cover = 1; torso.add(chest);
+  return root;
+}
+/** child mannequin (1.15 m, lilac, faceless, bigger head = child proportions), same joints as people/mannequin-* (pelvis torso head shoulderL/R elbowL/R hipL/R kneeL/R),
+ * 'fingertipR' empty node at the right hand tip. pose: 'reach' (right arm reaching forward to touch) | 'stand' | 'kneel' (kneeling on a rug, arm reaching). */
+export function childMannequin(pose = 'reach') {
+  const g = mannequin('stand'); g.name = 'child';
+  const ph = g.getObjectByName('phone'); ph.parent.remove(ph);
+  const hm = g.getObjectByName('headMesh'); hm.scale.multiplyScalar(1.32); hm.position.y *= 1.25;
+  const tip = grp('fingertipR'); tip.position.set(0, -.38, 0); g.getObjectByName('elbowR').add(tip);
+  const P = (n, x, y = 0, z = 0) => g.getObjectByName(n).rotation.set(x, y, z);
+  if (pose === 'reach' || pose === 'kneel') { P('shoulderR', -1.35, 0, -.08); P('elbowR', -.2); P('shoulderL', .1, 0, .1); P('elbowL', -.3); P('head', .1); P('torso', .12); }
+  if (pose === 'kneel') { P('hipL', -.25); P('kneeL', 1.6); P('hipR', .1); P('kneeR', 1.75); g.getObjectByName('pelvis').position.y = .56; }
+  const s = 1.15 / 1.72; const out = grp('childMannequin'); g.scale.setScalar(s); out.add(g);
+  return out;
+}
+/** warm living-room shell 7×5 m (corner cutaway: back wall + left wall, open front/right for the 3/4 camera). Faces +z.
+ *  'floor' (wood planks), 'wallBack' with a big 'window' (glass + frame + 'curtainL/R'), 'wallLeft', baseboards, 'shelf' with books, 'lampFloor' with 'lampShade' + 'lampBulb' (add a warm PointLight there; shade is matte warm, no glow), 'artFrame' plane 'art' (→ st.screen). */
+export function livingRoom(W = 7, D = 5, H = 2.7) {
+  const g = grp('livingRoom'), warm = M(0x5a4f9a, .85), plank = M(0x3a3482, .8), plank2 = M(0x332e78, .8), shade = M(0xf1e2c8, .9);
+  const fl = grp('floor'); g.add(fl); const n = Math.round(D / .22);
+  for (let i = 0; i < n; i++) for (let j = 0; j < 3; j++) { const L = W / 3, off = (i % 2) * L / 2; fl.add(at(bx(L - .006, .03, .21, 0, (i + j) % 3 ? plank : plank2), -W / 2 + L / 2 + j * L + off - (off && j === 2 ? 0 : 0), .015, -D / 2 + .11 + i * .22)); }
+  fl.children.forEach(o => { if (o.position.x + W / 6 > W / 2 + .01) o.scale.x = .5, o.position.x -= W / 12; });
+  const wb = grp('wallBack'); g.add(wb); const ww = 2.6, wh = 1.6, wy = .7;
+  wb.add(hb((W - ww) / 2, H, .14, HM.wall, -W / 2 + (W - ww) / 4, H / 2, -D / 2 - .07)); wb.add(hb((W - ww) / 2, H, .14, HM.wall, W / 2 - (W - ww) / 4, H / 2, -D / 2 - .07));
+  wb.add(hb(ww, wy, .14, HM.wall, 0, wy / 2, -D / 2 - .07)); wb.add(hb(ww, H - wy - wh, .14, HM.wall, 0, H - (H - wy - wh) / 2, -D / 2 - .07));
+  const win = grp('window'); at(win, 0, wy, -D / 2 - .07); wb.add(win); win.add(at(glassPane(ww, wh, 'windowGlass'), 0, 0, 0));
+  win.add(hb(.04, wh, .05, HM.metal, 0, wh / 2, 0)); win.add(hb(ww + .2, .05, .25, HM.light, 0, -.02, .1, 'sill'));
+  for (const s of [-1, 1]) { const c = grp(s < 0 ? 'curtainL' : 'curtainR'); at(c, s * (ww / 2 + .32), 0, -D / 2 + .1); wb.add(c);
+    const geo = new THREE.PlaneGeometry(.55, H - .2, 40, 4), p = geo.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, .035 * Math.sin(p.getX(i) * 34));
+    geo.computeVertexNormals(); const cm = HM.fab2.clone(); cm.side = THREE.DoubleSide; c.add(at(mesh(geo, cm, 'curtain'), 0, (H - .2) / 2 + .05, 0));
+    c.add(hb(.6, .03, .03, HM.metal, 0, H - .12, 0)); }
+  wb.add(hb(W, .1, .03, HM.light, 0, .05, -D / 2 + .015, 'baseboardBack'));
+  const wl = grp('wallLeft'); g.add(wl); wl.add(hb(.14, H, D + .14, warm, -W / 2 - .07, H / 2, -.07)); wl.add(hb(.03, .1, D, HM.light, -W / 2 + .015, .05, 0, 'baseboardLeft'));
+  const sh = grp('shelf'); at(sh, -W / 2 + .14, 1.5, -.6); wl.add(sh);
+  for (const y of [0, .38]) sh.add(hb(.26, .03, 1.6, HM.light, 0, y, 0));
+  for (let i = 0; i < 9; i++) sh.add(hb(.18, .22 + (i % 3) * .04, .05, [HM.acc, HM.mid, HM.fab2, HM.cap][i % 4], 0, .14 + (i % 3) * .02, -.7 + i * .09 + (i > 5 ? .25 : 0)));
+  sh.add(at(cyl(.07, .05, .18, HM.light, 'vase', 16), 0, .5, .4));
+  const art = at(plane(1.2, .8, MAT.screen.clone(), 'art'), -W / 2 + .005, 1.55, 1.15, 0, Math.PI / 2); art.userData.aspect = 1.5; wl.add(art);
+  wl.add(at(bx(.02, .86, 1.26, 0, HM.light), -W / 2 - .002, 1.55, 1.15));
+  const lamp = grp('lampFloor'); at(lamp, W / 2 - 1.0, 0, -D / 2 + .6); g.add(lamp);
+  lamp.add(at(cyl(.16, .18, .03, HM.dark, null, 24), 0, .015, 0)); lamp.add(at(cyl(.012, .012, 1.45, HM.metal, null, 10), 0, .74, 0));
+  lamp.add(at(cyl(.17, .24, .3, shade, 'lampShade', 28), 0, 1.5, 0)); lamp.add(grp('lampBulb')); lamp.getObjectByName('lampBulb').position.set(0, 1.45, 0);
+  return g;
+}
+/** laundry pile (~0.7 m wide): 9 soft crumpled clothes in indigo/lilac + one accent, 'cloth0..8'. */
+export function laundryPile() {
+  const g = grp('laundryPile'), C = [HM.fab, HM.fab2, HM.light, HM.mid, HM.acc, SM.knit, HM.cap, HM.fab2, HM.light]; let rnd = 7;
+  const r = () => (rnd = (rnd * 9301 + 49297) % 233280) / 233280;
+  for (let i = 0; i < 9; i++) { const geo = new RoundedBoxGeometry(.32 + r() * .2, .05 + r() * .03, .24 + r() * .14, 2, .025); const p = geo.attributes.position, v = new THREE.Vector3();
+    for (let j = 0; j < p.count; j++) { v.fromBufferAttribute(p, j); v.y += .025 * Math.sin(v.x * 18 + i) * Math.cos(v.z * 14 + i * 2) + .03 * Math.sin(v.x * 6); p.setXYZ(j, v.x, v.y, v.z); }
+    geo.computeVertexNormals(); const a = i / 9 * Math.PI * 2, rad = i < 5 ? .16 : .06;
+    g.add(at(mesh(geo, C[i], 'cloth' + i), Math.cos(a) * rad, .04 + (i < 5 ? 0 : .07) + (i > 7 ? .07 : 0), Math.sin(a) * rad, (r() - .5) * .5, r() * 3, (r() - .5) * .5)); }
+  return g;
+}
+/** folded T-shirt (0.3 × 0.24 m) with collar + fold lines; 'foldedStack' variant = 3 shirts. */
+export function foldedShirt(m = HM.fab2, name = 'foldedShirt') {
+  const g = grp(name); g.add(at(rbox(.3, .035, .24, .012, m, 'body'), 0, .0175, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(.045, .008, 8, 24, Math.PI), HM.light, 'collar'), 0, .036, -.08, -Math.PI / 2));
+  for (const x of [-.08, .08]) g.add(at(bx(.004, .002, .22, 0, HM.dark), x, .036, 0)); return g;
+}
+export function foldedStack() { const g = grp('foldedStack'); [HM.fab2, HM.acc, HM.light].forEach((m, i) => g.add(at(foldedShirt(m, 'shirt' + i), 0, i * .036, 0, 0, (i - 1) * .06, 0))); return g; }
+/** woven laundry basket Ø0.5 × 0.4 m, 'clothTop' cloth spilling out. */
+export function laundryBasket() {
+  const g = grp('laundryBasket'); g.add(at(cyl(.22, .2, .02, HM.wood2, 'bottom', 32), 0, .01, 0));
+  for (let i = 0; i < 32; i++) { const a = i / 32 * Math.PI * 2; g.add(at(bx(.03, .4, .012, 0, i % 2 ? HM.cap : HM.mid), Math.sin(a) * .23, .2, Math.cos(a) * .23, 0, a)); }
+  for (const y of [.12, .26, .39]) g.add(at(mesh(new THREE.TorusGeometry(.235, .012, 8, 40), HM.light), 0, y, 0, Math.PI / 2));
+  const top = laundryPile(); top.name = 'clothTop'; top.scale.setScalar(.6); top.position.y = .32; g.add(top); return g;
+}
+/** mug (Ø 8 cm, 9.5 cm) with handle and 'coffee' surface. */
+export function mug() {
+  const g = grp('mug'), shell = M(0xe6e9ef, .5); const prof = [[.0, 0], [.038, 0], [.04, .005], [.04, .095], [.036, .095], [.034, .008], [0, .008]].map(([x, y]) => new THREE.Vector2(x, y));
+  g.add(mesh(new THREE.LatheGeometry(prof, 32), shell, 'cup')); g.add(at(cyl(.034, .034, .003, M(0x2a1d3d, .3), 'coffee', 24), 0, .08, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(.026, .007, 10, 24, Math.PI * 1.2), shell, 'handle'), .043, .05, 0, 0, 0, -Math.PI * .6)); return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -1226,4 +1367,6 @@ export const KIT = {
   'citycorner/storefront': () => storefront(9, 4, CM.facadeA, 'shop'), 'citycorner/cafe': () => storefront(8, 3, CM.facadeB, 'cafe'), 'citycorner/bauhausCorner': bauhausCorner,
   'citycorner/streetCorner': streetCorner, 'citycorner/statue': statue, 'space/gpsSatellite': gpsSatellite, 'people/mannequin-scan': () => mannequin('scan'), 'people/mannequin-walk': () => mannequin('walk'),
   'vehicles/robotaxiXray': robotaxiXray,
+  'robots/humanoidSafe': humanoidSafe, 'people/mannequin-child': () => childMannequin('reach'), 'people/mannequin-childKneel': () => childMannequin('kneel'),
+  'home2056/livingRoom': livingRoom, 'home/laundryPile': laundryPile, 'home/foldedShirt': () => foldedShirt(), 'home/foldedStack': foldedStack, 'home/laundryBasket': laundryBasket, 'home/mug': mug,
 };

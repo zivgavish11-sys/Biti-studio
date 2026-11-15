@@ -89,6 +89,14 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   FX `engine/props/fx-car.js`: `xray(car).set(k)` → body fades to a matte indigo ghost (opacity .12), insides appear · `brakePulse(car).set(k)` → LEDs (0–.15) → white dot + accent fill along the cable (.15–.45) → motor spins (.45–.55) → deeper-blue fluid fills the 4 lines (.55–.85) → pads squeeze (.85–1); `.point(k)` = world point to follow with the camera, `.phase(k)`.
   Showcase: `python3 tools/render.py frames engine/props/showcase-car 1,4.5,7,8.8`.
 
+- **ep017-safehome kit** (added 2026-11-15 run 9, in-house CC0, real metres, no brand). Hero look; `st.prop(name, {tint: 1})` (home/* gets tint .62 by default — pass tint:1).
+  **robots/humanoidSafe** = robots/humanoid (same shape, metres, joints) + safety story: motor{Shoulder,Elbow,Wrist}{L,R} inside each arm joint (moves with it; 'can..' colour, 'rotor..' spin .x) · **brain** = computer board in the chest ('brainLed0..4') · wires brain → each motor split per arm segment so they bend with the arm ('wire_<Joint><L|R>_<0 torso|1 upper|2 fore>', userData.path/chain) · battery cells muted indigo · **softCover_*** knit sleeves (upper, fore, cuff, hand pad) + chest pad · 'touchR'/'touchL' = spot on the outer forearm where a hand lands. Inside meshes carry userData.ins, cover meshes userData.cover.
+  FX `engine/props/fx-arm.js`: `xray(bot).set(k)` (shell → light ghost, insides stay; cover hidden) · `motor(bot,'ElbowR').set(effort, spin)` (can → deeper blue #4f6fe0) · `signal(bot,'ElbowR').set(k,'out'|'back')` light-blue dot + fill along the wire chain, `.point(k)` for the camera · `brain(bot).set(k)` LEDs · `cover(bot).set(k)` knit fades/settles on · `stopRing(bot,'elbowR').set(k)` · st.screen draw fns `effortGraph(get)` (dashed 'כוח צפוי' + live line that spikes, get → {k, spike, stop}) and `forceGauge(get)` ({v, limit}).
+  **people/mannequin-child** (1.15 m, lilac, bigger head, arm reaching forward) / **mannequin-childKneel** (kneeling, ~.8 m) — same joints as the adult mannequins + 'fingertipR'. Showcase aligns the fingertip to touchR automatically (see index.html).
+  **home2056/livingRoom** (7×5 m corner cutaway: plank 'floor', 'wallBack' with big 'window' + wavy 'curtainL/R', 'wallLeft' with 'shelf' + 'art' (st.screen, aspect 1.5), 'lampFloor' with 'lampShade' + 'lampBulb' (put a warm PointLight there)). Pair with sofaModern, loungeSet, planterTall.
+  **home/laundryPile** (cloth0..8) · **foldedShirt** · **foldedStack** (shirt0..2) · **laundryBasket** ('clothTop') · **mug** ('coffee').
+  Showcase: `python3 tools/render.py frames engine/props/showcase-safehome 1,4.5,7.4,10.5` (touch · x-ray motors + wires · spike + stop · soft cover).
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.
