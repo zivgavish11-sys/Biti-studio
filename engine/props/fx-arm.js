@@ -33,9 +33,9 @@ export function motor(bot, id, {color = FORCE} = {}) {
 export function signal(bot, id, {color = ACC, keep = true} = {}) {
   const segs = []; bot.traverse(o => { if (o.isMesh && o.userData.chain === id) segs.push(o); }); segs.sort((a, b) => a.userData.seg - b.userData.seg);
   const curves = segs.map(s => { const p = s.userData.path, v = []; for (let i = 0; i < p.length; i += 3) v.push(new THREE.Vector3(p[i], p[i + 1], p[i + 2])); return new THREE.CatmullRomCurve3(v, false, 'centripetal'); });
-  const fills = segs.map((s, i) => { const o = new THREE.Mesh(new THREE.TubeGeometry(curves[i], 48, .0075, 8, false), new THREE.MeshStandardMaterial({color, roughness: .45}));
+  const fills = segs.map((s, i) => { const o = new THREE.Mesh(new THREE.TubeGeometry(curves[i], 48, .011, 8, false), new THREE.MeshStandardMaterial({color, roughness: .45}));
     o.userData.ins = 1; s.parent.add(o); o.geometry.setDrawRange(0, 0); return o; });
-  const dot = new THREE.Mesh(new THREE.SphereGeometry(.014, 14, 10), new THREE.MeshStandardMaterial({color: 0xffffff, roughness: .4})); dot.userData.ins = 1; dot.visible = false;
+  const dot = new THREE.Mesh(new THREE.SphereGeometry(.02, 14, 10), new THREE.MeshStandardMaterial({color: 0xffffff, roughness: .4})); dot.userData.ins = 1; dot.visible = false;
   const lens = curves.map(c => c.getLength()), tot = lens.reduce((a, b) => a + b, 0), cnt = g => g.index ? g.index.count : g.attributes.position.count;
   const at = u => { let d = u * tot; for (let i = 0; i < curves.length; i++) { if (d <= lens[i] || i === curves.length - 1) return [i, clamp(d / lens[i])]; d -= lens[i]; } };
   const api = {

@@ -1253,9 +1253,9 @@ export function humanoidSafe() {
       const o = (n - 1) * .012, id = j + k, segs = [];
       const p0 = n === 0 ? [[B[0] + s * .07, B[1] - .012, B[2] + .012], [s * .12, .488, .02], [s * .17, .5, .01], [s * (.25 - .045), .5, 0]]
                          : [[B[0] + s * .07, B[1] + o, B[2] + .012], [s * .12, .5 + o, .02], [s * .2, .5 + o * .5, .01], [s * (.25 - .045), .5, o * .6]];
-      segs.push(tubeAlong(p0, .0045, SM.wire, `wire_${id}_0`, 40));
-      if (n >= 1) segs.push(tubeAlong([[o * .8, -.01, .045], [o, -.12, .05], [o * .6, -.25, .04], [0, -.28 + .036, .0]], .0045, SM.wire, `wire_${id}_1`, 32));
-      if (n >= 2) segs.push(tubeAlong([[o * .5, -.01, .038], [o * .5, -.12, .042], [0, -.25 + .026, .0]], .0045, SM.wire, `wire_${id}_2`, 28));
+      segs.push(tubeAlong(p0, .007, SM.wire, `wire_${id}_0`, 40));
+      if (n >= 1) segs.push(tubeAlong([[o * .8, -.01, .045], [o, -.12, .05], [o * .6, -.25, .04], [0, -.28 + .036, .0]], .007, SM.wire, `wire_${id}_1`, 32));
+      if (n >= 2) segs.push(tubeAlong([[o * .5, -.01, .038], [o * .5, -.12, .042], [0, -.25 + .026, .0]], .007, SM.wire, `wire_${id}_2`, 28));
       [torso, sh, el].slice(0, segs.length).forEach((p, i) => { segs[i].userData.ins = 1; segs[i].userData.chain = id; segs[i].userData.seg = i; segs[i].castShadow = false; p.add(segs[i]); });
     });
   }
