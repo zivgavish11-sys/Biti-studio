@@ -1,0 +1,54 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-14 run 7 — ep015-pokemon city-corner kit (citycorner/*, space/gpsSatellite, people/mannequin-*) + FX helpers (engine/props/fx-city.js), one world.
+// Render: python3 tools/render.py frames engine/props/showcase-city 1,5,9,13
+import {studio, THREE, camKF, V} from '/engine/lib/core.js';
+import {photoCards, toDots, viewCone, edgeLines, errorCircle, dashLine, daylight, handPhone} from '/engine/props/fx-city.js';
+const st = await studio({look: 'hero', hook: ['איך רובוט', 'יודע <span class="pill">איפה הוא</span>'], hookEnd: 3, fog: .006, scenes: (A, B, E) => [0, 4, 8, 12, E]});
+const {scene} = st;
+st.stage({r: 200, grid: 0, spot: null});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+// street corner: roads cross at the origin, sidewalks 4..20 m
+const street = await P('citycorner/streetCorner', {x: 0, z: 0});
+const bau = await P('citycorner/bauhausCorner', {x: 8 + 5.25, z: -8 - 5.25});            // NE corner, rounded corner faces the junction
+const shop = await P('citycorner/storefront', {x: -12.7, z: -13});                       // NW, facade at z = −8
+const cafe = await P('citycorner/cafe', {x: -21.7, z: -12.2});
+const shop2 = await P('citycorner/storefront', {x: -13, z: 13.2, ry: Math.PI});            // SW, facade faces −z (the street)
+const statue = await P('citycorner/statue', {x: 13, y: .2, z: 13});
+const bot = await P('robots/deliveryBot', {x: -9, y: .2, z: -5.6, ry: Math.PI / 2});
+const sat = await P('space/gpsSatellite', {x: -4, y: 15, z: -6}); sat.rotation.set(.2, .5, .1);
+const mans = []; for (let i = 0; i < 5; i++) { const a = -1.9 + i * .55; const m = await P(i % 2 ? 'people/mannequin-scan' : 'people/mannequin-scan', {x: 13 + Math.sin(a) * 4.6, y: .2, z: 13 + Math.cos(a) * 4.6, ry: a + Math.PI}); mans.push(m); }
+const sky = daylight(st);
+// FX
+const ec = errorCircle(scene); ec.at(-8, -5.6);
+const dl = dashLine(scene);
+const cards = photoCards(scene, 160, .9);
+const vc = viewCone(scene);
+const edges = edgeLines(scene, shop, {filter: o => /window|frame|sill|lintel|shopWindow|door|balcony|slab|body|roof|awning/.test(o.name + (o.parent?.name || ''))});
+const dots = toDots(scene, [shop, cafe, bau, shop2], {n: 50000, size: .08});
+const hp = await handPhone(st); hp.o.scale.setScalar(4);
+st.screen(hp.screen, (c, t, W, H) => { c.fillStyle = '#12143a'; c.fillRect(0, 0, W, H); c.fillStyle = '#d9ddf7'; c.font = '700 70px Rubik'; c.direction = 'rtl'; c.textAlign = 'center';
+  c.fillText('משימה:', W / 2, 220); c.fillText('סרקו את הפסל', W / 2, 310); c.strokeStyle = '#8ea6ff'; c.lineWidth = 10; c.strokeRect(W * .18, 420, W * .64, H * .42); c.fillStyle = '#8ea6ff'; c.fillText('★ +100', W / 2, H - 160); });
+const rnd = (i, k) => Math.sin(i * 12.9898 + k * 78.233) * 43758.5453 % 1;
+st.frame(t => {
+  const set = Math.floor(t / 4);
+  // FX visibility per set
+  ec.set(set === 1 ? 2.6 + .6 * Math.sin(t * 3) : 0, set === 1 ? 1 : 0);
+  dl.set(sat.position.clone().add(V(0, -.8, 0)), V(-8, .25, -5.6), set === 1 ? Math.min(1, (t - 4) / 1.2) : 0);
+  sky(set === 2 ? Math.min(1, (t - 8.5) / 2) : 0);
+  hp.o.visible = false;
+  cards.flock(t, i => set !== 2 ? null : {from: V(13 + Math.cos(i) * 5, 1.6, 13 + Math.sin(i) * 5), to: V(13 + rnd(i, 1) * 8 - 4, 6 + rnd(i, 2) * 4, 13 + rnd(i, 3) * 8 - 4), face: V(3, 6, 4), a: 8.2 + (i % 40) * .05, b: 11.4, lift: 2, ry: i});
+  dots.set(set === 3 ? .55 : 0);
+  edges.set(set === 3 ? Math.min(1, (t - 12) / 1.5) : 0, set === 3 ? Math.min(1, (t - 12.5) / 1.5) : 0);
+  vc.set(set === 3 ? 1 : 0); const cam0 = bot.localToWorld(V(0, .55, .4)); vc.aim(cam0, V(-11, 5, -8), 1);
+  let cp, ct;
+  if (t < 4) [cp, ct] = camKF(t, [[0, [16, 24, 26], [-2, 2, -2]], [4, [14, 22, 24], [-2, 2, -2]]]);
+  else if (t < 8) [cp, ct] = camKF(t, [[4, [8, 7, 14], [-5, 8, -6]], [8, [8, 7.5, 13], [-5, 8.5, -6]]]);
+  else if (t < 12) [cp, ct] = camKF(t, [[8, [3, 6, 4], [12, 2.6, 13]], [12, [2.5, 6.5, 3.5], [12, 2.6, 13]]]);
+  else [cp, ct] = camKF(t, [[12, [2, 9, 6], [-11, 4, -8]], [16, [1.5, 9, 5.5], [-11, 4, -8]]]);
+  if (set === 2) { const P0 = cp.clone(), d = ct.clone().sub(P0).normalize(), r = d.clone().cross(V(0, 1, 0)).normalize(), u = r.clone().cross(d);
+    hp.o.visible = true; hp.o.position.copy(P0).addScaledVector(d, 1.6).addScaledVector(r, .28).addScaledVector(u, -.42); hp.o.lookAt(P0.clone().addScaledVector(u, -.3)); hp.o.scale.setScalar(2.2); }
+  return {cp, ct, noFlash: true}; });
+st.ready();
+</script></body></html>

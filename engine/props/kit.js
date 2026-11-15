@@ -945,6 +945,199 @@ export function deliveryDrone() {
   pc.position.y = .45; return g;
 }
 
+// ===================== citycorner/* (Media pro 2026-11-14 run 7, ep015-pokemon) — hero/indigo palette (HM), real metres, generic (no brands) =====================
+const CM = { facadeA: M(0x3e4390, .85), facadeB: M(0x34397f, .85), facadeC: M(0x474ca0, .85), trim: M(0x6268bf, .75), sill: M(0x8a90dc, .7),
+  winDark: M(0x12143a, .25, .3), shutter: M(0x575dae, .8), awnA: M(0xd9ddf7, .8), awnB: M(0x6c72c6, .85), sign: M(0x17193f, .5),
+  shopGlass: Object.assign(M(0x9fb0ff, .08, .2), {transparent: true, opacity: .35, depthWrite: false}), shopIn: M(0x22256a, .9),
+  asphalt: M(0x1a1c45, .92), walk: M(0x2f3373, .85), curb: M(0x7a80d0, .7), curbRed: M(0xb5524a, .75), zebra: M(0xd9ddf7, .7),
+  stone: M(0x8d90c9, .7), stone2: M(0x6a6eb4, .75), figure: M(0xb9b6ea, .6, .15), panel: M(0x2b3a8f, .35, .4), gold: M(0xc9b48a, .45, .6),
+  skin: M(0xc9c3f2, .7) };
+/** window with frame, sill and Israeli roller shutter box ('trisim'); 1.3×1.5 m by default. Nodes: glass, frame, shutter (scale .y 0..1 = closed amount). */
+function cWindow(w = 1.3, h = 1.5, shutter = .3) {
+  const g = grp('window');
+  g.add(at(bx(w + .16, h + .16, .06, 0, CM.trim, 'frame'), 0, h / 2, .03)); g.add(at(bx(w, h, .04, 0, CM.winDark, 'glass'), 0, h / 2, .05));
+  g.add(at(bx(.04, h, .05, 0, CM.trim), 0, h / 2, .06)); g.add(at(bx(w + .3, .07, .2, 0, CM.sill, 'sill'), 0, -.06, .1));
+  const sh = grp('shutter'); sh.position.set(0, h, .07); sh.add(at(bx(w, 1, .03, 0, CM.shutter), 0, -.5, 0)); for (let i = 1; i < 10; i++) sh.add(at(bx(w, .006, .035, 0, CM.trim), 0, -i / 10, 0));
+  sh.scale.y = Math.max(.001, shutter * h); g.add(sh); g.add(at(bx(w + .1, .18, .16, 0, CM.trim, 'shutterBox'), 0, h + .09, .08));
+  return g;
+}
+/** small balcony with railing (Israeli concrete + bar railing), w×.9 m. */
+function cBalcony(w = 2.6, m = CM.trim) {
+  const g = grp('balcony'); g.add(at(bx(w, .16, .95, 0, m, 'slab'), 0, 0, .47));
+  g.add(at(bx(w, .05, .05, 0, CM.sill), 0, 1.0, .92)); for (let x = -w / 2 + .06; x <= w / 2; x += .14) g.add(at(bx(.025, 1.0, .025, 0, CM.sill), x, .5, .92));
+  for (const s of [-1, 1]) g.add(at(bx(.05, .05, .9, 0, CM.sill), s * w / 2, 1.0, .47));
+  return g;
+}
+/** AC outdoor unit 0.8×0.55 m (fan grille). */
+function acUnit() { const g = grp('ac'); g.add(at(rbox(.8, .55, .3, .03, CM.awnA, 'acBody'), 0, .275, .15)); g.add(at(cyl(.2, .2, .02, CM.trim, null, 24), -.12, .275, .31, Math.PI / 2)); return g; }
+/** Israeli rooftop solar water heater ('dud shemesh'): tilted panel + horizontal tank. */
+function solarHeater() { const g = grp('solarHeater');
+  const p = at(bx(1.0, .05, 1.9, 0, CM.panel, 'panel'), 0, .55, 0, -.75); g.add(p);
+  g.add(at(cyl(.28, .28, 1.5, CM.awnA, 'tank', 24), 0, .95, -.75, 0, 0, Math.PI / 2)); g.add(at(bx(.05, .9, .05, 0, CM.trim), -.45, .45, -.7)); g.add(at(bx(.05, .9, .05, 0, CM.trim), .45, .45, -.7)); return g; }
+/** awning (striped, 2 colours), w × 1.4 m deep, tilted down 0.35 rad. Faces +z, top edge at y 0. */
+function awning(w = 3, stripes = 8) { const g = grp('awning'); const a = grp('awningCloth'); a.rotation.x = .35; g.add(a);
+  const sw = w / stripes; for (let i = 0; i < stripes; i++) a.add(at(bx(sw, .03, 1.4, 0, i % 2 ? CM.awnB : CM.awnA), -w / 2 + sw * (i + .5), 0, .7));
+  for (let i = 0; i < stripes; i++) a.add(at(bx(sw, .25, .03, 0, i % 2 ? CM.awnB : CM.awnA), -w / 2 + sw * (i + .5), -.12, 1.4)); return g; }
+/** shop front, w×3.6 m: shop window 'shopWindow' (see-through), interior 'shopInside', door, sign plate 'sign' (plane → st.screen, aspect in userData), optional awning. */
+function shopFront(w = 7, {awn = true, name = 'shop'} = {}) {
+  const g = grp(name);
+  g.add(at(bx(w, .35, .1, 0, CM.trim, 'lintel'), 0, 3.05, .05));
+  const sg = at(plane(w * .7, .7, CM.sign.clone(), 'sign'), 0, 3.0, .11); sg.userData.aspect = w * .7 / .7; g.add(sg);
+  g.add(at(bx(w - .4, 2.5, .3, 0, CM.shopIn, 'shopInside'), 0, 1.3, -.2));
+  // shelves/tables silhouettes inside
+  for (let i = 0; i < 4; i++) g.add(at(bx(.9, .8 + (i % 2) * .5, .4, 0, CM.trim), -w / 2 + 1.2 + i * (w - 2.4) / 3, .45 + (i % 2) * .25, -.15));
+  const glass = at(bx(w - 1.8, 2.3, .03, 0, CM.shopGlass, 'shopWindow'), -.6, 1.35, .02); glass.castShadow = false; g.add(glass);
+  for (const x of [-w / 2 + .3, w / 2 - 1.5, w / 2 - .3]) g.add(at(bx(.12, 2.6, .12, 0, CM.trim), x, 1.3, .03));
+  g.add(at(bx(1.0, 2.3, .05, 0, CM.winDark, 'door'), w / 2 - .9, 1.15, .02)); g.add(at(bx(.04, .4, .06, 0, CM.sill), w / 2 - .55, 1.1, .06));
+  g.add(at(bx(w - 1.8, .1, .12, 0, CM.sill), -.6, .2, .04));
+  if (awn) { const a = awning(w - 1.2); a.position.set(-.3, 2.75, .05); g.add(a); }
+  return g;
+}
+/** apartment/shop building with a detailed facade (Israeli street feel), w×floors (ground 3.6 m + 3.1 m per floor), depth 10 m. Facade faces +z at z=0, building goes back to z=−10.
+ * Nodes: body, shop (shopFront: sign/shopWindow/door/awning), window_f_i, balcony_f_i, ac*, solarHeater*, roof. variant 'cafe' adds 2 tables + chairs + parasol on the sidewalk (z 0.5..2.5). */
+export function storefront(w = 9, floors = 4, mat = CM.facadeA, variant = 'shop') {
+  const g = grp('storefront'), H = 3.6 + floors * 3.1;
+  g.add(at(bx(w, H, 10, 0, mat, 'body'), 0, H / 2, -5)); g.add(at(bx(w + .1, .4, 10.1, 0, CM.trim, 'roof'), 0, H + .2, -5));
+  g.add(at(bx(w + .02, .25, .1, 0, CM.trim, 'band0'), 0, 3.6, .05));
+  const sf = shopFront(w - .6, {awn: true}); sf.position.z = .02; g.add(sf);
+  const cols = Math.max(2, Math.round(w / 2.6));
+  for (let f = 0; f < floors; f++) { const y = 3.6 + f * 3.1 + .7;
+    for (let i = 0; i < cols; i++) { const x = -w / 2 + w / cols * (i + .5);
+      const wn = cWindow(1.25, 1.55, [.2, .55, 0, .8][(i + f * 3) % 4]); wn.name = `window_${f}_${i}`; wn.position.set(x, y, 0); g.add(wn);
+      if ((i + f) % 2 === 0 && f < floors) { const b = cBalcony(2.0); b.name = `balcony_${f}_${i}`; b.position.set(x, y - .78, 0); g.add(b); }
+      if ((i * 7 + f * 3) % 5 === 1) { const a = acUnit(); a.name = `ac_${f}_${i}`; a.position.set(x + .95, y - .1, 0); g.add(a); } } }
+  for (let i = 0; i < Math.max(1, Math.floor(w / 4)); i++) { const s = solarHeater(); s.name = 'solarHeater' + i; s.position.set(-w / 2 + 1.6 + i * 3, H + .4, -4); g.add(s); }
+  g.add(at(bx(1.6, 1.1, 1.6, 0, CM.trim, 'roofBox'), w / 2 - 1.6, H + .95, -6.5));
+  if (variant === 'cafe') for (let i = 0; i < 2; i++) { const t = grp('cafeTable' + i); t.position.set(-w / 2 + 1.6 + i * 2.4, 0, 1.6); g.add(t);
+    t.add(at(cyl(.4, .4, .04, CM.awnA, null, 24), 0, .74, 0)); t.add(at(cyl(.04, .04, .72, CM.trim, null, 8), 0, .37, 0)); t.add(at(cyl(.25, .25, .02, CM.trim, null, 16), 0, .01, 0));
+    for (const s of [-1, 1]) { const c = grp('chair'); c.position.set(s * .6, 0, 0); c.rotation.y = s * Math.PI / 2; t.add(c); c.add(at(bx(.42, .05, .42, 0, CM.awnB), 0, .45, 0)); c.add(at(bx(.42, .45, .04, 0, CM.awnB), 0, .7, -.2)); for (const [a, b] of [[-.18, -.18], [.18, -.18], [-.18, .18], [.18, .18]]) c.add(at(bx(.03, .45, .03, 0, CM.trim), a, .22, b)); } }
+  return g;
+}
+/** Tel-Aviv-style rounded corner building ('Bauhaus' feel, generic): 3 floors over a shop, curved continuous balconies wrapping the corner.
+ * Corner at origin; facades run along +x (faces +z) and along −z (faces −x)... i.e. it occupies x 0..R+L, z −(R+L)..0 viewed from the street corner (+z,−x side). Nodes: body, balconyBand0..2, shop, window*. */
+export function bauhausCorner(L = 7, floors = 3) {
+  const g = grp('bauhausCorner'), R = 3.5, H = 3.6 + floors * 3.1;
+  const body = grp('body'); g.add(body);
+  const q = mesh(new THREE.CylinderGeometry(R, R, H, 32, 1, false, -Math.PI / 2, Math.PI / 2), CM.facadeC); at(q, R, H / 2, -R); body.add(q);   // quarter round at the corner (x 0..R, z −R..0)
+  body.add(at(bx(L, H, 10, 0, CM.facadeC), R + L / 2, H / 2, -5)); body.add(at(bx(10, H, L, 0, CM.facadeC), 5, H / 2, -R - L / 2));
+  body.add(at(bx(R + 1, H, R + 1, 0, CM.facadeC), R + .5, H / 2, -R - .5));
+  for (let f = 0; f < floors; f++) { const y = 3.6 + f * 3.1;
+    const band = grp('balconyBand' + f); g.add(band);
+    const arc = mesh(new THREE.CylinderGeometry(R + 1, R + 1, .18, 40, 1, false, -Math.PI / 2, Math.PI / 2), CM.awnA); at(arc, R, y, -R); band.add(arc);
+    const lip = mesh(new THREE.CylinderGeometry(R + 1.02, R + 1.02, .9, 40, 1, true, -Math.PI / 2, Math.PI / 2), CM.awnA); lip.material = CM.awnA.clone(); lip.material.side = THREE.DoubleSide; at(lip, R, y + .5, -R); band.add(lip);
+    band.add(at(bx(L, .18, 1, 0, CM.awnA), R + L / 2, y, .5)); band.add(at(bx(L, .9, .05, 0, CM.awnA), R + L / 2, y + .5, 1));
+    band.add(at(bx(1, .18, L, 0, CM.awnA), -.5, y, -R - L / 2)); band.add(at(bx(.05, .9, L, 0, CM.awnA), -1, y + .5, -R - L / 2));
+    // long horizontal window strips (ribbon windows)
+    band.add(at(bx(L - .6, 1.3, .04, 0, CM.winDark, 'window_' + f + '_x'), R + L / 2, y + 1.35, .02)); band.add(at(bx(.04, 1.3, L - .6, 0, CM.winDark, 'window_' + f + '_z'), -.02, y + 1.35, -R - L / 2));
+    const rw = mesh(new THREE.CylinderGeometry(R + .02, R + .02, 1.3, 32, 1, true, -Math.PI / 2 + .12, Math.PI / 2 - .24), CM.winDark); at(rw, R, y + 1.35, -R); band.add(rw); }
+  // ground-floor shop along both streets
+  const s1 = shopFront(L - .4, {awn: false}); s1.name = 'shop'; s1.position.set(R + L / 2, 0, .02); g.add(s1);
+  const s2 = shopFront(L - .4, {awn: true, name: 'shop2'}); s2.position.set(-.02, 0, -R - L / 2); s2.rotation.y = -Math.PI / 2; g.add(s2);
+  g.add(at(bx(L + R + 1, .4, .3, 0, CM.trim, 'roofEdge'), (L + R) / 2, H + .2, 0));
+  for (let i = 0; i < 2; i++) { const s = solarHeater(); s.position.set(R + 1.5 + i * 2.6, H + .4, -4); g.add(s); }
+  return g;
+}
+/** street corner floor: two roads crossing at origin (each 8 m wide), sidewalks 4 m in the four quadrants (raised 0.15 m) with paving joints,
+ * Israeli red-white kerbs near the corner, zebra crossings 'crossingN/E/S/W' (stripe nodes inside), lane dashes, 2 street lamps, bin, bench, tree pits. Size 40×40 m.
+ * Building quadrant NW: buildings go at x < −8, z < −8 (facades face the street). */
+export function streetCorner(S = 40) {
+  const g = grp('streetCorner'), RW = 4, SW = 4, half = S / 2;
+  g.add(at(bx(S, .05, S, 0, CM.asphalt, 'asphalt'), 0, .025, 0));
+  for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const q = grp(`walk_${sx > 0 ? 'E' : 'W'}${sz > 0 ? 'S' : 'N'}`); g.add(q);
+    const cx = sx * (RW + (half - RW) / 2), cz = sz * (RW + (half - RW) / 2), L = half - RW;
+    q.add(at(bx(L, .15, L, 0, CM.walk), cx, .125, cz));
+    for (let k = 1; k < L / 1.2; k++) { q.add(at(bx(.02, .005, L, 0, CM.asphalt), sx * RW + sx * k * 1.2, .203, cz)); q.add(at(bx(L, .005, .02, 0, CM.asphalt), cx, .203, sz * RW + sz * k * 1.2)); }
+    // kerbs along both roads; red-white near the corner
+    for (let k = 0; k < L; k += 1) { const red = k < 6 && (k % 2 === 0);
+      q.add(at(bx(1, .2, .2, 0, red ? CM.curbRed : CM.curb), sx * (RW + k + .5), .1, sz * (RW + .1)));
+      q.add(at(bx(.2, .2, 1, 0, red ? CM.curbRed : CM.curb), sx * (RW + .1), .1, sz * (RW + k + .5))); } }
+  // zebra crossings (Israeli: white bars parallel to traffic), 3 m from the corner
+  const zebra = (name, along) => { const z = grp(name); g.add(z); for (let i = 0; i < 7; i++) { const off = -RW + .6 + i * 1.15;
+    z.add(along === 'x' ? at(bx(.55, .012, 2.8, 0, CM.zebra, name + '_' + i), off, .056, 0) : at(bx(2.8, .012, .55, 0, CM.zebra, name + '_' + i), 0, .056, off)); } return z; };
+  zebra('crossingN', 'x').position.z = -(RW + 2); zebra('crossingS', 'x').position.z = RW + 2; zebra('crossingW', 'z').position.x = -(RW + 2); zebra('crossingE', 'z').position.x = RW + 2;
+  for (let k = RW + 5; k < half; k += 3) for (const s of [-1, 1]) { g.add(at(bx(1.5, .01, .14, 0, CM.zebra), s * k, .055, 0)); g.add(at(bx(.14, .01, 1.5, 0, CM.zebra), 0, .055, s * k)); }
+  for (const s of [-1, 1]) { g.add(at(bx(.3, .01, 8, 0, CM.zebra, 'stopLine'), s * (RW + 3.6), .055, s * -2 * 0 + s * 2)); }
+  // street furniture on the NW and SE sidewalks
+  const lamp = (x, z, ry) => { const l = grp('lamp'); at(l, x, .2, z, 0, ry); g.add(l); l.add(at(cyl(.07, .1, 6, CM.trim, null, 12), 0, 3, 0)); l.add(at(bx(.08, .08, 1.4, 0, CM.trim), 0, 6, .65)); l.add(at(rbox(.5, .14, .3, .04, CM.awnA, 'lampHead'), 0, 5.95, 1.35)); };
+  lamp(-RW - .6, -RW - 6, Math.PI / 2); lamp(RW + .6, RW + 6, -Math.PI / 2); lamp(-RW - 6, RW + .6, Math.PI); 
+  const bin = grp('bin'); at(bin, -RW - .8, .2, -RW - 3); g.add(bin); bin.add(at(cyl(.28, .24, .9, CM.awnB, null, 16), 0, .45, 0)); bin.add(at(cyl(.3, .3, .06, CM.trim, null, 16), 0, .92, 0));
+  for (const [x, z] of [[-RW - 1.2, -RW - 11], [-RW - 11, -RW - 1.2], [RW + 1.2, RW + 11]]) { const tp = grp('tree'); at(tp, x, .2, z); g.add(tp); tp.add(at(bx(1.2, .04, 1.2, 0, CM.asphalt), 0, .01, 0));
+    tp.add(at(cyl(.1, .14, 2.6, CM.trim, null, 8), 0, 1.3, 0)); const c = mesh(new THREE.IcosahedronGeometry(1.4, 1), HM.leaf); at(c, 0, 3.4, 0); c.scale.set(1, .85, 1); tp.add(c); }
+  return g;
+}
+/** generic city statue (not a replica): stepped stone pedestal 1.7 m + bronze-ish stylised figure ~2.6 m in a long coat, right hand resting on a tall staff, left hand holding a book at the chest (calm pose).
+ * Nodes: pedestal, plaque (plane → st.screen, aspect 2), figure, armR, armL, head. Plaza ring paving 'plaza' Ø11 m with 4 benches 'bench0..3'. Faces +z. */
+export function statue({plaza = true} = {}) {
+  const g = grp('statue');
+  if (plaza) { const pz = grp('plaza'); g.add(pz); pz.add(at(cyl(5.5, 5.5, .06, CM.walk, null, 64), 0, .03, 0));
+    for (const r of [2.2, 3.4, 4.6]) pz.add(at(mesh(new THREE.TorusGeometry(r, .03, 6, 96), CM.asphalt), 0, .062, 0, Math.PI / 2));
+    for (let i = 0; i < 4; i++) { const a = Math.PI / 4 + i * Math.PI / 2; const b = grp('bench' + i); at(b, Math.sin(a) * 4.2, 0, Math.cos(a) * 4.2, 0, a + Math.PI); pz.add(b);
+      b.add(at(bx(1.8, .08, .5, 0, CM.awnB), 0, .45, 0)); b.add(at(bx(1.8, .4, .06, 0, CM.awnB), 0, .75, -.22)); for (const x of [-.75, .75]) b.add(at(bx(.08, .45, .5, 0, CM.trim), x, .22, 0)); } }
+  const ped = grp('pedestal'); g.add(ped);
+  ped.add(at(bx(2.8, .25, 2.8, 0, CM.stone2), 0, .125, 0)); ped.add(at(bx(2.3, .25, 2.3, 0, CM.stone2), 0, .375, 0));
+  ped.add(at(rbox(1.6, 1.05, 1.6, .04, CM.stone), 0, 1.0, 0)); ped.add(at(bx(1.85, .18, 1.85, 0, CM.stone2), 0, 1.6, 0));
+  const pl = at(plane(1.1, .55, CM.gold.clone(), 'plaque'), 0, 1.0, .805); pl.userData.aspect = 2; ped.add(pl);
+  const fig = grp('figure'); fig.position.y = 1.69; g.add(fig); const F = CM.figure;
+  const coat = mesh(new THREE.LatheGeometry([[0, 0], [.55, 0], [.52, .3], [.42, .9], [.36, 1.35], [.38, 1.7], [.42, 1.95], [.3, 2.05], [0, 2.08]].map(([x, y]) => new THREE.Vector2(x, y)), 28), F, 'coat'); coat.scale.z = .75; fig.add(coat);
+  fig.add(at(cyl(.09, .1, .14, F, 'neck', 12), 0, 2.12, 0));
+  const head = mesh(new THREE.SphereGeometry(.17, 24, 16), F, 'head'); head.scale.set(.95, 1.12, 1); at(head, 0, 2.33, .02); fig.add(head);
+  fig.add(at(mesh(new THREE.SphereGeometry(.18, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2.2), F, 'hair'), 0, 2.37, -.01));
+  fig.add(at(rbox(.62, .12, .5, .05, F, 'collar'), 0, 2.0, 0));
+  // right hand rests on a tall staff (calm, classic pose — no raised arm), left hand holds a book at the chest
+  const armR = joint('armR', [-.42, 1.92, 0]); fig.add(armR); armR.rotation.set(-.35, 0, -.18);
+  armR.add(at(cyl(.09, .1, .62, F, null, 12), 0, -.31, 0)); const fr = joint('forearmR', [0, -.62, 0]); armR.add(fr); fr.rotation.x = -.75;
+  fr.add(at(cyl(.08, .09, .55, F, null, 12), 0, -.27, 0)); fr.add(at(rbox(.1, .2, .07, .03, F, 'handR'), 0, -.6, 0));
+  fig.add(at(cyl(.035, .035, 2.3, F, 'staff', 10), -.62, 1.15, .62)); fig.add(at(mesh(new THREE.SphereGeometry(.07, 12, 8), F, 'staffTop'), -.62, 2.32, .62));
+  const armL = joint('armL', [.42, 1.92, 0]); fig.add(armL); armL.rotation.set(-.3, 0, .12);
+  armL.add(at(cyl(.09, .1, .62, F, null, 12), 0, -.31, 0)); const fl = joint('forearmL', [0, -.62, 0]); armL.add(fl); fl.rotation.set(-1.5, 0, -.5);
+  fl.add(at(cyl(.08, .09, .5, F, null, 12), 0, -.25, 0)); fl.add(at(rbox(.26, .34, .06, .01, F, 'book'), -.05, -.52, .06, .3));
+  // broad shoulders so the coat reads as a person, not a bottle
+  const sh = mesh(new THREE.CapsuleGeometry(.14, .62, 6, 12), F, 'shoulders'); sh.rotation.z = Math.PI / 2; sh.scale.set(1, 1, .8); at(sh, 0, 1.9, 0); fig.add(sh);
+  return g;
+}
+/** small GPS-style navigation satellite (~1 m body, ~5.5 m wingspan at scale 1; float it high in the sky), generic.
+ * Nodes: body (gold foil box), panelL/panelR (rotate .x to turn to the sun; each 6 cells cell*), boom, antennaArray (ring of helix antennas on the −y face = pointing at Earth), dish, sensor. */
+export function gpsSatellite() {
+  const g = grp('gpsSatellite');
+  g.add(at(rbox(1.0, 1.1, 1.0, .03, CM.gold, 'body'), 0, 0, 0));
+  for (let i = 0; i < 4; i++) g.add(at(bx(1.01, .02, 1.01, 0, CM.trim), 0, -.4 + i * .27, 0));
+  g.add(at(bx(.8, .05, .8, 0, CM.awnA, 'antennaArray'), 0, -.58, 0));
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; g.add(at(cyl(.035, .035, .22, CM.awnA, 'helix' + i, 10), Math.cos(a) * .28, -.72, Math.sin(a) * .28)); }
+  g.add(at(cyl(.05, .05, .25, CM.awnA, 'helixC', 10), 0, -.72, 0));
+  const dish = mesh(new THREE.SphereGeometry(.28, 24, 10, 0, Math.PI * 2, 0, Math.PI / 3.2), CM.awnA, 'dish'); dish.material = CM.awnA.clone(); dish.material.side = THREE.DoubleSide; at(dish, .2, .7, .2, Math.PI); g.add(dish);
+  g.add(at(rbox(.18, .18, .25, .03, CM.trim, 'sensor'), -.3, .62, -.25));
+  for (const s of [-1, 1]) { g.add(at(cyl(.03, .03, .7, CM.trim, 'boom', 8), s * .85, 0, 0, 0, 0, Math.PI / 2));
+    const p = grp(s < 0 ? 'panelL' : 'panelR'); p.position.set(s * 1.2, 0, 0); g.add(p);
+    for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) p.add(at(bx(.62, .03, .72, 0, CM.panel, 'cell'), s * (.36 + i * .66), 0, -.38 + j * .76));
+    p.add(at(bx(2.0, .02, .03, 0, CM.sill), s * 1.02, .02, 0)); }
+  return g;
+}
+/** lilac 'mannequin' person (1.72 m, smooth, faceless), joints pelvis, torso, head, shoulderL/R, elbowL/R, hipL/R, kneeL/R (.x fwd/back, .z sideways);
+ * a phone 'phone' in the right hand with 'screen' plane (→ st.screen). pose: 'scan' (holds the phone up in front of the face, other hand down) | 'stand' | 'walk'. Faces +z. */
+export function mannequin(pose = 'scan') {
+  const F = CM.skin, g = grp('mannequin');
+  const pel = joint('pelvis', [0, .98, 0]); g.add(pel); pel.add(at(rbox(.34, .2, .22, .09, F), 0, 0, 0));
+  const tor = joint('torso', [0, .08, 0]); pel.add(tor);
+  const chest = mesh(new THREE.CapsuleGeometry(.17, .32, 6, 16), F, 'chest'); chest.scale.set(1.15, 1, .72); at(chest, 0, .3, 0); tor.add(chest);
+  tor.add(at(cyl(.05, .055, .1, F, 'neck', 10), 0, .6, 0)); const hd = joint('head', [0, .66, 0]); tor.add(hd);
+  const hm = mesh(new THREE.SphereGeometry(.11, 20, 14), F, 'headMesh'); hm.scale.set(.9, 1.15, 1); at(hm, 0, .11, 0); hd.add(hm);
+  const limb = (r, len, name) => { const m = mesh(new THREE.CapsuleGeometry(r, len, 4, 12), F, name); m.position.y = -len / 2 - r * .3; return m; };
+  for (const [s, k] of [[-1, 'R'], [1, 'L']]) {
+    const sh = joint('shoulder' + k, [s * .23, .5, 0]); tor.add(sh); sh.add(limb(.05, .24, 'upperArm' + k));
+    const el = joint('elbow' + k, [0, -.3, 0]); sh.add(el); el.add(limb(.042, .22, 'foreArm' + k)); el.add(at(rbox(.07, .1, .035, .015, F, 'hand' + k), 0, -.32, 0));
+    const hp = joint('hip' + k, [s * .1, -.04, 0]); pel.add(hp); hp.add(limb(.07, .34, 'thigh' + k));
+    const kn = joint('knee' + k, [0, -.44, 0]); hp.add(kn); kn.add(limb(.055, .36, 'shin' + k)); kn.add(at(rbox(.1, .06, .24, .03, F, 'foot' + k), 0, -.47, .05)); }
+  const ph = grp('phone'); ph.add(at(rbox(.075, .155, .009, .01, M(0x15172e, .35, .4), 'phoneBody'), 0, 0, 0));
+  const sc = at(plane(.069, .149, MAT.screen.clone(), 'screen'), 0, 0, -.0048, 0, Math.PI); sc.userData.aspect = .069 / .149; ph.add(sc);
+  const eR = g.getObjectByName('elbowR'); ph.position.set(0, -.36, .03); eR.add(ph);
+  const P = (n, x, y = 0, z = 0) => g.getObjectByName(n).rotation.set(x, y, z);
+  if (pose === 'scan') { P('shoulderR', -1.25, 0, -.35); P('elbowR', -1.05, 0, 0); ph.rotation.set(Math.PI / 2 - .05, 0, 0); ph.position.set(.0, -.37, .04);
+    P('shoulderL', .05, 0, .12); P('elbowL', -.25); P('head', .12); }
+  else if (pose === 'walk') { P('shoulderR', -.3); P('shoulderL', .35); P('hipR', .35); P('hipL', -.35); P('kneeL', .3); P('elbowR', -.4); }
+  else { P('shoulderR', .02, 0, -.06); P('shoulderL', .02, 0, .06); }
+  return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -961,4 +1154,6 @@ export const KIT = {
   'home2056/kitchenIsland': kitchenIsland, 'home2056/kitchenRun': kitchenRun, 'home2056/sofaModern': sofaModern, 'home2056/loungeSet': loungeSet, 'home2056/mediaWall': mediaWall,
   'home2056/diningSet': diningSet, 'home2056/bedModern': bedModern, 'home2056/planterTall': planterTall, 'home2056/arcLamp': arcLamp, 'home2056/artFrame': artFrame,
   'home2056/garage': garage, 'vehicles/autoCar': autoCar, 'drone/deliveryDrone': deliveryDrone,
+  'citycorner/storefront': () => storefront(9, 4, CM.facadeA, 'shop'), 'citycorner/cafe': () => storefront(8, 3, CM.facadeB, 'cafe'), 'citycorner/bauhausCorner': bauhausCorner,
+  'citycorner/streetCorner': streetCorner, 'citycorner/statue': statue, 'space/gpsSatellite': gpsSatellite, 'people/mannequin-scan': () => mannequin('scan'), 'people/mannequin-walk': () => mannequin('walk'),
 };

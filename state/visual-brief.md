@@ -47,3 +47,8 @@ Image sent: engine/props/showcase-lab (t 1,5,9).
 2. Hidden rooms = frosted glass roof + padlock + sealed door; each new series part "un-frosts" one room when a robot enters (a visual payoff per 10 followers).
 3. Vote moment: show both candidates as see-through "ghosts" in their spots (car in the parking bay, drone over the roof pad) instead of only lighting empty spots.
 Image sent: engine/props/showcase-home (sheet of t 1,5,9,13).
+
+## Proposals sent 2026-11-15 (run 7, ep015 city kit) — waiting for Ziv's OK
+1. An Israeli street look as a fixed brand set: the new city corner (red-white kerbs, roller shutters, solar water heaters, Tel-Aviv rounded building) for every street/delivery/robotaxi story, in episodes and carousels, instead of the European Quaternius facades.
+2. 'Robot vision' as a recurring visual signature: when a robot senses the world, the scene turns into light-blue dots + edge lines (no glow) — same effect every time it appears = recognisable.
+Image sent: engine/props/showcase-city (t 1,5,10,13).
