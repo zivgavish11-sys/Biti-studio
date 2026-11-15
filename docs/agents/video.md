@@ -31,6 +31,7 @@ Then, before sending Ziv the final TTS text, `git pull` and apply any new lines 
 - `studio({outro:'card', ...})`: on that line the whole scene shrinks into a rounded card (keeps playing inside), a Follow button pops in (outline → filled light blue on "תעקבו"), like @grouper.explains. Align with `--tail 0.6` so the video ends right after the voice. Goal: done before people scroll away.
 
 ## Hooks first (Ziv 2026-11-12)
+**Hook method (Ziv approved 2026-11-15, research in docs/hooks-research.md):** for every episode write 6–8 hooks, send Ziv the best 3–4. Each hook = frame 0 shows the strongest moment (mid-action, peak tension — like the needle already at the skin) + short on-screen text + first spoken line, all three saying the same thing (works muted). The first second states the question; don't give the answer in the hook, only hint at it; the payoff answers it. Questions are optional (85% of million-view hooks aren't); a misconception the viewer holds is a strong opener. Log each episode's 3 s hold with its hook in state/performance.md to learn what works.
 Every new episode starts with **hook proposals**: after Ziv picks the topic, send 3–4 hook options (title on screen + first spoken line) and wait for his pick — only then write the full script. Hooks must be **explosive**: a shock fact, a number, a conflict or a "wait, what?" moment in the first 1–2 s, never a soft question or a definition.
 
 ## Preview = 2 frames (Ziv 2026-11-08, saves tokens)

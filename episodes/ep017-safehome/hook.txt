@@ -1,2 +1,3 @@
 hook title (Ziv 2026-11-15, hook 1): מפחדים מרובוט בבית? — first spoken line: "רובוט בבית שלכם מרגיש כל נגיעה... ועוצר."
 Topic (Ziv): why you don't need to be afraid to bring a robot home — explainer only, no stories. One mechanism: collision detection through the motors (+ built weak/soft on purpose).
+STATUS 2026-11-15 evening: Ziv paused ep017 until tomorrow for a stronger hook. New hook options sent (frame 0 = arm meets the child's hand): 1 'מה קורה אם רובוט פוגע בילד?' (recommended) · 2 'רובוט לא מרגיש כלום?' · 3 'אין לו עור. ובכל זאת הוא מרגיש.' · 4 'הרגע שמגן על הילד שלכם'. Next: Ziv picks → change script line 1 → factcheck → Ziv records → align → frame 0 = contact moment → build. Scene + media kit ready.
