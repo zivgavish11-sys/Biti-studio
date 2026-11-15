@@ -63,3 +63,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-15 Ziv: batch order per reel = hook → script → visual script → recording, step by step; build only after Ziv says the batch is closed (docs/agents/video.md).
 - 2026-11-15 Ziv (media proposal 1): the Israeli street kit (citycorner/*) is the set for every street/robotaxi/delivery story, in reels and carousels — with small changes every time (varyCity seed + layout), never the identical street (docs/agents/video.md, docs/agents/news.md).
 - 2026-11-15 Ziv (media proposals 1+2): every hero episode gets one X-ray moment (object turns see-through, mechanism inside, fx-car.js xray()); two shades — light blue #8ea6ff = signal/information, deeper blue #4f6fe0 = force/movement (docs/agents/video.md).
+- 2026-11-15 Ziv (revised): X-ray moment is NOT in every episode — only when Ziv asks for it per episode. Two shades rule stays (docs/agents/video.md).
