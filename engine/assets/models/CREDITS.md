@@ -27,3 +27,4 @@
 - lab/workbench, lab/printer3d, lab/chargingWall, buildings/labRoom, vehicles/farmRobot — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-12.
 - home2056/* (villa, sealedDoor, frostedRoom, pool, hotTub, lounger, umbrella, outdoorKitchen, firePit, kitchenIsland, kitchenRun, sofaModern, loungeSet, mediaWall, diningSet, bedModern, planterTall, arcLamp, artFrame, garage), vehicles/autoCar, drone/deliveryDrone — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-14.
 - citycorner/* (storefront, cafe, bauhausCorner, streetCorner, statue), space/gpsSatellite, people/mannequin-scan + mannequin-walk — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-15. FX helpers engine/props/fx-city.js — in-house, CC0.
+- vehicles/robotaxiXray (robotaxi + brake-by-wire insides: computer, cable, brake unit, lines, discs, calipers, pedal) — in-house (Media pro, engine/props/kit.js), CC0, 2026-11-15. FX helpers engine/props/fx-car.js — in-house, CC0.

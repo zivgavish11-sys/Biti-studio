@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-15 run 8 — ep016-robotaxi x-ray brake path: vehicles/robotaxiXray + engine/props/fx-car.js
+// Render: python3 tools/render.py frames engine/props/showcase-car 1,4,7,9
+import {studio, THREE, camKF, V} from '/engine/lib/core.js';
+import {xray, brakePulse} from '/engine/props/fx-car.js';
+const st = await studio({look: 'hero', hook: ['איך רובוטקסי', '<span class="pill">בולמת</span> לבד'], hookEnd: 2, fog: .01, scenes: (A, B, E) => [0, E]});
+st.stage({r: 60, grid: 1});
+const car = (await st.prop('vehicles/robotaxiXray', {tint: 1, x: 0, z: 0})).object;
+const xr = xray(car), bp = brakePulse(car);
+st.frame(t => {
+  xr.set((t - 1.5) / 1.2); bp.set((t - 3) / 6);
+  const [cp, ct] = camKF(t, [[0, [6.5, 4.2, 7.5], [0, .6, 0]], [3, [5.5, 4.6, -6.5], [0, .5, -.6]], [5.5, [-4.2, 3.2, 4.8], [-.2, .5, .6]], [8, [-3.6, 2.2, 3.8], [-.5, .45, 1.3]], [10, [6.5, 4.2, 7.5], [0, .6, 0]]]);
+  return {cp, ct, noFlash: true}; });
+st.ready();
+</script></body></html>

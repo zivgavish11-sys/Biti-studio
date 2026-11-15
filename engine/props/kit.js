@@ -1138,6 +1138,75 @@ export function mannequin(pose = 'scan') {
   return g;
 }
 
+// ---------- ep016-robotaxi x-ray brake path (Media pro 2026-11-15 run 8) ----------
+/** a tube along points (metres). userData.path = the points (flat array) so episodes can run a pulse along it. */
+function tubeAlong(pts, r, m, name, seg = 64) {
+  const v = pts.map(p => new THREE.Vector3(...p)); const curve = new THREE.CatmullRomCurve3(v, false, 'centripetal');
+  const o = mesh(new THREE.TubeGeometry(curve, seg, r, 10, false), m, name); o.userData.path = pts.flat(); return o;
+}
+const XM = { box: M(0xd9ddf7, .5, .2), dark: M(0x23265a, .6, .3), acc: M(0x8ea6ff, .45, .1), steel: M(0xb3b8e6, .3, .75), disc: M(0x9aa0d8, .35, .7),
+  cal: M(0x8ea6ff, .45, .15), pad: M(0x3b3f8a, .8), fluid: M(0x6f93f0, .4, .1), rubber: M(0x17193f, .85) };
+/** generic robotaxi x-ray: our vehicles/robotaxi (same shape, same metres, faces +z) + group 'insides' = the brake-by-wire path, aligned.
+ * Ghost everything except 'insides' (fx-car.js xray()). insides nodes:
+ *  computer (box under the trunk floor, z −1.9; 'computerTop' lid, 'computerLed0..5' status dots, 'fins') ·
+ *  cable (computer → brake unit, userData.path) ·
+ *  brakeUnit at the front (driver side): 'brakeMotor' (small electric motor: spin 'motorShaft' .z), 'masterCyl', 'reservoir' (fluid tank, 'fluidLevel') ·
+ *  line0..3 (brake-fluid lines brake unit → each wheel, userData.path; order = wheel0..3: FL FR RL RR) ·
+ *  disc0..3 (spin .x with the wheels) · caliper0..3 with padIn{i}/padOut{i} (squeeze: move .position.x toward 0 by up to .012) ·
+ *  pedalBox in the footwell: 'pedal' (pivot at the top, press = .rotation.x +.35), 'pushrod' to the brake unit. No labels, no brand. */
+export function robotaxiXray() {
+  const root = robotaxi(); root.name = 'robotaxiXray';
+  const ins = grp('insides'); root.add(ins);
+  // computer under the trunk floor
+  const comp = grp('computer'); at(comp, 0, .5, -1.85); ins.add(comp);
+  comp.add(at(rbox(.62, .14, .44, .02, XM.box, 'computerBody'), 0, 0, 0));
+  comp.add(at(rbox(.6, .02, .42, .01, XM.acc, 'computerTop'), 0, .08, 0));
+  const fins = grp('fins'); for (let i = 0; i < 9; i++) fins.add(at(bx(.012, .05, .38, 0, XM.dark), -.24 + i * .06, .115, 0)); comp.add(fins);
+  for (let i = 0; i < 6; i++) comp.add(at(cyl(.012, .012, .006, XM.acc, 'computerLed' + i, 12), -.2 + i * .08, 0, .222, Math.PI / 2));
+  comp.add(at(rbox(.08, .06, .05, .01, XM.dark, 'computerPort'), .22, 0, .235));
+  // brake unit at the front, driver side (Israel: left-hand drive → x −)
+  const bu = grp('brakeUnit'); at(bu, -.42, .74, 1.78); ins.add(bu);
+  bu.add(at(rbox(.26, .16, .2, .03, XM.box, 'unitBody'), 0, 0, 0));
+  bu.add(at(cyl(.045, .045, .3, XM.steel, 'masterCyl', 24), .02, -.02, -.02, Math.PI / 2, 0, 0));
+  const mot = grp('brakeMotor'); at(mot, .16, -.01, .02); bu.add(mot);
+  mot.add(at(cyl(.055, .055, .12, XM.acc, 'motorCan', 24), 0, 0, 0, 0, 0, Math.PI / 2));
+  mot.add(at(cyl(.06, .06, .02, XM.dark, null, 24), .065, 0, 0, 0, 0, Math.PI / 2));
+  const sh = grp('motorShaft'); at(sh, .085, 0, 0); sh.add(at(cyl(.012, .012, .03, XM.steel, null, 12), 0, 0, 0, 0, 0, Math.PI / 2)); sh.add(at(bx(.005, .05, .012, 0, XM.steel), .012, 0, 0)); mot.add(sh);
+  const res = grp('reservoir'); at(res, -.04, .13, .02); bu.add(res);
+  res.add(at(rbox(.16, .09, .1, .02, Object.assign(M(0xc9d1ff, .3), {transparent: true, opacity: .55, depthWrite: false}), 'tank'), 0, 0, 0));
+  res.add(at(bx(.15, .055, .09, 0, XM.fluid, 'fluidLevel'), 0, -.012, 0)); res.add(at(cyl(.03, .03, .03, XM.dark, 'cap', 16), 0, .06, 0));
+  // cable computer → brake unit (along the floor, up through the firewall)
+  ins.add(tubeAlong([[0.22, .5, -1.6], [.3, .42, -1.2], [.3, .4, 0], [.1, .42, 1.0], [-.2, .62, 1.45], [-.4, .7, 1.66]], .014, XM.acc, 'cable', 80));
+  // wheels: same positions as robotaxi wheel0..3
+  const W = [[-.84, 1.45], [.84, 1.45], [-.84, -1.5], [.84, -1.5]];
+  W.forEach(([x, z], i) => {
+    const s = Math.sign(x), dx = x - s * .1;                   // disc sits inside the rim
+    const d = grp('disc' + i); at(d, dx, .36, z); ins.add(d);
+    d.add(at(cyl(.2, .2, .024, XM.disc, 'rotor', 40), 0, 0, 0, 0, 0, Math.PI / 2));
+    d.add(at(cyl(.1, .1, .05, XM.dark, 'hat', 24), 0, 0, 0, 0, 0, Math.PI / 2));
+    for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; d.add(at(cyl(.009, .009, .026, XM.dark, null, 8), 0, Math.sin(a) * .155, Math.cos(a) * .155, 0, 0, Math.PI / 2)); }
+    // caliper on the back-top of the disc (doesn't spin)
+    const c = grp('caliper' + i); at(c, dx, .36 + .13, z - .1 * Math.sign(z)); c.rotation.x = .65 * Math.sign(z); ins.add(c);
+    c.add(at(rbox(.075, .12, .17, .02, XM.cal, 'caliperBody'), 0, .02, 0));
+    c.add(at(rbox(.012, .07, .13, .004, XM.pad, 'padIn' + i), -.026, -.02, 0));
+    c.add(at(rbox(.012, .07, .13, .004, XM.pad, 'padOut' + i), .026, -.02, 0));
+    // brake line brake unit → caliper (inner side of the caliper)
+    const end = [dx - s * .08, .5, z - .12 * Math.sign(z)];
+    const pts = z > 0 ? [[-.42 + (x > 0 ? .1 : -.02), .66, 1.7], [x * .3, .55, 1.62], [end[0] - s * .1, .52, end[2] + .05], end]
+                      : [[-.38 + (x > 0 ? .08 : -.02), .64, 1.68], [x > 0 ? .18 : -.18, .38, 1.1], [x > 0 ? .3 : -.3, .37, -.6], [end[0] - s * .12, .45, end[2] + .1], end];
+    ins.add(tubeAlong(pts, .008, XM.steel, 'line' + i, 64));
+  });
+  // brake pedal in the driver footwell (no foot needed)
+  const pb = grp('pedalBox'); at(pb, -.42, .78, 1.08); ins.add(pb);
+  pb.add(at(rbox(.14, .06, .1, .02, XM.dark, 'pedalMount'), 0, 0, 0));
+  const ped = grp('pedal'); pb.add(ped);
+  ped.add(link(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -.3, -.06), .012, XM.steel, 'pedalArm'));
+  ped.add(at(rbox(.11, .07, .02, .01, XM.rubber, 'pedalPad'), 0, -.32, -.07, .35, 0, 0));
+  pb.add(link(new THREE.Vector3(0, -.05, .03), new THREE.Vector3(0, -.05, .55), .008, XM.steel, 'pushrod'));
+  ins.traverse(o => { if (o.isMesh) o.castShadow = false; });
+  return root;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -1156,4 +1225,5 @@ export const KIT = {
   'home2056/garage': garage, 'vehicles/autoCar': autoCar, 'drone/deliveryDrone': deliveryDrone,
   'citycorner/storefront': () => storefront(9, 4, CM.facadeA, 'shop'), 'citycorner/cafe': () => storefront(8, 3, CM.facadeB, 'cafe'), 'citycorner/bauhausCorner': bauhausCorner,
   'citycorner/streetCorner': streetCorner, 'citycorner/statue': statue, 'space/gpsSatellite': gpsSatellite, 'people/mannequin-scan': () => mannequin('scan'), 'people/mannequin-walk': () => mannequin('walk'),
+  'vehicles/robotaxiXray': robotaxiXray,
 };

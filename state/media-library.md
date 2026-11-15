@@ -85,6 +85,10 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   **varyCity(prop, seed)** (Ziv 2026-11-15: never the identical street) — facade colours, awnings, shutters, ACs, solar heaters, balconies, cafe tables, kerb colour (red/blue/white), trees. **robotVision(st, {roots, edgeRoots, eye, target})** → set(k): world → dots + edge lines + view cone (demo engine/props/showcase-vision t 0–5).
   Showcase: `python3 tools/render.py frames engine/props/showcase-city 1,5,10,13` (corner wide · satellite + error circle · photo cloud + hand phone + mannequins · dot map + edges + view cone).
 
+- **vehicles/robotaxiXray** (added 2026-11-15 run 8 for ep016-robotaxi, in-house CC0, generic, no brand): our vehicles/robotaxi (same shape + metres, faces +z, all its nodes) + group **'insides'** = brake-by-wire path, aligned: **computer** under the trunk floor (z −1.9; computerTop, computerLed0..5, fins) → **cable** (userData.path) → **brakeUnit** front driver side (brakeMotor + motorShaft spin, masterCyl, reservoir/fluidLevel) → **line0..3** brake-fluid lines (userData.path; order = wheel0..3) → **disc0..3** (spin .x) + **caliper0..3** with padIn{i}/padOut{i} (squeeze) · **pedalBox/pedal** in the footwell (rotate .x to press) + pushrod.
+  FX `engine/props/fx-car.js`: `xray(car).set(k)` → body fades to a matte indigo ghost (opacity .12), insides appear · `brakePulse(car).set(k)` → LEDs (0–.15) → white dot + accent fill along the cable (.15–.45) → motor spins (.45–.55) → deeper-blue fluid fills the 4 lines (.55–.85) → pads squeeze (.85–1); `.point(k)` = world point to follow with the camera, `.phase(k)`.
+  Showcase: `python3 tools/render.py frames engine/props/showcase-car 1,4.5,7,8.8`.
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.
