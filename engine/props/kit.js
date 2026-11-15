@@ -1049,8 +1049,8 @@ export function streetCorner(S = 40) {
     for (let k = 1; k < L / 1.2; k++) { q.add(at(bx(.02, .005, L, 0, CM.asphalt), sx * RW + sx * k * 1.2, .203, cz)); q.add(at(bx(L, .005, .02, 0, CM.asphalt), cx, .203, sz * RW + sz * k * 1.2)); }
     // kerbs along both roads; red-white near the corner
     for (let k = 0; k < L; k += 1) { const red = k < 6 && (k % 2 === 0);
-      q.add(at(bx(1, .2, .2, 0, red ? CM.curbRed : CM.curb), sx * (RW + k + .5), .1, sz * (RW + .1)));
-      q.add(at(bx(.2, .2, 1, 0, red ? CM.curbRed : CM.curb), sx * (RW + .1), .1, sz * (RW + k + .5))); } }
+      q.add(at(bx(1, .2, .2, 0, red ? CM.curbRed : CM.curb, red ? 'kerbRed' : 'kerb'), sx * (RW + k + .5), .1, sz * (RW + .1)));
+      q.add(at(bx(.2, .2, 1, 0, red ? CM.curbRed : CM.curb, red ? 'kerbRed' : 'kerb'), sx * (RW + .1), .1, sz * (RW + k + .5))); } }
   // zebra crossings (Israeli: white bars parallel to traffic), 3 m from the corner
   const zebra = (name, along) => { const z = grp(name); g.add(z); for (let i = 0; i < 7; i++) { const off = -RW + .6 + i * 1.15;
     z.add(along === 'x' ? at(bx(.55, .012, 2.8, 0, CM.zebra, name + '_' + i), off, .056, 0) : at(bx(2.8, .012, .55, 0, CM.zebra, name + '_' + i), 0, .056, off)); } return z; };

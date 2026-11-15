@@ -48,7 +48,10 @@ Image sent: engine/props/showcase-lab (t 1,5,9).
 3. Vote moment: show both candidates as see-through "ghosts" in their spots (car in the parking bay, drone over the roof pad) instead of only lighting empty spots.
 Image sent: engine/props/showcase-home (sheet of t 1,5,9,13).
 
-## Proposals sent 2026-11-15 (run 7, ep015 city kit) — waiting for Ziv's OK
+## Proposals sent 2026-11-15 (run 7, ep015 city kit) — 1 ✓ with a change (Ziv: "looks crazy, but not the same every time — small changes" → varyCity), 2 Ziv asked for an example (sent 2026-11-15: 5 s clip engine/props/showcase-vision t 0–5), waiting
 1. An Israeli street look as a fixed brand set: the new city corner (red-white kerbs, roller shutters, solar water heaters, Tel-Aviv rounded building) for every street/delivery/robotaxi story, in episodes and carousels, instead of the European Quaternius facades.
 2. 'Robot vision' as a recurring visual signature: when a robot senses the world, the scene turns into light-blue dots + edge lines (no glow) — same effect every time it appears = recognisable.
 Image sent: engine/props/showcase-city (t 1,5,10,13).
+
+## Approved visual changes (cont.)
+- 2026-11-15: Israeli street kit for street stories, with small variations every time (varyCity seed + layout).

@@ -116,3 +116,42 @@ export async function handPhone(st, {skin = 0xc9c3f2} = {}) {
   const screen = ph.getObjectByName('screen');
   return {o: g, hand: hw, phone: ph, screen, bone};
 }
+
+// ---------- Israeli street set: small variations every time (Ziv 2026-11-15: "we won't see the same thing every time, there will be small changes") ----------
+const FACADES = [0x3e4390, 0x2f4f8f, 0x5a4f86, 0x8d90c9, 0x6a5a9e, 0x34397f, 0xa7a3d6, 0x474ca0];   // indigo family + one light 'Jerusalem stone' tone
+const AWNINGS = [[0xd9ddf7, 0x6c72c6], [0x8ea6ff, 0xd9ddf7], [0x6c72c6, 0x2c2f6e], [0xd9ddf7, 0x8ea6ff], [0xb5524a, 0xd9ddf7]];
+const KERBS = [0xb5524a, 0x3f63c9, 0xb5524a, 0xd9ddf7];                                          // red-white (no parking) · blue-white (paid) · plain
+/** varyCity(root, seed): recolours facades + awnings, randomises roller shutters, AC units, solar heaters, balconies, cafe tables, kerb colours, trees.
+ * Call once per prop after st.prop (streetCorner / storefront / cafe / bauhausCorner). Same seed = same look (repeatable). */
+export function varyCity(root, seed = 1) {
+  let s = (seed * 2654435761) >>> 0; const r = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  for (let i = 0; i < 4; i++) r(); const pick = a => a[Math.floor(r() * a.length)];
+  const recol = (o, c) => { if (!o.isMesh) return; o.material = o.material.clone(); o.material.color.setHex(c); };
+  const fac = pick(FACADES), awn = pick(AWNINGS), kerb = pick(KERBS);
+  root.traverse(o => {
+    const n = o.name || '';
+    if (o.isMesh && n === 'body' && !o.parent?.name?.startsWith('cafeTable')) recol(o, fac);
+    if (n === 'body' && !o.isMesh && o.parent?.name === 'bauhausCorner') o.traverse(q => recol(q, fac));
+    if (n === 'awningCloth') { const h = o.children.length / 2; o.children.forEach((c, j) => recol(c, awn[(j % h) % 2])); }
+    if (n === 'shutter') o.scale.y = Math.max(.001, [0, .25, .5, .9, .15][Math.floor(r() * 5)] * 1.55);
+    if (/^ac_/.test(n)) o.visible = r() < .7;
+    if (/^solarHeater/.test(n)) o.visible = r() < .8;
+    if (/^balcony_/.test(n)) o.visible = r() < .85;
+    if (/^cafeTable/.test(n)) o.visible = r() < .8;
+    if (n === 'kerbRed') recol(o, kerb);
+    if (n === 'tree') { o.visible = r() < .85; o.scale.setScalar(.8 + r() * .45); }
+  });
+  return {facade: fac, awning: awn, kerb};
+}
+
+/** robotVision(st, {roots, eye, target}): the recurring 'how a robot sees' signature — the world turns into light-blue dots + edge lines snap onto the
+ * objects + a view cone from the robot's camera. Matte, no glow. set(k): 0 = normal world, 1 = full robot vision. (eye/target = Vector3 or functions) */
+export function robotVision(st, {roots, eye, target, n = 50000, edgeRoots = null} = {}) {
+  const dots = toDots(st.scene, roots, {n, size: .07});
+  const edges = (edgeRoots || roots).map(r => edgeLines(st.scene, r, {angle: 35, color: 0xd9e2ff, offset: new THREE.Vector3(.4, .25, .5)}));
+  const cone = viewCone(st.scene);
+  return function set(k, t = 0) { k = Math.min(1, Math.max(0, k));
+    dots.set(k); edges.forEach(e => e.set(Math.min(1, k * 1.6), Math.max(0, k * 1.4 - .3)));
+    const E = typeof eye === 'function' ? eye(t) : eye, T = typeof target === 'function' ? target(t) : target;
+    cone.set(Math.min(1, k * 2)); if (E && T) cone.aim(E, T, Math.min(1, k * 2)); };
+}

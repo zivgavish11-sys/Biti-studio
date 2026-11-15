@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-15 — demo for Ziv: (a) 'robot vision' signature (t 0–5, video) · (b) the Israeli street with small variations (t 10, 11, 12 = 3 seeds).
+// Video: python3 tools/render.py video engine/props/showcase-vision out.mp4 --from 0 --to 5 · Frames: render.py frames engine/props/showcase-vision 10,11,12
+import {studio, THREE, camKF, V, sm} from '/engine/lib/core.js';
+import {robotVision, varyCity} from '/engine/props/fx-city.js';
+const st = await studio({look: 'hero', hook: ['ככה רובוט', 'רואה את <span class="pill">העולם</span>'], hookEnd: 1.0, fog: .006, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+st.stage({r: 200, grid: 0, spot: null});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+const street = await P('citycorner/streetCorner');
+const bau = await P('citycorner/bauhausCorner', {x: 13.25, z: -13.25});
+const shop = await P('citycorner/storefront', {x: -12.7, z: -13});
+const cafe = await P('citycorner/cafe', {x: -21.7, z: -12.2});
+const shop2 = await P('citycorner/storefront', {x: -13, z: 13.2, ry: Math.PI});
+const statue = await P('citycorner/statue', {x: 13, y: .2, z: 13});
+const bot = await P('robots/deliveryBot', {x: -7.5, y: .2, z: -5.2, ry: Math.PI * .9});
+const city = [street, bau, shop, cafe, shop2];
+const vary = seed => city.forEach((o, i) => varyCity(o, seed * 10 + i));
+vary(1);
+window.__dbg = () => { const out = []; [shop, cafe].forEach(o => o.traverse(q => { if (q.name === 'body' && q.isMesh) out.push(q.material.color.getHexString()); })); console.warn('facades', out.join(',')); };
+__dbg();
+const eye = () => bot.localToWorld(V(0, .6, .45));
+const vision = robotVision(st, {roots: [shop, cafe, bau], edgeRoots: [shop], eye, target: V(-13, 4.5, -8), n: 45000});
+let seedNow = 1;
+st.frame(t => {
+  const seed = t < 9.5 ? 1 : t < 10.5 ? 1 : t < 11.5 ? 2 : 3; if (seed !== seedNow) { vary(seed); seedNow = seed; __dbg(); }
+  for (let i = 0; i < 6; i++) { const w = bot.getObjectByName('wheel' + i); if (w) w.rotation.x = t * 4; }
+  vision(t < 9 ? sm(1.2, 2.8, t) : 0, t);
+  let cp, ct;
+  if (t < 9) [cp, ct] = camKF(t, [[0, [-2, 3.4, 1.5], [-11, 3.4, -8]], [5, [-3.6, 3.0, -.2], [-12, 4, -8]]]);
+  else [cp, ct] = camKF(t, [[9, [8, 14, 16], [-12, 4, -10]], [13, [8, 14, 16], [-12, 4, -10]]]);
+  return {cp, ct, noFlash: true}; });
+st.ready();
+</script></body></html>

@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from media] Ziv approved: street/robotaxi/delivery carousels use the Israeli street kit (citycorner/*) with small changes every time — varyCity(prop, seed) from engine/props/fx-city.js, new seed per carousel. Rule in docs/agents/news.md; demo engine/props/showcase-vision (t 10,11,12).
 - 2026-11-14 [from factcheck] FAQ carousel (draft, 15.11 14:00): checked against Ziv's brief. Anonymity OK (only "22 מהצפון"), slides 1–4 + follow slide + caption OK, no checkable numbers. 2 fixes + 1 optional:
   1) slide 6: "ישמע ראשון על הכנסים וההנחות שאנחנו מתכננים" + "אתם בוחרים על אילו רובוטים נעשה את הפרקים הבאים" — "הכנסים וההנחות" with "מתכננים" reads as concrete, promised events (Ziv's red line: future goals only); "אתם בוחרים" overclaims (followers suggest, we choose). Safe: "מי שכאן מההתחלה ישמע ראשון כשנגיע לכנסים ולהנחות שאנחנו שואפים אליהם, ויוכל להשפיע על התוכן: אתם מציעים בתגובות על אילו רובוטים נעשה פרקים, ואנחנו בוחרים מתוך ההצעות."
   2) slide 5: "מערכת AI שבנינו בעצמנו" — can be read as "we built the AI model", and a commenter can correct that (the system runs on existing AI tools). Keeps Ziv's meaning: "כן, רוב התוכן נוצר אוטומטית, בעזרת מערכת שבנינו בעצמנו על גבי כלי AI." Optional grammar for the end: "...שעובד קשה כדי לשפר את התוכן כל הזמן, ועובד גם על בניית הקהילה."
