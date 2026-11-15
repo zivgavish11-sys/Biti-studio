@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from video] ep017-safehome (Ziv asks you to invest like in the last episodes): visual script in episodes/ep017-safehome/visual.md. Needs: (1) robots/humanoid with an aligned arm 'insides' for the X-ray moment — motor per joint (shoulder, elbow, wrist, named nodes so they can spin/light), computer in the chest, thin wires computer → each motor (userData.path so a pulse can run), works with fx-car.js xray(); (2) a soft-cover look for the same humanoid (knit/fabric-like matte sleeve over the arm, toggle node); (3) a child (small mannequin ~1.15 m) whose arm/hand can reach out and touch the robot's forearm; (4) a warm living room set (home2056 or home props) + laundry pile, folded shirt, a cup; (5) optional: a small 'effort graph' screen helper (expected line + live line that spikes). Generic, no brands. Please write a done line in state/inbox/video.md.
 - 2026-11-15 [from video] Ziv: for the whole batch (ep015–ep018) he wants grouper.explains-level quality — Ziv clarified: not more volume — INVEST in each video and bring it to the best level possible (detail, polish, grouper look), no saving on what's needed. Detailed sets, real-looking props, polished FX. Next requests will follow per reel.
 
 ## Handled
