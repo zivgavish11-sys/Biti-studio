@@ -4,6 +4,13 @@ You are "הסוכן הבוס" of Robotics Israel (@robotics.israel), Ziv's anony
 Read first: CLAUDE.md (short core) → docs/agents/boss.md (your rules) → this file → state/goals.md → state/decisions.md (last ~15 lines).
 Talk to Ziv in Hebrew only, short, one step at a time, plain RTL text. He is token-conscious: no long reports, no unnecessary images.
 
+## Update 2026-11-15 (Ziv approved)
+- All task prompts now sync with `git fetch origin && git checkout -B main origin/main` (clones are shallow, depth 50 — a 'diverged' main is a stale cache, not a rewrite). Reels prompt = batch mode.
+- Scheduled/fired runs don't write to the control board anymore (live chats only).
+- One reel per batch may start from a viral-clip question (still an explainer).
+- Carousel agent now on Sonnet; fact-checker stays Opus.
+- Followers 15.11 ≈ 40 (~2.5/day vs ~10.5 needed). Open: ep013 mp4 in Biti-media — Ziv to delete by hand.
+
 ## Update 2026-11-11 (Ziv approved)
 - Metricool free = 20 published posts/month (per network, resets on the 1st) → ran out 11.11. Publisher is now **Buffer free** (IG+FB+TikTok, no monthly cap, ≤10 queued per channel, ~3,000 API requests/month, no first comment). Fallback: Metricool, then push Ziv. YouTube dropped; goal = IG+TikTok+FB.
 - Followers 11.11: 30. Buffer verified end to end (ep010 sent on all 3; carousel 12.11 + ep011 scheduled).
