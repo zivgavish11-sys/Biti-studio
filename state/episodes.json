@@ -1,5 +1,5 @@
 {
- "next_episode": 14,
+ "next_episode": 17,
  "episodes": [
   {
    "n": 1,
@@ -166,6 +166,30 @@
    "series": "home2056 part 1",
    "posted": "scheduled 2026-11-19T18:00+02:00 via Buffer by video (IG 6af8e9f1b9a106584c752ea1, FB 6af8e9f2918fe79d2eac8e8a, TikTok 6af8e9f2e86a5789a6d8dd77). Media on branch media-ep014-home1 (delete after all sent).",
    "notes": "33.5 s. Luxury villa cutaway (media kit home2056), 2 hidden locked rooms, pool; per-robot charging stations (dock/pod/kennel) with 10 blank name plates; vote ghosts (car in bay, drone over roof pad). No Biti, no follow card. Vote: בית + מכונית / בית + רחפן"
+  },
+  {
+   "n": 15,
+   "slug": "ep015-pokemon",
+   "title": "שיחקתם פוקימון גו? אימנתם אלפי רובוטים בלי לדעת",
+   "domain": "בינה מלאכותית ברובוטים",
+   "date": "2026-11-15",
+   "format": "long",
+   "look": "hero-v2",
+   "batch": "batch 1 (15–16.11)",
+   "posted": "scheduled 2026-11-15T18:00+02:00 via Buffer by video (IG 6af942c876c23bf1c75d955a, FB 6af942c9e86a5789a6ef5cb9, TikTok 6af942c9c5b364e0623731bf). Media on branch media-ep015-pokemon (delete after all sent).",
+   "notes": "42.7 s. Israeli city corner (varyCity), delivery bot + GPS error circle, photo cards, players scanning a statue, 30B counter, dot map. Question: הייתם סורקים את השכונה שלכם בשביל פרס במשחק? כן / לא"
+  },
+  {
+   "n": 16,
+   "slug": "ep016-robotaxi",
+   "title": "מי בולם מהר יותר, אתם או רכב אוטונומי?",
+   "domain": "איך רובוטים עובדים",
+   "date": "2026-11-16",
+   "format": "long",
+   "look": "hero-v2",
+   "batch": "batch 1 (15–16.11)",
+   "posted": "scheduled 2026-11-16T18:00+02:00 via Buffer by video (IG 6af942cae5a113497aca22f8, FB 6af942cb918fe79d2ec34499, TikTok 6af942cbe5a113497aca2347). Media on branch media-ep016-robotaxi (delete after all sent).",
+   "notes": "48.2 s (QA duration FAIL >46 s, Ziv approved as is). First X-ray moment (Ziv's request): brake path computer → motor → brake fluid → pads (vehicles/robotaxiXray). Question: הייתם נוסעים ברובוטקסי בלי נהג? כן / לא"
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
