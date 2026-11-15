@@ -23,6 +23,7 @@ Then, before sending Ziv the final TTS text, `git pull` and apply any new lines 
 ## Finding content: real questions with emotion (Ziv 2026-11-13)
 - Every idea starts from a **real question people ask**, never from your own idea. Sources (all four): our followers' comments · surveys/studies (e.g. YouGov 2025: cost 60%, reliability 49%, privacy/hacking 48%, family safety 43%; most-wanted tasks floors/dishes/laundry) · Reddit and forums (e.g. r/RobotVacuums, humanoid question banks) · comments under viral robot videos.
 - Only questions **with emotion**: fear/danger, surprise or a real story. Then how it works inside → is it worth buying. Ziv rejected "interesting but no emotion" ideas (phone captcha, vacuum vs poop, humanoid battery).
+- **For now: explainers only, no stories (Ziv 2026-11-15):** "כרגע אני לא רוצה לספר סיפורים שקרו אלא רק הסברים" — no viral clips / news events as the episode's story; the emotion comes from the viewer's own question or fear (e.g. "is it safe to bring a robot home?"), answered by how the robot works inside. Until Ziv says otherwise.
 - Each idea you send = the question in ordinary people's words + where it comes from and how many ask ("48% in a survey", "recurring on Reddit", "a follower asked") + the episode's opening line. Short, nothing else.
 
 ## Ending = grouper card (Ziv 2026-11-13, from ep013)
