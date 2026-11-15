@@ -1,0 +1,103 @@
+{
+ "date_label": "חדשות היום · 15.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "טסלה הזמינה לקוחות נבחרים לקנות Cybercab, רכב בלי הגה, ב־29,990$",
+    "הרובוטקסי של Zoox מתחיל לנסוע באטלנטה, בינתיים רק לעובדים ולמקורבים"
+   ],
+   "scene": {
+    "robot": false,
+    "props": [
+     "cabcover"
+    ],
+    "color": "orange",
+    "cam": [
+     0.4,
+     4.2,
+     17
+    ],
+    "target": [
+     0.4,
+     0.8,
+     -0.5
+    ],
+    "shift": 0.16
+   },
+   "topShade": 0.6
+  },
+  {
+   "type": "story",
+   "stat": "29,990$",
+   "statSub": "המחיר, לפני מסים",
+   "statColor": "orange",
+   "title": "טסלה מוכרת<br>רובוטקסי <span class=\"pill\">פרטי</span>",
+   "text": "טסלה הזמינה לקוחות נבחרים בארה״ב לקנות את Cybercab לשימוש פרטי: שני מושבים, בלי הגה ובלי דוושות. לפי הדיווח, צריך גם מנוי נהיגה אוטונומית של 299$ בחודש, והמסירות צפויות להתחיל בדצמבר.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Tesla, InsideEVs, The National",
+   "scene": {
+    "robot": false,
+    "props": [
+     "cabhome"
+    ],
+    "color": "orange",
+    "cam": [
+     2.2,
+     1.9,
+     9.6
+    ],
+    "target": [
+     1.6,
+     1.0,
+     -1.8
+    ],
+    "shift": 0.14
+   },
+   "topShade": 0.7
+  },
+  {
+   "type": "story",
+   "stat": "4",
+   "statSub": "נוסעים זה מול זה, ובלי הגה",
+   "statColor": "cyan",
+   "title": "Zoox מגיעה<br>ל<span class=\"pill\">אטלנטה</span>",
+   "text": "הרובוטקסי של Zoox, חברה של אמזון, נוסע עכשיו ליד Atlantic Station. בינתיים רק עובדי החברה, משפחה וחברים יכולים לנסוע בו. לפי החברה, רשימת המתנה לציבור תיפתח בחודשים הקרובים.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "Zoox, Atlanta News First",
+   "scene": {
+    "robot": false,
+    "props": [
+     "zooxatl"
+    ],
+    "color": "cyan",
+    "cam": [
+     2.6,
+     2.2,
+     8.2
+    ],
+    "target": [
+     0.3,
+     1.4,
+     -2.4
+    ],
+    "shift": 0.12
+   },
+   "topShade": 0.8
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "anim": "Wave",
+    "color": "orange",
+    "target": [
+     0,
+     1.3,
+     0
+    ],
+    "shift": 0.24
+   }
+  }
+ ]
+}

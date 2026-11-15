@@ -46,7 +46,7 @@ li:before{content:"";position:absolute;right:0;top:16px;width:20px;height:20px;b
 <script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
 /* Daily news slide. /engine/news/index.html?spec=/news/20261101/spec.json&i=0
-   spec.json: {date_label, slides:[{type:'cover'|'story'|'follow', title, text|bullets, stat, statSub, statColor, source,
+   spec.json: {date_label, slides:[{type:'cover'|'story'|'follow', topShade (0..1, darkens the top for stat readability), title, text|bullets, stat, statSub, statColor, source,
                 scene:{anim, count, color, models:[{name,x,z,scale,rot}], cam:[x,y,z], target:[x,y,z]}}]} */
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -67,6 +67,7 @@ const $ = id => document.getElementById(id);
 $('tag').textContent = spec.date_label || 'חדשות רובוטים';
 const nStories = spec.slides.filter(s => s.type === 'story').length;
 const storyIdx = spec.slides.slice(0, i + 1).filter(s => s.type === 'story').length;
+if (S.topShade) { const d = document.createElement('div'); d.className = 'ov'; d.style.background = `linear-gradient(180deg,rgba(5,6,26,${S.topShade}) 0%,rgba(5,6,26,${S.topShade * .8}) 16%,rgba(5,6,26,0) 30%)`; $('frame').before(d); }
 if (S.stat) { $('stat').innerHTML = `<bdi>${S.stat}</bdi>` + (S.statSub ? `<small>${S.statSub}</small>` : ''); $('stat').style.setProperty('--c', '#' + col(S.statColor).toString(16).padStart(6, '0')); }
 if (S.type === 'follow') {
   $('bottom').className = 'follow';
@@ -833,7 +834,7 @@ for (const p of sc.props || []) {
     for (const zz of [-3.85, 3.85]) { const e = new THREE.Mesh(new THREE.PlaneGeometry(80, .12), mat(0xf2d34a, .1, {roughness: .6})); e.rotation.x = -Math.PI / 2; e.position.set(0, .012, zz); scene.add(e); }
     const walk = new THREE.Mesh(new THREE.BoxGeometry(80, .16, 3.4), mat(0xb7b2a6, .1, {roughness: .95, metalness: 0})); walk.position.set(0, .08, -5.7); scene.add(walk);
     const names = opt.blocks ?? ['Building2_Large', 'Building1_Small', 'Building3_Big', 'Building4', 'Building3_Small', 'Building2_Large'];
-    let bx = opt.bx ?? -18; for (const [k, n] of names.entries()) { const o = await place('buildings/' + n, {x: bx, z: opt.bz ?? -10.5, h: 8 + (k * 7 % 6), dim: .62});
+    let bx = opt.bx ?? -18; for (const [k, n] of names.entries()) { const o = await place('buildings/' + n, {x: bx, z: opt.bz ?? -10.5, h: 8 + (k * 7 % 6), dim: opt.dim ?? .62});
       const bb = new THREE.Box3().setFromObject(o); const w = bb.max.x - bb.min.x; o.position.x += bx - bb.min.x; bx += w + .4; }
     for (const x of opt.trees ?? []) { const tr = new THREE.Mesh(new THREE.CylinderGeometry(.12, .16, 2.2, 10), mat(0x5a4330, .1, {roughness: 1})); tr.position.set(x, 1.1, -6.6); scene.add(tr);
       const cr = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3, 1), mat(0x4f7a3c, .1, {roughness: 1, metalness: 0})); cr.position.set(x, 2.8, -6.6); scene.add(cr); } };
@@ -1294,6 +1295,83 @@ for (const p of sc.props || []) {
     const sp = new THREE.SpotLight(0xffffff, 80, 12, .38, .5); sp.position.set(0, 6.5, 1.2); sp.target.position.set(0, 1.0, -1.2); scene.add(sp, sp.target);
     const rimL = new THREE.PointLight(accent, 10, 8); rimL.position.set(-2, 2.4, -3); scene.add(rimL);
     const key = new THREE.PointLight(0xdfe6ff, 6, 10); key.position.set(2, 2.5, 2.5); scene.add(key); }
+
+  if (['cabcover', 'cabhome', 'zooxatl'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const {RoundedBoxGeometry} = await import('three/addons/geometries/RoundedBoxGeometry.js');
+  // Cybercab-like two-seat coupé (generic, no logo): fastback body, full-width light bars, aero wheels, butterfly doors; no steering wheel, no pedals
+  const cybercab = (x, z, ry, opt = {}) => { const g = new THREE.Group(), L = 4.2, W = 1.9;
+    const paint = mat(opt.paint ?? 0xe2d2ae, .1, {roughness: .28, metalness: .45}), glass = mat(0x0b0f22, .1, {roughness: .05, metalness: .7}), blk = mat(0x111320, .1, {roughness: .6});
+    const prof = new THREE.Shape(); prof.moveTo(-L / 2, .32); prof.lineTo(L / 2 - .15, .32); prof.quadraticCurveTo(L / 2 + .05, .34, L / 2, .62); prof.quadraticCurveTo(L / 2 - .2, .82, L / 2 - .9, .92);
+    prof.lineTo(-L / 2 + .3, .95); prof.quadraticCurveTo(-L / 2, .9, -L / 2, .7); prof.lineTo(-L / 2, .32);
+    const bodyG = new THREE.ExtrudeGeometry(prof, {depth: W - .2, bevelEnabled: true, bevelThickness: .1, bevelSize: .08, bevelSegments: 5, curveSegments: 18}); bodyG.translate(0, 0, -(W - .2) / 2);
+    g.add(new THREE.Mesh(bodyG, paint));
+    const top = new THREE.Shape(); top.moveTo(L / 2 - .95, .9); top.quadraticCurveTo(L / 2 - 1.7, 1.38, -L / 2 + 1.5, 1.38); top.quadraticCurveTo(-L / 2 + .55, 1.3, -L / 2 + .3, .93); top.lineTo(L / 2 - .95, .9);
+    const topG = new THREE.ExtrudeGeometry(top, {depth: W - .5, bevelEnabled: true, bevelThickness: .08, bevelSize: .06, bevelSegments: 4, curveSegments: 18}); topG.translate(0, 0, -(W - .5) / 2);
+    const cabin = new THREE.Mesh(topG, opt.open ? new THREE.MeshPhysicalMaterial({color: 0x1a2040, roughness: .05, metalness: .2, transparent: true, opacity: .45}) : glass); g.add(cabin);
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(1.5, .03, W - .7), paint); roof.position.set(-.25, 1.45, 0); g.add(roof);
+    for (const ex of [L / 2 + .07, -L / 2 - .07]) { const bar = new THREE.Mesh(new THREE.BoxGeometry(.03, .05, W - .25), new THREE.MeshBasicMaterial({color: ex > 0 ? 0xf4f6ff : 0xff2e3d})); bar.position.set(ex - (ex > 0 ? .02 : 0), ex > 0 ? .64 : .76, 0); g.add(bar); }
+    for (const [wx, wz] of [[1.3, 1], [-1.35, 1], [1.3, -1], [-1.35, -1]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(.36, .36, .26, 32), blk); wh.rotation.x = Math.PI / 2; wh.position.set(wx, .36, wz * (W / 2 - .02)); g.add(wh);
+      const cap = new THREE.Mesh(new THREE.CylinderGeometry(.29, .29, .02, 32), mat(0xd9dce6, .1, {roughness: .2, metalness: .9})); cap.rotation.x = Math.PI / 2; cap.position.set(wx, .36, wz * (W / 2 + .12)); g.add(cap); }
+    if (opt.open) { // see-through cabin: two seats, a dash screen, no wheel
+      const seatM = mat(0xe8e2d6, .1, {roughness: .8, metalness: 0});
+      for (const sz of [-.42, .42]) { const base = new THREE.Mesh(new RoundedBoxGeometry(.55, .18, .5, 3, .06), seatM); base.position.set(-.2, .62, sz); g.add(base);
+        const back = new THREE.Mesh(new RoundedBoxGeometry(.14, .6, .5, 3, .06), seatM); back.position.set(-.52, .95, sz); back.rotation.z = .18; g.add(back); }
+      const dash = new THREE.Mesh(new THREE.BoxGeometry(.5, .14, W - .5), blk); dash.position.set(.85, .82, 0); g.add(dash);
+      const scr = new THREE.Mesh(new THREE.PlaneGeometry(.75, .4), new THREE.MeshBasicMaterial({map: screenTex((c, w, h) => { c.fillStyle = '#0d1430'; c.fillRect(0, 0, w, h); c.fillStyle = '#2ee6ff'; c.fillRect(30, 40, w * .5, 18); c.fillStyle = '#9aa6d8'; for (let k = 0; k < 4; k++) c.fillRect(30, 90 + k * 40, w * (.7 - k * .1), 12);
+        c.strokeStyle = '#ff5fd2'; c.lineWidth = 8; c.beginPath(); c.arc(w * .8, h * .55, 50, 0, 6.3); c.stroke(); }, 512, 280)})); scr.position.set(.62, 1.0, 0); scr.rotation.y = -Math.PI / 2; scr.rotation.x = 0; g.add(scr); }
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; };
+  // Zoox-like carriage robotaxi (generic, no logo): symmetric box, glass band, sensor pods on 4 roof corners, light bars on both ends, two facing benches
+  const carriage = (x, z, ry, opt = {}) => { const g = new THREE.Group(), L = 3.6, W = 1.9, H = 1.95;
+    const lower = mat(0x1c1f2e, .1, {roughness: .4, metalness: .4}), upper = mat(0xe9ecf3, .1, {roughness: .3, metalness: .3}), gl = new THREE.MeshPhysicalMaterial({color: 0x1a2240, roughness: .05, metalness: .3, transparent: true, opacity: .55});
+    const b1 = new THREE.Mesh(new RoundedBoxGeometry(L, .8, W, 5, .22), lower); b1.position.y = .62; g.add(b1);
+    const b2 = new THREE.Mesh(new RoundedBoxGeometry(L - .06, .75, W - .06, 5, .2), gl); b2.position.y = 1.36; g.add(b2);
+    const b3 = new THREE.Mesh(new RoundedBoxGeometry(L, .28, W, 5, .12), upper); b3.position.y = 1.82; g.add(b3);
+    for (const s of [-1, 1]) { const st = new THREE.Mesh(new THREE.BoxGeometry(L - .5, .05, .02), mat(accent, .1)); st.position.set(0, .98, s * (W / 2 + .005)); g.add(st); }
+    for (const [cx, cz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) { const pod = new THREE.Mesh(new THREE.CylinderGeometry(.14, .16, .24, 20), lower); pod.position.set(cx * (L / 2 - .18), 2.05, cz * (W / 2 - .18)); g.add(pod);
+      const dome = new THREE.Mesh(new THREE.SphereGeometry(.12, 20, 10, 0, 6.3, 0, 1.6), mat(0x0b0d18, .1, {roughness: .05, metalness: .8})); dome.position.set(cx * (L / 2 - .18), 2.17, cz * (W / 2 - .18)); g.add(dome); }
+    for (const ex of [1, -1]) { const bar = new THREE.Mesh(new THREE.BoxGeometry(.02, .06, W - .5), new THREE.MeshBasicMaterial({color: opt.dir === -ex ? 0xff2e3d : 0xf4f6ff})); bar.position.set(ex * (L / 2 + .01), .78, 0); g.add(bar); }
+    for (const [wx, wz] of [[1.15, 1], [-1.15, 1], [1.15, -1], [-1.15, -1]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(.36, .36, .24, 28), mat(0x0c0e18, .1, {roughness: .8})); wh.rotation.x = Math.PI / 2; wh.position.set(wx, .36, wz * (W / 2 - .1)); g.add(wh); }
+    const seatM = mat(0x3a4170, .1, {roughness: .8, metalness: 0});
+    for (const sx of [-1, 1]) { const bench = new THREE.Mesh(new RoundedBoxGeometry(.55, .3, W - .4, 3, .08), seatM); bench.position.set(sx * 1.05, 1.08, 0); g.add(bench);
+      const back = new THREE.Mesh(new RoundedBoxGeometry(.14, .7, W - .4, 3, .06), seatM); back.position.set(sx * 1.4, 1.45, 0); g.add(back); }
+    if (opt.open) { for (const k of [-1, 1]) { const door = new THREE.Mesh(new RoundedBoxGeometry(.85, 1.45, .06, 3, .03), gl); door.position.set(k * 1.05, 1.15, W / 2 + .06); g.add(door); }
+      const gap = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.4, .02), mat(0x0b0d18, .1)); gap.position.set(0, 1.15, W / 2 - .02); g.add(gap);
+      const inner = new THREE.PointLight(0xffe6c0, 4, 3); inner.position.set(0, 1.5, 0); g.add(inner); }
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; };
+  const streetSign = (x, z, text, sub, ry = 0) => { const pole = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 3.2, 10), mat(0x8a90a0, .1, {metalness: .7, roughness: .4})); pole.position.set(x, 1.6, z); scene.add(pole);
+    const tex = screenTex((c, w, h) => { c.fillStyle = '#0d6b3a'; c.fillRect(0, 0, w, h); c.strokeStyle = '#fff'; c.lineWidth = 8; c.strokeRect(10, 10, w - 20, h - 20); c.fillStyle = '#fff'; c.textAlign = 'center';
+      c.font = 'bold 92px Rubik'; c.fillText(text, w / 2, sub ? 112 : 150); if (sub) { c.font = 'bold 54px Rubik'; c.fillText(sub, w / 2, 200); } }, 768, 240);
+    const sg = new THREE.Mesh(new THREE.PlaneGeometry(1.9, .6), new THREE.MeshStandardMaterial({map: tex, roughness: .6, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: .25, side: 2})); sg.position.set(x, 3.05, z); sg.rotation.y = ry; scene.add(sg); };
+
+  if (p === 'cabhome') { // personal Cybercab parked in a home driveway at dusk, butterfly doors open: two seats, a screen, no wheel; owner checks the app on a phone
+    daySky(); dl.intensity = 1.6;
+    const lawn = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), mat(0x4a6a3a, .1, {roughness: 1, metalness: 0})); lawn.rotation.x = -Math.PI / 2; lawn.position.y = -.01; scene.add(lawn);
+    const drive = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 14), mat(0x8d8a84, .1, {roughness: .95, metalness: 0})); drive.rotation.x = -Math.PI / 2; drive.position.set(2.6, .005, 1); scene.add(drive);
+    await place('home2056/garage', {x: 2.6, z: -6.4, h: 3.0, dim: .3});
+    await place('outdoor/2Story_Balcony', {x: -8.5, z: -8, h: 7, dim: .7}); await place('outdoor/2Story_Balcony', {x: 8.8, z: -8.5, ry: .2, h: 7, dim: .7});
+    for (const [bx, bz] of [[-3.8, -2.4], [3.9, -2.2], [-4.2, 2], [4.4, 2.4]]) await place('outdoor/Bush_1', {x: bx, z: bz, h: .9, dim: .75});
+    await place('outdoor/CommonTree_1', {x: -6.2, z: -3.5, h: 5.5, dim: .7});
+    cybercab(1.4, -1.4, -.12, {open: true});
+    await place('people/character-female-c', {x: 4.0, y: 0, z: -3.6, ry: -1.4, h: 1.65, dim: .9, anim: 'idle', t: .2});
+    const gl1 = new THREE.PointLight(0xffd9a0, 6, 6); gl1.position.set(2.6, 2.4, -2.4); scene.add(gl1);
+    const key = new THREE.PointLight(0xffffff, 14, 14); key.position.set(3, 5, 6); scene.add(key); }
+
+  if (p === 'zooxatl') { // Atlanta street with real facades: a carriage robotaxi at the curb, doors open, a rider stepping in; green street sign "Atlantic Station"
+    await dayStreet({blocks: ['Building3_Big', 'Building2_Large', 'Building4', 'Building1_Small', 'Building3_Small', 'Building2_Large'], bx: -26, bz: -24, trees: [-9, 8.5], dim: .26});
+    carriage(.5, -1.95, .0, {open: true});
+    await place('people/character-male-b', {x: 1.1, y: .16, z: -4.3, ry: 2.9, h: 1.75, dim: .9, anim: 'walk', t: .4});
+    await place('people/character-female-a', {x: -2.4, y: .16, z: -5.0, ry: 1.2, h: 1.65, dim: .9, anim: 'idle', t: .1});
+    streetSign(4.4, -4.6, 'Atlantic Station', 'ATLANTA', -.35);
+    await place('street/TrafficLight', {x: -4.6, z: -4.4, h: 4.2, dim: .8});
+    for (const x of [-12, 10]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
+    const key = new THREE.PointLight(0xffffff, 10, 14); key.position.set(3, 5, 6); scene.add(key); }
+
+  if (p === 'cabcover') { // cover: dusk boulevard — the two-seat coupé (left lane) and the carriage pod (right) pass each other; nobody at a wheel
+    await dayStreet({blocks: ['Building2_Large', 'Building4', 'Building3_Big', 'Building1_Small', 'Building3_Small', 'Building4'], bx: -24, bz: -17, trees: [-10, 10], dim: .4});
+    cybercab(-1.3, 1.9, .1);
+    carriage(2.3, -1.9, Math.PI + .1, {dir: 1});
+    for (const x of [-12, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
+    const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(0, 5, 7); scene.add(key); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
