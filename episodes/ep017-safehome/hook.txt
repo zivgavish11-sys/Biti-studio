@@ -1,0 +1,2 @@
+hook title (Ziv 2026-11-15, hook 1): מפחדים מרובוט בבית? — first spoken line: "רובוט בבית שלכם מרגיש כל נגיעה... ועוצר."
+Topic (Ziv): why you don't need to be afraid to bring a robot home — explainer only, no stories. One mechanism: collision detection through the motors (+ built weak/soft on purpose).
