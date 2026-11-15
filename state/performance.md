@@ -78,3 +78,24 @@ Metric IDs for YouTube/Facebook (from getAnalyticsAvailableMetrics): YT subs YTE
 ### Raw observations (no conclusions yet — verdict 15.11)
 - IG views per short so far: 135 → 101 → 25 (falling); long ep006 got 728. TikTok: shorts 433 / 445 / 285 (@31 h) vs longs 225–746.
 - IG avg watch of shorts (3.8–8.3 s) is below the longs' 5.4–11.0 s, though shorts are 2x shorter → % watched is the comparison to make on 15.11.
+
+## Review 2026-11-15 (#4, analytics — short vs long verdict)
+Sources: TikTok via Metricool; IG via Buffer post metrics (Metricool IG reels/followers returned EMPTY this run → no IG avg watch / 3s-hold / followers; retry next run). FB reel numbers from Metricool were ambiguous → not logged. YouTube dropped.
+| Episode | Format / look | IG views (reach) | IG saves/shares | TikTok views | Notes |
+|---|---|---|---|---|---|
+| #7 mars | short classic | 136 (120) | 1/0 | 436 | final |
+| #8 amazon | short classic | 102 (95) | 1/0 | 446 | |
+| #9 captcha | short classic | 118 (107) | 1/0 | 517 | TikTok was 285 @31 h |
+| #10 zipline | short classic (first via Buffer) | 137 (120) | 1/1 | **72** | TikTok outlier; #11–#13 on Buffer were normal → not a Buffer problem |
+| #11 touch | short-deep hero | 114 (106) | 1/0 | 470 | deep science, lower weight |
+| #12 pushback | short hero | **1342 (1031)** | 1/0, 10 likes | **711** | record IG; viral-clip "does the robot kick back?" |
+| #13 vacuumcam | long hero | not in Buffer yet | – | 276 @~26 h | too early |
+| carousels TikTok 11-07..11-14 | – | 1–9 each | – | 428,250,178,107,514,365,294,142 (+149 intro post) | CTA "comment story number" from 13.11: 294, 142 → no uptick; comments/DMs not visible to me |
+
+### Verdict short vs long (IG + TikTok only; ep010 flagged)
+- IG: longs ep001–005 ≈ 119–126, ep006 728; shorts ep007–010 = 102–137 (avg 123). Same ceiling → length is not the IG driver.
+- TikTok: longs avg 505 (246–746); shorts avg 368 (466 without ep010's 72). Longs slightly ahead, within topic noise.
+- Conclusion: length ≈ no effect; the two IG jumps (ep006 728, ep012 1342) were both topic/hook-driven (drone "fight against falling", viral-clip revenge question), not length or look.
+- Hero test so far (ep011–013): ep011 114/470 (≈ baseline), ep012 1342/711 (10x), ep013 pending. One breakout ≠ look effect.
+### Followers
+TikTok 20 (11-07) → 23 (11-10) → 32 (11-14) ≈ +2/day recently. IG unknown (last known 7). FB 1. Goal pace ~11/day.
