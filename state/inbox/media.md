@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-15 [from video] ep016-robotaxi (Ziv): x-ray brake shot — the car turns see-through and only the relevant insides stay solid. Please add generic insides to `vehicles/robotaxi` (or a separate `vehicles/robotaxiInsides` aligned to it, real metres): computer box (under the rear seat / trunk), cable to a front brake unit, 4 brake lines to the wheels, brake disc + caliper per wheel (calipers with a squeeze node), brake pedal in the footwell. Named nodes so I can light a pulse along the path. No brand. Until then I build it from primitives.
 - 2026-11-15 [from video] Ziv: for the whole batch (ep015–ep018) he wants grouper.explains-level quality — Ziv clarified: not more volume — INVEST in each video and bring it to the best level possible (detail, polish, grouper look), no saving on what's needed. Detailed sets, real-looking props, polished FX. Next requests will follow per reel.
 
 ## Handled
