@@ -50,13 +50,14 @@ const dash = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMate
 // ---------- timing ----------
 // reach: frame 0 = at the touch (hook) → freeze on A2 'ולעצור' · back off 3–4 · reach again 9–10 → contact at B10, freeze · slow replay 19–20 · back to frame-0 pose on the outro
 const reach = t => {
-  if (t < A[3]) return RC - .05 * (1 - sm(0, .9, t));
+  if (t < A[2]) return RC - .16 + .16 * sm(0, A[1] + .8, t);             // hook: arm visibly moving toward the hand, touch on 'נוגעים'
+  if (t < A[3]) return RC;
   if (t < A[9]) return RC - (RC - .55) * sm(A[3], A[4] + .3, t);
   if (t < A[19]) return .55 + (RC - .55) * sm(A[9], B[10], t);
   if (t < A[21]) return .8 + (RC - .8) * sm(A[19], B[20] - .2, t);
   return RC - (RC - .62) * sm(A[21], END, t); };
 // child's hand: in from frame 0, away 3–9, in on 9–10, in again for the slow replay
-const kidIn = t => (1 - sm(A[3], A[4], t)) + sm(A[9] + .3, B[10], t) * (1 - sm(A[15], A[15] + .6, t)) + sm(A[19], B[20] - .3, t) * (1 - sm(A[21] + .3, END, t));
+const kidIn = t => (.75 + .25 * sm(0, A[1] + .6, t)) * (1 - sm(A[3], A[4], t)) + sm(A[9] + .3, B[10], t) * (1 - sm(A[15], A[15] + .6, t)) + sm(A[19], B[20] - .3, t) * (1 - sm(A[21] + .3, END, t));
 st.frame(t => {
   const rk = reach(t); poseBot(rk);
   K('shoulderR').rotation.set(KA + .9 * (1 - kidIn(t)), 0, -.1);
@@ -87,12 +88,14 @@ st.frame(t => {
   // ---------- camera: one world, every sentence a move (around the touch point T) ----------
   const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
   const TT = [T.x - .3, T.y - .1, T.z - .3], O0 = [2.7, 1.6, 2.9];               // frame 0 = last frame: robot + child + table
-  const TC = [T.x - .1, T.y, T.z - .2], OC = [.75, .35, .75];                  // forearm close
+  const TC = [T.x - .1, T.y, T.z - .2], OC = [.75, .35, .75];
+  const TH = [T.x, T.y - .05, T.z], OH = [1.2, .5, .1];                         // hook close: child's hand + forearm                  // forearm close
   const TA = [T.x - .35, T.y + .25, T.z - .35], OA = [1.4, .9, 1.0];           // whole arm (x-ray)
   const TG = [T.x - .45, T.y + .45, T.z - .2], OG = [1.6, .7, 1.7];            // arm + graph
   const [cp, ct] = camPath(t, [
-    sh(0, TT, O0, 1.0), sh(A[1] - .1, TT, O0, .8),                                                   // hook: the touch
-    sh(A[1] + .7, TC, OC, 1.4), sh(A[2] + .3, TC, OC, 1.0), sh(A[3] + .3, TC, [.9, .5, .6], 1.15),   // feels it, stops
+    sh(0, TH, [.2, .55, 1.2], .85), sh(B[0] - .2, TH, [.35, .5, 1.15], .72),                                                // hook: behind the child, the robot's hand coming at it
+    sh(A[1] + .8, TH, [1.15, .45, .35], .75), sh(A[2] + .15, TH, [1.15, .45, .35], .8),                                        // the touch → stop
+    sh(A[3] + .15, TT, O0, .9), sh(A[3] + .5, TT, O0, .95),                                         // fast pull-out: the child is fine
     sh(A[4] + .3, TA, OA, 1.15), sh(A[5] + .2, TA, [.6, .8, 1.5], 1.0), sh(A[5] + 1.6, TA, [1.5, .7, .4], 1.0),   // motors along the arm
     sh(A[6] + .4, TG, OG, 1.0), sh(B[7], TG, OG, .9),                                               // brain + graph
     sh(A[8] + .2, TT, O0, .9), sh(A[9] + .5, TT, [2.2, 1.2, 2.6], .8),                              // re-hook: imagine
