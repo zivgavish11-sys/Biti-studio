@@ -9,3 +9,4 @@ episodes/*/*.mp3
 news/*/out-flat/
 episodes/*/*.wav
 episodes/*/sfx.json
+episodes/*/src/
