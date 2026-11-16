@@ -1,7 +1,7 @@
 # ep017-safehome — visual script v1 (hero look, one world, camera flies; X-ray moment = Ziv approved for this topic: show the mechanism)
 World: a warm living room (home2056 / home props), evening. Hero = a generic home humanoid (robots/humanoid, no brand) folding laundry by a coffee table. A child (small mannequin, ~1.15 m) plays on the rug. Indigo world, one accent. Light blue = signal/information (computer, wires), deeper blue #4f6fe0 = force/movement (motors, effort).
-1. 0–2.5 s hook "מפחדים שהרובוט העתידי בבית שלכם יפגע בילדים?" (title: מפחדים שהרובוט בבית | יפגע [בילדים]?) — frame 0 = the arm meets the child's hand; then "אז דעו: גם בלי עור... ולעצור." — the arm stops: high 3/4, humanoid reaching across the table; the child's hand touches its forearm; the arm stops at once. Title on screen from frame 0.
-2. (on "גם בלי עור כמו שלנו"): camera swoops to the forearm close-up; callout "אין עור".
+1. 0–2.5 s hook "מפחדים שהרובוט העתידי בבית שלכם יפגע בילדים?" (title: מפחדים שהרובוט בבית | יפגע [בילדים]?) — frame 0 = the arm meets the child's hand; then "רובוט כזה יכול להרגיש כשנוגעים בו... ולעצור." — the arm stops: high 3/4, humanoid reaching across the table; the child's hand touches its forearm; the arm stops at once. Title on screen from frame 0.
+2. (Ziv 2026-11-16: "בלי עור" line cut — shot 2 merges into shot 1/3, no "אין עור" callout): camera swoops to the forearm close-up; callout "אין עור".
 3. "איך? חלק גדול מהתשובה נמצא במנועים.": X-ray — body goes to a matte indigo ghost; the arm's joint motors (shoulder, elbow, wrist) stay solid.
 4. "כל מפרק... מנוע חשמלי.": camera runs along the arm, each motor lights deeper blue and spins in turn.
 5. "והמחשב יודע כמה כוח... בכל תנועה.": computer in the chest lights light blue, thin wires to each motor; floating screen joined by a dashed line: a calm line "כוח צפוי" with the live effort line on top of it.
