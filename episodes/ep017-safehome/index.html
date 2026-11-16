@@ -2,15 +2,15 @@
 <script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
 // EP017-safehome — LONG + hero look, one world (living room, media kit run 9: robots/humanoidSafe + fx-arm.js). visual.md v1. Explainer, no story (Ziv).
-// Phrases: 0 מרגיש כשנוגעים בו | 1 ועוצר | 2 אבל איך | 3 אין לו עור | 4 במנועים | 5 כל מפרק מנוע | 6-7 המחשב יודע כמה כוח, בכל תנועה
+// Phrases (aligned 2026-11-16): 0 hook מפחדים...יפגע בילדים? | 1 מרגיש כשנוגעים בו | 2 ולעצור | 3 איך | 4 במנועים | 5 כל מפרק מנוע | 6-7 המחשב יודע כמה כוח, בכל תנועה
 //          8 עכשיו תדמיינו | 9 הזרוע זזה | 10 פוגשת יד של ילד | 11 המנוע צריך יותר כוח | 12 המחשב מרגיש את הקפיצה | 13 ועוצר | 14 בשבריר שנייה
 //          15 עוד סוד | 16 קלים | 17 כוח מוגבל | 18 ציפוי רך | 19-20 אם משהו משתבש, הכוח קטן | 21-22 outro card
 import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
 import {xray, motor, signal, brain, cover, stopRing, effortGraph, forceGauge} from '/engine/props/fx-arm.js';
 const st = await studio({
   look: 'hero', episode: 17, fog: .012, outro: 'card',
-  keys: ['נוגעים', 'עור', 'במנועים', 'מנוע', 'כוח', 'ילד', 'הקפיצה', 'ועוצר', 'שנייה', 'סוד', 'קלים', 'מוגבל', 'רך', 'קטן'],
-  hookEnd: 3.4, hook: ['מפחדים שהרובוט בבית', 'יפגע <span class="pill">בילדים</span>?'],
+  keys: ['בילדים', 'נוגעים', 'ולעצור', 'במנועים', 'מנוע', 'כוח', 'ילד', 'הקפיצה', 'ועוצר', 'שנייה', 'סוד', 'קלים', 'מוגבל', 'רך', 'קטן'],
+  hookEnd: 3.1, hook: ['מפחדים שהרובוט', 'בבית יפגע <span class="pill">בילדים</span>?'],
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
@@ -48,15 +48,15 @@ const scr = st.screen([.62, .36], effortGraph(() => G)); scene.add(scr.mesh);
 const gau = st.screen([.42, .3], forceGauge(() => FG, {title: 'כוח במגע'})); scene.add(gau.mesh);
 const dash = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: 0x8ea6ff, dashSize: .05, gapSize: .04})); scene.add(dash);
 // ---------- timing ----------
-// reach: hook reach → touch at A1 (freeze) · back off 2–4 · reach again 9–10 → contact at B10, freeze · slow replay 19–20 · back to frame-0 pose on the outro
+// reach: frame 0 = at the touch (hook) → freeze on A2 'ולעצור' · back off 3–4 · reach again 9–10 → contact at B10, freeze · slow replay 19–20 · back to frame-0 pose on the outro
 const reach = t => {
-  if (t < A[2]) return .62 + (RC - .62) * sm(0, A[1] + .05, t);
-  if (t < A[9]) return RC - (RC - .55) * sm(A[2], A[4], t);
+  if (t < A[3]) return RC - .05 * (1 - sm(0, .9, t));
+  if (t < A[9]) return RC - (RC - .55) * sm(A[3], A[4] + .3, t);
   if (t < A[19]) return .55 + (RC - .55) * sm(A[9], B[10], t);
   if (t < A[21]) return .8 + (RC - .8) * sm(A[19], B[20] - .2, t);
   return RC - (RC - .62) * sm(A[21], END, t); };
-// child's hand: in at the hook, away 2–9, in on 9–10, in again for the slow replay
-const kidIn = t => sm(0, A[1] - .1, t) * (1 - sm(A[2], A[3], t)) + sm(A[9] + .3, B[10], t) * (1 - sm(A[15], A[15] + .6, t)) + sm(A[19], B[20] - .3, t) * (1 - sm(A[21] + .3, END, t));
+// child's hand: in from frame 0, away 3–9, in on 9–10, in again for the slow replay
+const kidIn = t => (1 - sm(A[3], A[4], t)) + sm(A[9] + .3, B[10], t) * (1 - sm(A[15], A[15] + .6, t)) + sm(A[19], B[20] - .3, t) * (1 - sm(A[21] + .3, END, t));
 st.frame(t => {
   const rk = reach(t); poseBot(rk);
   K('shoulderR').rotation.set(KA + .9 * (1 - kidIn(t)), 0, -.1);
@@ -70,7 +70,7 @@ st.frame(t => {
   br.set(sm(A[6], A[6] + .4, t) * (1 - sm(B[7], B[7] + .4, t)) + sm(A[12], A[12] + .3, t) * (1 - sm(A[14], A[14] + .5, t)));
   sgS.set(sm(A[6] + .2, A[6] + .9, t)); sgW.set(sm(A[6] + .5, A[6] + 1.2, t));
   if (t < A[12]) sgE.set(sm(A[6] + .35, A[6] + 1.05, t)); else sgE.set(sm(A[12], A[12] + .7, t), 'back');   // 12: the jump travels motor → brain
-  ring.set(sm(A[13], A[13] + .35, t) * (1 - sm(A[15], A[15] + .4, t)));
+  ring.set(Math.max(sm(A[2] - .1, A[2] + .25, t) * (1 - sm(A[3] + .3, A[4], t)), sm(A[13], A[13] + .35, t) * (1 - sm(A[15], A[15] + .4, t))));
   // 15–18: soft cover
   cv.set(sm(A[15] + .3, A[16] + .8, t));
   // dim the room a bit on the re-hook (8), back on the secret (15)
@@ -91,8 +91,8 @@ st.frame(t => {
   const TA = [T.x - .35, T.y + .25, T.z - .35], OA = [1.4, .9, 1.0];           // whole arm (x-ray)
   const TG = [T.x - .45, T.y + .45, T.z - .2], OG = [1.6, .7, 1.7];            // arm + graph
   const [cp, ct] = camPath(t, [
-    sh(0, TT, O0, 1.0), sh(A[1] - .1, TT, O0, .85),
-    sh(A[2] + .2, TC, OC, 1.4), sh(A[3] + .6, TC, OC, 1.0),                                        // no skin
+    sh(0, TT, O0, 1.0), sh(A[1] - .1, TT, O0, .8),                                                   // hook: the touch
+    sh(A[1] + .7, TC, OC, 1.4), sh(A[2] + .3, TC, OC, 1.0), sh(A[3] + .3, TC, [.9, .5, .6], 1.15),   // feels it, stops
     sh(A[4] + .3, TA, OA, 1.15), sh(A[5] + .2, TA, [.6, .8, 1.5], 1.0), sh(A[5] + 1.6, TA, [1.5, .7, .4], 1.0),   // motors along the arm
     sh(A[6] + .4, TG, OG, 1.0), sh(B[7], TG, OG, .9),                                               // brain + graph
     sh(A[8] + .2, TT, O0, .9), sh(A[9] + .5, TT, [2.2, 1.2, 2.6], .8),                              // re-hook: imagine
@@ -104,7 +104,7 @@ st.frame(t => {
   scr.mesh.lookAt(cp); gau.mesh.lookAt(cp);
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
-    L(A[3], A[4], 'אין עור', T, 150, -300);
+    L(A[2] - .1, A[3] + .4, 'עוצר', J('elbowR').getWorldPosition(V3()), 170, -300);
     L(A[5] + .1, A[6], 'מנוע', J('elbowR').getWorldPosition(V3()), -160, -280);
     L(A[6] + .2, A[8], 'מחשב', J('brainLed2') ? J('brainLed2').getWorldPosition(V3()) : J('torso').getWorldPosition(V3()), -180, -360);
     L(A[13], A[15], 'עוצר', J('elbowR').getWorldPosition(V3()), 170, -300);
