@@ -3,3 +3,4 @@ Hook (Ziv pick 1): on screen 'הרובוט הזה תקף | את [המפעילי�
 Ziv wants: attention-grabbing "it attacked" opener, then the real reason (balance loop with feet in the air).
 STATUS 2026-11-17 ~01:30 (Ziv's time): script + caption fact-checked and final; Ziv's recording in raw-voice.mp3 (aligned, timeline.json). Source clip = Ziv's screen recording, NOT in git (third-party video, public repo) — if lost, ask Ziv to resend it; frames: ffmpeg -i clip.mov -vf fps=30,scale=876:-2 -q:v 3 src/f/%03d.jpg
 Ziv (going to sleep): remove the 'סרטון אמיתי' label, push the visuals higher with strong visual explanations. Video agent rebuilding v2 tonight. Next: send Ziv light+full + caption -> his OK -> Buffer 18.11 18:00 Israel (date not yet confirmed).
+SCHEDULED 2026-11-17: 18.11 18:00 Israel on IG+FB+TikTok (Buffer), before Ziv's OK at his request. Waiting for his feedback; change via Buffer edit_post if he asks.

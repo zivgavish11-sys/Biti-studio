@@ -1,5 +1,5 @@
 {
-  "next_episode": 18,
+  "next_episode": 19,
   "episodes": [
     {
       "n": 1,
@@ -201,6 +201,17 @@
       "look": "hero-v2",
       "posted": "scheduled 2026-11-17T18:00+02:00 via Buffer by video (IG 6afb16a36e7c17c8df0afea4, FB 6afb16a410e4aa34391b6882, TikTok 6afb16a53b039ec10331252b). Media on branch media-ep017-safehome (delete after all sent).",
       "notes": "37.0 s. Hook (Ziv's own): מפחדים שהרובוט העתידי בבית שלכם יפגע בילדים? — frame 0 v2 = close behind the child, robot hand coming in (Ziv: v1 start was boring). X-ray arm: motors, wires, chest computer, effort graph, touch ripple (replaced 3D stop hoop, Ziv), soft cover, force gauge. Explainer only. Question: הייתם משאירים ילד לבד בחדר עם רובוט? כן / לא"
+    },
+    {
+      "n": 18,
+      "slug": "ep018-flail",
+      "title": "הרובוט הזה תקף את המפעילים שלו?",
+      "domain": "בינה מלאכותית ברובוטים",
+      "date": "2026-11-17",
+      "format": "long",
+      "look": "hero-v2",
+      "posted": "scheduled 2026-11-18T18:00+02:00 via Buffer by video, BEFORE Ziv viewed the final (his explicit request: schedule so it is not lost, he may change it) (IG 6afb46bad3924e687ee6e0fe, FB 6afb46bbd2971d5b1dc3c3ee, TikTok 6afb46bc3393e02ff10594cc). Media on branch media-ep018-flail (delete after all sent).",
+      "notes": "37.0 s. Batch viral-clip exception: 3.3 s of the real July 2025 clip (Ziv's screen recording, credit X: @cixliv, not in git) on a floating screen → our humanoid replica on a hoist; balance demo with chest x-ray IMU + signals, floor force rings, 'no floor' pads, correction pulses, swing trail, loop arrows. Hook (Ziv pick): הרובוט הזה תקף את המפעילים שלו?! First 3.4 s darkened slightly (QA glare on the bright clip). Question: אתם הייתם עומדים ליד רובוט כזה? כן / לא"
     }
   ],
   "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
