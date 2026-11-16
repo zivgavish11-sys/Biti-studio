@@ -10,7 +10,7 @@ import {xray, motor, signal, brain, cover, stopRing, effortGraph, forceGauge} fr
 const st = await studio({
   look: 'hero', episode: 17, fog: .012, outro: 'card',
   keys: ['נוגעים', 'עור', 'במנועים', 'מנוע', 'כוח', 'ילד', 'הקפיצה', 'ועוצר', 'שנייה', 'סוד', 'קלים', 'מוגבל', 'רך', 'קטן'],
-  hookEnd: 3.4, hook: ['מפחדים מרובוט', '<span class="pill">בבית</span>?'],
+  hookEnd: 3.4, hook: ['מפחדים שהרובוט בבית', 'יפגע <span class="pill">בילדים</span>?'],
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
