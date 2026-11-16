@@ -1,0 +1,137 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP018-flail — LONG + hero look, one world (lab corner). Viral-clip question (batch exception, Ziv 2026-11-16): the REAL clip (Ziv's screen recording, src/f/*.jpg, NOT in git)
+// plays on a floating screen at frame 0, the camera pulls back to our replica hanging on a hoist, then explains the balance loop. Never name the robot model (factcheck).
+// Phrases: 0 תקף את המפעילים?! | 1 ככה זה נראה | 2 האמת שונה | 3 לא עומד סתם | 4 מאזן את עצמו | 5 מרגיש לאן נוטה | 6 מזיז ידיים ורגליים
+//          7 תדמיינו | 8 תלוי באוויר | 9 הרגליים לא נוגעות | 10 רגיל להרגיש רצפה | 11 והיא לא שם | 12 מתקן | 13 ועוד תיקון | 14 מנדנד עוד יותר
+//          15 לפי מי שהפעיל | 16 הסיבה... כל הגוף | 17 כשהרגליים לא נגעו | 18 לא כעס | 19 זו לולאה | 20-21 outro card
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+const st = await studio({
+  look: 'hero', episode: 18, fog: .012, outro: 'card',
+  keys: ['תקף', 'שונה', 'מאזן', 'נוטה', 'תלוי', 'רצפה', 'מתקן', 'מנדנד', 'הגוף', 'כעס', 'לולאה'],
+  hookEnd: 2.0, hook: ['הרובוט הזה תקף', 'את <span class="pill">המפעילים</span> שלו?!'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+st.stage({r: 60, grid: 0, spot: [0, 6, 3], target: [0, .8, 0]});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+await P('buildings/labRoom', {x: 0, z: -.4});
+await P('lab/workbench', {x: -2.4, z: -2.2});
+const MAT = c => new THREE.MeshStandardMaterial({color: c, roughness: .6, metalness: .1});
+const ACC = 0x8ea6ff, DEEP = 0x4f6fe0;
+
+// ---------- the real clip on a floating screen (frames from Ziv's screen recording) ----------
+const NF = 98, imgs = await Promise.all([...Array(NF)].map((_, i) => new Promise(r => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = `src/f/${String(i + 1).padStart(3, '0')}.jpg`; })));
+let clipT = 0;
+const SW = 1.6, SH = SW * 886 / 1168;
+const scr = st.screen([SW, SH], (c, t, W, H) => {
+  const im = imgs[Math.min(NF - 1, Math.max(0, Math.floor(clipT * 30)))]; c.fillStyle = '#0c0e28'; c.fillRect(0, 0, W, H);
+  if (im) c.drawImage(im, 0, 0, W, H);
+  c.font = `700 ${H * .042}px Rubik`; const tw = c.measureText('סרטון אמיתי').width + H * .06;
+  c.fillStyle = 'rgba(12,14,40,.85)'; c.beginPath(); c.roundRect(W - tw - H * .04, H * .87, tw, H * .07, H * .02); c.fill();
+  c.fillStyle = '#fff'; c.fillText('סרטון אמיתי', W - H * .07, H * .92);
+  c.direction = 'ltr'; c.textAlign = 'left'; c.font = `600 ${H * .04}px Rubik`; c.fillStyle = 'rgba(12,14,40,.75)'; c.fillRect(H * .03, H * .9, H * .42, H * .07);
+  c.fillStyle = '#fff'; c.fillText('X: @cixliv', H * .05, H * .95);
+}, {px: 1168, light: .9});
+scr.mesh.position.set(-1.9, 1.45, .7); scr.mesh.rotation.y = .28; scene.add(scr.mesh);
+const frameM = new THREE.Mesh(new THREE.BoxGeometry(SW + .06, SH + .06, .03), MAT(0x23264f)); frameM.position.copy(scr.mesh.position); frameM.rotation.copy(scr.mesh.rotation); frameM.translateZ(-.025); scene.add(frameM);
+
+// ---------- hoist (engine-crane style) + hanging robot ----------
+const HX = .15, HZ = 0, HOOK = new THREE.Vector3(HX, 2.62, HZ);
+const crane = new THREE.Group(); scene.add(crane);
+const tube = (a, b, r, col = 0x3a3f7a) => { const d = b.clone().sub(a), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), 16), MAT(col));
+  m.position.copy(a).add(b).multiplyScalar(.5); m.quaternion.setFromUnitVectors(V(0, 1, 0), d.normalize()); m.castShadow = true; crane.add(m); return m; };
+const MZ = HZ - 1.15;
+tube(V(HX - .55, .06, MZ), V(HX - .55, .06, HZ + .3), .045); tube(V(HX + .55, .06, MZ), V(HX + .55, .06, HZ + .3), .045); tube(V(HX - .6, .06, MZ), V(HX + .6, .06, MZ), .05);
+tube(V(HX, .06, MZ), V(HX, 2.75, MZ), .06); tube(V(HX, 2.72, MZ), V(HX, HOOK.y + .05, HZ), .055); tube(V(HX, 1.2, MZ), V(HX, 2.25, MZ + .55), .03, 0x2c3066);
+for (const x of [-.55, .55]) for (const z of [MZ, HZ + .25]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .05, 16), MAT(0x15173a)); w.rotation.z = Math.PI / 2; w.position.set(HX + x, .06, z); crane.add(w); }
+const pivot = new THREE.Group(); pivot.position.copy(HOOK); scene.add(pivot);
+const chain = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1, 8), MAT(0xb8bde8)); chain.position.y = -.18; chain.scale.y = .36; pivot.add(chain);
+const bot = await P('robots/humanoid', {x: 0, z: 0});
+const bb = new THREE.Box3().setFromObject(bot), botH = bb.max.y - bb.min.y;
+const hang = new THREE.Group(); pivot.add(hang); hang.add(bot); bot.position.set(0, -.36 - botH, 0); bot.rotation.y = .5;   // feet ≈ .2 m above the floor
+const J = n => bot.getObjectByName(n);
+// a second robot standing on the floor = "how a humanoid balances"
+const bot2 = await P('robots/humanoid', {x: 2.1, z: -.6, ry: -.5});
+const J2 = n => bot2.getObjectByName(n);
+// foot contact pads (light blue = signal: "expects floor") under the hanging robot's feet
+const pads = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.RingGeometry(.09, .12, 40), new THREE.MeshStandardMaterial({color: ACC, roughness: .5, transparent: true, side: THREE.DoubleSide})); m.rotation.x = -Math.PI / 2; scene.add(m); return m; });
+const dashes = [0, 1].map(() => { const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: ACC, dashSize: .04, gapSize: .03, transparent: true})); scene.add(l); return l; });
+// tilt screen next to the standing robot
+let TILT = {a: 0, k: 0};
+const tsc = st.screen([.62, .42], (c, t, W, H) => {
+  c.fillStyle = '#14163a'; c.fillRect(0, 0, W, H); c.fillStyle = '#fff'; c.font = `700 ${H * .13}px Rubik`; c.fillText('שיווי משקל', W * .93, H * .2);
+  const cx = W / 2, cy = H * .62, L = W * .36; c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 3; c.setLineDash([8, 8]); c.beginPath(); c.moveTo(cx - L, cy); c.lineTo(cx + L, cy); c.stroke(); c.setLineDash([]);
+  c.strokeStyle = '#8ea6ff'; c.lineWidth = 9; c.lineCap = 'round'; c.beginPath(); c.moveTo(cx - L * Math.cos(TILT.a), cy - L * Math.sin(TILT.a)); c.lineTo(cx + L * Math.cos(TILT.a), cy + L * Math.sin(TILT.a)); c.stroke();
+  c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(cx, cy, 10, 0, 7); c.fill();
+});
+scene.add(tsc.mesh);
+const dash2 = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: ACC, dashSize: .05, gapSize: .04})); scene.add(dash2);
+
+// ---------- timing ----------
+const C2 = A[15] - .1, C3 = A[20] - .2;                 // clip replays: on the operator line, and on the outro (loop echo)
+// flail amplitude: wild in the hook, calm 2–11, corrections 12–14 grow, loop 18–19, calm on the outro
+const amp = t => Math.max(1 - sm(B[1], A[2] + .4, t), .35 * sm(A[12], A[12] + .3, t) + .3 * sm(A[13], A[13] + .3, t) + .35 * sm(A[14], A[14] + .5, t)) * (1 - .45 * sm(A[18], A[19], t)) * (1 - sm(A[20], A[20] + .8, t)) + .9 * sm(END - 1.4, END - .6, t);
+const N = (t, f, p) => Math.sin(t * f + p) * .6 + Math.sin(t * f * 1.73 + p * 2.1) * .4;   // jerky-ish
+st.frame(t => {
+  // clip playback on the screen
+  clipT = t < C2 ? t : t < C3 ? t - C2 : t - C3; scr.update(t);
+  // hanging robot
+  const a = amp(t);
+  J('shoulderL').rotation.set(-.2 + 1.3 * a * N(t, 9, 0), 0, .2 + .5 * a * Math.abs(N(t, 7, 1)));
+  J('shoulderR').rotation.set(-.2 + 1.3 * a * N(t, 8.4, 2), 0, -.2 - .5 * a * Math.abs(N(t, 7.6, 3)));
+  J('elbowL').rotation.x = -.3 - .9 * a * Math.abs(N(t, 11, .5)); J('elbowR').rotation.x = -.3 - .9 * a * Math.abs(N(t, 10.2, 1.7));
+  J('hipL').rotation.x = -.1 + .9 * a * N(t, 8.1, 4); J('hipR').rotation.x = -.1 + .9 * a * N(t, 7.3, 5);
+  J('kneeL').rotation.x = .15 + .9 * a * Math.abs(N(t, 9.3, 6)); J('kneeR').rotation.x = .15 + .9 * a * Math.abs(N(t, 8.8, 7));
+  J('torso').rotation.y = .5 * a * N(t, 5, 8); J('head').rotation.x = .1 + .3 * a * N(t, 6, 9);
+  const sw = a * .2 * (1 + .6 * sm(A[14], B[14], t));
+  pivot.rotation.z = sw * Math.sin(t * 3.3); pivot.rotation.x = sw * .7 * Math.sin(t * 2.7 + 1);
+  // foot pads: on 9–11 (feet don't touch), pulse "expects floor"
+  const pk = win(t, A[9] - .1, A[12], .3); bot.updateMatrixWorld(true);
+  ['ankleL', 'ankleR'].forEach((n, i) => { const f = J(n).getWorldPosition(V(0, 0, 0)); pads[i].position.set(f.x, .012, f.z); pads[i].visible = pk > .01;
+    pads[i].material.opacity = pk * (.55 + .45 * Math.sin(t * 7)); pads[i].scale.setScalar(.9 + .25 * pk);
+    dashes[i].visible = pk > .01; dashes[i].material.opacity = pk; dashes[i].geometry.setFromPoints([f, V(f.x, .015, f.z)]); dashes[i].computeLineDistances(); });
+  // standing robot: idle micro-balance, lean on 5, arms + leg correct on 6
+  const lean = .3 * sm(A[5], A[5] + .5, t) * (1 - sm(A[6] + .1, B[6], t)), fix = sm(A[6], A[6] + .5, t) * (1 - sm(B[6], B[6] + .8, t));
+  J2('torso').rotation.z = lean + .02 * Math.sin(t * 2); J2('ankleL').rotation.z = J2('ankleR').rotation.z = -.4 * lean;
+  J2('shoulderL').rotation.set(-.1, 0, .15 + .9 * fix); J2('shoulderR').rotation.set(-.1, 0, -.15 - .5 * fix); J2('hipR').rotation.z = -.25 * fix; J2('elbowL').rotation.x = -.3;
+  TILT = {a: lean * 2.2 - .02 * Math.sin(t * 2)}; tsc.update(t);
+  const tk = win(t, A[4] + .2, A[7], .3); const ch = J2('torso').getWorldPosition(V(0, 0, 0));
+  tsc.mesh.visible = tk > .01; tsc.mesh.scale.setScalar(Math.max(.01, tk)); tsc.mesh.position.set(ch.x - .75, ch.y + .4, ch.z + .35);
+  dash2.visible = tsc.mesh.visible; if (dash2.visible) { dash2.geometry.setFromPoints([ch, tsc.mesh.position.clone().add(V(0, -.2, 0))]); dash2.computeLineDistances(); }
+  // ---------- camera ----------
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const sp = scr.mesh.position, nrm = V(0, 0, 1).applyQuaternion(scr.mesh.quaternion), act = scr.mesh.localToWorld(V(.42, -.14, 0));
+  const TS = [sp.x, sp.y, sp.z], OS = [nrm.x * 1.75, .02, nrm.z * 1.75], TA = [act.x, act.y, act.z], OA = [nrm.x * 1.45, .02, nrm.z * 1.45];   // TA = the action corner of the clip
+  const TH = [HX, 1.35, 0], OW = [-1.1, .7, 3.4];                         // hoist + robot, wide (with the screen at the side)
+  const TB = [2.1, .95, -.6], OB = [-.6, .3, 3.1];
+  const TF = [HX, .3, .1], OF = [.9, .45, 1.9];
+  const [cp, ct] = camPath(t, [
+    sh(0, TA, OA, 1.0), sh(B[0] - .1, TA, OA, .9),                                                   // hook: the real clip fills the frame
+    sh(A[1] + .5, [-.7, 1.3, .2], [.1, .45, 4.4], 1.0), sh(A[2] + .3, TH, OW, 1.0), sh(B[2], TH, [-.6, .6, 3.2], .95),                    // pull back → our replica on the hoist
+    sh(A[3] + .2, TB, OB, 1.05), sh(A[4] + .3, TB, [.4, .3, 2.9], .95), sh(A[5] + .3, TB, [.9, .4, 2.7], .95), sh(A[6] + .3, TB, [-.3, .35, 2.8], 1.0), sh(B[6], TB, [-.6, .35, 3.0], 1.0), sh(A[7] + .3, [1.1, 1.2, -.3], [-.2, .45, 4.3], 1.0),   // balance demo
+    sh(A[8] + .2, TH, [1.2, .4, 2.6], 1.0), sh(A[9] + .2, TF, OF, 1.15), sh(A[10] + .3, TF, [-.5, .25, 1.5], 1.0), sh(A[11] + .2, TF, OF, .95),           // hanging, feet in the air
+    sh(A[12] + .1, TH, [1.5, .55, 2.4], 1.0), sh(A[13] + .2, TH, [.4, .6, 2.8], 1.0), sh(A[14] + .4, TH, [-1.0, .7, 2.6], 1.1),                          // corrections
+    sh(A[15] + .2, TS, OS, 1.15), sh(A[16] + .4, TS, [.1, .02, 1.6], 1.05), sh(A[17] + .2, TS, OS, 1.1),                                              // the operator's reason, back on the real clip
+    sh(A[18] + .2, TH, OW, .95), sh(A[19] + .3, TH, [.8, .6, 3.0], .95),                                                                               // loop
+    sh(A[20] - .1, TS, OS, 1.1), sh(END - .6, TA, OA, 1.05), sh(END, TA, OA, 1.0)]);
+  scr.mesh.visible = true; tsc.mesh.lookAt(cp);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    L(A[4], A[5] + .2, 'מאזן', J2('head').getWorldPosition(V(0, 0, 0)), 170, -220);
+    L(A[9], A[11] + .6, 'אין רצפה', V(HX, .1, 0), -170, -260);
+    L(A[12], A[13] + .3, 'תיקון', J('elbowL').getWorldPosition(V(0, 0, 0)), -180, -280);
+    L(A[13] + .1, A[14], 'עוד תיקון', J('kneeR').getWorldPosition(V(0, 0, 0)), 170, -300);
+    L(A[14], A[15], 'נדנוד', HOOK, 160, 120);
+    // the loop: two arrows chasing each other around the robot, 'תיקון' ⇄ 'נדנוד' (light blue = signal)
+    const lk = win(t2, A[18] - .1, A[20] - .1, .35);
+    if (lk > .01) { const [x, y, z] = st.proj(V(HX, 1.3, 0)); if (z < 1) { const c = st.ctx, R = 250, r0 = t2 * 2.2; c.save(); c.globalAlpha = lk; c.strokeStyle = '#8ea6ff'; c.fillStyle = '#8ea6ff'; c.lineWidth = 9; c.lineCap = 'round';
+      for (const o of [0, Math.PI]) { const a0 = r0 + o, a1 = a0 + 2.3; c.beginPath(); c.arc(x, y, R, a0, a1); c.stroke();
+        const hx = x + R * Math.cos(a1), hy = y + R * Math.sin(a1), tx = -Math.sin(a1), ty = Math.cos(a1); c.beginPath(); c.moveTo(hx + tx * 30, hy + ty * 30); c.lineTo(hx - ty * 22, hy + tx * 22); c.lineTo(hx + ty * 22, hy - tx * 22); c.fill(); }
+      c.restore();
+      st.callout(Math.max(180, x - 250), Math.max(420, y - R - 80), 'תיקון', x - 120, y - R + 20, lk); st.callout(Math.min(900, x + 250), Math.min(1150, y + R + 60), 'נדנוד', x + 120, y + R - 20, lk); } }
+  }};
+});
+st.ready();
+</script></body></html>
