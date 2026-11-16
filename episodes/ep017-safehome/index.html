@@ -71,7 +71,7 @@ st.frame(t => {
   br.set(sm(A[6], A[6] + .4, t) * (1 - sm(B[7], B[7] + .4, t)) + sm(A[12], A[12] + .3, t) * (1 - sm(A[14], A[14] + .5, t)));
   sgS.set(sm(A[6] + .2, A[6] + .9, t)); sgW.set(sm(A[6] + .5, A[6] + 1.2, t));
   if (t < A[12]) sgE.set(sm(A[6] + .35, A[6] + 1.05, t)); else sgE.set(sm(A[12], A[12] + .7, t), 'back');   // 12: the jump travels motor → brain
-  ring.set(Math.max(sm(A[2] - .1, A[2] + .25, t) * (1 - sm(A[3] + .3, A[4], t)), sm(A[13], A[13] + .35, t) * (1 - sm(A[15], A[15] + .4, t))));
+  ring.set(0);   // Ziv 2026-11-16: the 3D hoop looked off → 2D touch ripple at the contact point instead (overlay)
   // 15–18: soft cover
   cv.set(sm(A[15] + .3, A[16] + .8, t));
   // dim the room a bit on the re-hook (8), back on the secret (15)
@@ -107,6 +107,11 @@ st.frame(t => {
   scr.mesh.lookAt(cp); gau.mesh.lookAt(cp);
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    // touch ripple (light blue = signal): two thin rings spread from the contact point, once per touch / stop
+    const rip = t0 => { const d = t2 - t0; if (d < 0 || d > 1.1) return; const [x, y, z] = st.proj(T); if (z > 1) return; const c = st.ctx; c.save();
+      for (const o of [0, .28]) { const p = (d - o) / .8; if (p < 0 || p > 1) continue; c.globalAlpha = (1 - p) * .95; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6 - 3 * p; c.beginPath(); c.arc(x, y, 18 + 150 * (1 - (1 - p) * (1 - p)), 0, Math.PI * 2); c.stroke(); }
+      c.globalAlpha = 1 - Math.max(0, (d - .7) / .4); c.fillStyle = '#fff'; c.beginPath(); c.arc(x, y, 9, 0, Math.PI * 2); c.fill(); c.restore(); };
+    rip(A[1] + .75); rip(A[2]); rip(B[10] - .15); rip(A[13]);
     L(A[2] - .1, A[3] + .4, 'עוצר', J('elbowR').getWorldPosition(V3()), 170, -300);
     L(A[5] + .1, A[6], 'מנוע', J('elbowR').getWorldPosition(V3()), -160, -280);
     L(A[6] + .2, A[8], 'מחשב', J('brainLed2') ? J('brainLed2').getWorldPosition(V3()) : J('torso').getWorldPosition(V3()), -180, -360);
