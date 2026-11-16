@@ -28,9 +28,6 @@ const SW = 1.6, SH = SW * 886 / 1168;
 const scr = st.screen([SW, SH], (c, t, W, H) => {
   const im = imgs[Math.min(NF - 1, Math.max(0, Math.floor(clipT * 30)))]; c.fillStyle = '#0c0e28'; c.fillRect(0, 0, W, H);
   if (im) c.drawImage(im, 0, 0, W, H);
-  c.font = `700 ${H * .042}px Rubik`; const tw = c.measureText('סרטון אמיתי').width + H * .06;
-  c.fillStyle = 'rgba(12,14,40,.85)'; c.beginPath(); c.roundRect(W - tw - H * .04, H * .87, tw, H * .07, H * .02); c.fill();
-  c.fillStyle = '#fff'; c.fillText('סרטון אמיתי', W - H * .07, H * .92);
   c.direction = 'ltr'; c.textAlign = 'left'; c.font = `600 ${H * .04}px Rubik`; c.fillStyle = 'rgba(12,14,40,.75)'; c.fillRect(H * .03, H * .9, H * .42, H * .07);
   c.fillStyle = '#fff'; c.fillText('X: @cixliv', H * .05, H * .95);
 }, {px: 1168, light: .9});
@@ -55,6 +52,22 @@ const J = n => bot.getObjectByName(n);
 // a second robot standing on the floor = "how a humanoid balances"
 const bot2 = await P('robots/humanoid', {x: 2.1, z: -.6, ry: -.5});
 const J2 = n => bot2.getObjectByName(n);
+// x-ray chest (IMU + computer, light blue = signal) + signal lines chest → hands/feet with a travelling dot
+const xrayBot = (b) => { const sh = ['torsoShell', 'chestPlate', 'pelvisShell'].map(n => b.getObjectByName(n)).filter(Boolean), ms = [];
+  for (const o of sh) o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } });
+  const comp = b.getObjectByName('computer'); if (comp) comp.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.userData.c0 = m.material.color.clone(); ms.push(m); } });
+  const lines = ['handL', 'handR', 'footL', 'footR'].map(n => { const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({color: ACC, transparent: true})); scene.add(l);
+    const d = new THREE.Mesh(new THREE.SphereGeometry(.028, 16, 12), new THREE.MeshStandardMaterial({color: 0xffffff, emissive: ACC, emissiveIntensity: .6, roughness: .4})); scene.add(d); return {n, l, d}; });
+  return { set(k, sig, ph) { for (const m of ms) { if (m.userData.c0) { m.material.color.copy(m.userData.c0).lerp(new THREE.Color(ACC), k); } else { m.material.opacity = 1 - .82 * k; m.material.depthWrite = k < .5; } }
+    const c0 = (comp || b.getObjectByName('torso')).getWorldPosition(V(0, 0, 0));
+    for (const [i, q] of lines.entries()) { const e = b.getObjectByName(q.n).getWorldPosition(V(0, 0, 0)); q.l.visible = sig > .01; q.l.material.opacity = sig * .9; q.l.geometry.setFromPoints([c0, e]);
+      const f = (ph + i * .13) % 1; q.d.visible = sig > .01 && f < .9; q.d.position.copy(c0).lerp(e, Math.min(1, f / .9)); q.d.scale.setScalar(Math.max(.01, sig)); } } }; };
+const X1 = xrayBot(bot), X2 = xrayBot(bot2);
+// floor force under the standing robot's feet (deeper blue = force), vs empty dashed pads under the hanging one
+const force = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.CircleGeometry(.16, 40), new THREE.MeshStandardMaterial({color: DEEP, roughness: .6, transparent: true})); m.rotation.x = -Math.PI / 2; scene.add(m); return m; });
+// swing trail of the hanging robot (pelvis), last ~1.6 s
+const TRN = 48, trail = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({color: ACC, transparent: true})), trailPts = [];
+scene.add(trail);
 // foot contact pads (light blue = signal: "expects floor") under the hanging robot's feet
 const pads = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.RingGeometry(.09, .12, 40), new THREE.MeshStandardMaterial({color: ACC, roughness: .5, transparent: true, side: THREE.DoubleSide})); m.rotation.x = -Math.PI / 2; scene.add(m); return m; });
 const dashes = [0, 1].map(() => { const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: ACC, dashSize: .04, gapSize: .03, transparent: true})); scene.add(l); return l; });
@@ -100,6 +113,19 @@ st.frame(t => {
   const tk = win(t, A[4] + .2, A[7], .3); const ch = J2('torso').getWorldPosition(V(0, 0, 0));
   tsc.mesh.visible = tk > .01; tsc.mesh.scale.setScalar(Math.max(.01, tk)); tsc.mesh.position.set(ch.x - .75, ch.y + .4, ch.z + .35);
   dash2.visible = tsc.mesh.visible; if (dash2.visible) { dash2.geometry.setFromPoints([ch, tsc.mesh.position.clone().add(V(0, -.2, 0))]); dash2.computeLineDistances(); }
+  // x-ray + signals: standing robot on 4–6 (balance), hanging robot on 10–14 (corrections)
+  const x2 = win(t, A[5] - .3, A[7], .35), x1 = win(t, A[10] - .2, A[15], .35);
+  X2.set(x2, x2 * win(t, A[5], A[7], .3), t * (.8 + 1.2 * sm(A[6], A[6] + .3, t)));
+  const kick = Math.max(win(t, A[12], A[12] + .5, .1), win(t, A[13], A[13] + .5, .1), win(t, A[14], A[14] + .6, .1));
+  X1.set(x1, x1 * Math.max(.35 * win(t, A[10], A[12], .3), kick, .6 * win(t, A[14], A[15], .3)), t * 1.6);
+  // floor force rings
+  bot2.updateMatrixWorld(true); const fk = win(t, A[3], A[12], .4);
+  ['footL', 'footR'].forEach((n, i) => { const f = J2(n).getWorldPosition(V(0, 0, 0)); force[i].position.set(f.x, .011, f.z); force[i].visible = fk > .01;
+    const w = n === 'footR' ? 1 + .5 * sm(A[6], A[6] + .4, t) * (1 - sm(B[6], B[6] + .6, t)) : 1 - .3 * sm(A[6], A[6] + .4, t) * (1 - sm(B[6], B[6] + .6, t));
+    force[i].material.opacity = fk * .8; force[i].scale.setScalar(Math.max(.01, fk * w)); });
+  // swing trail
+  const pel = J('pelvis').getWorldPosition(V(0, 0, 0)); trailPts.push(pel); if (trailPts.length > TRN) trailPts.shift();
+  const trk = win(t, A[12], A[18] + .3, .4); trail.visible = trk > .01 && trailPts.length > 2; trail.material.opacity = trk * .85; if (trail.visible) trail.geometry.setFromPoints(trailPts);
   // ---------- camera ----------
   const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
   const sp = scr.mesh.position, nrm = V(0, 0, 1).applyQuaternion(scr.mesh.quaternion), act = scr.mesh.localToWorld(V(.42, -.14, 0));
@@ -111,7 +137,7 @@ st.frame(t => {
     sh(0, TA, OA, 1.0), sh(B[0] - .1, TA, OA, .9),                                                   // hook: the real clip fills the frame
     sh(A[1] + .5, [-.7, 1.3, .2], [.1, .45, 4.4], 1.0), sh(A[2] + .3, TH, OW, 1.0), sh(B[2], TH, [-.6, .6, 3.2], .95),                    // pull back → our replica on the hoist
     sh(A[3] + .2, TB, OB, 1.05), sh(A[4] + .3, TB, [.4, .3, 2.9], .95), sh(A[5] + .3, TB, [.9, .4, 2.7], .95), sh(A[6] + .3, TB, [-.3, .35, 2.8], 1.0), sh(B[6], TB, [-.6, .35, 3.0], 1.0), sh(A[7] + .3, [1.1, 1.2, -.3], [-.2, .45, 4.3], 1.0),   // balance demo
-    sh(A[8] + .2, TH, [1.2, .4, 2.6], 1.0), sh(A[9] + .2, TF, OF, 1.15), sh(A[10] + .3, TF, [-.5, .25, 1.5], 1.0), sh(A[11] + .2, TF, OF, .95),           // hanging, feet in the air
+    sh(A[8] + .2, [HX, 1.4, 0], [1.2, .35, 2.6], 1.35), sh(B[8] - .1, [HX, 1.3, 0], [1.0, .35, 2.7], 1.35), sh(A[9] + .7, TF, OF, 1.15), sh(A[10] + .3, TF, [-.5, .25, 1.5], 1.0), sh(A[11] + .2, TF, OF, .95),           // hanging, feet in the air
     sh(A[12] + .1, TH, [1.5, .55, 2.4], 1.0), sh(A[13] + .2, TH, [.4, .6, 2.8], 1.0), sh(A[14] + .4, TH, [-1.0, .7, 2.6], 1.1),                          // corrections
     sh(A[15] + .2, TS, OS, 1.15), sh(A[16] + .4, TS, [.1, .02, 1.6], 1.05), sh(A[17] + .2, TS, OS, 1.1),                                              // the operator's reason, back on the real clip
     sh(A[18] + .2, TH, OW, .95), sh(A[19] + .3, TH, [.8, .6, 3.0], .95),                                                                               // loop
@@ -119,8 +145,10 @@ st.frame(t => {
   scr.mesh.visible = true; tsc.mesh.lookAt(cp);
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
-    L(A[4], A[5] + .2, 'מאזן', J2('head').getWorldPosition(V(0, 0, 0)), 170, -220);
+    L(A[4], A[5] - .05, 'מאזן', J2('head').getWorldPosition(V(0, 0, 0)), 170, -220);
     L(A[9], A[11] + .6, 'אין רצפה', V(HX, .1, 0), -170, -260);
+    for (const t0 of [A[12], A[13], A[14], A[14] + .7]) { const d = t2 - t0; if (d > 0 && d < .8) { const [x, y, z] = st.proj((bot.getObjectByName('computer') || J('torso')).getWorldPosition(V(0, 0, 0))); if (z < 1) { const c = st.ctx, p = d / .8; c.save(); c.globalAlpha = 1 - p; c.strokeStyle = '#8ea6ff'; c.lineWidth = 7 - 4 * p; c.beginPath(); c.arc(x, y, 20 + 160 * (1 - (1 - p) * (1 - p)), 0, 7); c.stroke(); c.restore(); } } }
+    L(A[5], A[6] - .1, 'חיישן תנועה', (bot2.getObjectByName('computer') || J2('torso')).getWorldPosition(V(0, 0, 0)), -190, -300);
     L(A[12], A[13] + .3, 'תיקון', J('elbowL').getWorldPosition(V(0, 0, 0)), -180, -280);
     L(A[13] + .1, A[14], 'עוד תיקון', J('kneeR').getWorldPosition(V(0, 0, 0)), 170, -300);
     L(A[14], A[15], 'נדנוד', HOOK, 160, 120);
