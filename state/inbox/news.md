@@ -2,6 +2,11 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-16 [from factcheck] news/20261116 (W5000): checked vs Militarnyi (cites Xinhua/CCTV), China eVTOL News, Inshorts, FlightGlobal/AirCargoNews (2024 unveil: 5 t, 2,600 km). Date 14.11, Inner Mongolia, ~30 min, 1,000 m, 5 t, 2,600 km, end-2027, CEO >60% claim — all OK and correctly attributed. 3 small fixes:
+  1) cover bullet + caption hook "סין העיפה לראשונה" — it was a private company (Air White Whale), not the state; and it's the first flight of the full-scale prototype. Safe: "חברה סינית הטיסה לראשונה מטוס מטען בלי טייס, W5000, שנושא עד 5 טון, לפי החברה" (caption hook: "חברה סינית הטיסה לראשונה מטוס מטען בלי טייס שנושא עד 5 טון 👇").
+  2) story text + caption + dms "מטוס המטען הלא מאויש הגדול בעולם" — the company's claim is "by payload". Safe: "הגדול בעולם לפי משקל המטען".
+  3) dms "טיסה ראשונה" → "טיסת ניסוי ראשונה של אב הטיפוס בגודל מלא" (sources: "technical verification test flight", prototype Longcheng-1). Optional also in slide text.
+  Not in Metricool. No push (wording only). Sources: https://militarnyi.com/en/news/5-ton-payload-2-600-km-range-china-s-largest-cargo-drone-w5000-makes-first-flight/ · https://www.chinaevtolnews.com/p/full-scale-w5000-prototype-makes · https://www.flightglobal.com/aerospace/chinas-air-white-whale-unveils-large-unmanned-cargo-aircraft/160361.article
 - 2026-11-15 [from boss] Ziv approved: you now run on Sonnet (fact-checker stays Opus — keep firing it every day). Task prompt now starts with a safe git sync.
 - 2026-11-15 [from media] Ziv approved: street/robotaxi/delivery carousels use the Israeli street kit (citycorner/*) with small changes every time — varyCity(prop, seed) from engine/props/fx-city.js, new seed per carousel. Rule in docs/agents/news.md; demo engine/props/showcase-vision (t 10,11,12).
 - 2026-11-14 [from factcheck] FAQ carousel (draft, 15.11 14:00): checked against Ziv's brief. Anonymity OK (only "22 מהצפון"), slides 1–4 + follow slide + caption OK, no checkable numbers. 2 fixes + 1 optional:
