@@ -97,6 +97,14 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
   **home/laundryPile** (cloth0..8) · **foldedShirt** · **foldedStack** (shirt0..2) · **laundryBasket** ('clothTop') · **mug** ('coffee').
   Showcase: `python3 tools/render.py frames engine/props/showcase-safehome 1,4.5,7.4,10.5` (touch · x-ray motors + wires · spike + stop · soft cover).
 
+- **home2056 robot lineup** (added 2026-11-16 run 10, in-house CC0, real metres, generic, hero palette — `st.prop(name, {tint: 1})`): future robots for the series votes, each with its OWN kind of charging station; every station has a **'plates'** plane (st.screen target for the 10 name plates, `userData.aspect`). Never put real names unless the follower commented "בית".
+  **robots/lawnMower** (0.7×0.5 m: shell, shellTop, bumper, 'blade' spin .y, wheelL/R spin .x, caster0/1, mast/'lidarHead' spin .y, stopBtn, 'cut' = mowed stripe trail plane, scale .z) + **home2056/mowerDock** (arched hood garage, pad, dockRing, plates aspect 1.8).
+  **robots/poolCleaner** (0.4×0.42 m, sits on the pool floor: body, lid, trackL/R, 'brushF'/'brushB' spin .x, handle, 'cable' (userData.path) up to the surface + float0..4) + **home2056/poolCaddy** (trolley + cradle, wheel0/1, plates aspect 1.6). Pair with home2056/pool.
+  **robots/windowCleaner** (0.3 m square, faces +z, stick on glass: body, 'pad' spin .z, ring, suctionLed, safety 'rope') + **home2056/windowStation** (wall box + cradle, plates aspect 1.4).
+  **robots/kitchenChef** (2.4 m counter + cooktop, burner0/1, 'pan' with food0..3, 'pot', board + veg; ceiling 'rail' at 2.4 m, 'carriage' slide .x ±.8, two hanging robotArm()s 'armL'/'armR' with nodes prefixed L_/R_ (L_j1..L_j6, R_tool + spatula), wall 'garage' + plates aspect 2.4).
+  **robots/solarCleaner** (rooftop row of 4 panels 1×1.7 m tilted 25°: 'row', panel0..3, frame; 'cleaner' slide .position.x −2..2 inside 'row', 'brush' spin .z, cleanerPv, wheelTop/Bot; 'dock' at x +2.4 with plates aspect 1.6). Also fits the solar-panel-cleaning topic.
+  Showcase: `python3 tools/render.py frames engine/props/showcase-lineup 1.5,4.5,7.5,10.5` (mower · pool · chef · solar + window).
+
 ## HDRI (engine/assets/hdri/, Poly Haven CC0)
 - moonless_golf_1k.hdr — night sky; moodier, deeper image-based light for outdoor night scenes (tested on ep005: less washed-out stone).
 - venice_sunset_1k.hdr — warm sunset; for "future/hopeful" endings.
@@ -106,5 +114,5 @@ What visual assets we have, where, license, and what they fit. Credits: engine/a
 - Rubik 400/700 (OFL) — UI/captions. Frank Ruhl Libre (OFL).
 
 ## Wanted next
-- Done 2026-11-08: humanoid, robot dog, delivery bot, industrial arm, warehouse drive unit + pod, robotaxi, forklift, servo, factory hall, city facades, traffic lights. Still wanted: glass office tower, Israeli shikun block. Done 2026-11-12: lab room, workbench, 3D printer, charging wall, farm robot. Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
+- Done 2026-11-08: humanoid, robot dog, delivery bot, industrial arm, warehouse drive unit + pod, robotaxi, forklift, servo, factory hall, city facades, traffic lights. Still wanted: glass office tower, Israeli shikun block. Done 2026-11-16: home2056 robot lineup (mower, pool, window, kitchen chef, solar cleaner + docks). Done 2026-11-12: lab room, workbench, 3D printer, charging wall, farm robot. Done 2026-11-04: drone, park/outdoor, tray, Mars rover, solar panels, operating room, robot vacuum.
 - Note: only GitHub is reachable from sessions (poly.pizza, polyhaven.com, kenney.nl, quaternius.com are blocked). Good mirrors: github.com/trebeljahr/quaternius-showcase (all Quaternius packs, Draco → decode with `npx @gltf-transform/cli copy`), github.com/ETdoFresh/kenney.nl (older Kenney 3D kits: space, food, nature, tower-defense). When nothing exists, build it in engine/props/kit.js. Note: GitHub repo search is blocked in sessions; find repos via web search, then clone.

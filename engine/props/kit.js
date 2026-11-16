@@ -1348,6 +1348,131 @@ export function mug() {
   g.add(at(mesh(new THREE.TorusGeometry(.026, .007, 10, 24, Math.PI * 1.2), shell, 'handle'), .043, .05, 0, 0, 0, -Math.PI * .6)); return g;
 }
 
+// ===================== home2056 robot lineup (Media pro 2026-11-16 run 10) — future robots for 'הבית בעוד 30 שנה' votes + their own charging stations =====================
+// Hero/indigo palette (HM) + white shells, in-house CC0, real metres, generic (no brands). Each station has a 'plates' plane (st.screen target, aspect in userData.aspect) for 10 name plates.
+const RW = M(0xe3e6f6, .45, .05);
+/** plate panel: frame + 'plates' plane (w×h) for st.screen (10 names). */
+function platePanel(w, h, name = 'platePanel') { const g = grp(name); g.add(at(rbox(w + .08, h + .08, .05, .03, HM.dark, 'plateFrame'), 0, 0, -.03));
+  const pl = mesh(new THREE.PlaneGeometry(w, h), MAT.screen.clone(), 'plates'); pl.userData.aspect = w / h; g.add(at(pl, 0, 0, .001)); return g; }
+const dockRing = (r, name = 'dockRing') => at(mesh(new THREE.TorusGeometry(r, .012, 8, 48), HM.acc, name), 0, .025, 0, Math.PI / 2);
+const rTire = (r, w, name) => { const g = grp(name); g.add(at(cyl(r, r, w, MAT2.tire, null, 28), 0, 0, 0, 0, 0, Math.PI / 2)); g.add(at(cyl(r * .6, r * .6, w + .004, HM.metal, null, 20), 0, 0, 0, 0, 0, Math.PI / 2));
+  for (let k = 0; k < 12; k++) { const a = k / 12 * Math.PI * 2; g.add(at(bx(w * .9, .02, .03, 0, MAT2.tire), 0, Math.cos(a) * r, Math.sin(a) * r, a)); } return g; };
+
+/** robot lawn mower, 0.7×0.5 m. Nodes: shell, shellTop, bumper, blade (spin .y; 3 blades under the deck), wheelL/wheelR (rotate .x), caster0/1, mast + lidarHead (spin .y), stopBtn, cut (stripe trail plane, scale .z). */
+export function lawnMower() {
+  const g = grp('lawnMower');
+  const sh = mesh(new THREE.SphereGeometry(1, 40, 16, 0, Math.PI * 2, 0, Math.PI / 2), RW, 'shell'); sh.scale.set(.32, .16, .38); at(sh, 0, .1, 0); g.add(sh);
+  g.add(at(rbox(.6, .07, .7, .03, HM.dark, 'deck'), 0, .1, 0));
+  g.add(at(mesh(new THREE.TorusGeometry(.3, .02, 8, 48, Math.PI), HM.dark, 'bumper'), 0, .11, .06, Math.PI / 2, 0, Math.PI));
+  g.add(at(rbox(.36, .02, .22, .01, HM.acc, 'shellTop'), 0, .25, -.02));
+  g.add(at(cyl(.035, .035, .02, HM.orange, 'stopBtn', 20), .1, .262, -.08));
+  const bl = grp('blade'); at(bl, 0, .045, .05); g.add(bl); bl.add(at(cyl(.11, .11, .012, HM.metal, null, 32), 0, 0, 0));
+  for (let i = 0; i < 3; i++) bl.add(at(bx(.05, .004, .018, 0, MAT.steel), Math.cos(i * 2.09) * .12, -.004, Math.sin(i * 2.09) * .12, 0, -i * 2.09));
+  for (const [n, x] of [['wheelL', .3], ['wheelR', -.3]]) { const w = rTire(.12, .07, n); at(w, x, .12, -.16); g.add(w); }
+  for (const [i, x] of [[0, .18], [1, -.18]]) g.add(at(cyl(.04, .04, .03, MAT2.tire, 'caster' + i, 16), x, .04, .3, 0, 0, Math.PI / 2));
+  const mast = grp('mast', at(cyl(.012, .012, .2, HM.dark, null, 10), 0, .1, 0)); at(mast, 0, .25, -.18); g.add(mast);
+  mast.add(joint('lidarHead', [0, .21, 0], at(cyl(.045, .05, .04, HM.dark, null, 24), 0, 0, 0), at(cyl(.046, .046, .012, HM.acc, null, 24), 0, .02, 0)));
+  const cut = mesh(new THREE.PlaneGeometry(.5, 1), M(0x3e5aa8, .9), 'cut'); at(cut, 0, .003, -.85, -Math.PI / 2); g.add(cut);
+  return g;
+}
+/** mower garage: small arched hood over a pad, plate panel on the back. Nodes: hood, pad, dockRing, platePanel/plates (aspect 1.8). */
+export function mowerDock() {
+  const g = grp('mowerDock');
+  g.add(at(rbox(1.0, .04, 1.1, .02, HM.dark, 'pad'), 0, .02, 0)); g.add(dockRing(.36));
+  const h2 = grp('hoodG'); h2.add(at(mesh(new THREE.CylinderGeometry(.55, .55, 1.0, 40, 1, true, 0, Math.PI), Object.assign(HM.mid.clone(), {side: THREE.DoubleSide}), 'hood'), 0, 0, 0, Math.PI / 2, Math.PI / 2, 0)); at(h2, 0, .04, -.05); g.add(h2);
+  const pp = platePanel(.9, .5); at(pp, 0, .78, -.55); g.add(pp); g.add(at(cyl(.02, .02, .6, HM.dark, null, 10), 0, .3, -.6));
+  return g;
+}
+
+/** pool cleaning robot, 0.45×0.42 m, sits on the pool floor (y 0). Nodes: body, lid (accent), trackL/trackR, brushF/brushB (spin .x), handle, cable (tube up to +y 1.3 m, floats at the surface), float0..4. */
+export function poolCleaner() {
+  const g = grp('poolCleaner');
+  g.add(at(rbox(.4, .2, .42, .07, RW, 'body'), 0, .17, 0)); g.add(at(rbox(.3, .03, .32, .03, HM.acc, 'lid'), 0, .275, 0));
+  for (const [n, x] of [['trackL', .21], ['trackR', -.21]]) { const t = grp(n); at(t, x, .08, 0); g.add(t); t.add(at(rbox(.05, .14, .44, .06, MAT2.tire), 0, 0, 0));
+    for (let k = 0; k < 9; k++) t.add(at(bx(.055, .012, .02, 0, HM.dark), 0, -.07, -.2 + k * .05)); }
+  for (const [n, z] of [['brushF', .18], ['brushB', -.18]]) { const b = grp(n); at(b, 0, .05, z); g.add(b); b.add(at(cyl(.045, .045, .36, HM.mid, null, 16), 0, 0, 0, 0, 0, Math.PI / 2));
+    for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; b.add(at(bx(.36, .012, .03, 0, HM.light), 0, Math.cos(a) * .05, Math.sin(a) * .05, a)); } }
+  g.add(at(mesh(new THREE.TorusGeometry(.09, .015, 8, 24, Math.PI), HM.dark, 'handle'), 0, .29, -.08));
+  const pts = [[0, .3, -.12], [0, .6, -.4], [.1, 1.0, -.7], [.2, 1.28, -1.1], [.3, 1.3, -1.8]].map(v => new THREE.Vector3(...v));
+  const cab = mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, .008, 6), HM.dark, 'cable'); cab.userData.path = pts.map(v => v.toArray()); g.add(cab);
+  for (let i = 0; i < 5; i++) g.add(at(cyl(.025, .025, .06, HM.orange, 'float' + i, 12), .2 + i * .02, 1.3, -1.15 - i * .14, Math.PI / 2));
+  return g;
+}
+/** poolside caddy: trolley that holds the pool robot + plate panel. Nodes: caddy, cradle, wheel0/1, platePanel/plates (aspect 1.6). */
+export function poolCaddy() {
+  const g = grp('poolCaddy');
+  g.add(at(rbox(.56, .05, .5, .02, HM.dark, 'cradle'), 0, .3, 0));
+  for (const x of [-.26, .26]) g.add(at(cyl(.02, .02, 1.0, HM.metal, null, 10), x, .55, -.24));
+  g.add(at(cyl(.02, .02, .56, HM.metal, null, 10), 0, 1.05, -.24, 0, 0, Math.PI / 2));
+  [0, 1].forEach(i => { const w = rTire(.1, .05, 'wheel' + i); at(w, i ? -.3 : .3, .1, -.15); g.add(w); });
+  g.add(at(rbox(.6, .02, .54, .02, HM.acc, 'cradleTrim'), 0, .33, 0));
+  const pp = platePanel(.64, .4); at(pp, 0, .8, -.22); g.add(pp);
+  return g;
+}
+
+/** window cleaning robot, 0.3×0.3×0.09 m, faces +z (stick it on a glass pane: back = −z). Nodes: body, pad (spin .z), ring (accent), rope (safety cord tube), suctionLed. */
+export function windowCleaner() {
+  const g = grp('windowCleaner');
+  g.add(at(rbox(.3, .3, .07, .06, RW, 'body'), 0, .15, .035));
+  g.add(at(mesh(new THREE.TorusGeometry(.1, .012, 8, 40), HM.acc, 'ring'), 0, .15, .072));
+  g.add(at(cyl(.02, .02, .01, HM.orange, 'suctionLed', 16), 0, .15, .073, Math.PI / 2));
+  const pad = grp('pad'); at(pad, 0, .15, -.005); g.add(pad); pad.add(at(cyl(.13, .13, .02, HM.mid, null, 32), 0, 0, 0, Math.PI / 2));
+  for (let k = 0; k < 6; k++) pad.add(at(bx(.24, .01, .006, 0, HM.light), 0, 0, -.011, 0, 0, k * Math.PI / 6));
+  const pts = [[0, .3, .04], [.05, .55, .1], [.2, .75, .12], [.35, .9, .08]].map(v => new THREE.Vector3(...v));
+  g.add(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, .006, 6), HM.orange, 'rope'));
+  return g;
+}
+/** window robot wall station: slim wall box with a cradle + plate panel (hang on a wall, back = −z). Nodes: station, cradle, platePanel/plates (aspect 1.4). */
+export function windowStation() {
+  const g = grp('windowStation');
+  g.add(at(rbox(.5, 1.0, .08, .03, HM.mid, 'station'), 0, .5, .04));
+  g.add(at(rbox(.36, .06, .12, .02, HM.dark, 'cradle'), 0, .3, .12)); g.add(at(rbox(.36, .015, .02, .005, HM.acc, 'cradleTrim'), 0, .335, .18));
+  const pp = platePanel(.42, .3); at(pp, 0, .76, .09); g.add(pp);
+  return g;
+}
+
+/** kitchen chef: two generic robot arms hanging from a ceiling rail over a 2.4 m counter with a cooktop. Nodes: counter, cooktop, burner0..1, pan (on burner0), pot (burner1), rail, carriage (slide .position.x ±.8),
+ * armL/armR = robotArm() hanging (nodes prefixed L_ / R_: L_j1..L_j6, L_tool …), spatula on R_tool, garage (wall cabinet the arms park in) + platePanel/plates (aspect 2.4). Rail height 2.4 m. */
+export function kitchenChef() {
+  const g = grp('kitchenChef');
+  g.add(at(rbox(2.4, .9, .65, .02, HM.wood2, 'counter'), 0, .45, 0)); g.add(at(rbox(2.44, .05, .7, .015, HM.light, 'top'), 0, .925, 0));
+  g.add(at(rbox(.9, .012, .5, .01, HM.dark, 'cooktop'), -.4, .956, 0));
+  [-.62, -.18].forEach((x, i) => g.add(at(mesh(new THREE.TorusGeometry(.1, .008, 6, 32), HM.acc, 'burner' + i), x, .963, 0, Math.PI / 2)));
+  const pan = grp('pan'); at(pan, -.62, .965, 0); g.add(pan); pan.add(at(cyl(.13, .11, .04, HM.dark, null, 32), 0, .02, 0)); pan.add(at(bx(.24, .02, .03, 0, HM.dark), .24, .035, 0));
+  for (let i = 0; i < 4; i++) pan.add(at(cyl(.025, .025, .015, i % 2 ? HM.orange : M(0xe0503a, .7), 'food' + i, 12), Math.cos(i * 1.6) * .06, .045, Math.sin(i * 1.6) * .06));
+  const pot = grp('pot'); at(pot, -.18, .965, 0); g.add(pot); pot.add(at(cyl(.11, .1, .16, HM.metal, null, 32), 0, .08, 0));
+  g.add(at(rbox(.5, .03, .35, .01, HM.wood, 'board'), .55, .955, .05));
+  for (let i = 0; i < 3; i++) g.add(at(cyl(.03, .03, .03, i ? HM.orange : M(0x6aa060, .8), 'veg' + i, 12), .45 + i * .1, .985, .05));
+  g.add(at(rbox(2.6, .08, .12, .02, HM.dark, 'rail'), 0, 2.4, .05));
+  const car = grp('carriage'); at(car, 0, 2.34, .05); g.add(car); car.add(at(rbox(.9, .1, .22, .03, HM.mid, 'carBody'), 0, 0, 0));
+  for (const [s, x] of [['L', -.3], ['R', .3]]) { const a = robotArm(); a.name = 'arm' + s; a.scale.setScalar(.55); a.rotation.x = Math.PI; at(a, x, -.03, 0); a.rotation.x = Math.PI;
+    a.traverse(o => { if (o !== a && o.name) o.name = s + '_' + o.name; }); car.add(a);
+    const j2 = a.getObjectByName(s + '_j2'), j3 = a.getObjectByName(s + '_j3'); j2.rotation.x = .5; j3.rotation.x = -1.3; }
+  const tool = car.getObjectByName('R_tool'); tool.add(at(bx(.02, .2, .01, 0, HM.metal, 'spatula'), 0, .1, 0)); tool.add(at(bx(.08, .005, .07, 0, HM.metal), 0, .2, 0));
+  g.add(at(rbox(1.0, .7, .4, .03, HM.mid, 'garage'), .9, 2.0, -.15));
+  const pp = platePanel(.84, .35); at(pp, .9, 2.0, .06); g.add(pp);
+  return g;
+}
+
+/** rooftop solar row + cleaning robot: 4 panels (1×1.7 m) in a row on a tilted frame, the cleaner spans the panel height and slides along x. Nodes: frame, panel0..3, cleaner (slide .position.x −2..2),
+ * brush (spin .z — its axis runs along the panel height), cleanerPv (small own panel), wheelTop/wheelBot, dock (park box at x +2.4) + platePanel/plates (aspect 1.6). Tilt 25°. */
+export function solarCleaner() {
+  const g = grp('solarCleaner'), tilt = .44, row = grp('row'); at(row, 0, .7, 0, tilt); g.add(row);
+  const pv = M(0x1e2a6a, .25, .3); const cell = M(0x34449a, .4, .2);
+  for (let i = 0; i < 4; i++) { const p = grp('panel' + i); at(p, -1.53 + i * 1.02, 0, 0); row.add(p); p.add(at(bx(1.0, .04, 1.7, 0, HM.metal), 0, 0, 0)); p.add(at(bx(.96, .045, 1.66, 0, pv), 0, .001, 0));
+    for (let c = 1; c < 6; c++) p.add(at(bx(.96, .047, .008, 0, cell), 0, .001, -.83 + c * .277)); for (let c = 1; c < 3; c++) p.add(at(bx(.008, .047, 1.66, 0, cell), -.48 + c * .32, .001, 0)); }
+  const fr = grp('frame'); g.add(fr); for (const x of [-1.9, 0, 1.9]) { fr.add(at(cyl(.03, .03, .45, HM.dark, null, 8), x, .22, .7)); fr.add(at(cyl(.03, .03, 1.15, HM.dark, null, 8), x, .57, -.72)); }
+  const cl = grp('cleaner'); at(cl, -1.2, .06, 0); row.add(cl);
+  cl.add(at(rbox(.24, .16, 1.9, .04, RW, 'cleanerBody'), 0, .1, 0)); cl.add(at(rbox(.18, .02, 1.6, .01, HM.acc, 'cleanerTrim'), 0, .185, 0));
+  cl.add(at(bx(.2, .01, .5, 0, pv, 'cleanerPv'), 0, .19, .3));
+  const br = grp('brush'); at(br, .14, .02, 0); cl.add(br); br.add(at(cyl(.05, .05, 1.8, HM.mid, null, 16), 0, 0, 0, Math.PI / 2));
+  for (let k = 0; k < 10; k++) { const a = k / 10 * Math.PI * 2; br.add(at(bx(.012, .04, 1.78, 0, HM.light), Math.cos(a) * .055, Math.sin(a) * .055, 0, 0, 0, a)); }
+  for (const [n, z] of [['wheelTop', -.97], ['wheelBot', .97]]) cl.add(at(cyl(.05, .05, .04, MAT2.tire, n, 16), 0, .02, z, 0, 0, Math.PI / 2));
+  const dk = grp('dock'); at(dk, 2.4, 0, 0); g.add(dk); dk.add(at(rbox(.4, .9, .4, .04, HM.mid, 'dockBox'), 0, .45, -.3)); dk.add(at(rbox(.42, .04, .42, .02, HM.acc, 'dockTrim'), 0, .9, -.3));
+  const pp = platePanel(.64, .4); at(pp, 0, 1.25, -.3); dk.add(pp); dk.add(at(cyl(.02, .02, .4, HM.dark, null, 8), 0, .95, -.32));
+  return g;
+}
+
 export const KIT = {
   'medical/surgical-robot': surgicalRobot, 'medical/surgeon-console': surgeonConsole, 'medical/operating-table': operatingTable,
   'medical/draped-patient': drapedPatient, 'medical/surgical-lamp': surgicalLamp, 'medical/medical-monitor': medicalMonitor,
@@ -1369,4 +1494,6 @@ export const KIT = {
   'vehicles/robotaxiXray': robotaxiXray,
   'robots/humanoidSafe': humanoidSafe, 'people/mannequin-child': () => childMannequin('reach'), 'people/mannequin-childKneel': () => childMannequin('kneel'),
   'home2056/livingRoom': livingRoom, 'home/laundryPile': laundryPile, 'home/foldedShirt': () => foldedShirt(), 'home/foldedStack': foldedStack, 'home/laundryBasket': laundryBasket, 'home/mug': mug,
+  'robots/lawnMower': lawnMower, 'home2056/mowerDock': mowerDock, 'robots/poolCleaner': poolCleaner, 'home2056/poolCaddy': poolCaddy,
+  'robots/windowCleaner': windowCleaner, 'home2056/windowStation': windowStation, 'robots/kitchenChef': kitchenChef, 'robots/solarCleaner': solarCleaner,
 };

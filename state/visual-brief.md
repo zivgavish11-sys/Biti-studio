@@ -56,8 +56,14 @@ Image sent: engine/props/showcase-city (t 1,5,10,13).
 ## Approved visual changes (cont.)
 - 2026-11-15: Israeli street kit for street stories, with small variations every time (varyCity seed + layout).
 
-## Proposals sent 2026-11-15 (run 9, ep017-safehome kit) — waiting for Ziv's OK
+## Proposals sent 2026-11-15 (run 9, ep017-safehome kit) — 1 ✓ (2026-11-15, two shades rule in video.md), 2 re-asked 2026-11-16, 3 already covered by the hero rule (floating info screens)
 1. Fixed colour code for every x-ray/mechanism shot: light blue #8ea6ff = signal/information (computer, wires), deeper blue #4f6fe0 = force/movement (motors, fluid, effort). Already used in ep016 + ep017 → make it a rule in docs/agents/video.md so followers learn it.
 2. Home robots in our world wear a soft knit cover (fabric sleeves, chest pad) in home scenes instead of bare white plastic — warmer, "safe at home" look, a recognisable brand trait (bare shell only for x-ray/lab shots).
 3. Mechanism data lives on one recurring "info screen" (floating screen joined to the object by a dashed line, same frame/fonts every episode) — e.g. effortGraph / forceGauge.
 Image sent: engine/props/showcase-safehome (sheet of t 1, 4.5, 7.4, 10.5).
+
+## Proposals sent 2026-11-16 (run 10, home2056 robot lineup) — waiting for Ziv's OK
+1. One fixed name-plate design on every charging station in "הבית בעוד 30 שנה" (same frame, font, colours; a plate with a name = light, empty = dark with a dash) so followers recognise "my spot" in every part.
+2. Vote moment: the two candidate robots stand side by side on the stage, each next to its own empty station (e.g. kitchen chef vs lawn mower) — instead of lighting empty spots.
+3. Re-ask run 9 #2: home robots in home scenes wear the soft knit cover (bare shell only for x-ray shots).
+Image sent: engine/props/showcase-lineup (t 1.5, 4.5, 7.5, 10.5).
