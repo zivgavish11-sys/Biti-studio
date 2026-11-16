@@ -1372,6 +1372,42 @@ for (const p of sc.props || []) {
     carriage(2.3, -1.9, Math.PI + .1, {dir: 1});
     for (const x of [-12, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
     const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(0, 5, 7); scene.add(key); }
+
+  // ---------- 20261116 props (W5000 unmanned cargo aircraft: first flight, Inner Mongolia) ----------
+  if (['whalecover', 'whaleline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const cargoUav = (x, y, z, ry, opt = {}) => { const g = new THREE.Group(), hull = mat(0xe9edf5, .1, {roughness: .45, metalness: .25}), dark = mat(0x1b2036, .1, {roughness: .5, metalness: .4}), acc = mat(0x2ee6ff, .1, {roughness: .4, metalness: .2});
+    const L = 11.4, R = .95; // half-scale of the real 22.9 m aircraft
+    const fus = new THREE.Mesh(new THREE.CapsuleGeometry(R, L - 2 * R, 12, 24), hull); fus.rotation.z = Math.PI / 2; g.add(fus);
+    const nose = new THREE.Mesh(new THREE.SphereGeometry(R * .98, 20, 14), dark); nose.scale.set(.9, .75, .75); nose.position.set(L / 2 - .2, .1, 0); g.add(nose);
+    const stripe = new THREE.Mesh(new THREE.CylinderGeometry(R + .01, R + .01, .35, 24, 1, true), acc); stripe.rotation.z = Math.PI / 2; stripe.position.x = 1.2; g.add(stripe);
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(2.2, .16, 11.3), hull); wing.position.set(.3, R * .75, 0); g.add(wing);
+    for (const s of [-1, 1]) { const tip = new THREE.Mesh(new THREE.BoxGeometry(1.4, .12, .9), acc); tip.position.set(.55, R * .75, s * 5.5); g.add(tip);
+      const nac = new THREE.Mesh(new THREE.CapsuleGeometry(.3, 1.5, 8, 14), dark); nac.rotation.z = Math.PI / 2; nac.position.set(1.4, R * .75 + .05, s * 3.2); g.add(nac);
+      const hub = new THREE.Mesh(new THREE.SphereGeometry(.2, 12, 10), hull); hub.position.set(2.3, R * .75 + .05, s * 3.2); g.add(hub);
+      const pr = new THREE.Mesh(new THREE.CircleGeometry(1.15, 40), new THREE.MeshBasicMaterial({color: 0xbfd2ff, transparent: true, opacity: .22, side: THREE.DoubleSide})); pr.rotation.y = Math.PI / 2; pr.position.set(2.32, R * .75 + .05, s * 3.2); g.add(pr);
+      const th = new THREE.Mesh(new THREE.BoxGeometry(1.5, .1, 3.4), hull); th.position.set(-L / 2 + .6, 1.2, s * 1.7); g.add(th); }
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 2.6, .12), hull); fin.position.set(-L / 2 + .9, 1.2, 0); fin.rotation.z = -.08; g.add(fin);
+    const cs = (xx) => { const c = new THREE.Mesh(new THREE.BoxGeometry(.2, .6, .6), acc); c.position.set(xx, .1, 0); return c; };
+    if (opt.gear) for (const [gx, gz] of [[2.2, .9], [2.2, -.9], [-2.6, .9], [-2.6, -.9]]) { const st = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .8, 8), dark); st.position.set(gx, -R - .2, gz); g.add(st);
+      const wh = new THREE.Mesh(new THREE.CylinderGeometry(.34, .34, .3, 20), dark); wh.rotation.x = Math.PI / 2; wh.position.set(gx, -R - .62, gz); g.add(wh); }
+    g.position.set(x, y, z); g.rotation.y = ry; if (opt.pitch) g.rotation.z = opt.pitch; scene.add(g); return g; };
+  const airfield = (opt = {}) => { scene.background = new THREE.Color(0x26306a); scene.fog = new THREE.Fog(0x26306a, 30, 90);
+    dl.intensity = 2.0; dl.color.set(0xffc996); dl.position.set(-12, 8, 8); scene.environmentIntensity = .7; scene.add(new THREE.HemisphereLight(0x9aa8e8, 0x3a3a2a, .9));
+    const gr = new THREE.Mesh(new THREE.PlaneGeometry(260, 200), mat(0x7a7350, .1, {roughness: 1, metalness: 0})); gr.rotation.x = -Math.PI / 2; gr.position.y = -.01; scene.add(gr);
+    if (opt.runway) { const rw = new THREE.Mesh(new THREE.PlaneGeometry(200, 11), mat(0x34373f, .1, {roughness: .95, metalness: 0})); rw.rotation.x = -Math.PI / 2; rw.position.set(0, .005, 0); scene.add(rw);
+      for (let k = -34; k < 35; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(2.2, .22), mat(0xf2f2f2, .1, {roughness: .6})); d.rotation.x = -Math.PI / 2; d.position.set(k * 4.2, .012, 0); scene.add(d); } }
+    for (let k = 0; k < 9; k++) { const h = new THREE.Mesh(new THREE.ConeGeometry(14 + (k * 5 % 9), 7 + (k * 3 % 5), 6), mat(0x6f6a4a, .1, {roughness: 1, metalness: 0})); h.position.set(-90 + k * 24, 3, -62 - (k % 3) * 10); scene.add(h); }
+    for (let k = 0; k < 4; k++) { const cl = new THREE.Group(); for (let j = 0; j < 4; j++) { const s2 = new THREE.Mesh(new THREE.SphereGeometry(1.6 + (j % 2) * .7, 16, 12), new THREE.MeshBasicMaterial({color: 0x5a5c9a, fog: false})); s2.position.set(j * 1.9, (j % 2) * .6, 0); cl.add(s2); } cl.position.set(-30 + k * 22, 24 + (k % 3) * 3, -70); scene.add(cl); } };
+  if (p === 'whalecover') { // cover: dusk runway — a crewless cargo aircraft rolls out, nobody in the cockpit; control tower behind
+    airfield({runway: true});
+    cargoUav(.5, 2.35, -.4, 0, {gear: true});
+    const tw = new THREE.Mesh(new THREE.CylinderGeometry(.8, 1.1, 14, 14), mat(0xc8c9d4, .1, {roughness: .7})); tw.position.set(-16, 7, -16); scene.add(tw);
+    const cab = new THREE.Mesh(new THREE.CylinderGeometry(2.3, 1.6, 2.4, 14), mat(0x22314f, .1, {roughness: .1, metalness: .6})); cab.position.set(-16, 15, -16); scene.add(cab);
+    const key = new THREE.PointLight(0xffffff, 12, 20); key.position.set(0, 6, 8); scene.add(key); }
+  if (p === 'whaleline') { // story: the cargo aircraft climbing away from the runway, small dust trail on the ground, tower far behind
+    airfield({runway: true});
+    cargoUav(1.5, 7.5, -1.5, -.12, {pitch: .16});
+    const key = new THREE.PointLight(0xffffff, 10, 24); key.position.set(0, 8, 8); scene.add(key); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
