@@ -1373,6 +1373,54 @@ for (const p of sc.props || []) {
     for (const x of [-12, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
     const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(0, 5, 7); scene.add(key); }
 
+  // ---------- 20261117 props (Zoox on the Uber app in Las Vegas; Remedy Robotics stroke-robot funding) ----------
+  if (['lvcover', 'lvride', 'orcover', 'orline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const neon = (x, y, z, w, h, text, col, ry = 0) => { const tex = screenTex((c, cw, ch) => { c.fillStyle = '#12082a'; c.fillRect(0, 0, cw, ch); c.strokeStyle = col; c.lineWidth = 10; c.strokeRect(8, 8, cw - 16, ch - 16); c.fillStyle = col; c.textAlign = 'center'; c.font = 'bold 120px Rubik'; c.fillText(text, cw / 2, ch / 2 + 42); }, 768, 256);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({map: tex})); m.position.set(x, y, z); m.rotation.y = ry; scene.add(m); };
+  const palm = (x, z, h = 6) => { const g = new THREE.Group(), tm = mat(0x6b4f35, .1, {roughness: 1, metalness: 0}), lm = mat(0x3f7a45, .1, {roughness: 1, metalness: 0});
+    const tr = new THREE.Mesh(new THREE.CylinderGeometry(.14, .22, h, 10), tm); tr.position.y = h / 2; tr.rotation.z = .06; g.add(tr);
+    for (let k = 0; k < 7; k++) { const lf = new THREE.Mesh(new THREE.ConeGeometry(.28, 2.6, 6), lm); lf.position.set(Math.cos(k * .9) * 1.0, h + .1, Math.sin(k * .9) * 1.0); lf.rotation.set(Math.sin(k * .9) * 1.2, 0, -Math.cos(k * .9) * 1.2); g.add(lf); }
+    g.position.set(x, 0, z); scene.add(g); };
+  const vegasStreet = async (blocks) => { await dayStreet({blocks, bx: -22, bz: -13, trees: [], dim: .42});
+    palm(-9, -6.6, 6.5); palm(6.5, -6.6, 5.6); palm(-3, -6.6, 7);
+    neon(-6.5, 6.8, -9.2, 4.2, 1.4, 'VEGAS', '#ff5fd2'); neon(3.4, 5.4, -9.2, 3.6, 1.2, 'CASINO', '#2ee6ff');
+    for (const x of [-12, 10]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
+    const pk = new THREE.PointLight(0xff5fd2, 16, 14); pk.position.set(-6, 5, -5); scene.add(pk); const cy = new THREE.PointLight(0x2ee6ff, 14, 14); cy.position.set(4, 4.5, -5); scene.add(cy); };
+  if (p === 'lvcover') { // cover: the Strip at dusk — a driverless carriage pod glides past neon signs, palms along the sidewalk
+    await vegasStreet(['Building4', 'Building2_Large', 'Building3_Big', 'Building3_Small', 'Building1_Small', 'Building2_Large']);
+    carriage(.2, -1.7, Math.PI + .08, {dir: 1});
+    const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(0, 5, 7); scene.add(key); }
+  if (p === 'lvride') { // story: a carriage pod pulled up at the Las Vegas curb, doors open, a rider walking up with the app
+    await vegasStreet(['Building3_Big', 'Building1_Small', 'Building2_Large', 'Building4', 'Building3_Small', 'Building3_Big']);
+    carriage(.8, -1.95, 0, {open: true});
+    await place('people/character-female-b', {x: -1.6, y: .16, z: -4.4, ry: 1.3, h: 1.65, dim: .9, anim: 'walk', t: .3});
+    await place('people/character-male-c', {x: 3.7, y: .16, z: -4.8, ry: -1.2, h: 1.75, dim: .9, anim: 'idle', t: .5});
+    const key = new THREE.PointLight(0xffffff, 10, 14); key.position.set(3, 5, 6); scene.add(key); }
+  const orRoom = (monitor = true) => { scene.background = new THREE.Color(0x0d1230); scene.fog = new THREE.Fog(0x0d1230, 18, 50);
+    scene.add(new THREE.HemisphereLight(0xaab8ff, 0x1a1f3a, 1.0)); dl.intensity = 1.6; dl.position.set(-4, 8, 6);
+    const fl = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), mat(0x2a3050, .1, {roughness: .45, metalness: .2})); fl.rotation.x = -Math.PI / 2; fl.position.y = -.01; scene.add(fl);
+    const wl = new THREE.Mesh(new THREE.PlaneGeometry(40, 9), mat(0x2d3566, .1, {roughness: .8, metalness: 0})); wl.position.set(0, 4.5, -6); scene.add(wl);
+    for (let k = -3; k <= 3; k++) { const pn = new THREE.Mesh(new THREE.BoxGeometry(2.6, 3.2, .06), mat(0x3b4585, .1, {roughness: .7})); pn.position.set(k * 3, 2.0, -5.95); scene.add(pn); } };
+  const vesselTex = () => screenTex((c, w, h) => { c.fillStyle = '#05091c'; c.fillRect(0, 0, w, h); c.strokeStyle = '#2ee6ff'; c.lineWidth = 7; c.lineCap = 'round';
+    const br = (x, y, a, l, d) => { if (d > 4) return; const x2 = x + Math.cos(a) * l, y2 = y + Math.sin(a) * l; c.lineWidth = 8 - d * 1.6; c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke(); br(x2, y2, a - .5, l * .72, d + 1); br(x2, y2, a + .45, l * .7, d + 1); };
+    br(w / 2, h - 10, -Math.PI / 2, h * .3, 0); c.fillStyle = '#ff5fd2'; c.beginPath(); c.arc(w * .38, h * .3, 14, 0, 6.3); c.fill(); }, 512, 360);
+  const orScene = async (kind) => { orRoom();
+    const tbl = await place('medical/operating-table', {x: 0, z: -1.2, ry: Math.PI / 2, h: 1.0, dim: .8});
+    const pat = await place('medical/draped-patient', {x: 0, y: .86, z: -1.2, ry: Math.PI / 2, h: .27, dim: .8});
+    const rb = await place('medical/surgical-robot', {x: 1.8, z: -1.2, ry: -Math.PI / 2, h: 2.5, dim: .85});
+    for (const [n, v] of [['arm0', -.5], ['arm2', .5]]) { const a = rb.getObjectByName(n); if (a) a.rotation.y = v; }
+    const lamp = await place('medical/surgical-lamp', {x: 0, y: 2.0, z: -1.2, h: 1.0, dim: .9});
+    if (kind === 'story') { const cs = await place('medical/surgeon-console', {x: -3.3, z: 0.8, ry: Math.PI / 2 + .5, h: 1.5, dim: .85});
+      const mo = await place('medical/medical-monitor', {x: -1.7, z: -2.6, ry: .5, h: 1.8, dim: .85});
+      mo.traverse(m => { if (m.isMesh && m.name === 'screen') m.material = new THREE.MeshBasicMaterial({map: vesselTex()}); }); }
+    else { const mo = await place('medical/medical-monitor', {x: -1.9, z: -2.4, ry: .4, h: 1.8, dim: .85});
+      mo.traverse(m => { if (m.isMesh && m.name === 'screen') m.material = new THREE.MeshBasicMaterial({map: vesselTex()}); }); }
+    const sp = new THREE.SpotLight(0xffffff, 120, 14, .6, .5); sp.position.set(0, 6, 1); sp.target.position.set(0, .9, -1.2); scene.add(sp, sp.target);
+    const rim = new THREE.PointLight(0x2ee6ff, 14, 10); rim.position.set(-4, 3, -3); scene.add(rim);
+    const key = new THREE.PointLight(0xdfe6ff, 10, 12); key.position.set(3, 3, 4); scene.add(key); };
+  if (p === 'orcover') await orScene('cover');
+  if (p === 'orline') await orScene('story');
+
   // ---------- 20261116 props (W5000 unmanned cargo aircraft: first flight, Inner Mongolia) ----------
   if (['whalecover', 'whaleline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
   const cargoUav = (x, y, z, ry, opt = {}) => { const g = new THREE.Group(), hull = mat(0xe9edf5, .1, {roughness: .45, metalness: .25}), dark = mat(0x1b2036, .1, {roughness: .5, metalness: .4}), acc = mat(0x2ee6ff, .1, {roughness: .4, metalness: .2});
