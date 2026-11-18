@@ -1373,6 +1373,103 @@ for (const p of sc.props || []) {
     for (const x of [-12, 9]) { await place('street/Streetlight_Double', {x, z: -4.3, h: 5, dim: .8}); const l = new THREE.PointLight(0xffc98a, 14, 10); l.position.set(x, 4.6, -3.2); scene.add(l); }
     const key = new THREE.PointLight(0xffffff, 12, 14); key.position.set(0, 5, 7); scene.add(key); }
 
+  // ---------- 20261118 props (Waymo robotaxis off California freeways: work-zone taper + stopped robotaxi; Genesis AI Eno: two-arm wheeled robot packing parcels at a table) ----------
+  if (['wmcover', 'wmfree', 'enoline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const limb = (a, b, r, m) => { const d = b.clone().sub(a), len = d.length(); const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 16), m); c.position.copy(a).addScaledVector(d, .5);
+    c.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); return c; };
+  const twoBone = (sh, hand, l1, l2, bend) => { const d = hand.clone().sub(sh), L = Math.min(d.length(), l1 + l2 - .02), dir = d.clone().normalize();
+    const a = (l1 * l1 - l2 * l2 + L * L) / (2 * L), h = Math.sqrt(Math.max(l1 * l1 - a * a, 0)); const perp = bend.clone().sub(dir.clone().multiplyScalar(bend.dot(dir))).normalize();
+    return sh.clone().addScaledVector(dir, a).addScaledVector(perp, h); };
+  const cone = (x, z, s = 1) => { const g = new THREE.Group(); const o = mat(0xff7a1a, .1, {roughness: .55, metalness: 0}), w = mat(0xf4f4f4, .1, {roughness: .5, metalness: 0});
+    const base = new THREE.Mesh(new THREE.BoxGeometry(.5, .04, .5), mat(0x20222c, .1, {roughness: .8})); base.position.y = .02; g.add(base);
+    const c = new THREE.Mesh(new THREE.ConeGeometry(.2, .68, 20), o); c.position.y = .38; g.add(c);
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(.115, .14, .1, 20), w); st.position.y = .4; g.add(st);
+    g.scale.setScalar(s); g.position.set(x, 0, z); scene.add(g); };
+  const jersey = (x, z, ry = 0) => { const g = new THREE.Group(); const m = mat(0xb9b6ae, .1, {roughness: .9, metalness: 0});
+    const lo = new THREE.Mesh(new THREE.BoxGeometry(2.4, .3, .6), m); lo.position.y = .15; g.add(lo);
+    const mid = new THREE.Mesh(new THREE.BoxGeometry(2.4, .45, .3), m); mid.position.y = .52; g.add(mid);
+    const st = new THREE.Mesh(new THREE.BoxGeometry(2.41, .06, .31), mat(0xd9342b, .1, {roughness: .6, metalness: 0})); st.position.y = .62; g.add(st);
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); };
+  const workSign = (x, z, ry = 0) => { const g = new THREE.Group(); const tex = screenTex((c, w, h) => { c.fillStyle = '#ff9a1f'; c.fillRect(0, 0, w, h); c.strokeStyle = '#111'; c.lineWidth = 14; c.strokeRect(10, 10, w - 20, h - 20);
+      c.fillStyle = '#111'; c.font = 'bold 62px Rubik'; c.textAlign = 'center'; c.fillText('ROAD WORK', w / 2, h * .42); c.fillText('AHEAD', w / 2, h * .74); }, 512, 512);
+    const pl = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, .05), [mat(0x333, .1), mat(0x333, .1), mat(0x333, .1), mat(0x333, .1), new THREE.MeshBasicMaterial({map: tex}), mat(0x333, .1)]); pl.rotation.z = Math.PI / 4; pl.position.y = 2.3; g.add(pl);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.05, .05, 1.9, 10), mat(0x8a93b8, .1, {metalness: .7})); pole.position.y = .95; g.add(pole);
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); };
+  const arrowBoard = (x, z, ry = 0) => { const g = new THREE.Group(); const bd = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, .12), mat(0x14161e, .1, {roughness: .6})); bd.position.y = 2.1; g.add(bd);
+    const am = new THREE.MeshBasicMaterial({color: 0xffb020}); for (let k = 0; k < 7; k++) { const d = new THREE.Mesh(new THREE.SphereGeometry(.08, 10, 8), am); d.position.set(-.8 + k * .27, 2.1, .08); g.add(d); }
+    for (const [dx, dy] of [[.6, .24], [.6, -.24], [.35, .4], [.35, -.4], [.85, .0]]) { const d = new THREE.Mesh(new THREE.SphereGeometry(.08, 10, 8), am); d.position.set(dx - .4, 2.1 + dy, .08); g.add(d); }
+    const tr = new THREE.Mesh(new THREE.BoxGeometry(2.4, .8, 1.2), mat(0x2a2d3a, .1, {roughness: .6})); tr.position.y = .6; g.add(tr);
+    const wheels = [-.8, .8].map(wx => { const w = new THREE.Mesh(new THREE.CylinderGeometry(.3, .3, .2, 16), mat(0x101218, .1)); w.rotation.x = Math.PI / 2; w.position.set(wx, .3, .62); g.add(w); return w; });
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); };
+  const freeway = async (opt = {}) => { daySky();
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 90), mat(0x5d6a4a, .1, {roughness: 1, metalness: 0})); ground.rotation.x = -Math.PI / 2; ground.position.y = -.01; scene.add(ground);
+    const road = new THREE.Mesh(new THREE.PlaneGeometry(120, 13), mat(0x353844, .1, {roughness: .95, metalness: 0})); road.rotation.x = -Math.PI / 2; road.position.set(0, .005, -1.5); scene.add(road);
+    for (const zz of [-1.5 - 2.1, -1.5 + 2.1]) for (let k = -22; k < 23; k++) { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.8, .16), mat(0xf2f2f2, .1, {roughness: .6})); d.rotation.x = -Math.PI / 2; d.position.set(k * 3.4, .012, zz); scene.add(d); }
+    for (const zz of [-1.5 - 6.3, -1.5 + 6.3]) { const e = new THREE.Mesh(new THREE.PlaneGeometry(120, .16), mat(0xf2f2f2, .1, {roughness: .6})); e.rotation.x = -Math.PI / 2; e.position.set(0, .012, zz); scene.add(e); }
+    const shoulder = new THREE.Mesh(new THREE.PlaneGeometry(120, 2.2), mat(0x2d3039, .1, {roughness: .95, metalness: 0})); shoulder.rotation.x = -Math.PI / 2; shoulder.position.set(0, .004, -1.5 - 7.4); scene.add(shoulder);
+    // real facades far behind the soundline, real street lamps along the median
+    let bx = -26; for (const [k, n] of ['Building3_Big', 'Building2_Large', 'Building4', 'Building1_Small', 'Building3_Small', 'Building2_Large', 'Building3_Big'].entries()) { const o = await place('buildings/' + n, {x: bx, z: -22, h: 9 + (k * 5 % 7), dim: .5});
+      const bb = new THREE.Box3().setFromObject(o); o.position.x += bx - bb.min.x; bx += (bb.max.x - bb.min.x) + .5; }
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(120, 2.6, .3), mat(0x8a8780, .1, {roughness: .95, metalness: 0})); wall.position.set(0, 1.3, -11.5); scene.add(wall);
+    for (const x of [-15, -7, 14, 22]) { await place('street/Streetlight_Double', {x, z: -8.4, h: 6.5, dim: .8}); }
+    // green overhead gantry sign
+    const gt = screenTex((c, w, h) => { c.fillStyle = '#0d5a3a'; c.fillRect(0, 0, w, h); c.strokeStyle = '#fff'; c.lineWidth = 8; c.strokeRect(8, 8, w - 16, h - 16); c.fillStyle = '#fff'; c.font = 'bold 120px Rubik'; c.textAlign = 'center'; c.fillText('101', w / 2, h * .62); }, 512, 200);
+    const gs = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 1.6), new THREE.MeshBasicMaterial({map: gt})); gs.position.set(opt.gx ?? -9, 6.6, -1.5); scene.add(gs);
+    for (const [px, pz] of [[opt.gx ?? -9, -9.2], [opt.gx ?? -9, 6.2]]) { const pl = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, 7.4, 12), mat(0x8a93b8, .1, {metalness: .7})); pl.position.set(px, 3.7, pz); scene.add(pl); }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(.2, .2, 15.6), mat(0x8a93b8, .1, {metalness: .7})); beam.position.set(opt.gx ?? -9, 7.4, -1.5); scene.add(beam); };
+  const taperZone = () => { // lane closure on the near lane: taper of cones, jersey barriers, arrow board, work sign
+    const zN = -1.5 + 4.2 + 0; // near lane centre line z
+    for (let k = 0; k < 7; k++) cone(1.8 - k * 1.1 + 6, zN - 1.8 + k * 0.0 + (6 - k) * .0 - (k * .28), 1);
+    for (let k = 0; k < 4; k++) jersey(9.0 + k * 2.55, zN - 1.9 - 1.05, 0);
+    arrowBoard(10.2, zN + 1.6, Math.PI);
+    workSign(-3.4, 6.1, -.15); };
+  if (p === 'wmcover') { // cover: dusk freeway, a lane closure ahead, a robotaxi pulled up at the taper
+    await freeway({gx: 4});
+    for (let k = 0; k < 7; k++) cone(4.2 + k * 1.15, 2.6 + k * .3, 1);
+    for (let k = 0; k < 4; k++) jersey(8.4 + k * 2.55, 3.4, 0);
+    arrowBoard(8.0, 6.2, Math.PI); workSign(-5.4, 6.4, -.12);
+    const tx = await place('vehicles/robotaxi', {x: 1.0, z: 1.0, ry: Math.PI / 2 - .3, h: 1.65, dim: .95});
+    const hz = new THREE.PointLight(0xffb020, 8, 7); hz.position.set(1.0, 1.2, 1.0); scene.add(hz);
+    const key = new THREE.PointLight(0xffffff, 12, 16); key.position.set(0, 5, 8); scene.add(key); }
+  if (p === 'wmfree') { // story: a robotaxi stops short of the closed lane on the freeway shoulder, hazards on, a patrol-style barrier taper ahead
+    await freeway({gx: -2});
+    for (let k = 0; k < 8; k++) cone(4.4 + k * 1.15, 2.5 + k * .28, 1);
+    for (let k = 0; k < 5; k++) jersey(9.6 + k * 2.55, 3.4, 0);
+    arrowBoard(9.4, 6.4, Math.PI); workSign(-6.0, 6.4, -.12);
+    await place('vehicles/robotaxi', {x: 1.0, z: 1.2, ry: Math.PI / 2 - .12, h: 1.65, dim: .95});
+    await place('vehicles/car-suv', {x: -9, z: -2.2, ry: Math.PI / 2, h: 1.7, dim: .7});
+    const hz = new THREE.PointLight(0xffb020, 7, 7); hz.position.set(1.0, 1.3, 1.2); scene.add(hz);
+    const key = new THREE.PointLight(0xffffff, 12, 16); key.position.set(0, 5, 8); scene.add(key); }
+  if (p === 'enoline') { // story: Eno-like wheeled two-arm robot (no head) packing parcels into a carton at a table; factory hall behind
+    scene.fog = new THREE.FogExp2(0x070a24, 0.022); labFloor(0x2e3450);
+    await place('buildings/factoryHall', {x: 1, z: -10, h: 9, dim: .34});
+    const tb = new THREE.Group(); const top = new THREE.Mesh(new THREE.BoxGeometry(2.2, .05, 1.0), mat(0x3b4466, .1, {roughness: .6})); top.position.y = .9; tb.add(top);
+    for (const [lx, lz] of [[-1, -.42], [1, -.42], [-1, .42], [1, .42]]) { const l = new THREE.Mesh(new THREE.BoxGeometry(.06, .9, .06), mat(0x8a93b8, .1, {roughness: .35, metalness: .7})); l.position.set(lx, .45, lz); tb.add(l); }
+    tb.position.set(.8, 0, -2.4); scene.add(tb);
+    const cardM = mat(0xb98b58, .1, {roughness: .9, metalness: 0});
+    const carton = new THREE.Group(); const bb = new THREE.Mesh(new THREE.BoxGeometry(.7, .04, .5), cardM); bb.position.y = .02; carton.add(bb);
+    for (const [sx, sz, w, d] of [[0, -.25, .7, .03], [0, .25, .7, .03], [-.35, 0, .03, .5], [.35, 0, .03, .5]]) { const s = new THREE.Mesh(new THREE.BoxGeometry(w, .3, d), cardM); s.position.set(sx, .17, sz); carton.add(s); }
+    carton.position.set(1.0, .925, -2.4); scene.add(carton);
+    const parcels = [[.35, .2, .3, 1.7, -2.2, .2, 0xc99a63], [.28, .18, .26, 1.7, -2.6, -.3, 0xb98b58], [.3, .22, .24, 0.0, -2.1, .1, 0xd4a56e]];
+    for (const [w, h, d, x, z, ry, c] of parcels) { const pb = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(c, .1, {roughness: .9, metalness: 0})); pb.position.set(x, .925 + h / 2, z); pb.rotation.y = ry; scene.add(pb);
+      const tp = new THREE.Mesh(new THREE.BoxGeometry(.04, h + .005, d + .005), mat(0xe9e3d4, .1, {roughness: .8, metalness: 0})); tp.position.set(x, .925 + h / 2, z); tp.rotation.y = ry; scene.add(tp); }
+    // Eno-like robot: low wheeled base, rotating column, no head, two arms with two joints, flat grippers
+    const rb = new THREE.Group(), dark = mat(0x23273a, .1, {roughness: .45, metalness: .55}), lite = mat(0xdfe5f5, .1, {roughness: .35, metalness: .3}), acc = mat(accent, .1, {roughness: .4});
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(.46, .5, .42, 32), dark); base.position.y = .35; rb.add(base);
+    const ring2 = new THREE.Mesh(new THREE.CylinderGeometry(.47, .47, .05, 32), acc); ring2.position.y = .5; rb.add(ring2);
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; const w = new THREE.Mesh(new THREE.CylinderGeometry(.14, .14, .1, 16), mat(0x101218, .1, {roughness: .8})); w.rotation.x = Math.PI / 2; w.position.set(Math.cos(a) * .36, .14, Math.sin(a) * .36); rb.add(w); }
+    const col = new THREE.Mesh(new THREE.CylinderGeometry(.2, .24, .78, 24), lite); col.position.y = .92; rb.add(col);
+    const torso = new THREE.Mesh(new RoundedBoxGeometry(.56, .34, .36, 4, .08), lite); torso.position.y = 1.42; rb.add(torso);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(.4, .04, .28), dark); cap.position.y = 1.61; rb.add(cap);
+    const sens = new THREE.Mesh(new THREE.SphereGeometry(.07, 16, 12), dark); sens.position.set(0, 1.47, .19); rb.add(sens);
+    for (const s of [-1, 1]) { const sh = new THREE.Vector3(s * .32, 1.42, .02), hand = new THREE.Vector3(s * .22, 1.0, .95 - (s > 0 ? .05 : 0)), el = twoBone(sh, hand, .55, .55, new THREE.Vector3(s * .6, .9, -.2));
+      const j = (v, r = .07) => { const o = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), acc); o.position.copy(v); rb.add(o); };
+      rb.add(limb(sh, el, .05, lite)); rb.add(limb(el, hand, .045, lite)); j(sh, .08); j(el, .065); j(hand, .05);
+      const gr = new THREE.Mesh(new THREE.BoxGeometry(.2, .03, .12), dark); gr.position.copy(hand).add(new THREE.Vector3(0, -.05, .04)); rb.add(gr); }
+    rb.position.set(-.95, 0, -2.4); rb.rotation.y = Math.PI / 2 - .05; scene.add(rb);
+    const sp = new THREE.SpotLight(0xffffff, 65, 16, .5, .5); sp.position.set(.5, 6, 2); sp.target.position.set(-.2, 1, -2.2); scene.add(sp, sp.target);
+    const key = new THREE.PointLight(0xe8e0ff, 8, 12); key.position.set(3, 3, 3); scene.add(key); }
+
   // ---------- 20261117 props (Zoox on the Uber app in Las Vegas; Remedy Robotics stroke-robot funding) ----------
   if (['lvcover', 'lvride', 'orcover', 'orline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
   const neon = (x, y, z, w, h, text, col, ry = 0) => { const tex = screenTex((c, cw, ch) => { c.fillStyle = '#12082a'; c.fillRect(0, 0, cw, ch); c.strokeStyle = col; c.lineWidth = 10; c.strokeRect(8, 8, cw - 16, ch - 16); c.fillStyle = col; c.textAlign = 'center'; c.font = 'bold 120px Rubik'; c.fillText(text, cw / 2, ch / 2 + 42); }, 768, 256);
