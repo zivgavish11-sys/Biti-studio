@@ -99,3 +99,27 @@ Sources: TikTok via Metricool; IG via Buffer post metrics (Metricool IG reels/fo
 - Hero test so far (ep011–013): ep011 114/470 (≈ baseline), ep012 1342/711 (10x), ep013 pending. One breakout ≠ look effect.
 ### Followers
 TikTok 20 (11-07) → 23 (11-10) → 32 (11-14) ≈ +2/day recently. IG unknown (last known 7). FB 1. Goal pace ~11/day.
+
+## Review 2026-11-19 (#5, analytics)
+Sources: IG + FB via Buffer post metrics (Metricool IG reels returned EMPTY again → no IG avg watch / 3s-hold; IG follower count empty). TikTok views/shares via Metricool (TKPO), followers TKEV07, FB followers FBEV17. Fresh numbers (<24 h) marked.
+| Episode | Format / look | IG views (reach) | IG saves/shares | FB reach | TikTok views / shares | Notes |
+|---|---|---|---|---|---|---|
+| #11 touch | short-deep hero | 121 (113) | 1/0 | 247 | 471 / – | final |
+| #12 pushback | short hero | **1365** (1054) | 1/0, 10 likes | 187 | 715 / – | |
+| #13 vacuumcam | long hero | **1596** (1279) | 2/**8** | **3338** (3790 impr.) | **1454** / 2 | best episode ever on all 3 networks; privacy/"can they hack my vacuum" |
+| #15 pokemon | long hero | 186 (155) | 1/2 | 1240 | 584 / 3 | story/trivia, no personal stake |
+| #16 robotaxi | long hero (X-ray) | **1686** (1394) | 4/0, 18 likes | 224 | 515 / 1 | "who brakes faster, you or the car" |
+| #17 safehome | long hero | 464 (402) | 2/0 | 226 | 525 / 0 | child-safety fear hook |
+| #18 flail | long hero | pending (<24 h) | – | 0 | 158 / 0 @~20 h | too early, re-check next review |
+| #14 home1 | long hero | not posted yet (scheduled 19.11 18:00) | | | | |
+| carousels 11-12..11-18 | – | 3–11 each | 0–1 saves | 0–8 impr. | 216–408 each (intro post 348) | CTA "comment the story number": no uptick (TikTok 11-12: 382 → 11-18: 216); comments/DMs not visible to me |
+
+### Followers (Metricool)
+TikTok 32 (11-14) → 37 (11-18) = +1.2/day. Facebook 1 (11-14) → 6 (11-15) → 12 (11-16..18) = +11 in 4 days, now the fastest source. IG: Metricool empty (last known 7). Total ≈ 56 (IG stale) vs ~11/day needed for 1,000 by Feb 2027 (actual ≈ 4/day).
+
+### Findings
+- Hero-v2 vs classic on IG: classic ep001–010 = 101–137 views (ep006 728 the only exception); hero ep011–017 = 121 / 1365 / 1596 / 186 / 1686 / 464 → 4 of 6 above 460 (median ~915). Topic-confounded, but 3 breakouts in 7 days after zero in the classic phase is a strong signal.
+- Length again irrelevant: short ep012 1365 vs long ep013 1596 vs long ep016 1686.
+- Best-performing topics = personal stake in a home/consumer robot (spying vacuum, braking car, pushed robot). Weakest = trivia story with no personal stake (pokemon 186 IG).
+- Facebook behaves like IG now: ep013 reach 3338 (Biti episodes only; FB news posts 0–8).
+- Carousels on IG/FB are dead (3–11 views); TikTok flat 216–408, no follows or comment uptick visible.
