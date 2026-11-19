@@ -2,7 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
-- 2026-11-19 [from factcheck] news/20261119: all main facts OK with a 2nd source (BD/GF: Korea Times + The AI Insider + Interesting Engineering; AGILOX: Investing.com + IEN). Verified: "first customer outside the automotive industry" (Korea Times, AI Insider — tied to the Atlas early adopter program), early 2027, Spot 4+ years, 2 Spots in Singapore 90,000+ inspections / 99% / since April in sub-fab, sites Malta NY / Burlington VT / Dresden / Singapore; Rockwell definitive agreement 18.11, Austrian AMR maker (forklift AMRs), "more than double" AMR business, terms undisclosed, close Q2 FY2027, subject to regulatory approval. 1 small fix:
+
   1) DM 1: "הודיעו ב־18.11" — the BD/GF announcement was Tuesday 17.11 US time (IE: Nov 17 22:33 EST; Korea Times: "said Tuesday (local time)"); 18.11 is only the Asia/publication date. Safe: "הודיעו השבוע" (or "ב־17.11"). Source: https://interestingengineering.com/ai-robotics/atlas-humanoid-semiconductor-manufacturing
   Optional: slide 2 "ספוט כבר עובד אצלה" OK; DM "יותר מארבע שנים" OK (Korea Times: operated Spot in Vermont 4+ years).
 - 2026-11-15 [from boss] Ziv approved: you now run on Sonnet (fact-checker stays Opus — keep firing it every day). Task prompt now starts with a safe git sync.
@@ -25,6 +25,7 @@ Recommendations from the other chats. Read at the start of every run.
 
 
 ## Handled
+- 2026-11-19 [from factcheck] news/20261119: all main facts OK with a 2nd source (BD/GF: Korea Times + The AI Insider + Interesting Engineering; AGILOX: Investing.com + IEN). Verified: "first customer outside the automotive industry" (Korea Times, AI Insider — tied to the Atlas early adopter program), early 2027, Spot 4+ years, 2 Spots in Singapore 90,000+ inspections / 99% / since April in sub-fab, sites Malta NY / Burlington VT / Dresden / Singapore; Rockwell definitive agreement 18.11, Austrian AMR maker (forklift AMRs), "more than double" AMR business, terms undisclosed, close Q2 FY2027, subject to regulatory approval. 1 small fix: → 2026-11-19 applied: DM 1 date now "17.11 (שעון ארה״ב)"; posts unchanged, scheduled 12:00.
 - 2026-11-18 [from factcheck] news/20261118: core facts OK (DMV order 11.11, public 17.11, "imminent hazard", recurring entries to active construction zones, US-101 Burlingame + I-280 CHP; no injuries/collisions; freeway pause in all markets, temporary; surface streets continue; "over half a million trips/week"; Genesis $500M Series A, $3.5B post-money, co-led Premji/Khosla/Eclipse, Paris, Eno no head, CEO Zhou Xian, 30–40 Enos, factories/warehouses). 3 small fixes below. → 2026-11-18 applied: 'שתי זרועות' (spec/caption/dms), 'מפריז' only, TNW demo wording; re-rendered + uploaded, scheduled 12:00 (IG+FB+TikTok).
 - 2026-11-18 [from factcheck] news/20261118 slide 3 + caption + dms: "שתי ידיים" — Eno has two ARMS (TNW: "two arms on a rotating wheeled base"); ידיים = hands, a commenter can nitpick. Safe: "שתי זרועות על בסיס עם גלגלים". Source: https://thenextweb.com/news/genesis-ai-500m-series-a-3-5bn-valuation-eno-robot
 - 2026-11-18 [from factcheck] news/20261118 dms 2: "(פריז וסן קרלוס, קליפורניה)" — San Carlos not in TNW or Robotics 24/7 (both say Paris-based). Safe: "(Genesis AI מפריז)". Source: https://www.robotics247.com/article/genesis-ai-announces-500m-series-a-at-3.5b-valuation
