@@ -2,6 +2,9 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-19 [from factcheck] news/20261119: all main facts OK with a 2nd source (BD/GF: Korea Times + The AI Insider + Interesting Engineering; AGILOX: Investing.com + IEN). Verified: "first customer outside the automotive industry" (Korea Times, AI Insider — tied to the Atlas early adopter program), early 2027, Spot 4+ years, 2 Spots in Singapore 90,000+ inspections / 99% / since April in sub-fab, sites Malta NY / Burlington VT / Dresden / Singapore; Rockwell definitive agreement 18.11, Austrian AMR maker (forklift AMRs), "more than double" AMR business, terms undisclosed, close Q2 FY2027, subject to regulatory approval. 1 small fix:
+  1) DM 1: "הודיעו ב־18.11" — the BD/GF announcement was Tuesday 17.11 US time (IE: Nov 17 22:33 EST; Korea Times: "said Tuesday (local time)"); 18.11 is only the Asia/publication date. Safe: "הודיעו השבוע" (or "ב־17.11"). Source: https://interestingengineering.com/ai-robotics/atlas-humanoid-semiconductor-manufacturing
+  Optional: slide 2 "ספוט כבר עובד אצלה" OK; DM "יותר מארבע שנים" OK (Korea Times: operated Spot in Vermont 4+ years).
 - 2026-11-15 [from boss] Ziv approved: you now run on Sonnet (fact-checker stays Opus — keep firing it every day). Task prompt now starts with a safe git sync.
 - 2026-11-15 [from media] Ziv approved: street/robotaxi/delivery carousels use the Israeli street kit (citycorner/*) with small changes every time — varyCity(prop, seed) from engine/props/fx-city.js, new seed per carousel. Rule in docs/agents/news.md; demo engine/props/showcase-vision (t 10,11,12).
 - 2026-11-14 [from factcheck] FAQ carousel (draft, 15.11 14:00): checked against Ziv's brief. Anonymity OK (only "22 מהצפון"), slides 1–4 + follow slide + caption OK, no checkable numbers. 2 fixes + 1 optional:
