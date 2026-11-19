@@ -1553,6 +1553,59 @@ for (const p of sc.props || []) {
     airfield({runway: true});
     cargoUav(1.0, 5.2, -1.5, -.12, {pitch: .12});
     const key = new THREE.PointLight(0xffffff, 10, 24); key.position.set(0, 8, 8); scene.add(key); }
+  // ---------- 20261119 props (Boston Dynamics x GlobalFoundries: Spot patrols a chip fab, Atlas to be tested from 2027; Rockwell buys AGILOX: forklift AMR + flatbed AMR moving pallets) ----------
+  if (['gfcover', 'gfspot', 'agiline'].includes(p)) { grid.visible = false; ring.visible = glow.visible = false; }
+  const fabTool = (x, z, ry = 0, w = 1.8, scr = null) => { const g = new THREE.Group(), body = mat(0xdfe5f2, .1, {roughness: .5, metalness: .15}), dk = mat(0x23273a, .1, {roughness: .5, metalness: .4});
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, 2.1, 1.1), body); b.position.y = 1.05; g.add(b);
+    const base = new THREE.Mesh(new THREE.BoxGeometry(w + .04, .14, 1.14), dk); base.position.y = .07; g.add(base);
+    const win = new THREE.Mesh(new THREE.BoxGeometry(w * .55, .75, .03), new THREE.MeshStandardMaterial({color: 0x1a3a66, emissive: 0x2a6fd8, emissiveIntensity: .5, roughness: .2})); win.position.set(-w * .12, 1.35, .56); g.add(win);
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(w + .02, .06, 1.12), mat(0x2ee6ff, .1)); strip.position.y = 2.0; g.add(strip);
+    if (scr) { const t = screenTex(scr, 384, 256); const sm = new THREE.Mesh(new THREE.PlaneGeometry(.62, .42), new THREE.MeshBasicMaterial({map: t})); sm.position.set(w * .33, 1.3, .571); g.add(sm); }
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); return g; };
+  const fabRail = (z, x0, x1) => { const r = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, .12, .16), mat(0x8a93b8, .1, {metalness: .7, roughness: .35})); r.position.set((x0 + x1) / 2, 4.6, z); scene.add(r);
+    for (let k = 0; k < 4; k++) { const pod = new THREE.Mesh(new THREE.BoxGeometry(.5, .36, .45), mat(0xf2f2f2, .1, {roughness: .5})); pod.position.set(x0 + 2.2 + k * 3.2, 4.3, z); scene.add(pod);
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(.03, .5, .03), mat(0x8a93b8, .1)); cab.position.set(x0 + 2.2 + k * 3.2, 4.52, z); scene.add(cab); } };
+  const fabHall = async () => { scene.fog = new THREE.FogExp2(0x161a38, 0.02); labFloor(0x3a3f5a);
+    await place('buildings/factoryHall', {x: 0, z: -13, h: 10, dim: .5});
+    for (const xx of [-2.2, 2.6]) { const l = new THREE.Mesh(new THREE.PlaneGeometry(.12, 16), mat(0xf2d34a, .1)); l.rotation.x = -Math.PI / 2; l.position.set(xx, .006, -4); scene.add(l); } };
+  const fabLight = (cx = 0) => { for (let k = 0; k < 4; k++) { const lamp = new THREE.Mesh(new THREE.BoxGeometry(2.4, .08, .3), new THREE.MeshStandardMaterial({color: 0xfff2c8, emissive: 0xffe9a8, emissiveIntensity: .7})); lamp.position.set(cx, 6, -1 - k * 2.8); lamp.rotation.y = Math.PI / 2; scene.add(lamp); }
+    const sp = new THREE.SpotLight(0xfff0cf, 75, 22, .6, .5); sp.position.set(cx, 7, 3); sp.target.position.set(cx, 1, -3); scene.add(sp, sp.target);
+    const key = new THREE.PointLight(0xffe9c8, 8, 13); key.position.set(cx + 2, 3, 5); scene.add(key); };
+  const pallet = (x, z, ry = 0, y0 = 0, loaded = true) => { const g = new THREE.Group(), wd = mat(0xa87a46, .1, {roughness: .9, metalness: 0});
+    for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(1.2, .1, .14), wd); b.position.set(0, .05, -.33 + k * .33); g.add(b); }
+    const top = new THREE.Mesh(new THREE.BoxGeometry(1.2, .05, .9), wd); top.position.y = .12; g.add(top);
+    if (loaded) for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) for (let l = 0; l < 2; l++) carton(-.28 + i * .56, .145 + l * .4, -.22 + j * .44, .52, .38, .4, 0, i + j + l, g);
+    g.position.set(x, y0, z); g.rotation.y = ry; scene.add(g); return g; };
+  const flatbedAmr = (x, z, ry, withPallet = true) => { const g = new THREE.Group(), dk = mat(0x23273a, .1, {roughness: .5, metalness: .4});
+    const b = new THREE.Mesh(new THREE.BoxGeometry(1.3, .26, 0.95), dk); b.position.y = .26; g.add(b);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(1.34, .06, .99), mat(0xffa53a, .1, {roughness: .5})); top.position.y = .42; g.add(top);
+    for (const [wx, wz] of [[-.5, -.4], [.5, -.4], [-.5, .4], [.5, .4]]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, .1, 16), mat(0x101218, .1)); w.rotation.x = Math.PI / 2; w.position.set(wx, .12, wz * 1.1); g.add(w); }
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(.07, 12, 8), new THREE.MeshBasicMaterial({color: 0x2ee6ff})); lid.position.set(.62, .5, 0); g.add(lid);
+    g.position.set(x, 0, z); g.rotation.y = ry; scene.add(g); if (withPallet) { const pl = pallet(0, 0, 0, .45); scene.remove(pl); g.add(pl); } return g; };
+  const hudScr = (a, b) => (c, w, h) => { c.fillStyle = '#06121f'; c.fillRect(0, 0, w, h); c.fillStyle = '#2ee6ff'; c.font = 'bold 110px Rubik'; c.textAlign = 'center'; c.fillText(a, w / 2, h * .55); c.fillStyle = '#9fd8ff'; c.font = 'bold 40px Rubik'; c.fillText(b, w / 2, h * .85); };
+  if (p === 'gfcover') { // cover: one fab hall — Spot patrolling between process tools (left), a forklift AMR lifting a pallet (right)
+    await fabHall(); fabRail(-5.5, -10, 10);
+    fabTool(-4.2, -5.3, 0.12, 2.2); fabTool(-1.6, -5.4, 0, 1.8); fabTool(4.4, -9.5, -.1, 2.2);
+    await lib('robots/robotDog', {x: -1.4, z: -2.6, ry: .5});
+    await lib('robots/humanoid', {x: -3.5, y: .25, z: -2.4, ry: .4});
+    await lib('vehicles/forklift', {x: 3.4, z: -2.6, ry: -2.2}); pallet(5.1, -3.3, .3);
+    fabLight(0); }
+  if (p === 'gfspot') { // story: Spot checks a process tool in a chip fab, the tool screen shows 99%; a humanoid waits further down the aisle for the 2027 test
+    await fabHall(); fabRail(-7, -10, 10);
+    fabTool(-1.0, -4.6, 0, 2.6, hudScr('99%', 'SPOT'));
+    fabTool(-5.2, -6.4, .15, 2.2); fabTool(4.0, -8.0, -.1, 2.2);
+    await lib('robots/robotDog', {x: 0.8, z: -2.4, ry: .55});
+    await lib('robots/humanoid', {x: 3.4, y: .25, z: -3.2, ry: -.5});
+    fabLight(0); }
+  if (p === 'agiline') { // story: warehouse floor — a forklift AMR lifting a pallet onto a stack, a flatbed AMR carrying a pallet, a second pallet waiting
+    scene.fog = new THREE.FogExp2(0x070a24, 0.022); labFloor(0x2a304a);
+    await place('buildings/factoryHall', {x: 0, z: -11, h: 9, dim: .55});
+    for (const xx of [-1.6, 1.8]) { const l = new THREE.Mesh(new THREE.PlaneGeometry(.1, 14), mat(0xf2d34a, .1)); l.rotation.x = -Math.PI / 2; l.position.set(xx, .005, -4); scene.add(l); }
+    await lib('vehicles/forklift', {x: -.2, z: -2.6, ry: -1.2}); pallet(1.5, -2.9, .1, .0);
+    flatbedAmr(2.9, -1.2, Math.PI / 2 + .3, true);
+    pallet(-3.8, -4.4, .2, 0); pallet(-3.8, -4.4, .2, .5);
+    pallet(5.0, -5.2, -.3, 0);
+    fabLight(0.5); }
 }
 const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.target || (count > 1 ? [0, 0, -4] : [0, 1.3, 0]);
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
