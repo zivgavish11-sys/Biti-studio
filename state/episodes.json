@@ -221,6 +221,14 @@
    "topic": "אפשר לפרוץ לרובוט בבית? (UniPwn, brand-free)",
    "hook": "יהיה אפשר לפרוץ לרובוט שלכם? (red 'נפרץ!' alert)",
    "posted": "scheduled 2026-11-20T18:00+02:00 via Buffer by video (IG 6affd38dca85ebefb0f8ff27, FB 6affd38e0f5eda1a57c1b454, TikTok 6affd38e738ce4635f89cf43). Media on branch media-ep019-hack (delete after all sent)."
+  },
+  {
+   "slug": "ep020-protect",
+   "date": "2026-11-20",
+   "format": "long",
+   "look": "hero-v2",
+   "topic": "איך שומרים על הרובוט בבית מפריצה? (3 steps, follow-up to ep019)",
+   "posted": "scheduled 2026-11-21T18:00+02:00 via Buffer by video (IG 6b0000d1738ce4635f9abab8, FB 6b0000d2d5f8acdd0d8254d7, TikTok 6b0000d2d5f8acdd0d825547). Media on branch media-ep020-protect (delete after all sent)."
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
