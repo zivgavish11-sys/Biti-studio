@@ -1,0 +1,15 @@
+# ep019-hack — visual script v1 (hero look, one world, camera flies between 3 sets; no brand/model on screen)
+World: evening living room (home2056/livingRoom + sofaModern + loungeSet). Hero = generic home humanoid (robots/humanoid) standing by the sofa.
+Outside the window: a street spot with a mannequin holding a phone (people/mannequin-scan) = "the researcher". Second set 3–4 m away: a row of 5 identical humanoids (the "same model" line).
+Colours: light blue #8ea6ff = signal/information (Bluetooth dots, message, key); deeper blue #4f6fe0 = force/movement (robot moving). Red #f0502a only as the caption key word.
+1. 0–3 s "יהיה אפשר לפרוץ לרובוט שלכם? / חוקרים כבר עשו את זה... בלי לגעת בו." — frame 0 mid-action: high 3/4 on the robot in the living room, a stream of light-blue dots already flowing from the phone outside the window into the robot; its head turns toward the window. Title: יהיה אפשר לפרוץ | לרובוט [שלכם]?
+2. "איך? כשמחברים רובוט כזה לוויפיי, הטלפון שולח לו את הסיסמה בבלוטוס." — camera dolly to the owner's phone on the coffee table (everyday/smartphone, st.screen: Hebrew app "חיבור לוויפיי · שם רשת · סיסמה"); light-blue envelope flies phone → robot, dashed line.
+3. "ההודעה נעולה במפתח סודי, כדי שרק האפליקציה שלכם תוכל לדבר איתו." — close-up on the envelope: a padlock closes on it; floating screen joined to the robot's chest: a key icon + "מפתח סודי"; the robot accepts (small check).
+4. "אבל הנה החלק המטורף: לכל הרובוטים מהדגם הזה, היה אותו מפתח!" — re-hook visual shift: camera pulls far back and flies to the row of 5 identical robots; the same key icon pops above each one in turn (one by one, fast); callout "אותו מפתח".
+5. "החוקרים מצאו אותו, ושלחו לרובוט הודעה משלהם." — fly back to the window: the researcher's phone screen shows the key; a second envelope (outline style, different from the owner's) flies through the window to the robot; the padlock opens.
+6. "במקום שם של רשת, הם החביאו בה פקודה." — envelope opens on a floating screen: field "שם רשת:" — the text slides aside and a command line appears instead ("פקודה"); callout on the hidden part.
+7. "והרובוט, ממושמע כמו תמיד, ביצע אותה." — the robot does a small obedient nod (joke beat); the robot's chest/visor screen shows the command running.
+8. "ככה הם יכלו לקבל שליטה מלאה ברובוט." — robot's joints light deeper blue one by one (shoulder, elbow, knee) = "full control" as a possibility — the robot does NOT walk or act (no move was shown in reality); callout "שליטה מלאה".
+9. "אז מה עושים? מעדכנים את הרובוט, ומכבים בלוטוס כשלא צריך." — back to the owner's phone: app screen "עדכון מותקן ✓" then a Bluetooth toggle switches off; the dot stream from the window fades out.
+10. outro card "עוד הסברים על רובוטים? תעקבו." — wide high 3/4 of the living room like frame 0 (loop), scene shrinks into the card, Follow button.
+Assets needed: humanoid ×6 (instances), livingRoom + window with a street spot outside, mannequin-scan, smartphone ×2 (st.screen), envelope + padlock + key icons (build in kit.js or simple planes) → ask media only if missing.
