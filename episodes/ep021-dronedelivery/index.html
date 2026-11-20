@@ -94,6 +94,11 @@ st.frame(t => {
       sh(A[3] + 1.0, [S.x, 8, S.z], [30, 40, 30]), sh(A[4] + .2, [S.x, 4, S.z - .5], [11, 8, 15.5]),                 // dive: ghost tries to land, ✕
       sh(A[5] - .25, [S.x, 4, S.z - 1], [9, 6, 13]), sh(B[7], [S.x + 1, 3, S.z - 2], [7, 4.5, 10.5]),   // ONE slow shot: trees + wires + people all in frame, callouts pop on each word (Ziv: sync, no whips)
       sh(END + 5, [S.x + 1, 3, S.z - 2], [6.8, 4.4, 10.2])]);
+    // Ziv 2026-11-20: close-ups on each word (trees / wires / people), clean cut on the word, slow push-in while it's spoken
+    const cu = (t0, t1, tg, o0, o1) => { if (t >= t0 && t < t1) { const k = sm(t0, t1, t); ct = V(...tg); cp = V(tg[0] + o0[0] + (o1[0] - o0[0]) * k, tg[1] + o0[1] + (o1[1] - o0[1]) * k, tg[2] + o0[2] + (o1[2] - o0[2]) * k); } };
+    cu(A[5] - .1, A[6] - .1, [S.x - 4, 4, S.z - 2], [5, 4, 8], [3.8, 3.2, 6.2]);
+    cu(A[6] - .1, A[7] - .1, [S.x + 5, 8, S.z], [-6, 1.5, 7], [-4.6, 1.2, 5.4]);
+    cu(A[7] - .1, B[7] + .05, [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
     if (t > B[7] + .05) [cp, ct] = camPath(t, [   // clean cut street → drone (was a 100 m whip at 10.4 s)
       sh(B[7] + .05, [Dp.x, Dp.y - 2, Dp.z], [4.4, 3.3, 5.5]),
       sh(A[8] + .3, [Dp.x, Dp.y - 2, Dp.z], [4, 3, 5]), sh(B[9], [Pp.x, Pp.y + 1, Pp.z], [3, 3, 4]),   // follow the pod already (was a 30 m leap at 13 s)            // back up: drone lets the line out
@@ -120,7 +125,7 @@ st.frame(t => {
     const xk = win(t2, A[4], A[5] + .2, .25); if (xk > .01) { const [x, y, z] = st.proj(V(S.x, 3, S.z)); if (z < 1) { c.save(); c.globalAlpha = xk; c.strokeStyle = '#fff'; c.lineWidth = 16; c.lineCap = 'round';
       c.beginPath(); c.moveTo(x - 60, y - 60); c.lineTo(x + 60, y + 60); c.moveTo(x + 60, y - 60); c.lineTo(x - 60, y + 60); c.stroke(); c.restore(); } }
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
-    L(A[5] - .1, A[6] - .1, 'עצים', V(S.x - 4, 5, S.z - 2), 120, -260);
+    L(A[5] - .05, A[6] - .1, 'עצים', V(S.x - 4, 5, S.z - 2), 120, -260);
     L(A[6] - .05, A[7] - .1, 'חוטי חשמל', V(S.x + 5, 8.3, S.z + 7), -120, -240);
     L(A[7] - .05, A[8], 'אנשים', people[0].getWorldPosition(V3()).add(V(0, 1.8, 0)), 100, -240);
     L(A[12], A[13] + .2, 'רובוט', pod.position, 140, -260);
