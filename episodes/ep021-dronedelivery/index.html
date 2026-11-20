@@ -80,38 +80,38 @@ st.frame(t => {
   const sh = (tt, tg, o, z = 1) => [tt, [tg[0] + o[0] * z, tg[1] + o[1] * z, tg[2] + o[2] * z], tg];
   let cp, ct;
   const up = sm(.8, B[2] - .3, t), over = sm(B[2] - .55, A[3] + .1, t);
-  if (t < A[3] + .1) {                                        // HOOK v3 (Ziv 2026-11-20): start over the drone, ride DOWN the line looking down, land at the hand + pod on the terrace; counter 100 → 0
-    const dn = sm(.5, B[2] - .2, t), land = sm(B[2] - .45, A[3] + .1, t);
-    const ty = H.y + HOV - 1.5 - (HOV - 2.4) * dn;
-    const ride = V(H.x + .55, ty + .3, H.z + .4), rideT = pod.position.clone();
-    const top0 = V(H.x + 5.5, H.y + HOV + 5.5, H.z + .6), topT = dr.position.clone().add(V(-4, -3, 0));   // look west: sea + beach in the frame (Tel Aviv)
-    const end = V(H.x + 3.4, H.y + 2.1, H.z + 3.0), endT = V(H.x + .4, H.y + .4, H.z + .3), k0 = sm(.15, .6, t);
-    cp = top0.clone().lerp(ride, k0).lerp(end, land); ct = topT.clone().lerp(rideT, k0).lerp(endT, land);
-  } else {
-    const Dp = dr.position, Pp = pod.position, Ss = [S.x, 2, S.z];
-    [cp, ct] = camPath(t, [
-      sh(A[3] + .1, [S.x, 8, S.z], [33, 43, 33]),   // clean cut terrace → street (was a 30 m whip at 5 s)
-      sh(A[3] + 1.0, [S.x, 8, S.z], [30, 40, 30]), sh(A[4] + .2, [S.x, 4, S.z - .5], [11, 8, 15.5]),                 // dive: ghost tries to land, ✕
-      sh(A[5] - .25, [S.x, 4, S.z - 1], [9, 6, 13]), sh(B[7], [S.x + 1, 3, S.z - 2], [7, 4.5, 10.5]),   // ONE slow shot: trees + wires + people all in frame, callouts pop on each word (Ziv: sync, no whips)
-      sh(END + 5, [S.x + 1, 3, S.z - 2], [6.8, 4.4, 10.2])]);
-    // Ziv 2026-11-20: close-ups on each word (trees / wires / people), clean cut on the word, slow push-in while it's spoken
-    const cu = (t0, t1, tg, o0, o1) => { if (t >= t0 && t < t1) { const k = sm(t0, t1, t); ct = V(...tg); cp = V(tg[0] + o0[0] + (o1[0] - o0[0]) * k, tg[1] + o0[1] + (o1[1] - o0[1]) * k, tg[2] + o0[2] + (o1[2] - o0[2]) * k); } };
-    cu(A[5] - .1, A[6] - .1, [S.x - 4, 4, S.z - 2], [8, 6, 12.5], [6.8, 5.2, 10.6]);   // less zoom (Ziv)
-    cu(A[6] - .1, A[7] - .1, [S.x + 4.6, 7.6, S.z + 5], [-9.5, 2.5, 10], [-8, 2.1, 8.6]);   // less zoom, wires across the frame (Ziv)
-    cu(A[7] - .1, B[7] + .05, [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
-    if (t > B[7] + .05) [cp, ct] = camPath(t, [   // clean cut street → drone (was a 100 m whip at 10.4 s)
-      sh(B[7] + .05, [Dp.x, Dp.y - 2, Dp.z], [4.4, 3.3, 5.5]),
-      sh(A[8] + .3, [Dp.x, Dp.y - 2, Dp.z], [4, 3, 5]), sh(B[9], [Pp.x, Pp.y + 1, Pp.z], [3, 3, 4]),   // follow the pod already (was a 30 m leap at 13 s)            // back up: drone lets the line out
-      sh(A[10] + .3, [Pp.x, Pp.y, Pp.z], [1.4, 1.2, 1.8]), sh(A[11] + .4, [Pp.x, Pp.y, Pp.z], [1.1, .8, 1.4]),  // re-hook: follow the pod down
+  // ---------- camera: ONE world, the camera always FLIES between shots (no cuts — grouper rule, Ziv 2026-11-20) ----------
+  const Dp = dr.position, Pp = pod.position;
+  const lerpV = (a, b, k) => V(a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k);
+  const shotHook = tt => { const dn = sm(.5, B[2] - .2, tt), land = sm(B[2] - .45, A[3] + .1, tt);
+    const ty = H.y + HOV - 1.5 - (HOV - 2.4) * dn, ride = V(H.x + .55, ty + .3, H.z + .4), rideT = pod.position.clone();
+    const top0 = V(H.x + 5.5, H.y + HOV + 5.5, H.z + .6), topT = dr.position.clone().add(V(-4, -3, 0));   // look west: sea + beach (Tel Aviv)
+    const end = V(H.x + 3.4, H.y + 2.1, H.z + 3.0), endT = V(H.x + .4, H.y + .4, H.z + .3), k0 = sm(.15, .6, tt);
+    return [top0.clone().lerp(ride, k0).lerp(end, land), topT.clone().lerp(rideT, k0).lerp(endT, land)]; };
+  const push = (t0, t1, tg, o0, o1) => tt => { const k = sm(t0, t1, tt); return [lerpV([tg[0] + o0[0], tg[1] + o0[1], tg[2] + o0[2]], [tg[0] + o1[0], tg[1] + o1[1], tg[2] + o1[2]], k), V(...tg)]; };
+  const dive = tt => { const k = sm(5.6, A[5] - .45, tt); const tg = [S.x, 8 - 4 * k, S.z - .5 * k]; const o = lerpV([30, 40, 30], [11, 8, 15.5], k); return [V(tg[0] + o.x, tg[1] + o.y, tg[2] + o.z), V(...tg)]; };
+  const trees = push(A[5] - .05, A[6] - .35, [S.x - 4, 4, S.z - 2], [8, 6, 12.5], [6.8, 5.2, 10.6]);          // less zoom (Ziv)
+  const wires = push(A[6] + .05, A[7] - .35, [S.x + 4.6, 7.6, S.z + 5], [-9.5, 2.5, 10], [-8, 2.1, 8.6]);    // wires across the frame (Ziv)
+  const people = push(A[7] + .05, B[7], [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
+  const follow = tt => camPath(tt, [
+      sh(A[8] + .9, [Dp.x, Dp.y - 2, Dp.z], [4, 3, 5]), sh(B[9], [Pp.x, Pp.y + 1, Pp.z], [3, 3, 4]),             // the drone lets the line out → follow the pod
+      sh(A[10] + .3, [Pp.x, Pp.y, Pp.z], [1.4, 1.2, 1.8]), sh(A[11] + .4, [Pp.x, Pp.y, Pp.z], [1.1, .8, 1.4]),
       sh(A[12] + .2, [Pp.x, Pp.y, Pp.z], [.9, .5, 1.1]), sh(A[13] + .1, [Pp.x, Pp.y, Pp.z], [1.0, .9, 1.2]),
-      sh(A[14] + .3, [T.x, T.y + .6, T.z], [2.4, 1.8, 2.8]), sh(B[15], [T.x, T.y + .4, T.z], [1.8, 1.3, 2.2]),  // steering to the table
+      sh(A[14] + .3, [T.x, T.y + .6, T.z], [2.4, 1.8, 2.8]), sh(B[15], [T.x, T.y + .4, T.z], [1.8, 1.3, 2.2]),   // to the table
       sh(A[16] + .3, [T.x, T.y + .3, T.z], [1.6, 1.2, 2.0]),
-      sh(A[17] + .3, [T.x, T.y + 3, T.z], [5, 4, 7]), sh(B[17], [T.x, T.y + 12, T.z], [14, 6, 18]),   // wider so the fast reel-up doesn't shake (25 s)                // reel up, follow
-      sh(A[18] + .2, [Dp.x, Dp.y, Dp.z], [10, 6, 14]), sh(B[18], [Dp.x, Dp.y - 20, Dp.z], [30, 30, 40]),          // drone flies off over the roofs
-      sh(A[19] + .1, [D.x, D.y + 1.2, D.z], [3, 1.5, 4]), sh(B[19], [D.x, D.y + 1.2, D.z], [2.4, 1.3, 3.4]), sh(END, [D.x, D.y + 1.2, D.z], [2.2, 1.2, 3.2])]);
-    if (t > A[19] - .05 && t <= A[20] - .05) { const k = sm(A[19] - .05, A[20], t); cp = V(D.x + 3 - .6 * k, D.y + 2.7 - .2 * k, D.z + 4 - .6 * k); ct = V(D.x, D.y + 1.2, D.z); }   // clean cut to the door (was a 40 m whip at 27.9 s)
-    if (t > A[20] - .05) { const k = sm(A[20] - .05, END, t); cp = V(H.x + 5.5 + .1 * k, H.y + HOV + 5.5 + .1 * k, H.z + .6); ct = V(H.x - 4, H.y + HOV - 3, H.z); }   // clean cut to the outro (was a 100 m whip in 0.3 s at 29.9 s)
-  }
+      sh(A[17] + .3, [T.x, T.y + 3, T.z], [5, 4, 7]), sh(B[17], [T.x, T.y + 12, T.z], [14, 6, 18]),                // reel up (wide)
+      sh(A[18] + .2, [Dp.x, Dp.y, Dp.z], [10, 6, 14]), sh(B[18], [Dp.x, Dp.y - 20, Dp.z], [30, 30, 40])]);         // drone flies off
+  const door = tt => { const k = sm(A[19] + .3, A[20] - .4, tt); return [V(D.x + 3 - .6 * k, D.y + 2.7 - .2 * k, D.z + 4 - .6 * k), V(D.x, D.y + 1.2, D.z)]; };
+  const outro = tt => { const k = sm(A[20], END, tt); return [V(H.x + 5.5 + .1 * k, H.y + HOV + 5.5 + .1 * k, H.z + .6), V(H.x - 4, H.y + HOV - 3, H.z)]; };
+  // [shot, until] — between shots the camera flies over a window [until, nextStart] with an eased arc
+  const SH = [[shotHook, 4.5], [dive, A[5] - .45], [trees, A[6] - .35], [wires, A[7] - .35], [people, B[7] - .1], [follow, B[18]], [door, A[20] - .4], [outro, 1e9]];
+  const FROM = [0, 5.6, A[5] - .05, A[6] + .05, A[7] + .05, A[8] + .9, A[19] + .3, A[20] + .7];   // when each shot is fully on screen
+  const ee = k => k * k * k * (k * (6 * k - 15) + 10);
+  let si = 0; while (si < SH.length - 1 && t >= FROM[si + 1]) si++;
+  if (t <= SH[si][1] || si === SH.length - 1) [cp, ct] = SH[si][0](t);
+  else { const t0 = SH[si][1], t1 = FROM[si + 1], k = ee(Math.min(1, Math.max(0, (t - t0) / (t1 - t0))));
+    const [p0, q0] = SH[si][0](t0), [p1, q1] = SH[si + 1][0](t1), d = p0.distanceTo(p1);
+    cp = p0.clone().lerp(p1, k).add(V(0, Math.sin(Math.PI * k) * Math.min(25, d * .18), 0)); ct = q0.clone().lerp(q1, k); }
   const h = Math.round(100 * (1 - sm(.5, B[2] - .2, t)));
   return {cp, ct, noFlash: true, overlay: t2 => {
     const c = st.ctx;
