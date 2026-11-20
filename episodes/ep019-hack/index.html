@@ -1,16 +1,20 @@
 <!doctype html><html><head><meta charset="utf-8"></head><body>
 <script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
-// EP019-hack — LONG + hero look. visual.md v1 + hook v2 (Ziv: red "נפרץ" alert with warning signs above the robot).
-// Timeline is ESTIMATED until Ziv records. Phrases: 0 hook | 1 חוקרים כבר עשו את זה | 2 בלי לגעת בו | 3 איך | ...
+// EP019-hack — LONG + hero look, one world: living room (robot + owner's phone) · researcher outside the window · row of 5 identical robots (4 m left).
+// visual.md v1 + hook v2 (Ziv: red "נפרץ!" alert). Ending = CTA to ep020 (Ziv). Phrases (aligned 2026-11-20; 19+20 merged so the card starts on "בפרק הבא"):
+// 0 hook | 1 חוקרים כבר עשו את זה | 2 בלי לגעת בו | 3 איך | 4 כשמחברים לוויפיי | 5 הטלפון שולח בבלוטוס | 6 נעולה במפתח סודי | 7 רק האפליקציה שלכם
+// 8 אבל הנה החלק המטורף | 9 לכל הרובוטים מהדגם הזה | 10 היה אותו מפתח | 11 החוקרים מצאו אותו | 12 ושלחו הודעה משלהם | 13 במקום שם של רשת
+// 14 החביאו בה פקודה | 15 והרובוט | 16 ממושמע כמו תמיד | 17 ביצע אותה | 18 שליטה מלאה | 19 איך שומרים מפריצה? | 20 בפרק הבא. תעקבו.
 import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
 const st = await studio({
   look: 'hero', episode: 19, fog: .012, outro: 'card',
-  keys: ['לפרוץ', 'בלי', 'מפתח', 'פקודה', 'שליטה', 'בלוטוס'],
-  hookEnd: 3.0, hook: ['יהיה אפשר לפרוץ', 'לרובוט <span class="pill">שלכם</span>?'],
+  keys: ['לפרוץ', 'בלי', 'בבלוטוס', 'סודי', 'אותו', 'פקודה', 'ממושמע', 'שליטה', 'מפריצה'],
+  hookEnd: 3.3, hook: ['יהיה אפשר לפרוץ', 'לרובוט <span class="pill">שלכם</span>?'],
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
+const ACC = 0x8ea6ff, FORCE = 0x4f6fe0, RED = '#f0502a';
 st.stage({r: 60, grid: 0, spot: [1.5, 6, 3], target: [0, .6, 0]});
 const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
 await P('home2056/livingRoom', {x: 0, z: -.6});
@@ -18,48 +22,167 @@ await P('home2056/sofaModern', {x: -1.4, z: -1.9});
 await P('home2056/loungeSet', {x: -.6, z: .1});
 await P('home2056/planterTall', {x: -3.0, z: -2.5});
 const warm = new THREE.PointLight(0xffd9a8, 3, 6, 1.6); warm.position.set(2.5, 1.5, -2.5); scene.add(warm);
+const V3 = () => new THREE.Vector3();
 const bot = await P('robots/humanoid', {x: .9, z: .2, ry: -.35});
-const J = n => bot.getObjectByName(n), V3 = () => new THREE.Vector3();
-// the researcher outside the window, phone up
+const J = n => bot.getObjectByName(n);
 const man = await P('people/mannequin-scan', {x: .2, z: -3.9, ry: 0});
+// the row of 5 identical robots, 4 m to the left of the room
+const row = []; for (let i = 0; i < 5; i++) row.push(await P('robots/humanoid', {x: -6 - i * 1.25, z: .6 - i * .35, ry: .25}));
+// owner's phone lying on the coffee table + its floating UI screen (dashed line to the phone)
+const phone = await P('everyday/smartphone', {x: -.25, y: .43, z: .35, scale: 2.2}); phone.rotation.x = -Math.PI / 2;
+let UI = {mode: 'wifi', k: 0};
+const ui = st.screen([.42, .62], (c, t, W, H) => {
+  c.fillStyle = '#141838'; c.fillRect(0, 0, W, H); c.textAlign = 'right'; c.direction = 'rtl'; const r = W - 60;
+  c.fillStyle = '#b9bdf0'; c.font = `700 ${W * .075}px Rubik`;
+  if (UI.mode === 'wifi') {
+    c.fillText('חיבור הרובוט לוויפיי', r, H * .12);
+    c.font = `600 ${W * .06}px Rubik`; c.fillStyle = '#8b90c8'; c.fillText('שם רשת', r, H * .28); c.fillText('סיסמה', r, H * .5);
+    c.strokeStyle = '#8ea6ff'; c.lineWidth = 5; c.strokeRect(60, H * .31, W - 120, H * .09); c.strokeRect(60, H * .53, W - 120, H * .09);
+    c.fillStyle = '#fff'; c.font = `600 ${W * .06}px Rubik`; c.fillText('הבית שלנו', r - 30, H * .38); c.fillText('••••••••', r - 30, H * .6);
+    const s = UI.k; c.fillStyle = s > 0 ? '#8ea6ff' : '#3a4290'; c.beginPath(); c.roundRect(80, H * .74, W - 160, H * .11, 40); c.fill();
+    c.fillStyle = '#0a0c1c'; c.textAlign = 'center'; c.font = `800 ${W * .065}px Rubik`; c.fillText(s > 0 ? 'שולח בבלוטוס...' : 'חיבור', W / 2, H * .82);
+  } else {   // 'update' etc. unused in ep019
+  }
+}); scene.add(ui.mesh);
+const dash = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: ACC, dashSize: .05, gapSize: .04})); scene.add(dash);
+// envelope (owner = solid light blue; researcher = outline) + padlock + key
+const mkEnv = (outline) => { const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.BoxGeometry(.32, .2, .02), new THREE.MeshStandardMaterial({color: outline ? 0x262c66 : 0xe8ebff, roughness: .8})); g.add(body);
+  const fl = new THREE.Mesh(new THREE.CylinderGeometry(.19, .19, .021, 3), new THREE.MeshStandardMaterial({color: ACC, roughness: .7})); fl.rotation.set(Math.PI / 2, 0, Math.PI); fl.scale.set(1, 1, .55); fl.position.set(0, .05, .002); g.add(fl);
+  if (outline) { const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(.33, .21, .025)), new THREE.LineBasicMaterial({color: ACC})); g.add(e); }
+  return g; };
+const env1 = mkEnv(false), env2 = mkEnv(true); scene.add(env1, env2);
+const mkLock = () => { const g = new THREE.Group(); const m = new THREE.MeshStandardMaterial({color: ACC, roughness: .6});
+  const b = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, .05), m); g.add(b);
+  const sh = new THREE.Mesh(new THREE.TorusGeometry(.04, .012, 8, 20, Math.PI), m); sh.position.y = .05; sh.name = 'shackle'; g.add(sh); return g; };
+const lock = mkLock(); scene.add(lock);
+const mkKey = (s = 1) => { const g = new THREE.Group(); const m = new THREE.MeshStandardMaterial({color: ACC, roughness: .5});
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(.06, .02, 8, 24), m); ring.position.x = -.1; g.add(ring);
+  const sh = new THREE.Mesh(new THREE.BoxGeometry(.18, .025, .025), m); sh.position.x = .04; g.add(sh);
+  for (const x of [.09, .12]) { const tt = new THREE.Mesh(new THREE.BoxGeometry(.02, .05, .025), m); tt.position.set(x, -.03, 0); g.add(tt); }
+  g.scale.setScalar(s); return g; };
+const keys = row.map(() => { const k = mkKey(1.6); scene.add(k); return k; });
+const keyR = mkKey(1.2); scene.add(keyR);      // the key on the researcher's phone side
+// floating info screen next to the robot (key / command)
+let INF = {mode: 'key', k: 0};
+const inf = st.screen([.62, .36], (c, t, W, H) => {
+  c.fillStyle = '#141838'; c.fillRect(0, 0, W, H); c.textAlign = 'center'; c.direction = 'rtl';
+  if (INF.mode === 'key') { c.fillStyle = '#8ea6ff'; c.font = `800 ${H * .2}px Rubik`; c.fillText('🔑 מפתח סודי', W / 2, H * .42);
+    c.fillStyle = '#b9bdf0'; c.font = `600 ${H * .13}px Rubik`; c.fillText(INF.k > .5 ? '✓ האפליקציה שלכם' : 'בודק...', W / 2, H * .72); }
+  else { const k = INF.k; c.textAlign = 'right'; c.fillStyle = '#8b90c8'; c.font = `700 ${H * .15}px Rubik`; c.fillText('שם רשת:', W - 40, H * .3);
+    c.save(); c.globalAlpha = 1 - k; c.fillStyle = '#fff'; c.font = `700 ${H * .17}px Rubik`; c.fillText('הבית שלנו', W - 40 - 260 * k, H * .62); c.restore();
+    c.save(); c.globalAlpha = k; c.fillStyle = '#8ea6ff'; c.beginPath(); c.roundRect(40, H * .45, W - 80, H * .3, 18); c.fill();
+    c.fillStyle = '#0a0c1c'; c.font = `800 ${H * .17}px Rubik`; c.textAlign = 'center'; c.fillText('⚙ פקודה', W / 2, H * .67); c.restore(); }
+}); scene.add(inf.mesh);
+const dash2 = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: ACC, dashSize: .05, gapSize: .04})); scene.add(dash2);
 // chest screen on the robot
-let CS = {k: 0};
+let CS = {mode: 'other', run: 0};
 const chest = st.screen([.26, .16], (c, t, W, H) => {
-  c.fillStyle = '#141838'; c.fillRect(0, 0, W, H);
-  const k = CS.k; c.textAlign = 'center'; c.font = `800 ${H * .27}px Rubik`; c.direction = 'rtl';
-  c.fillStyle = k < .5 ? '#8ea6ff' : '#f0502a';
-  c.fillText('מחובר ל:', W / 2, H * .42); c.fillText(k < .5 ? 'בעלים' : 'מישהו אחר', W / 2, H * .8);
-}); J('torso').add(chest.mesh);
-// Bluetooth dots: phone -> robot head
-const N = 26, dots = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 10, 8), new THREE.MeshStandardMaterial({color: 0x8ea6ff, roughness: .6}), N); scene.add(dots);
-const M = new THREE.Matrix4();
+  c.fillStyle = '#141838'; c.fillRect(0, 0, W, H); c.textAlign = 'center'; c.direction = 'rtl';
+  if (CS.run > 0) { c.fillStyle = '#8ea6ff'; c.font = `800 ${H * .27}px Rubik`; c.fillText('מבצע', W / 2, H * .45);
+    c.fillRect(W * .15, H * .62, W * .7 * CS.run, H * .1); return; }
+  c.font = `800 ${H * .27}px Rubik`; c.fillStyle = CS.mode === 'owner' ? '#8ea6ff' : RED;
+  c.fillText('מחובר ל:', W / 2, H * .42); c.fillText(CS.mode === 'owner' ? 'בעלים' : 'מישהו אחר', W / 2, H * .8);
+}); J('torso').add(chest.mesh); chest.mesh.position.set(0, .34, .15);
+// joint markers (deeper blue = force/movement) for "full control"
+const jn = ['shoulderR', 'elbowR', 'shoulderL', 'elbowL', 'hipR', 'kneeR', 'hipL', 'kneeL', 'neck'];
+const jm = jn.map(n => { const m = new THREE.Mesh(new THREE.SphereGeometry(.065, 16, 12), new THREE.MeshStandardMaterial({color: FORCE, roughness: .5})); m.visible = false; scene.add(m); return m; });
+// Bluetooth dots: researcher's phone -> robot head (hook + recap)
+const N = 26, dots = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 10, 8), new THREE.MeshStandardMaterial({color: ACC, roughness: .6}), N); scene.add(dots);
+const M4 = new THREE.Matrix4();
+const arc = (p0, p1, u, lift) => { const p = p0.clone().lerp(p1, u); p.y += Math.sin(u * Math.PI) * lift; return p; };
+// ---------- frame ----------
 st.frame(t => {
-  bot.updateMatrixWorld(true); man.updateMatrixWorld(true);
-  const hit = 1;                                                // frame 0 = already hacked (strongest moment)
-  J('head').rotation.y = -.55 - .08 * Math.sin(t * 9) * (1 - sm(0, 1.2, t));  // head jerked toward the window
+  bot.updateMatrixWorld(true); man.updateMatrixWorld(true); phone.updateMatrixWorld(true);
+  const hacked = t < A[3] || t > A[17];              // red state in the hook and from "ביצע אותה" on
+  // head: jerked to the window in the hook; small obedient nod on "ממושמע כמו תמיד"
+  const nod = sm(A[16], A[16] + .2, t) * (1 - sm(B[16] - .1, B[16] + .2, t)) * Math.max(0, Math.sin((t - A[16]) * 12));
+  J('head').rotation.y = (-.55 - .08 * Math.sin(t * 9) * (1 - sm(0, 1.2, t))) * (1 - sm(A[3], A[3] + .5, t)) + (-.45) * sm(A[11], A[11] + .4, t) * (1 - sm(A[15], A[15] + .4, t)) + (-.5) * sm(A[19] - .3, A[19] + .2, t);
+  J('head').rotation.x = .12 + .25 * nod;
   J('shoulderL').rotation.set(-.1, 0, .12); J('shoulderR').rotation.set(-.1, 0, -.12); J('elbowL').rotation.x = J('elbowR').rotation.x = -.3;
-  CS.k = 1; chest.update(t);
-  chest.mesh.position.set(0, .34, .15);
-  const ph = man.getObjectByName('phone') || man, hd = J('head');
-  const p0 = ph.getWorldPosition(V3()), p1 = hd.getWorldPosition(V3()).add(V(0, .05, 0));
-  for (let i = 0; i < N; i++) { const u = ((i / N + t * .9) % 1); const p = p0.clone().lerp(p1, u); p.y += Math.sin(u * Math.PI) * .35;
-    const s = u < hit ? 1 : 0; M.makeScale(s, s, s).setPosition(p); dots.setMatrixAt(i, M); }
+  CS.mode = hacked ? 'other' : 'owner'; CS.run = t > A[17] - .1 && t < A[18] ? sm(A[17] - .1, B[17] + .2, t) : 0; chest.update(t);
+  // owner's phone UI 4–7
+  const pW = phone.getWorldPosition(V3()), uiPos = pW.clone().add(V(.15, .55, .25));
+  const uk = win(t, A[4] - .2, A[8], .3); ui.mesh.visible = uk > .01; ui.mesh.scale.setScalar(Math.max(.01, uk)); ui.mesh.position.copy(uiPos);
+  UI.k = t > A[5] ? 1 : 0; ui.update(t);
+  dash.visible = ui.mesh.visible; if (dash.visible) { dash.geometry.setFromPoints([pW, uiPos.clone().add(V(0, -.31, 0))]); dash.computeLineDistances(); }
+  // envelope 1: phone -> robot chest on "שולח בבלוטוס" (5), lock closes on it (6), accepted (7)
+  const chestW = J('torso').getWorldPosition(V3()).add(V(0, .25, .2));
+  const e1 = sm(A[5] + .3, B[5], t); env1.visible = t > A[5] + .2 && t < A[8];
+  env1.position.copy(arc(uiPos, chestW.clone().add(V(-.45, .35, .05)), e1, .4)); env1.rotation.y = -.4;
+  // lock on envelope 1 (6–7), later on envelope 2 (12) where it opens
+  const lockOn1 = t > A[6] - .1 && t < A[8], lockOn2 = t > A[12] + .5 && t < A[13] + .3;
+  lock.visible = lockOn1 || lockOn2;
+  const host = lockOn2 ? env2 : env1; lock.position.copy(host.position).add(V(0, .14, .03)); lock.rotation.y = host.rotation.y;
+  const shk = lock.getObjectByName('shackle');
+  const closeK = lockOn1 ? sm(A[6], A[6] + .4, t) : 1 - sm(B[12] - .2, B[12] + .2, t);
+  shk.position.y = .05 + .05 * (1 - closeK); shk.rotation.y = (1 - closeK) * 1.2;
+  lock.scale.setScalar(lockOn1 ? sm(A[6] - .1, A[6] + .2, t) : 1);
+  // info screen: key (6–8) · command (13–15)
+  const infOn = win(t, A[6] + .2, A[8], .3) + win(t, A[13] - .1, A[15] + .2, .3);
+  INF.mode = t < A[10] ? 'key' : 'cmd'; INF.k = INF.mode === 'key' ? sm(A[7], A[7] + .4, t) : sm(A[14] - .1, A[14] + .5, t); inf.update(t);
+  const infPos = chestW.clone().add(V(-.45, .62, .1));
+  inf.mesh.visible = infOn > .01; inf.mesh.scale.setScalar(Math.max(.01, infOn)); inf.mesh.position.copy(infPos);
+  dash2.visible = inf.mesh.visible; if (dash2.visible) { dash2.geometry.setFromPoints([chestW, infPos.clone().add(V(0, -.18, 0))]); dash2.computeLineDistances(); }
+  // row keys pop one by one on 9–10 (fast), stay till 11
+  row.forEach((r, i) => { r.updateMatrixWorld(true); const h = r.getObjectByName('head').getWorldPosition(V3());
+    const k = sm(A[9] + .25 * i, A[9] + .25 * i + .2, t) * (1 - sm(A[11] + .3, A[11] + .6, t));
+    keys[i].visible = k > .01; keys[i].scale.setScalar(1.6 * k); keys[i].position.copy(h).add(V(0, .45 + .04 * Math.sin(t * 3 + i), 0)); keys[i].rotation.y = t * 1.5; });
+  // researcher: key shows by his phone (11), envelope 2 through the window to the robot (12)
+  const ph = man.getObjectByName('phone') || man, phW = ph.getWorldPosition(V3());
+  const kr = win(t, A[11] - .1, A[12] + .3, .3); keyR.visible = kr > .01; keyR.scale.setScalar(1.2 * kr); keyR.position.copy(phW).add(V(0, .3, .1)); keyR.rotation.y = t * 1.5;
+  const e2 = sm(A[12] + .1, B[12] - .3, t); env2.visible = t > A[12] && t < A[15];
+  env2.position.copy(arc(phW.clone().add(V(0, .1, .2)), chestW.clone().add(V(-.45, .35, .05)), e2, .5)); env2.rotation.y = -.4;
+  // Bluetooth dots: hook (0–3), and the researcher's message (12)
+  const dOn = (t < A[3] ? 1 : 0); const hd = J('head').getWorldPosition(V3()).add(V(0, .05, 0));
+  for (let i = 0; i < N; i++) { const u = ((i / N + t * .9) % 1); const s = dOn * (1 - sm(A[2], A[3], t)); M4.makeScale(s, s, s).setPosition(arc(phW, hd, u, .35)); dots.setMatrixAt(i, M4); }
   dots.instanceMatrix.needsUpdate = true;
-  const H0 = hd.getWorldPosition(V3());
-  const T = [H0.x - .25, H0.y - .2, H0.z - .6];
-  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
-  const [cp, ct] = camPath(t, [sh(0, T, [1.0, 1.25, 3.0], 1.0), sh(1.5, T, [.85, 1.15, 2.8], .93), sh(3.2, T, [.6, 1.05, 2.6], .86), sh(END, T, [1.1, .9, 2.6], 1.0)]);
+  // full control (18): joints light deeper blue one by one; robot stays still (no move was shown in reality)
+  jn.forEach((n, i) => { const k = sm(A[18] + .2 * i, A[18] + .2 * i + .2, t) * (1 - sm(A[19] + .2, A[19] + .6, t)); jm[i].visible = k > .01; jm[i].scale.setScalar(Math.max(.01, k)); jm[i].position.copy(J(n).getWorldPosition(V3())); });
+  warm.intensity = 3 - 1.2 * sm(A[8], A[8] + .5, t) * (1 - sm(A[11], A[11] + .5, t));     // re-hook: room dims while we're at the row
+  // ---------- camera ----------
+  const H0 = J('head').getWorldPosition(V3()), C = chestW;
+  const TH = [H0.x - .25, H0.y - .2, H0.z - .6];
+  const sh = (tt, tg, off, z = 1) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const TP = [pW.x + .1, pW.y + .35, pW.z + .1];                       // phone + UI
+  const TE = [(pW.x + C.x) / 2, C.y - .1, (pW.z + C.z) / 2];           // phone -> robot
+  const TC = [C.x - .3, C.y + .15, C.z];                               // robot chest + info screen
+  const r0 = row[0].position, r4 = row[4].position;
+  const TR = [(r0.x + r4.x) / 2, 1.2, (r0.z + r4.z) / 2];               // the row
+  const TW = [(phW.x + C.x) / 2, 1.3, (phW.z + C.z) / 2];               // window: researcher + robot
+  const [cp, ct] = camPath(t, [
+    sh(0, TH, [1.0, 1.25, 3.0]), sh(1.5, TH, [.85, 1.15, 2.8], .93), sh(A[3] - .1, TH, [.6, 1.05, 2.6], .86),       // hook push-in
+    sh(A[4] + .3, TP, [.6, 1.2, 1.4]), sh(A[5] + .2, TP, [.4, 1.0, 1.25], .9),                                          // owner's phone
+    sh(B[5] - .2, TE, [.9, .8, 2.0]), sh(A[6] + .3, TC, [1.0, .6, 2.6]), sh(A[7] + .5, TC, [1.3, .6, 2.4], .95),         // envelope → lock → key screen
+    sh(A[8] + .2, TC, [2.4, 1.6, 3.6], 1.3), sh(A[9] + .3, TR, [1.8, 1.4, 4.2]), sh(A[10] + .6, TR, [.6, 1.0, 4.6], .9),  // re-hook: fly to the row
+    sh(A[11] + .2, TW, [2.4, 1.6, 3.4]), sh(A[12] + .4, TW, [1.6, 1.3, 3.0], .9), sh(B[12] - .1, TC, [1.2, .6, 2.6]),   // researcher → envelope 2 → lock opens
+    sh(A[13] + .2, TC, [1.1, .6, 2.5]), sh(A[14] + .4, TC, [.9, .5, 2.3]),                                    // the hidden command
+    sh(A[15] + .2, TH, [1.0, .8, 2.6]), sh(B[16], TH, [.8, .7, 2.4]), sh(A[17] + .3, TC, [.9, .6, 2.6]),         // nod (joke) → running
+    sh(A[18] + .2, TC, [1.4, .8, 2.6], 1.1), sh(B[18], TC, [-.6, .9, 2.8], 1.1),                                         // full control: orbit
+    sh(A[19] + .1, TH, [1.0, 1.25, 3.0]), sh(END, TH, [1.0, 1.25, 3.0], 1.02)]);                                          // back to frame 0 (loop)
+  ui.mesh.lookAt(cp); inf.mesh.lookAt(cp);
   return {cp, ct, noFlash: true, overlay: t2 => {
-    // red "נפרץ!" alert with warning triangles above the head (matte, gentle blink)
-    const a = 1; if (a <= 0) return; const [x, y, z] = st.proj(H0.clone().add(V(0, .42, 0))); if (z > 1) return;
-    const c = st.ctx; c.save(); c.globalAlpha = a * (.85 + .15 * Math.cos(t2 * 7));
-    const w = 380, h = 120, X = x - w / 2, Y = Math.max(600, y - h - 20);
-    c.fillStyle = '#f0502a'; c.beginPath(); c.roundRect(X, Y, w, h, 24); c.fill();
-    const tri = cx => { c.fillStyle = '#fff'; c.beginPath(); c.moveTo(cx, Y + 26); c.lineTo(cx + 34, Y + 92); c.lineTo(cx - 34, Y + 92); c.closePath(); c.fill();
-      c.fillStyle = '#f0502a'; c.font = '900 50px Rubik'; c.textAlign = 'center'; c.fillText('!', cx, Y + 86); };
-    tri(X + 58); tri(X + w - 58);
-    c.fillStyle = '#fff'; c.font = '900 72px Rubik'; c.textAlign = 'center'; c.direction = 'rtl'; c.fillText('נפרץ!', x, Y + 86);
-    c.restore(); }};
+    const c = st.ctx;
+    // red "נפרץ!" alert above the head (hook + from 'ביצע אותה' on), matte, gentle blink
+    if (hacked) { const a = Math.min(1, t2 < A[3] ? 1 - sm(A[3] - .3, A[3], t2) + (t2 < A[3] - .3 ? 1 : 0) : sm(A[17], A[17] + .3, t2)); const [x, y, z] = st.proj(H0.clone().add(V(0, .42, 0)));
+      if (z < 1 && a > 0) { c.save(); c.globalAlpha = Math.min(1, a) * (.85 + .15 * Math.cos(t2 * 7)); const w = 380, h = 120, X = x - w / 2, Y = Math.max(600, y - h - 20);
+        c.fillStyle = RED; c.beginPath(); c.roundRect(X, Y, w, h, 24); c.fill();
+        const tri = cx => { c.fillStyle = '#fff'; c.beginPath(); c.moveTo(cx, Y + 26); c.lineTo(cx + 34, Y + 92); c.lineTo(cx - 34, Y + 92); c.closePath(); c.fill(); c.fillStyle = RED; c.font = '900 50px Rubik'; c.textAlign = 'center'; c.fillText('!', cx, Y + 86); };
+        tri(X + 58); tri(X + w - 58); c.fillStyle = '#fff'; c.font = '900 72px Rubik'; c.textAlign = 'center'; c.direction = 'rtl'; c.fillText('נפרץ!', x, Y + 86); c.restore(); } }
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    L(A[5] + .3, A[6], 'בלוטוס', env1.position, -150, -260);
+    L(A[9] + .2, A[11], 'אותו מפתח', keys[2].position, 0, -260);
+    L(A[18] + .3, A[19], 'שליטה מלאה', J('elbowR').getWorldPosition(V3()), 170, -320);
+    // shield with "?" next to the robot on "איך שומרים...?" (teaser for ep020)
+    const sk = win(t2, A[19] + .3, END, .3); if (sk > .01) { const [x, y, z] = st.proj(C.clone().add(V(.55, .1, 0))); if (z < 1) { c.save(); c.globalAlpha = sk; c.translate(x, y); c.scale(sk, sk);
+      c.fillStyle = '#8ea6ff'; c.beginPath(); c.moveTo(0, -80); c.quadraticCurveTo(60, -70, 70, -60); c.quadraticCurveTo(70, 40, 0, 85); c.quadraticCurveTo(-70, 40, -70, -60); c.quadraticCurveTo(-60, -70, 0, -80); c.fill();
+      c.fillStyle = '#0a0c1c'; c.font = '900 90px Rubik'; c.textAlign = 'center'; c.fillText('?', 0, 30); c.restore(); } }
+  }};
 });
+// "next episode" label under the Follow button on the outro card (Ziv: CTA to ep020)
+const lab = document.createElement('div'); lab.textContent = 'בפרק הבא: איך שומרים עליו';
+lab.style.cssText = 'position:absolute;left:50%;top:1015px;transform:translateX(-50%);padding:14px 40px;border-radius:40px;background:rgba(10,12,28,.85);color:#fff;font:700 38px Rubik;direction:rtl;white-space:nowrap;opacity:0;z-index:50';
+document.body.appendChild(lab);
+const _frame = window.renderAt; window.renderAt = async t => { lab.style.opacity = sm(A[20] + .2, A[20] + .5, t); return _frame(t); };
 st.ready();
 </script></body></html>
