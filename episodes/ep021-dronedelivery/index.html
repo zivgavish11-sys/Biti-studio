@@ -51,7 +51,7 @@ st.frame(t => {
   // hook (0–A3): pod already at the hand, full line. Story (A8→): line goes out from the drone (8–9), pod rides down (10–12), steers to the table (13–15),
   // drops the parcel (16), reels up (17), drone flies on (18), back above for the outro.
   const off = V(0, 0, 0);
-  const fly = sm(A[18], B[18], t) * (1 - sm(A[20] - .2, A[20] + .4, t));
+  const fly = sm(A[18], B[18], t) * (1 - sm(A[19], A[20] - .15, t));   // back in place before the outro cut (it zipped into frame at 29.9 s)
   dr.position.set(H.x + 40 * fly, H.y + HOV + 4 * fly, H.z - 25 * fly); dr.rotation.y = t * .05; dr.rotation.z = -.12 * win(t, A[18], B[18], .5);
   for (let i = 0; i < 6; i++) { const p = dr.getObjectByName('prop' + i); if (p) p.rotation.y = t * 40 * (i % 2 ? -1 : 1); }
   let len;
