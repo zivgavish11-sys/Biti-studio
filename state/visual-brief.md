@@ -76,7 +76,7 @@ Image sent: engine/props/showcase-lineup (t 1.5, 4.5, 7.5, 10.5).
 - Composition: object centred in the free band between the stat and the text, never under the stat/top bar; slight depth of field + film grain + vignette for a photographic feel.
 - Tools: engine/news/look.js + pro/* models (see state/media-library.md).
 
-## Proposals sent 2026-11-20 (run 11, news pro kit) — waiting for Ziv's OK
+## Proposals sent 2026-11-20 (run 11, news pro kit) — all 3 ✓ (Ziv 2026-11-20: "זה נראה מעולה") → docs/agents/news.md
 1. Carousel art = the "pro studio" look on every slide (one realistic hero object, studio light, auto-framed between stat and text).
 2. No cartoon characters in carousels any more — people only as faceless grey silhouettes, or none.
 3. Light preset by story type: studio = robots/products, cool = labs/vehicles/warehouses, warm = service/home/people stories.
