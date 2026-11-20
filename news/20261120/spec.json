@@ -10,23 +10,24 @@
    ],
    "scene": {
     "robot": false,
-    "props": [
-     "apeccover"
+    "look": "studio",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": -0.55,
+      "z": 0,
+      "ry": 0.35
+     },
+     {
+      "name": "pro/serviceRobot",
+      "x": 0.55,
+      "z": 0.1,
+      "ry": -0.4
+     }
     ],
-    "color": "cyan",
-    "cam": [
-     0.0,
-     3.0,
-     10.4
-    ],
-    "target": [
-     0.0,
-     1.1,
-     -3.8
-    ],
-    "shift": 0.18
+    "color": "cyan"
    },
-   "topShade": 0.6
+   "topShade": 0.35
   },
   {
    "type": "story",
@@ -39,23 +40,33 @@
    "source": "Reuters, Xinhua",
    "scene": {
     "robot": false,
-    "props": [
-     "apeccafe"
+    "look": "warm",
+    "hero": [
+     {
+      "name": "pro/espressoBar",
+      "x": 0,
+      "z": 0,
+      "az": 0.45,
+      "el": 0.14,
+      "frac": 1.15
+     },
+     {
+      "name": "pro/humanoid",
+      "x": -0.05,
+      "z": -0.7,
+      "ry": -0.5,
+      "pose": {
+       "shoulderR": -0.5,
+       "elbowR": -0.9,
+       "shoulderL": -0.3,
+       "elbowL": -0.8
+      }
+     }
     ],
     "color": "pink",
-    "cam": [
-     0.4,
-     1.9,
-     6.2
-    ],
-    "target": [
-     0.2,
-     1.2,
-     -3.0
-    ],
-    "shift": 0.1
+    "az": 0.3
    },
-   "topShade": 0.8
+   "topShade": 0.35
   },
   {
    "type": "story",
@@ -68,35 +79,40 @@
    "source": "SiliconANGLE, TechStartups",
    "scene": {
     "robot": false,
-    "props": [
-     "megalab"
-    ],
-    "color": "orange",
-    "cam": [
-     0.5,
-     2.2,
-     6.8
-    ],
-    "target": [
-     0.2,
-     1.2,
-     -3.1
-    ],
-    "shift": 0.1
+    "look": "cool",
+    "hero": {
+     "name": "pro/liquidHandler",
+     "az": 0.45,
+     "el": 0.3,
+     "frac": 1.0
+    },
+    "color": "cyan"
    },
-   "topShade": 0.8
+   "topShade": 0.35
   },
   {
    "type": "follow",
    "scene": {
-    "anim": "Wave",
-    "color": "cyan",
-    "target": [
-     0,
-     1.3,
-     0
-    ],
-    "shift": 0.24
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/humanoid",
+     "ry": 0,
+     "az": 0.4,
+     "pose": {
+      "shoulderR": {
+       "x": 0,
+       "y": 0,
+       "z": 2.6
+      },
+      "elbowR": {
+       "x": 0,
+       "y": 0,
+       "z": 0.4
+      }
+     }
+    },
+    "color": "cyan"
    }
   }
  ]
