@@ -7,6 +7,7 @@ Biti episodes only: 1) ideas, 2) script, 3) build, publishing of videos. Never t
 
 ## Decisions from Ziv that affect you
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
+- 2026-11-19 (Ziv approved, analytics review #5): **the hero-v2 look is now the permanent standard** — hero test closed (IG: classic ep001–010 ≈ 101–137 views, hero ep011–017 = 121/1365/1596/186/1686/464). Don't build classic-v1 any more.
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).
 - 2026-11-04 (Ziv): when you can't find a fitting image/model for a story, ask the media agent for help (line in `state/inbox/media.md`) — it finds what's needed on GitHub. Applies to the news and video agents.
 
@@ -24,6 +25,7 @@ Then, before sending Ziv the final TTS text, `git pull` and apply any new lines 
 - Every idea starts from a **real question people ask**, never from your own idea. Sources (all four): our followers' comments · surveys/studies (e.g. YouGov 2025: cost 60%, reliability 49%, privacy/hacking 48%, family safety 43%; most-wanted tasks floors/dishes/laundry) · Reddit and forums (e.g. r/RobotVacuums, humanoid question banks) · comments under viral robot videos.
 - Only questions **with emotion**: fear/danger, surprise or a real story. Then how it works inside → is it worth buying. Ziv rejected "interesting but no emotion" ideas (phone captcha, vacuum vs poop, humanoid battery).
 - **For now: explainers only, no stories (Ziv 2026-11-15):** "כרגע אני לא רוצה לספר סיפורים שקרו אלא רק הסברים" — no viral clips / news events as the episode's story; the emotion comes from the viewer's own question or fear (e.g. "is it safe to bring a robot home?"), answered by how the robot works inside. Until Ziv says otherwise. **Exception (Ziv 2026-11-15):** one episode per batch may start from a question people ask about a viral robot clip (like ep012 pushback, our record) — still an explainer of how it works, not a retelling of the event/news.
+- **Priority (Ziv 2026-11-19, from data):** ideas with a **personal stake for the viewer in a home/consumer robot** go first — "can they hack my vacuum?" (IG 1,596 / TikTok 1,454 / FB 3,338), "who brakes faster, me or the car?" (1,686), "why did it kick back?" (1,365). Trivia/history stories with no personal stake (ep015 Pokémon: IG 186) go last.
 - Each idea you send = the question in ordinary people's words + where it comes from and how many ask ("48% in a survey", "recurring on Reddit", "a follower asked") + the episode's opening line. Short, nothing else.
 
 ## Ending = grouper card (Ziv 2026-11-13, from ep013)
@@ -100,6 +102,7 @@ Order per reel (Ziv 2026-11-15): hook (Ziv picks) → script (fact-checked, Ziv 
 
 ### Buffer — the publisher (Ziv 2026-11-11; Metricool free limit of 20 posts/month ran out)
 - Tools `mcp__Buffer__*` (load via ToolSearch). Organization "My organization" `6af481822b7767541f8bffa9`.
+- **Facebook stays in every episode (Ziv 2026-11-19):** FB is now the fastest follower source (1→12 in 4 days; ep013 reach 3,338). Always schedule IG + FB + TikTok.
 - Channels: Instagram `6af48a4162b70b94b0f6abe1` · Facebook `6af482be62b70b94b0f61347` · TikTok `6af4825162b70b94b0f60f44`. **No YouTube** (Ziv dropped it 2026-11-11).
 - Free plan: max 10 scheduled posts per channel at a time; **no first comment** → the opinion question goes at the end of the caption (no pinned comment).
 - Metricool (brand 7444571) is for stats only now — never schedule there.

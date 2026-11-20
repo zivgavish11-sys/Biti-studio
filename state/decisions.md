@@ -70,3 +70,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-15 (boss, Ziv approved 3): exception to "explainers only" — one episode per batch may start from a question about a viral robot clip, still an explainer (docs/agents/video.md).
 - 2026-11-15 (boss, Ziv approved 4): carousel agent model → Sonnet; fact-checker stays Opus.
 - 2026-11-15 Ziv: hook method — 6–8 hooks per episode, best 3–4 to Ziv; frame 0 = strongest moment + short text + spoken line saying the same thing; hint, don't answer; track 3 s hold per hook (docs/agents/video.md, docs/hooks-research.md).
+- 2026-11-19 (analytics review #5, Ziv approved 1, 2, 4): hero-v2 = permanent look (test closed); viewer-personal-stake home-robot ideas first, no-stake trivia last; Facebook stays in every episode. docs/agents/video.md. Proposal 3 (carousels TikTok-only) REJECTED — carousels stay on IG + FB + TikTok.
