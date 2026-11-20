@@ -67,3 +67,17 @@ Image sent: engine/props/showcase-safehome (sheet of t 1, 4.5, 7.4, 10.5).
 2. Vote moment: the two candidate robots stand side by side on the stage, each next to its own empty station (e.g. kitchen chef vs lawn mower) — instead of lighting empty spots.
 3. Re-ask run 9 #2: home robots in home scenes wear the soft knit cover (bare shell only for x-ray shots).
 Image sent: engine/props/showcase-lineup (t 1.5, 4.5, 7.5, 10.5).
+
+## News carousels — audience brief (2026-11-20, from Ziv via the news chat: "childish" art → professional, for adults and teens)
+- Tone: Bloomberg / The Verge / a tech-magazine product shot — not a toy shop, not a game.
+- One realistic hero object per slide (the story's machine), lots of dark space, no filler props, no cartoon people (faceless grey silhouettes or nobody).
+- Light: dark studio sweep, one soft key + thin rims, real reflections and soft shadows; colour only in the light preset (studio / cool / warm), never neon, no glow.
+- Materials: satin white polymer, brushed alloy, anodised dark metal, black glass, rubber. Accent cyan only as a small detail (status bar, stripe).
+- Composition: object centred in the free band between the stat and the text, never under the stat/top bar; slight depth of field + film grain + vignette for a photographic feel.
+- Tools: engine/news/look.js + pro/* models (see state/media-library.md).
+
+## Proposals sent 2026-11-20 (run 11, news pro kit) — waiting for Ziv's OK
+1. Carousel art = the "pro studio" look on every slide (one realistic hero object, studio light, auto-framed between stat and text).
+2. No cartoon characters in carousels any more — people only as faceless grey silhouettes, or none.
+3. Light preset by story type: studio = robots/products, cool = labs/vehicles/warehouses, warm = service/home/people stories.
+Image sent: before/after of the 20.11 cover (news/20261120 vs news/_lookkit slide 1).

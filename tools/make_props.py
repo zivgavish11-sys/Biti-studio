@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Export the in-house procedural prop kit (engine/props/kit.js) to GLB files.
-Usage: make_props.py [name-filter]   → engine/assets/models/<folder>/<name>.glb
+Usage: make_props.py [name-filter]   (kit.js + kit-pro.js; filter "pro/" = the realistic news kit)   → engine/assets/models/<folder>/<name>.glb
 Also: make_props.py --preview OUT.jpg  → contact sheet of all props in the classic look (for review).
 """
 import sys, os, base64, threading, http.server, functools
@@ -12,7 +12,9 @@ PAGE = """<!doctype html><meta charset=utf-8><body style="margin:0;background:#0
 <script type="module">
 import * as THREE from 'three';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
-import {KIT} from '/engine/props/kit.js';
+import {KIT as KIT0} from '/engine/props/kit.js';
+import {KITPRO} from '/engine/props/kit-pro.js';
+const KIT = {...KIT0, ...KITPRO};
 window.exportAll = async (filter) => {
   const out = {};
   for (const [k, fn] of Object.entries(KIT)) {

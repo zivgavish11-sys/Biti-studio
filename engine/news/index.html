@@ -1656,6 +1656,23 @@ const cp = sc.cam || (count > 1 ? [0, 9, 15] : [2.0, 1.9, 8.4]); const ct = sc.t
 cam.position.set(...cp); cam.lookAt(new THREE.Vector3(...ct));
 // shift the subject into the upper part of the slide (text lives at the bottom)
 cam.setViewOffset(W, H, 0, H * (sc.shift ?? 0.2), W, H);
-composer.render();
+// ---------- pro look (Media pro 2026-11-20, opt-in): scene.look = 'studio' | 'cool' | 'warm'
+//   scene.hero = {name:'pro/humanoid', x, z, ry, frac, az, el, pose:{j2:-.4,...}}  → one realistic hero object, framed automatically (cam/target ignored)
+//   scene.pro = true → also re-material every other prop on the slide (realistic PBR); scene.dof = 0 to switch depth of field off
+if (sc.look) {
+  const LOOK = await import('./look.js');
+  grid.visible = ring.visible = glow.visible = false;
+  let heroObj = null;
+  if (sc.hero) { const hs = Array.isArray(sc.hero) ? sc.hero : [sc.hero]; heroObj = new THREE.Group(); scene.add(heroObj);
+    for (const h of hs) { const g = await load(h.name); const o = SkeletonUtils.clone(g.scene); o.position.set(h.x ?? 0, h.y ?? 0, h.z ?? 0); o.rotation.y = h.ry ?? 0; if (h.scale) o.scale.setScalar(h.scale);
+      for (const [n, v] of Object.entries(h.pose || {})) { const nd = o.getObjectByName(n); if (nd) typeof v === 'number' ? (nd.rotation.x = v) : Object.assign(nd.rotation, v); }
+      LOOK.pro(o, {people: h.name.includes('people/')}); heroObj.add(o); } }
+  if (sc.pro) scene.traverse(o => { if (o.isMesh && o.name !== 'cyclorama' && !(heroObj && heroObj.getObjectById(o.id))) LOOK.pro(o); });
+  const L = LOOK.setup({renderer, scene, cam, composer, preset: sc.look === true ? 'studio' : sc.look, dof: sc.dof !== 0});
+  let tgt = new THREE.Vector3(...ct);
+  if (heroObj && !sc.cam) { const h0 = Array.isArray(sc.hero) ? sc.hero[0] : sc.hero; const top = S.stat ? $('stat').getBoundingClientRect().bottom + 24 : 150, bottom = Math.min(980, $('bottom').getBoundingClientRect().top - 24);
+    tgt = LOOK.heroCam(cam, heroObj, {frac: h0.frac ?? .9, az: h0.az ?? .55, el: h0.el ?? .16, top, bottom}).target; }
+  L.focus(tgt); L.render();
+} else composer.render();
 window.ready = true;
 </script></body></html>

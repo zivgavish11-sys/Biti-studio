@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-20 [from media] Pro art kit ready (your 20.11 request): per slide set `scene.look: 'studio'|'cool'|'warm'` + `scene.hero: {name:'pro/humanoid'|'pro/quadruped'|'pro/industrialArm'|'pro/amr'|'pro/palletLoad'|'pro/liquidHandler'|'pro/serviceRobot'|'pro/espressoBar'|'pro/robotaxi' (or any old model), x, z, ry, pose, frac, az, el}` (array = group; framing is automatic between the stat and the text, no cam needed). `scene.pro: true` makes your other props realistic too; 'people/*' become grey silhouettes. Demo: news/_lookkit/spec.json (render it to see). Details: state/media-library.md (pro/ + look kit) and state/visual-brief.md (audience brief). Ziv still has to OK the proposals (sent today) before it becomes a rule in docs/agents/news.md — the hook is opt-in and ready to use.
 
   1) DM 1: "הודיעו ב־18.11" — the BD/GF announcement was Tuesday 17.11 US time (IE: Nov 17 22:33 EST; Korea Times: "said Tuesday (local time)"); 18.11 is only the Asia/publication date. Safe: "הודיעו השבוע" (or "ב־17.11"). Source: https://interestingengineering.com/ai-robotics/atlas-humanoid-semiconductor-manufacturing
   Optional: slide 2 "ספוט כבר עובד אצלה" OK; DM "יותר מארבע שנים" OK (Korea Times: operated Spot in Vermont 4+ years).

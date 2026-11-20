@@ -1,0 +1,119 @@
+{
+ "date_label": "חדשות היום · 20.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "רובוטים רקדו, התאגרפו בכלוב והגישו קפה בפסגת APEC בשנג'ן",
+    "חברת MegaRobo הסינית גייסה כ־200 מיליון דולר למעבדות אוטומטיות"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": -0.55,
+      "z": 0,
+      "ry": 0.35
+     },
+     {
+      "name": "pro/serviceRobot",
+      "x": 0.55,
+      "z": 0.1,
+      "ry": -0.4
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "APEC",
+   "statSub": "פסגת המנהיגים בשנג'ן, סין",
+   "statColor": "pink",
+   "title": "רובוטים הגישו<br><span class=\"pill\">קפה</span> לעיתונאים",
+   "text": "לפי הדיווחים, בפסגת APEC בשנג'ן רובוטים דמויי אדם רקדו, התאגרפו בכלוב והגישו גלידה לתושבים. במרכז התקשורת של הפסגה רובוטים־ברמנים הגישו קפה לעיתונאים.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Reuters, Xinhua",
+   "scene": {
+    "robot": false,
+    "look": "warm",
+    "hero": [
+     {
+      "name": "pro/espressoBar",
+      "x": 0,
+      "z": 0,
+      "az": 0.45,
+      "el": 0.14,
+      "frac": 1.15
+     },
+     {
+      "name": "pro/humanoid",
+      "x": -0.05,
+      "z": -0.7,
+      "ry": -0.5,
+      "pose": {
+       "shoulderR": -0.5,
+       "elbowR": -0.9,
+       "shoulderL": -0.3,
+       "elbowL": -0.8
+      }
+     }
+    ],
+    "color": "pink",
+    "az": 0.3
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "$200M",
+   "statSub": "גיוס חדש, לפי החברה",
+   "statColor": "orange",
+   "title": "מעבדות שרובוטים<br><span class=\"pill\">מריצים</span> בשבילן",
+   "text": "לפי הדיווח, MegaRobo הסינית, שבונה מערכות רובוטיות שמריצות ניסויים פיזיים עבור תוכנות AI, גייסה כ־200 מיליון דולר. החברה אומרת שגייסה עד היום כ־600 מיליון דולר.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "SiliconANGLE, TechStartups",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/liquidHandler",
+     "az": 0.45,
+     "el": 0.3,
+     "frac": 1.0
+    },
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/humanoid",
+     "ry": 0,
+     "az": 0.4,
+     "pose": {
+      "shoulderR": {
+       "x": 0,
+       "y": 0,
+       "z": 2.6
+      },
+      "elbowR": {
+       "x": 0,
+       "y": 0,
+       "z": 0.4
+      }
+     }
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}

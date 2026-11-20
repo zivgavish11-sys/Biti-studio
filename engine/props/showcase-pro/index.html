@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:1080px;height:1350px;overflow:hidden;background:#000}</style></head><body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Pro look showcase (Media pro 2026-11-20): ?m=robots/humanoid | pro:humanoidPro  &preset=studio|cool|warm &az &el &frac &raw=1 (no pro material)
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import * as LOOK from '/engine/news/look.js';
+const q = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true}); renderer.setSize(1080, 1350, false);
+const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(+(q.get('fov') || 30), 1080 / 1350, .05, 200), composer = new EffectComposer(renderer);
+const L = LOOK.setup({renderer, scene, cam, composer, preset: q.get('preset') || 'studio', dof: q.get('dof') !== '0'});
+const root = new THREE.Group(); scene.add(root);
+for (const [k, name] of (q.get('m') || 'robots/humanoid').split(',').entries()) {
+  let o;
+  if (name.startsWith('pro:')) { const KP = await import('/engine/props/kit-pro.js'); o = KP.KITPRO_FN[name.slice(4)](); }
+  else o = (await new GLTFLoader().loadAsync(`/engine/assets/models/${name}.glb`)).scene;
+  if (q.get('raw') !== '1') LOOK.pro(o, {people: name.includes('people/')}); else o.traverse(m => m.isMesh && (m.castShadow = m.receiveShadow = true));
+  const xs = (q.get('x') || '').split(',').map(Number); o.position.x = xs[k] || 0; o.rotation.y = +(q.get('ry') || 0);
+  root.add(o);
+}
+const h = LOOK.heroCam(cam, root, {frac: +(q.get('frac') || .8), az: +(q.get('az') || .55), el: +(q.get('el') || .16)});
+L.focus(h.target); L.render(); window.ready = true;
+</script></body></html>
