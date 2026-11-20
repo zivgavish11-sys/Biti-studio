@@ -1,0 +1,14 @@
+# ep019-hack — "מישהו יכול לפרוץ לרובוט שלי ולהזיז אותו מרחוק?" (Ziv picked idea 4, 2026-11-20)
+# Source question: YouGov 2025 privacy/hacking 48%. Mechanism story: UniPwn (Makris & Finisterre, disclosed 20.9.2025, IEEE Spectrum):
+#  BLE Wi-Fi setup encrypted with hardcoded keys (same in every unit); handshake = encrypted word → in; code hidden in Wi-Fi name/password runs as root.
+#  Wormable = researchers' CLAIM (not demonstrated). No demo of the robot moving — only reboot shown; root = full control in principle.
+#  Unitree 29.9.2025: "majority of fixes" done. Don't name the brand/model in video. Advice: Bluetooth off, separate Wi-Fi.
+# Hooks (frame 0 / on-screen / first spoken line):
+1. humanoid in a living room, phone outside the window, BT dots reach it, its head turns | השתלטו עליו בלי לגעת | "חוקרים השתלטו על רובוט דמוי אדם... בלי לגעת בו."
+2. row of identical robots, one key floats over all of them | אותו מפתח לכולם | "לכל הרובוטים מהדגם הזה... היה אותו מפתח."
+3. one robot pulses, the pulse jumps to robots around it | רובוט שמדביק רובוט? | "לפי החוקרים, רובוט אחד שנפרץ... יכול להדביק את הרובוטים לידו."
+4. street view, a man with a phone by the fence, robot inside the house | שולטים בו מהרחוב? | "מישהו ברחוב... יכול לשלוט ברובוט שבבית שלכם?"
+5. robot's screen flips from owner's name to a stranger's | כבר לא שלכם | "אם הרובוט שלכם נפרץ... הוא כבר לא שלכם."
+6. phone screen shows one word being sent, robot unlocks | מילה אחת. וזהו. | "מילה אחת הספיקה... כדי להשתלט על רובוט."
+7. hacker POV: robot seen through a phone scan list | ככה האקר רואה אותו | "ככה הרובוט שלכם נראה... בעיניים של האקר."
+Sent to Ziv: 6, 1, 4, 2.
