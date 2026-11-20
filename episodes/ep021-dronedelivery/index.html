@@ -58,14 +58,17 @@ st.frame(t => {
   const d = dd.getObjectByName('drone'); for (let i = 0; i < 4; i++) { const p = dd.getObjectByName('prop' + i); if (p) p.rotation.y = t * 40 * (i % 2 ? -1 : 1); }
   const p0 = parcel.position.clone().add(V(0, .25, 0)), p1 = dd.position.clone().add(V(0, -.3, 0));
   line.position.copy(p0).lerp(p1, .5); line.scale.set(1, p0.distanceTo(p1), 1);
-  // camera: starts at the hand + parcel, rises along the line to the drone
-  const up = sm(.9, 3.4, t);
-  const ty = hand.y + .5 + (dy - .5) * up;
-  const tg = [hand.x, ty, hand.z];
-  const off = [3.6 + 2.2 * up, 3.4 + 2.6 * up, 3.0 + 2.0 * up];
-  const [cp, ct] = camPath(t, [[0, [tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]], tg], [END, [tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]], tg]]);
-  const h = Math.round(100 * sm(.9, 3.4, t));
-  return {cp: V(tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]), ct: V(...tg), noFlash: true, overlay: t2 => {
+  // camera (Ziv 2026-11-20): runs tight along the line, then climbs over the drone and looks down
+  const up = sm(.8, 3.0, t), over = sm(2.75, 3.6, t);
+  const ty = hand.y + .6 + (dy - 2.2) * up;
+  const ride = V(hand.x + .75, ty + .15, hand.z + .55);                        // ~1 m beside the line
+  const rideT = V(hand.x, ty - .35, hand.z);                                   // looking along the line, slightly down (city drops away)
+  const top0 = V(hand.x + 2.2, hand.y + dy + 5.2, hand.z + 1.8), topT = dd.position.clone().add(V(0, -.9, 0));
+  const start = V(hand.x + 2.6, hand.y + 1.6, hand.z + 2.0), startT = V(hand.x, hand.y + .3, hand.z);
+  const k0 = sm(.5, 1.0, t);
+  const cpv = start.clone().lerp(ride, k0).lerp(top0, over), ctv = startT.clone().lerp(rideT, k0).lerp(topT, over);
+  const h = Math.round(100 * sm(.8, 3.0, t));
+  return {cp: cpv, ct: ctv, noFlash: true, overlay: t2 => {
     const c = st.ctx; c.save(); c.globalAlpha = sm(.3, .7, t2);
     const X = 900, Y = 1050; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.beginPath(); c.moveTo(X, Y - 380); c.lineTo(X, Y); c.stroke();
     const yy = Y - 380 * h / 100; c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(X, yy, 14, 0, Math.PI * 2); c.fill();
