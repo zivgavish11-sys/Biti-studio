@@ -8,3 +8,4 @@
 5. phone settings: Bluetooth toggle flips off, dots stop mid-air | כבו את זה | "הכפתור הזה בטלפון... פותח דלת לרובוט שלכם."
 6. hacker's phone scan list: "רובוט נמצא" → "לא נמצא" | ההאקר לא מוצא אותו | "ככה הרובוט שלכם נעלם מעיני האקרים."
 Sent to Ziv: 1, 3, 2, 4.
+# Ziv picked hook D (שלושה צעדים) 2026-11-20. Script v1 sent to Ziv FIRST (new order), factcheck after his OK.
