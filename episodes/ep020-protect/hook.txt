@@ -1,0 +1,10 @@
+# ep020-protect — "איך שומרים על הרובוט בבית מפריצה?" — promised at the end of ep019 ("בפרק הבא"), posts the day after ep019.
+# Content (to verify at script): separate Wi-Fi for smart devices (guest/IoT network), install updates, Bluetooth off when not pairing, change default passwords, check before buying how long the maker gives security updates (UK PSTI law 2024 bans universal default passwords + requires stating the update period).
+# Hooks (frame 0 / on-screen / first spoken line):
+1. ep019's robot with the red "נפרץ" sign, a shield slams over it and the sign turns light blue "מוגן" | בפרק הקודם פרצו לו | "בפרק הקודם פרצו לרובוט. הנה איך שומרים על שלכם."
+2. a robot box at the door, a hand about to plug it in, big STOP | לפני שמחברים לוויפיי | "לפני שאתם מחברים רובוט לוויפיי... תעשו את זה."
+3. house Wi-Fi drawn as one big circle, the robot pulled into its own small circle | לרובוט יש רשת משלו | "הרובוט שלכם צריך רשת ויפיי משלו."
+4. three numbered steps pop next to the robot | שלושה צעדים | "שלושה צעדים, והרובוט שלכם הרבה יותר קשה לפריצה."
+5. phone settings: Bluetooth toggle flips off, dots stop mid-air | כבו את זה | "הכפתור הזה בטלפון... פותח דלת לרובוט שלכם."
+6. hacker's phone scan list: "רובוט נמצא" → "לא נמצא" | ההאקר לא מוצא אותו | "ככה הרובוט שלכם נעלם מעיני האקרים."
+Sent to Ziv: 1, 3, 2, 4.
