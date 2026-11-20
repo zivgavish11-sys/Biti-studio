@@ -12,6 +12,7 @@ Biti episodes only: 1) ideas, 2) script, 3) build, publishing of videos. Never t
 - 2026-11-04 (Ziv): when you can't find a fitting image/model for a story, ask the media agent for help (line in `state/inbox/media.md`) — it finds what's needed on GitHub. Applies to the news and video agents.
 
 ## Fact-check before Ziv records (Ziv 2026-11-08)
+**Order (Ziv 2026-11-20):** send Ziv the script text FIRST; only after he approves it, fire the fact-checker, apply its fixes, then send the final TTS text for recording.
 The fact-checker has no schedule — you call it. Right after you commit `episodes/epNNN-slug/script.txt` (before sending the TTS text to Ziv), fire it:
 `fire_trigger` (Claude Code Remote tools, load via ToolSearch) on the task named "סוכן בודק עובדות" (find its id with list_triggers) with text `video: episodes/epNNN-slug/script.txt`.
 Then, before sending Ziv the final TTS text, `git pull` and apply any new lines from it in `state/inbox/video.md` (usually there within a few minutes). Also fire it for any caption with new facts (deep-facts block) before scheduling.
