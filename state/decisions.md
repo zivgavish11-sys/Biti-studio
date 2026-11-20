@@ -77,3 +77,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-20 (Ziv, news chat): carousel look changed to dark editorial/serious (template CSS + rule in docs/agents/news.md). Real news photos not possible: WebFetch returns no images and bypassing is not allowed; official press photo as a separate slide remains the only option (not adopted).
 
 - 2026-11-20 (Ziv, media chat, approved all 3 Media proposals): carousels use the pro studio art kit on every slide (one realistic hero object, engine/news/look.js + pro/* models), no cartoon people (grey silhouettes or none), light preset by story type (studio/cool/warm). Rule in docs/agents/news.md.
+
+- 2026-11-20 (Ziv, media chat, approved media proposals 1+2): reels test the realistic **pro-v3** look (real world + real light + realistic robots + silhouettes; brand accent light-blue, captions unchanged) on 4 videos **from ep022** (ep019–ep021 already built, stay hero-v2). Engine engine/lib/look-pro.js; rule in docs/agents/video.md. Proposal 3: media keeps adding general assets and invests per script in each reel/carousel (docs/agents/media.md).
