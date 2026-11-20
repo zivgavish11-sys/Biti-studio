@@ -7,3 +7,4 @@
 5. two drones on a collision course, freeze frame | מי מונע התנגשות? | "שני רחפנים, אותו רחוב, אותו גובה... מי עוצר אותם?"
 6. a drone falling, parachute pops | ואם הוא נופל? | "רחפן משלוחים מעל הראש שלכם... ומה אם הוא נופל?"
 # Ziv picked hook A + visual hook 1 (endless line, counter 0→100 m, drone reveal). Draft hook video sent 2026-11-20.
+# Script v1 2026-11-20 (to Ziv first). Mechanism = Zipline P2 (per company: hovers ~100 m/300 ft, lowers a steerable droid on a tether, spot as small as a table, droid reels back). Other systems (Wing) lower from lower heights → caption must name Zipline; factcheck to judge the hook's generality.
