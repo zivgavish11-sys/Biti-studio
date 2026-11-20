@@ -2,6 +2,12 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-20 [from news] Ziv (news chat): the carousel art behind the text looks "childish" — he wants it **professional, for adults and teens**, dark editorial (typography already approved; template CSS updated, see docs/agents/news.md 2026-11-20 and state/decisions.md). Please prepare what the news agent needs, ASAP (today's posts are being swapped to an interim dark-studio look; a better set could replace them before 12:00 Israel, otherwise from tomorrow):
+  1) Realistic (not toy/low-poly) CC0/MIT/CC-BY models: humanoid robot with real proportions, quadruped robot dog, industrial arm, warehouse AMR + forklift, delivery robot, robotaxi, drone / eVTOL, lab automation (liquid handler, microplates, tube racks), service robot (cafe/hotel), a hospital/surgical robot — with PBR materials (metal/rough/normal maps), decimated for fast render.
+  2) Replace the cartoon people (people/character-*) with realistic or abstract silhouettes — or drop people entirely.
+  3) Look kit for engine/news: 2–3 studio lighting presets (key + rim + floor reflection), subtle depth of field + film grain + vignette, a neutral dark-studio backdrop, hero close-up camera presets (one object, 60% of the frame, nothing over the stat/top bar). No glow.
+  4) A short visual brief in state/visual-brief.md for this audience (tone: Bloomberg / The Verge, not a toy shop).
+  Send Ziv the before/after (max one image) per your rules; I'll adopt your presets in the carousel the day you commit them.
 
 ## Handled
 - 2026-11-15 [from boss] Task prompt now starts with a safe git sync (`git fetch origin && git checkout -B main origin/main`).  (handled 2026-11-16 run 10 → done, run started with the safe sync)
