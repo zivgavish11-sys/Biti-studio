@@ -413,9 +413,78 @@ function officeTowerPro(h = 120) {
   return g;
 }
 
+// ---------- pro additions for the pro-v3 reels (Media 2026-11-20 run 13: topic bank — humanoid battery, how a robot doesn't fall, servo, 'not a robot' on a phone) ----------
+/** pro/humanoidXray — pro/humanoid + aligned insides for an x-ray shot (make the white shell see-through, insides stay solid).
+ * torso: 'insides' → 'battery' (pack in the back, cell0..23 = 18650-style cells, 'bms' board), 'brain' (chest computer, 'brainLed'), 'imu' (small board with chip at the pelvis = balance sensor),
+ * 'wire_*' tubes battery → shoulder/hip motors (userData.path = world-ish points in torso space for a pulse). Cells: scale .y or swap material to show charge draining. */
+function humanoidXrayPro() {
+  const h = humanoidPro(); h.name = 'humanoidXray';
+  const torso = h.getObjectByName('torso'), pelvis = h.getObjectByName('pelvis');
+  const ins = grp('insides'); torso.add(ins);
+  const bat = grp('battery'); at(bat, 0, .3, -.15); ins.add(bat);
+  bat.add(at(rbox(.25, .23, .062, .01, S(0x2b2f36, .6, .2), 'batteryCase'), 0, 0, 0));
+  const cellM = S(0x3d6fd1, .35, .3), capM = S(0xb8bec6, .3, .9); let n = 0;
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 6; c++) { const cell = grp('cell' + n++); at(cell, -.1 + c * .04, -.08 + r * .054, 0); bat.add(cell);
+    cell.add(cyl(.0175, .0175, .048, cellM, null, 18)); cell.add(at(cyl(.012, .012, .004, capM, null, 14), 0, .026, 0)); }
+  bat.add(at(rbox(.22, .012, .05, .003, S(0x1f6b3a, .6), 'bms'), 0, .122, 0));
+  const brain = grp('brain'); at(brain, 0, .3, .03); ins.add(brain);
+  brain.add(rbox(.15, .1, .05, .008, S(0x22252b, .4, .6), 'brainBox'));
+  for (let k = 0; k < 7; k++) brain.add(at(rbox(.004, .085, .02, .001, MP.alloy), -.06 + k * .02, 0, -.03));
+  brain.add(at(rbox(.03, .006, .004, .002, MP.accent, 'brainLed'), .04, .035, .026));
+  const imu = grp('imu'); at(imu, 0, .02, .02); pelvis.add(imu);
+  imu.add(rbox(.045, .006, .035, .002, S(0x1f6b3a, .6), 'imuBoard')); imu.add(at(rbox(.014, .005, .014, .001, MP.dark, 'imuChip'), 0, .005, 0));
+  const wm = S(0xd14b3d, .55);
+  for (const [k, s] of [['L', -1], ['R', 1]]) {
+    const pts = [[s * .08, .38, -.12], [s * .16, .44, -.06], [s * .24, .46, 0]]; ins.add(Object.assign(tube(pts, .005, wm, 'wire_shoulder' + k, 24), {userData: {path: pts}}));
+    const pl = [[s * .06, .2, -.12], [s * .08, .02, -.06], [s * .095, -.17, 0]]; ins.add(Object.assign(tube(pl, .005, wm, 'wire_hip' + k, 24), {userData: {path: pl}}));
+  }
+  const pb = [[0, .38, -.12], [0, .34, -.04], [0, .3, .005]]; ins.add(Object.assign(tube(pb, .005, MP.accent, 'wire_brain', 16), {userData: {path: pb}}));
+  return h;
+}
+/** pro/smartphone — generic modern phone (no brand): 0.072×0.150×0.008 m, glass front, alloy frame, 3-lens camera bump, side buttons.
+ * 'screen' = plane in front (+z) for st.screen (userData.aspect = .48), 'frame', 'back', 'camBump', 'btnPower', 'btnVol'. Stands upright facing +z, bottom at y 0. */
+function smartphonePro() {
+  const g = grp('smartphone'), W = .072, H = .15, D = .008;
+  g.add(at(rbox(W, H, D, .009, S(0x9da3ab, .3, .9), 'frame', 6), 0, H / 2, 0));
+  g.add(at(rbox(W - .002, H - .002, .001, .0085, MP.glass, 'glassFront', 6), 0, H / 2, D / 2 - .0002));
+  g.add(at(rbox(W - .002, H - .002, .001, .0085, S(0x30343b, .25, .2), 'back', 6), 0, H / 2, -D / 2 + .0002));
+  const sc = mesh(new THREE.PlaneGeometry(W - .006, H - .006), S(0x05060a, .2), 'screen'); sc.userData.aspect = (W - .006) / (H - .006); sc.castShadow = false; at(sc, 0, H / 2, D / 2 + .0006); g.add(sc);
+  const cb = grp('camBump'); at(cb, -.014, H - .02, -D / 2 - .0015); g.add(cb); cb.add(rbox(.03, .03, .003, .007, S(0x30343b, .2, .3)));
+  [[-.006, .006], [.006, .006], [-.006, -.006]].forEach(([x, y], i) => { cb.add(at(cyl(.0045, .0045, .002, MP.alloy, null, 24), x, y, -.0018, Math.PI / 2)); cb.add(at(cyl(.0032, .0032, .0022, MP.glass, 'lens' + i, 24), x, y, -.002, Math.PI / 2)); });
+  cb.add(at(cyl(.0015, .0015, .001, S(0xf0e6c8, .4), 'flash', 12), .006, -.006, -.0018, Math.PI / 2));
+  g.add(at(rbox(.0015, .018, .003, .0007, MP.alloy, 'btnPower'), W / 2 + .0006, H * .68, 0));
+  g.add(at(rbox(.0015, .03, .003, .0007, MP.alloy, 'btnVol'), -W / 2 - .0006, H * .7, 0));
+  g.add(at(mesh(new THREE.CircleGeometry(.0018, 16), MP.dark, 'frontCam'), 0, H - .01, D / 2 + .0008));
+  return g;
+}
+/** pro/servo — hobby/robot servo with a cutaway: case (front half 'caseFront' can be hidden for x-ray), output 'horn' (spin .z), gear train 'gear0..3' (spin .z, alternate directions, ratios 1 : 3 : 9 : 27),
+ * 'motor' (small DC can, 'motorShaft' spin .z), 'pot' (potentiometer under the output = position sensor), 'board' (control PCB), 'cable' (3 wires, userData.path). ~0.04×0.04×0.02 m → scale up for close-ups. Faces +z, bottom at y 0. */
+function servoPro() {
+  const g = grp('servo'), cm = S(0x1b1d22, .5, .1);
+  g.add(at(rbox(.04, .036, .02, .002, cm, 'caseBack'), 0, .018, -.0001));
+  const front = rbox(.0405, .0365, .0102, .002, Object.assign(S(0x1b1d22, .5, .1), {transparent: true, opacity: 1}), 'caseFront'); at(front, 0, .018, .0052); g.add(front);
+  g.add(at(rbox(.054, .0025, .02, .001, cm, 'mountTab'), 0, .028, 0));
+  for (const s of [-1, 1]) g.add(at(cyl(.0018, .0018, .003, MP.seam, null, 10), s * .024, .028, 0));
+  const gearM = S(0xe8e2d4, .45), gm2 = S(0xb8bec6, .3, .9);
+  const gear = (R, teeth, t, m, name) => { const pts = []; for (let i = 0; i < teeth * 2; i++) { const a = i / (teeth * 2) * Math.PI * 2, r = i % 2 ? R : R * .86; pts.push([Math.cos(a) * r, Math.sin(a) * r]); }
+    const o = ext(pts, t, m, name, .0002); return o; };
+  [[.01, .028, 30, .0085, 0], [-.004, .02, 22, .0065, 1], [.006, .012, 18, .0055, 0], [-.008, .009, 14, .004, 1]].forEach(([x, y, n, R, k], i) => {
+    const o = gear(R, n, .0022, i === 0 ? gm2 : gearM, 'gear' + i); at(o, x, y, .004 + (i % 2) * .0025); g.add(o); });
+  const horn = grp('horn'); at(horn, .01, .028, .013); g.add(horn); horn.add(at(cyl(.0042, .0042, .004, MP.white, null, 24), 0, 0, 0, Math.PI / 2));
+  horn.add(at(rbox(.03, .006, .002, .003, MP.white, 'hornArm'), 0, 0, .0025));
+  const mot = grp('motor'); at(mot, -.008, .012, -.002); g.add(mot); mot.add(at(cyl(.006, .006, .018, MP.alloy, null, 24), 0, 0, 0, Math.PI / 2));
+  mot.add(at(cyl(.0007, .0007, .006, MP.alloy, 'motorShaft', 8), 0, 0, .011, Math.PI / 2));
+  g.add(at(cyl(.005, .005, .004, S(0x3d6fd1, .5), 'pot', 20), .01, .028, -.004, Math.PI / 2));
+  g.add(at(rbox(.034, .0012, .016, .0005, S(0x1f6b3a, .6), 'board'), 0, .003, 0));
+  const cp = [[-.02, .006, 0], [-.035, .004, 0], [-.06, .0, .01]]; const cab = grp('cable'); cab.userData.path = cp; g.add(cab);
+  [S(0x6b3a2a, .6), S(0xd14b3d, .6), S(0xe0a030, .6)].forEach((m, i) => cab.add(at(tube(cp, .0007, m, null, 16), 0, 0, (i - 1) * .0016)));
+  return g;
+}
+
 export const KITPRO = {
   'pro/humanoid': humanoidPro, 'pro/quadruped': quadrupedPro, 'pro/industrialArm': () => industrialArmPro(), 'pro/amr': amrPro, 'pro/palletLoad': palletLoad,
   'pro/liquidHandler': liquidHandler, 'pro/serviceRobot': serviceRobot, 'pro/espressoBar': espressoBar, 'pro/robotaxi': robotaxiPro,
   'pro/evtol': evtolPro, 'pro/surgicalRobot': surgicalPro, 'pro/officeTower': () => officeTowerPro(),
+  'pro/humanoidXray': humanoidXrayPro, 'pro/smartphone': smartphonePro, 'pro/servo': servoPro,
 };
 export const KITPRO_FN = Object.fromEntries(Object.entries(KITPRO).map(([k, v]) => [k.slice(4), v]));
