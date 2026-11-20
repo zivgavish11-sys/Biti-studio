@@ -82,6 +82,6 @@ Image sent: engine/props/showcase-lineup (t 1.5, 4.5, 7.5, 10.5).
 3. Light preset by story type: studio = robots/products, cool = labs/vehicles/warehouses, warm = service/home/people stories.
 Image sent: before/after of the 20.11 cover (news/20261120 vs news/_lookkit slide 1).
 
-## Proposals sent 2026-11-20 (run 13, pro humanoidXray/smartphone/servo) — 1 ✗ (Ziv 2026-11-20, don't re-ask), 2 Ziv asked "what will it give?" (explained, waiting)
+## Proposals sent 2026-11-20 (run 13, pro humanoidXray/smartphone/servo) — both ✗ (Ziv 2026-11-20: 1 "לא", 2 "לדחות" after the explanation), don't re-ask
 1. Small parts (servo, chip) always next to a real hand/coin for scale.
 2. Energy episodes: battery drains cell by cell + a % screen, same effect every time = recognisable signature.
