@@ -1,0 +1,137 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// PROPOSAL (Media pro 2026-11-20, Ziv asked): ep017-safehome re-lit in the carousels' realistic 'pro' look (engine/news/look.js) — test only, not an episode.
+// EP017-safehome — LONG + hero look, one world (living room, media kit run 9: robots/humanoidSafe + fx-arm.js). visual.md v1. Explainer, no story (Ziv).
+// Phrases (aligned 2026-11-16): 0 hook מפחדים...יפגע בילדים? | 1 מרגיש כשנוגעים בו | 2 ולעצור | 3 איך | 4 במנועים | 5 כל מפרק מנוע | 6-7 המחשב יודע כמה כוח, בכל תנועה
+//          8 עכשיו תדמיינו | 9 הזרוע זזה | 10 פוגשת יד של ילד | 11 המנוע צריך יותר כוח | 12 המחשב מרגיש את הקפיצה | 13 ועוצר | 14 בשבריר שנייה
+//          15 עוד סוד | 16 קלים | 17 כוח מוגבל | 18 ציפוי רך | 19-20 אם משהו משתבש, הכוח קטן | 21-22 outro card
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import * as LOOK from '/engine/news/look.js';
+import {xray, motor, signal, brain, cover, stopRing, effortGraph, forceGauge} from '/engine/props/fx-arm.js';
+const st = await studio({
+  look: 'hero', episode: 17, fog: .012, outro: 'card',
+  keys: ['בילדים', 'נוגעים', 'ולעצור', 'במנועים', 'מנוע', 'כוח', 'ילד', 'הקפיצה', 'ועוצר', 'שנייה', 'סוד', 'קלים', 'מוגבל', 'רך', 'קטן'],
+  hookEnd: 3.1, hook: ['מפחדים שהרובוט', 'בבית יפגע <span class="pill">בילדים</span>?'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+st.stage({r: 60, grid: 0, spot: [1.5, 6, 3], target: [0, .6, 0]});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+await P('home2056/livingRoom', {x: 0, z: -.6});
+await P('home2056/sofaModern', {x: -1.2, z: -1.9});
+await P('home2056/loungeSet', {x: -.4, z: .1});
+await P('home2056/planterTall', {x: -3.0, z: -2.5});
+await P('home/laundryBasket', {x: -1.6, z: .5});
+await P('home/laundryPile', {x: -.65, y: .41, z: .05, fit: [.55, .45]});
+await P('home/foldedStack', {x: -.05, y: .41, z: .1});
+const cup = await P('home/mug', {x: .2, y: .41, z: .35});
+const warm = new THREE.PointLight(0xffd9a8, 3, 6, 1.6); warm.position.set(2.5, 1.5, -2.5); scene.add(warm);
+// the robot by the coffee table; right arm reaches toward the cup
+const bot = await P('robots/humanoidSafe', {x: .85, z: .45, ry: -Math.PI / 2 + .25});
+const J = n => bot.getObjectByName(n);
+const xr = xray(bot), cv = cover(bot), br = brain(bot), sgE = signal(bot, 'ElbowR'), sgS = signal(bot, 'ShoulderR'), sgW = signal(bot, 'WristR');
+const mS = motor(bot, 'ShoulderR'), mE = motor(bot, 'ElbowR'), mW = motor(bot, 'WristR'), ring = stopRing(bot, 'elbowR');
+const kid = await P('people/mannequin-childKneel', {x: 1.2, z: 1.6});
+const K = n => kid.getObjectByName(n), V3 = () => new THREE.Vector3();
+const poseBot = rk => { J('torso').rotation.x = .2 + .3 * rk; J('shoulderR').rotation.set(-.35 - .35 * rk, 0, -.12); J('elbowR').rotation.x = -.35 - .25 * rk; J('wristR').rotation.x = -.3;
+  J('shoulderL').rotation.set(-.15, 0, .12); J('elbowL').rotation.x = -.5; J('kneeL').rotation.x = J('kneeR').rotation.x = .12; J('hipL').rotation.x = J('hipR').rotation.x = -.12; J('head').rotation.x = .35; };
+// contact pose → place the child so its fingertip lands on the robot's forearm ('touchR')
+const RC = 7 / 7.4;   // reach value at contact (media showcase)
+poseBot(RC); bot.updateMatrixWorld(true); const T = J('touchR').getWorldPosition(V3());
+const hand = J('wristR').getWorldPosition(V3()); cup.position.x += Math.min(.15, Math.max(-.9, hand.x - .12)) - .2; cup.position.z += Math.min(.38, Math.max(-.2, hand.z)) - .35;
+kid.lookAt(T.x, kid.position.y, T.z); let best = [9, -1.5];
+for (let a = -.8; a > -2.8; a -= .02) { K('shoulderR').rotation.set(a, 0, -.1); kid.updateMatrixWorld(true); const F = K('fingertipR').getWorldPosition(V3()); const e = Math.abs(F.y - T.y); if (e < best[0]) best = [e, a]; }
+const KA = best[1]; K('shoulderR').rotation.set(KA, 0, -.1); kid.updateMatrixWorld(true); const F = K('fingertipR').getWorldPosition(V3());
+kid.position.x += T.x - F.x; kid.position.z += T.z - F.z;
+// floating screens joined by a dashed line: effort graph (6–14) and force gauge (19–20)
+let G = {k: 0, spike: 0, stop: 0}, FG = {v: 0, limit: .35};
+const scr = st.screen([.62, .36], effortGraph(() => G)); scene.add(scr.mesh);
+const gau = st.screen([.42, .3], forceGauge(() => FG, {title: 'כוח במגע'})); scene.add(gau.mesh);
+const dash = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({color: 0x8ea6ff, dashSize: .05, gapSize: .04})); scene.add(dash);
+// ---------- timing ----------
+// reach: frame 0 = at the touch (hook) → freeze on A2 'ולעצור' · back off 3–4 · reach again 9–10 → contact at B10, freeze · slow replay 19–20 · back to frame-0 pose on the outro
+const reach = t => {
+  if (t < A[2]) return RC - .16 + .16 * sm(0, A[1] + .8, t);             // hook: arm visibly moving toward the hand, touch on 'נוגעים'
+  if (t < A[3]) return RC;
+  if (t < A[9]) return RC - (RC - .55) * sm(A[3], A[4] + .3, t);
+  if (t < A[19]) return .55 + (RC - .55) * sm(A[9], B[10], t);
+  if (t < A[21]) return .8 + (RC - .8) * sm(A[19], B[20] - .2, t);
+  return RC - (RC - .62) * sm(A[21], END, t); };
+// child's hand: in from frame 0, away 3–9, in on 9–10, in again for the slow replay
+const kidIn = t => (.75 + .25 * sm(0, A[1] + .6, t)) * (1 - sm(A[3], A[4], t)) + sm(A[9] + .3, B[10], t) * (1 - sm(A[15], A[15] + .6, t)) + sm(A[19], B[20] - .3, t) * (1 - sm(A[21] + .3, END, t));
+st.frame(t => {
+  const rk = reach(t); poseBot(rk);
+  K('shoulderR').rotation.set(KA + .9 * (1 - kidIn(t)), 0, -.1);
+  const spin = (t < B[10] ? t : B[10]) * 6;
+  // x-ray 4–15
+  xr.set(sm(A[4] - .2, A[4] + .5, t) * (1 - sm(A[15], A[15] + .5, t)));
+  // 5: motors light one by one along the arm; 6: brain + signals out to each motor
+  const m5 = k => sm(A[5] + k, A[5] + k + .4, t) * (1 - sm(A[6] + .5, A[6] + 1, t)) * .7;
+  mS.set(m5(0), spin); mW.set(m5(1.2), spin * 1.3);
+  mE.set(m5(.6) + sm(A[11], A[11] + .35, t) * (1 - sm(A[14], A[15], t)), spin);       // 11: effort jumps (deeper blue)
+  br.set(sm(A[6], A[6] + .4, t) * (1 - sm(B[7], B[7] + .4, t)) + sm(A[12], A[12] + .3, t) * (1 - sm(A[14], A[14] + .5, t)));
+  sgS.set(sm(A[6] + .2, A[6] + .9, t)); sgW.set(sm(A[6] + .5, A[6] + 1.2, t));
+  if (t < A[12]) sgE.set(sm(A[6] + .35, A[6] + 1.05, t)); else sgE.set(sm(A[12], A[12] + .7, t), 'back');   // 12: the jump travels motor → brain
+  ring.set(0);   // Ziv 2026-11-16: the 3D hoop looked off → 2D touch ripple at the contact point instead (overlay)
+  // 15–18: soft cover
+  cv.set(sm(A[15] + .3, A[16] + .8, t));
+  // dim the room a bit on the re-hook (8), back on the secret (15)
+  warm.intensity = 3 - 1.4 * sm(A[8], A[8] + .5, t) * (1 - sm(A[15], A[15] + .6, t));
+  // effort graph 6–14 · force gauge 19–20
+  G = {k: sm(A[6], B[13], t), spike: sm(A[11], A[11] + .5, t), stop: sm(A[13], A[13] + .5, t)}; scr.update(t);
+  FG = {v: .25 * sm(A[19] + .3, B[20] - .2, t), limit: .35}; gau.update(t);
+  const eW = J('elbowR').getWorldPosition(V3());
+  const gk = win(t, A[6] - .2, A[15], .3), fk = win(t, A[19] - .2, A[21], .3);
+  scr.mesh.visible = gk > .01; scr.mesh.scale.setScalar(Math.max(.01, gk)); scr.mesh.position.set(eW.x - .35, eW.y + .62, eW.z + .15);
+  gau.mesh.visible = fk > .01; gau.mesh.scale.setScalar(Math.max(.01, fk)); gau.mesh.position.set(eW.x - .3, eW.y + .55, eW.z + .15);
+  const sOn = scr.mesh.visible ? scr.mesh : gau.mesh.visible ? gau.mesh : null;
+  dash.visible = !!sOn; if (sOn) { dash.geometry.setFromPoints([eW, sOn.position.clone().add(V(0, -.18, 0))]); dash.computeLineDistances(); }
+  // ---------- camera: one world, every sentence a move (around the touch point T) ----------
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const TT = [T.x - .3, T.y - .1, T.z - .3], O0 = [2.7, 1.6, 2.9];               // frame 0 = last frame: robot + child + table
+  const TC = [T.x - .1, T.y, T.z - .2], OC = [.75, .35, .75];
+  const TH = [T.x, T.y - .05, T.z], OH = [1.2, .5, .1];                         // hook close: child's hand + forearm                  // forearm close
+  const TA = [T.x - .35, T.y + .25, T.z - .35], OA = [1.4, .9, 1.0];           // whole arm (x-ray)
+  const TG = [T.x - .45, T.y + .45, T.z - .2], OG = [1.6, .7, 1.7];            // arm + graph
+  const [cp, ct] = camPath(t, [
+    sh(0, TH, [.2, .55, 1.2], .85), sh(B[0] - .2, TH, [.35, .5, 1.15], .72),                                                // hook: behind the child, the robot's hand coming at it
+    sh(A[1] + .8, TH, [1.15, .45, .35], .75), sh(A[2] + .15, TH, [1.15, .45, .35], .8),                                        // the touch → stop
+    sh(A[3] + .15, TT, O0, .9), sh(A[3] + .5, TT, O0, .95),                                         // fast pull-out: the child is fine
+    sh(A[4] + .3, TA, OA, 1.15), sh(A[5] + .2, TA, [.6, .8, 1.5], 1.0), sh(A[5] + 1.6, TA, [1.5, .7, .4], 1.0),   // motors along the arm
+    sh(A[6] + .4, TG, OG, 1.0), sh(B[7], TG, OG, .9),                                               // brain + graph
+    sh(A[8] + .2, TT, O0, .9), sh(A[9] + .5, TT, [2.2, 1.2, 2.6], .8),                              // re-hook: imagine
+    sh(A[10] + .4, TC, [.9, .4, .5], 1.1), sh(A[11] + .3, TG, OG, 1.05), sh(A[12] + .4, TA, OA, 1.0), // contact, spike, signal back
+    sh(A[13] + .2, TC, OC, 1.05), sh(A[14] + .3, TC, OC, .9),                                        // stop ring
+    sh(A[15] + .3, TA, [1.6, .9, 1.6], 1.0), sh(A[16] + .5, TA, [.4, .8, 1.8], 1.0), sh(A[17] + .5, TC, [1.1, .5, .6], 1.0), sh(A[18] + .3, TC, OC, 1.0),  // soft cover
+    sh(A[19] + .2, TG, OG, 1.0), sh(B[20], TG, OG, .9),                                              // slow replay + small force
+    sh(A[21] - .1, TT, O0, 1.05), sh(END, TT, O0, 1.0)]);
+  scr.mesh.lookAt(cp); gau.mesh.lookAt(cp);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    // touch ripple (light blue = signal): two thin rings spread from the contact point, once per touch / stop
+    const rip = t0 => { const d = t2 - t0; if (d < 0 || d > 1.1) return; const [x, y, z] = st.proj(T); if (z > 1) return; const c = st.ctx; c.save();
+      for (const o of [0, .28]) { const p = (d - o) / .8; if (p < 0 || p > 1) continue; c.globalAlpha = (1 - p) * .95; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6 - 3 * p; c.beginPath(); c.arc(x, y, 18 + 150 * (1 - (1 - p) * (1 - p)), 0, Math.PI * 2); c.stroke(); }
+      c.globalAlpha = 1 - Math.max(0, (d - .7) / .4); c.fillStyle = '#fff'; c.beginPath(); c.arc(x, y, 9, 0, Math.PI * 2); c.fill(); c.restore(); };
+    rip(A[1] + .75); rip(A[2]); rip(B[10] - .15); rip(A[13]);
+    L(A[2] - .1, A[3] + .4, 'עוצר', J('elbowR').getWorldPosition(V3()), 170, -300);
+    L(A[5] + .1, A[6], 'מנוע', J('elbowR').getWorldPosition(V3()), -160, -280);
+    L(A[6] + .2, A[8], 'מחשב', J('brainLed2') ? J('brainLed2').getWorldPosition(V3()) : J('torso').getWorldPosition(V3()), -180, -360);
+    L(A[13], A[15], 'עוצר', J('elbowR').getWorldPosition(V3()), 170, -300);
+    L(A[16], A[17] + .2, 'קל', J('torso').getWorldPosition(V3()), -170, -320);
+    L(A[17], A[18] + .2, 'כוח מוגבל', J('elbowR').getWorldPosition(V3()), 160, -300);
+    L(A[18], A[19], 'ציפוי רך', T, -150, -280);
+  }};
+});
+// ---- pro look merge: real-world neutral materials for the room, pro() for the robot, silhouettes for people, the carousel studio light + AO + DOF + grain ----
+{ const neutral = (o, warm = true) => o.traverse(m => { if (!m.isMesh || m.userData.ins) return; const ms = Array.isArray(m.material) ? m.material : [m.material];
+    m.material = ms.map(src => { if (!src || src.map || src.transparent && src.opacity < .9) return src; const c = (src.color || new THREE.Color(.5, .5, .5)); const L = c.r * .3 + c.g * .55 + c.b * .15;
+      const n = /floor|plank/i.test(m.name + (m.parent && m.parent.name)) ? new THREE.Color(0x7a5a3e).multiplyScalar(.6 + L) : new THREE.Color(warm ? 0xe9e2d8 : 0xdfe3ea).multiplyScalar(Math.min(1, .25 + L * 1.25));
+      return new THREE.MeshStandardMaterial({color: n, roughness: .78, metalness: 0}); }); if (m.material.length === 1) m.material = m.material[0]; });
+  scene.traverse(o => { if (o.isMesh && o.parent === scene) neutral(o); });
+  scene.children.filter(o => o.type === 'Group' || o.type === 'Object3D').forEach(o => { if (o === bot) LOOK.pro(o); else if (o === kid) LOOK.pro(o, {people: true}); else neutral(o); });
+  const L = LOOK.setup({renderer: st.renderer, scene, cam: st.cam, composer: st.composer, preset: 'warm', W: 1080, H: 1920});
+  const tgt = bot.getObjectByName('touchR') ? bot.getObjectByName('touchR').getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(.8, .9, .4);
+  L.focus(tgt); scene.add(warm); scene.fog = new THREE.Fog(L.P.bg, 9, 22); }
+st.ready();
+</script></body></html>
