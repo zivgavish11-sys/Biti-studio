@@ -10,6 +10,6 @@ Colours: light blue #8ea6ff = signal/information (Bluetooth dots, message, key);
 6. "במקום שם של רשת, הם החביאו בה פקודה." — envelope opens on a floating screen: field "שם רשת:" — the text slides aside and a command line appears instead ("פקודה"); callout on the hidden part.
 7. "והרובוט, ממושמע כמו תמיד, ביצע אותה." — the robot does a small obedient nod (joke beat); the robot's chest/visor screen shows the command running.
 8. "ככה הם יכלו לקבל שליטה מלאה ברובוט." — robot's joints light deeper blue one by one (shoulder, elbow, knee) = "full control" as a possibility — the robot does NOT walk or act (no move was shown in reality); callout "שליטה מלאה".
-9. "אז מה עושים? מעדכנים את הרובוט, ומכבים בלוטוס כשלא צריך." — back to the owner's phone: app screen "עדכון מותקן ✓" then a Bluetooth toggle switches off; the dot stream from the window fades out.
-10. outro card "עוד הסברים על רובוטים? תעקבו." — wide high 3/4 of the living room like frame 0 (loop), scene shrinks into the card, Follow button.
+9. (Ziv 2026-11-20: prevention moved to ep020) "אז איך שומרים על הרובוט שלכם מפריצה?" — camera pulls back to the frame-0 composition (loop); the red "נפרץ!" sign still blinking; a small light-blue shield icon fades in next to the robot with a "?".
+10. outro card on "בפרק הבא. תעקבו." — scene shrinks into the card, Follow button + a label above it "בפרק הבא: איך שומרים עליו" (draw in the episode overlay/extra). Last phrase in the timeline must be "תעקבו." on its own so the card starts on "בפרק הבא".
 Assets needed: humanoid ×6 (instances), livingRoom + window with a street spot outside, mannequin-scan, smartphone ×2 (st.screen), envelope + padlock + key icons (build in kit.js or simple planes) → ask media only if missing.

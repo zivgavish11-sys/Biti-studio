@@ -17,3 +17,4 @@ A. יהיה אפשר לפרוץ לרובוט שלכם! | "יהיה אפשר לפ
 B. גם לרובוט שלכם?! | "גם לרובוט שלכם יהיה אפשר לפרוץ?! חוקרים כבר עשו את זה לרובוט דמוי אדם."
 C. מישהו ייכנס לרובוט שלכם | "הרובוט שלכם בבית... ומישהו אחר יכול להיכנס אליו!"
 # Ziv picked: question form 'יהיה אפשר לפרוץ לרובוט שלכם?' + line 2 'חוקרים כבר עשו את זה... בלי לגעת בו.'
+# Ending (Ziv 2026-11-20, option A): prevention tip removed → CTA 'אז איך שומרים על הרובוט שלכם מפריצה? בפרק הבא. תעקבו.' → ep020 MUST be the protection episode ('איך שומרים על הרובוט בבית מפריצה?': separate Wi-Fi for the robot, updates, Bluetooth off, what to check before buying), posted the day after ep019.
