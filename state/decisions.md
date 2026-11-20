@@ -73,3 +73,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-19 (analytics review #5, Ziv approved 1, 2, 4): hero-v2 = permanent look (test closed); viewer-personal-stake home-robot ideas first, no-stake trivia last; Facebook stays in every episode. docs/agents/video.md. Proposal 3 (carousels TikTok-only) REJECTED — carousels stay on IG + FB + TikTok.
 
 - 2026-11-20 (Ziv, video chat): script order = Ziv approves the text first, then the fact-checker, then the final TTS text. Rule in docs/agents/video.md.
+
+- 2026-11-20 (Ziv, news chat): carousel look changed to dark editorial/serious (template CSS + rule in docs/agents/news.md). Real news photos not possible: WebFetch returns no images and bypassing is not allowed; official press photo as a separate slide remains the only option (not adopted).
