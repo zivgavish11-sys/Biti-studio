@@ -1,0 +1,8 @@
+# ep021-dronedelivery — "עתיד משלוחי הרחפנים" (Ziv topic 2026-11-20). Angles sent: 1 tether delivery (Zipline P2 ~100 m hover + droid on a line, per company) · 2 drone air-traffic over Israeli cities (national drone initiative, Airwayz) · 3 what if it falls.
+# Hooks v2 (Ziv asked for more), sent:
+1. droid on a long line dropping from the sky onto a balcony table | 100 מטר של חבל | "המשלוח הבא שלכם... יירד אליכם על חבל, מגובה של מאה מטר."
+2. a pizza box floating down past apartment windows, nobody holding it | מי מחזיק את הפיצה? | "הפיצה הזאת יורדת מהשמיים... ואף אחד לא מחזיק אותה."
+3. drone hovering high, can't land: balcony too small, trees, kids | אין לו איפה לנחות | "לרחפן משלוחים אין איפה לנחות ליד הבית שלכם. אז איך הוא מוסר לכם את החבילה?"
+4. sky over a Tel-Aviv street filled with dozens of drones crossing paths | שמיים מלאים רחפנים | "תסתכלו למעלה. בעוד כמה שנים יעופו פה מאות רחפני משלוחים."
+5. two drones on a collision course, freeze frame | מי מונע התנגשות? | "שני רחפנים, אותו רחוב, אותו גובה... מי עוצר אותם?"
+6. a drone falling, parachute pops | ואם הוא נופל? | "רחפן משלוחים מעל הראש שלכם... ומה אם הוא נופל?"
