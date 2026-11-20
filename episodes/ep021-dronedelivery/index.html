@@ -16,7 +16,7 @@ const st = await studio({
 const {scene, A, B, END} = st;
 const ACC = 0x8ea6ff, FORCE = 0x4f6fe0;
 st.stage({r: 900, grid: 0, spot: null});
-const sun = new THREE.DirectionalLight(0xdfe3ff, 1.6); sun.position.set(-120, 220, 90); sun.castShadow = true; Object.assign(sun.shadow.camera, {left: -140, right: 140, top: 140, bottom: -140, near: 1, far: 600});
+const sun = new THREE.DirectionalLight(0xdfe3ff, 1.15); sun.position.set(-120, 220, 90); sun.castShadow = true; Object.assign(sun.shadow.camera, {left: -140, right: 140, top: 140, bottom: -140, near: 1, far: 600});
 sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; scene.add(sun, sun.target);
 const city = await tlvCity(st, {cols: 4, rows: 4, hero: {col: 1, row: 1, slot: 1}, boulevardAfter: 1});
 const spot = city.heroSpot, V3 = () => new THREE.Vector3();
@@ -107,6 +107,7 @@ st.frame(t => {
   const h = Math.round(100 * sm(.8, B[2] - .3, t));
   return {cp, ct, noFlash: true, overlay: t2 => {
     const c = st.ctx;
+    c.save(); c.fillStyle = 'rgba(10,12,40,.16)'; c.fillRect(0, 0, 1080, 1920); c.restore();   // QA glare fix: white Bauhaus roofs too bright (whole episode, matte dim)
     // height counter (hook)
     const ca = sm(.3, .7, t2) * (1 - sm(A[3] - .2, A[3] + .2, t2));
     if (ca > .01) { c.save(); c.globalAlpha = ca; const X = 900, Y = 1050; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.beginPath(); c.moveTo(X, Y - 380); c.lineTo(X, Y); c.stroke();
