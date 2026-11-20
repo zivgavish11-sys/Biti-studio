@@ -20,10 +20,10 @@ const sun = new THREE.DirectionalLight(0xdfe3ff, 1.15); sun.position.set(-120, 2
 sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; scene.add(sun, sun.target);
 const city = await tlvCity(st, {cols: 4, rows: 4, hero: {col: 1, row: 1, slot: 1}, boulevardAfter: 1});
 const spot = city.heroSpot, V3 = () => new THREE.Vector3();
-const man = (await st.prop('people/mannequin-reach', {x: spot.x, y: spot.y, z: spot.z, ry: .6, tint: 1})).object;
-man.updateMatrixWorld(true); const H = man.getObjectByName('handR').getWorldPosition(V3());
-{ const u = city.hero.getObjectByName('umbrella'); if (u) u.visible = false; }
 const table = city.hero.getObjectByName('table'), T = table.getWorldPosition(V3()); T.y += .02 + new THREE.Box3().setFromObject(table).max.y - table.getWorldPosition(V3()).y;
+const H = T.clone();   // Ziv 2026-11-20: the robot lands on the table; the person waits next to it (no reaching)
+const man = (await st.prop('people/mannequin-walk', {x: T.x + 1.1, y: spot.y, z: T.z + .7, ry: 0, h: 1.72, tint: 1})).object; man.lookAt(T.x, man.position.y, T.z);
+{ const u = city.hero.getObjectByName('umbrella'); if (u) u.visible = false; }
 const door = city.hero.getObjectByName('roofDoor'), D = door.getWorldPosition(V3());
 const dr = (await st.model('drone/winchDrone')).object; scene.add(dr);
 const pod = (await st.model('drone/droidPod')).object; scene.add(pod);
@@ -66,7 +66,7 @@ st.frame(t => {
   if (t >= A[8]) { const k = steer; pod.position.lerp(V(tgt.x, Math.max(tgt.y, pod.position.y), tgt.z), k); }   // no snap (jump at 22.3 s)
   if (t < A[3]) pod.position.copy(H.clone().add(V(0, .55 - .1 * sm(0, 3, t), 0)));                                   // hook: hovering just above the hand
   // re-aim the line to the pod's real position
-  { dr.updateMatrixWorld(true); const a = dr.getObjectByName('lineOut').getWorldPosition(V3()), e = pod.position.clone().add(V(0, .35, 0)), L = teth.line;
+  { dr.updateMatrixWorld(true); const a = dr.getObjectByName('lineOut').getWorldPosition(V3()), e = (pod.getObjectByName('hook') || pod).getWorldPosition(V3()), L = teth.line;   // line ends exactly on the pod's ring (Ziv)
     L.position.copy(a).lerp(e, .5); L.scale.set(1, Math.max(.001, a.distanceTo(e)), 1); L.quaternion.setFromUnitVectors(V(0, 1, 0), a.clone().sub(e).normalize()); }
   doors.set(sm(A[16], A[16] + .4, t) * (1 - sm(A[17] + .2, A[17] + .6, t)), .5 * sm(A[16] + .3, A[16] + .7, t) * (t < A[17] + .2 ? 1 : 0));
   // parcel stays on the table after the drop
@@ -85,7 +85,7 @@ st.frame(t => {
     const ty = H.y + HOV - 1.5 - (HOV - 2.4) * dn;
     const ride = V(H.x + .55, ty + .3, H.z + .4), rideT = pod.position.clone();
     const top0 = V(H.x + 5.5, H.y + HOV + 5.5, H.z + .6), topT = dr.position.clone().add(V(-4, -3, 0));   // look west: sea + beach in the frame (Tel Aviv)
-    const end = V(H.x + 2.6, H.y + 1.6, H.z + 2.0), endT = V(H.x, H.y + .3, H.z), k0 = sm(.15, .6, t);
+    const end = V(H.x + 3.4, H.y + 2.1, H.z + 3.0), endT = V(H.x + .4, H.y + .4, H.z + .3), k0 = sm(.15, .6, t);
     cp = top0.clone().lerp(ride, k0).lerp(end, land); ct = topT.clone().lerp(rideT, k0).lerp(endT, land);
   } else {
     const Dp = dr.position, Pp = pod.position, Ss = [S.x, 2, S.z];
@@ -96,8 +96,8 @@ st.frame(t => {
       sh(END + 5, [S.x + 1, 3, S.z - 2], [6.8, 4.4, 10.2])]);
     // Ziv 2026-11-20: close-ups on each word (trees / wires / people), clean cut on the word, slow push-in while it's spoken
     const cu = (t0, t1, tg, o0, o1) => { if (t >= t0 && t < t1) { const k = sm(t0, t1, t); ct = V(...tg); cp = V(tg[0] + o0[0] + (o1[0] - o0[0]) * k, tg[1] + o0[1] + (o1[1] - o0[1]) * k, tg[2] + o0[2] + (o1[2] - o0[2]) * k); } };
-    cu(A[5] - .1, A[6] - .1, [S.x - 4, 4, S.z - 2], [5, 4, 8], [3.8, 3.2, 6.2]);
-    cu(A[6] - .1, A[7] - .1, [S.x + 5, 8, S.z], [-6, 1.5, 7], [-4.6, 1.2, 5.4]);
+    cu(A[5] - .1, A[6] - .1, [S.x - 4, 4, S.z - 2], [8, 6, 12.5], [6.8, 5.2, 10.6]);   // less zoom (Ziv)
+    cu(A[6] - .1, A[7] - .1, [S.x + 4.6, 7.6, S.z + 5], [-9.5, 2.5, 10], [-8, 2.1, 8.6]);   // less zoom, wires across the frame (Ziv)
     cu(A[7] - .1, B[7] + .05, [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
     if (t > B[7] + .05) [cp, ct] = camPath(t, [   // clean cut street → drone (was a 100 m whip at 10.4 s)
       sh(B[7] + .05, [Dp.x, Dp.y - 2, Dp.z], [4.4, 3.3, 5.5]),
@@ -126,7 +126,7 @@ st.frame(t => {
       c.beginPath(); c.moveTo(x - 60, y - 60); c.lineTo(x + 60, y + 60); c.moveTo(x + 60, y - 60); c.lineTo(x - 60, y + 60); c.stroke(); c.restore(); } }
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
     L(A[5] - .05, A[6] - .1, 'עצים', V(S.x - 4, 5, S.z - 2), 120, -260);
-    L(A[6] - .05, A[7] - .1, 'חוטי חשמל', V(S.x + 5, 8.3, S.z + 7), -120, -240);
+    L(A[6] - .05, A[7] - .1, 'חוטי חשמל', V(S.x + 4.6, 7.95, S.z + 7), -60, -260);   // leader line lands on the wire (Ziv)
     L(A[7] - .05, A[8], 'אנשים', people[0].getWorldPosition(V3()).add(V(0, 1.8, 0)), 100, -240);
     L(A[12], A[13] + .2, 'רובוט', pod.position, 140, -260);
     L(A[13] + .2, A[14] + .3, 'מדחפים', pod.position, -160, -240);
