@@ -55,3 +55,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-19: fired for news/20261119 BD/GF Atlas + Rockwell/AGILOX (spec+caption+dms, 2e767c6). Read Korea Times, AI Insider, Interesting Engineering, Investing.com, IEN (Robotics 24/7, Robot Report, UPI blocked). All special checks OK; 1 fix: DM 1 date 18.11 → 'השבוע' (announced 17.11 US) → inbox/news. Not scheduled yet; minor, no push.
 - 2026-11-20 news/20261120 (spec+caption+dms): OK, 2 optional wording polishes (ברמנים→הכינו קפה; גלידה למבקרים ולתושבים). No notification.
 - 2026-11-20 video ep019-hack script.txt: OK. Read IEEE Spectrum + Hackaday. 1 optional soften (קיבלו→יכלו לקבל שליטה מלאה; demo = reboot only) → inbox/video. Not scheduled; no push.
+- 2026-11-20 video ep020-protect script.txt: OK. Read Kaspersky + Bitdefender (guest network), Red Hot Cyber/SentinelOne (UniPwn BLE). No fixes; notes vs overclaims → inbox/video. Not scheduled; no push.
