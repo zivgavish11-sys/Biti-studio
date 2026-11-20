@@ -1,86 +1,128 @@
 <!doctype html><html><head><meta charset="utf-8"></head><body>
 <script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
 <script type="module">
-// EP021-dronedelivery — hook draft (Ziv: visual hook 1 "the endless line"). Timeline ESTIMATED.
-// frame 0: hand up on a Tel-Aviv rooftop, parcel hanging just above it on a thin line going out of frame; camera rises along the line, counter 0 → 100 m, the drone is revealed.
-import {studio, THREE, sm, camPath, V} from '/engine/lib/core.js';
-import {varyCity} from '/engine/props/fx-city.js';
+// EP021-dronedelivery — LONG + hero look, one world = media's Tel-Aviv kit (fx-tlv.js). visual.md v1, hook moves approved by Ziv (ride the line looking down → over the drone).
+// Phrases (aligned 2026-11-20): 0 המשלוח הבא שלכם | 1 יירד אליכם על חבל | 2 מגובה של מאה מטר | 3 למה לא נוחת? | 4 אין לו איפה | 5 עצים | 6 חוטי חשמל | 7 ואנשים
+// 8 נשאר גבוה | 9 ומוריד חבל | 10 החלק המטורף | 11 אין רק חבילה | 12 יש רובוט קטן | 13 מדחפים משלו | 14 מכוון את עצמו | 15 לשולחן בחצר
+// 16 משאיר את החבילה | 17 החבל נגלל | 18 בדרך למשלוח הבא | 19 בלי לצלצל בפעמון | 20 עוד הסברים | 21 תעקבו
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {tlvCity, tether, podDoors} from '/engine/props/fx-tlv.js';
 const st = await studio({
-  look: 'hero', episode: 21, fog: .002, outro: 'card',
-  keys: ['חבל', 'מאה'],
-  hookEnd: 3.4, hook: ['המשלוח הבא שלכם', 'על <span class="pill">חבל</span>'],
+  look: 'hero', episode: 21, fog: .0016, outro: 'card',
+  keys: ['חבל', 'מאה', 'נוחת', 'עצים', 'חשמל', 'גבוה', 'רובוט', 'מדחפים', 'בדיוק', 'לשולחן', 'נגלל', 'בפעמון'],
+  hookEnd: 4.0, hook: ['המשלוח הבא שלכם', 'על <span class="pill">חבל</span>'],
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
-st.stage({r: 160, grid: 0, spot: [4, 30, 6], target: [0, 10, 0]});
-const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
-await P('citycorner/streetCorner', {x: 0, z: 0});
-const bau = await P('citycorner/bauhausCorner', {x: 13.25, z: -13.25}); try { varyCity(bau, 1921); } catch (e) {}
-const sf = await P('citycorner/storefront', {x: -10, z: -13}); try { varyCity(sf, 1922); } catch (e) {}
-const cf = await P('citycorner/cafe', {x: -12, z: 12, ry: Math.PI}); try { varyCity(cf, 1923); } catch (e) {}
-// Tel-Aviv neighbourhood (Ziv 2026-11-20): dense Bauhaus blocks on a street grid, a tree boulevard, and the sea + beach + promenade palms on the west
-{ let sd = 21; const rnd = () => (sd = (sd * 9301 + 49297) % 233280) / 233280; const kinds = ['citycorner/bauhausCorner', 'citycorner/storefront', 'citycorner/cafe'];
-  for (let gx = -33; gx <= 77; gx += 22) for (let gz = -77; gz <= 55; gz += 22) {
-    if (Math.abs(gx) < 12 && Math.abs(gz) < 12) continue; if (Math.abs(gx - 11) < 12 && Math.abs(gz + 11) < 12) continue;
-    const o = await P(kinds[Math.floor(rnd() * 3)], {x: gx + (rnd() - .5) * 2, z: gz + (rnd() - .5) * 2, ry: Math.floor(rnd() * 4) * Math.PI / 2}); try { varyCity(o, 1900 + gx * 7 + gz); } catch (e) {} }
-  for (let x = -40; x <= 85; x += 7) for (const z of [-33.5, -28.5]) await P('outdoor/CommonTree_1', {x: x + rnd(), z, h: 6 + rnd() * 1.5});   // boulevard
-  const flat = (w, d, x, z, y, col) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({color: col, roughness: .9})); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); scene.add(m); return m; };
-  flat(14, 400, -51, -10, .03, 0x7e80c4);            // beach
-  const sea = flat(300, 400, -208, -10, .02, 0x2b3a9c);  // sea (deeper blue)
-  for (let k = 0; k < 9; k++) flat(1.2, 400, -60 - k * 9, -10, .04, 0x4f6fe0).material.opacity = .55;   // gentle wave lines
-  for (let z = -90; z <= 70; z += 9) await P('outdoor/PalmTree_1', {x: -44, z: z + rnd() * 2, h: 7 + rnd() * 2});   // promenade
-}
-// hero palette (Ziv 2026-11-20: "חרגת מההגדרות"): everything monochrome indigo by brightness, textures off; only the accent stays light blue
-const IND = [new THREE.Color(0x262c66), new THREE.Color(0x4750a8), new THREE.Color(0x6d74c4), new THREE.Color(0xb9bdf0)];
-const indigo = (root, keep = () => false) => root.traverse(o => { if (!o.isMesh || keep(o)) return; const ms = Array.isArray(o.material) ? o.material : [o.material];
-  o.material = ms.map(m => { const c = (m.color || new THREE.Color(1, 1, 1)).clone(); let l = c.r * .3 + c.g * .55 + c.b * .15; if (m.map) l = Math.max(l, .45);
-    const i = Math.min(2.999, l * 3.4), a = Math.floor(i); const col = IND[a].clone().lerp(IND[a + 1], i - a);
-    return new THREE.MeshStandardMaterial({color: col, roughness: .85, metalness: 0, transparent: m.transparent, opacity: m.opacity}); });
-  if (o.material.length === 1) o.material = o.material[0]; });
-scene.children.forEach(o => { if (o.isMesh && o.geometry && o.geometry.type === 'CircleGeometry') return; if (o.type === 'Group' || o.type === 'Object3D') indigo(o); });
-const top = new THREE.Box3().setFromObject(bau).max.y;
-// person on the rooftop, arm up
-const man = await P('people/mannequin-walk', {x: 11.5, y: top, z: -11.5, ry: -2.3});
-const M = n => man.getObjectByName(n);
-// drone 100 m above the parcel
-const dd = await P('drone/deliveryDrone', {scale: 1.2});
-const parcel = dd.getObjectByName('parcel'), teth = dd.getObjectByName('tether');
-if (teth) teth.visible = false;
-scene.attach(parcel);
-indigo(dd);
-// parcel: plain light box + light-blue band (accent), no coloured groceries
-parcel.traverse(o => { if (!o.isMesh) return; const n = o.name + (o.parent ? o.parent.name : '');
-  if (/band/.test(n)) o.material = new THREE.MeshStandardMaterial({color: 0x8ea6ff, roughness: .7});
-  else if (/box/.test(n)) o.material = new THREE.MeshStandardMaterial({color: 0xd9dbf5, roughness: .85});
-  else o.visible = false; });
-const line = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1, 6), new THREE.MeshStandardMaterial({color: 0xe8ecff, roughness: .5})); scene.add(line);
-const V3 = () => new THREE.Vector3();
+const ACC = 0x8ea6ff, FORCE = 0x4f6fe0;
+st.stage({r: 900, grid: 0, spot: null});
+const sun = new THREE.DirectionalLight(0xdfe3ff, 1.6); sun.position.set(-120, 220, 90); sun.castShadow = true; Object.assign(sun.shadow.camera, {left: -140, right: 140, top: 140, bottom: -140, near: 1, far: 600});
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; scene.add(sun, sun.target);
+const city = await tlvCity(st, {cols: 4, rows: 4, hero: {col: 1, row: 1, slot: 1}, boulevardAfter: 1});
+const spot = city.heroSpot, V3 = () => new THREE.Vector3();
+const man = (await st.prop('people/mannequin-reach', {x: spot.x, y: spot.y, z: spot.z, ry: .6, tint: 1})).object;
+man.updateMatrixWorld(true); const H = man.getObjectByName('handR').getWorldPosition(V3());
+{ const u = city.hero.getObjectByName('umbrella'); if (u) u.visible = false; }
+const table = city.hero.getObjectByName('table'), T = table.getWorldPosition(V3()); T.y += .02 + new THREE.Box3().setFromObject(table).max.y - table.getWorldPosition(V3()).y;
+const door = city.hero.getObjectByName('roofDoor'), D = door.getWorldPosition(V3());
+const dr = (await st.model('drone/winchDrone')).object; scene.add(dr);
+const pod = (await st.model('drone/droidPod')).object; scene.add(pod);
+const teth = tether(scene, dr, pod), doors = podDoors(pod);
+const parcel = pod.getObjectByName('parcel');
+// street spot for "why not land" (east street of the hero cell), wires + people there
+const S = V(32, 0, H.z + 6);
+const ghost = (await st.model('drone/winchDrone')).object; ghost.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = .35; o.castShadow = false; } }); scene.add(ghost);
+const poleM = new THREE.MeshStandardMaterial({color: 0x4750a8, roughness: .8}), wireM = new THREE.LineBasicMaterial({color: 0xb9bdf0});
+const poles = [-14, 0, 14].map(dz => { const p = new THREE.Mesh(new THREE.CylinderGeometry(.12, .16, 9, 8), poleM); p.position.set(S.x + 5, 4.5, S.z + dz); p.castShadow = true; scene.add(p); return p; });
+for (const dy of [8.6, 8.0]) for (let i = 0; i < 2; i++) { const a = poles[i].position, b = poles[i + 1].position, pts = [];
+  for (let k = 0; k <= 20; k++) { const u = k / 20; pts.push(V(a.x + (dy === 8 ? .4 : -.4), dy - Math.sin(u * Math.PI) * .7, a.z + (b.z - a.z) * u)); }
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), wireM)); }
+const people = []; for (const [dx, dz, ry] of [[0, -6, .4], [1.6, -3.2, 2.8], [-1.2, -.5, -1.2]]) people.push((await st.prop('people/mannequin-walk', {x: S.x + dx, z: S.z + dz, ry, h: 1.7, tint: 1})).object);
+// target ring on the terrace table, ✕ ring on the street
+const ringM = (col) => new THREE.MeshStandardMaterial({color: col, roughness: .6, transparent: true, side: THREE.DoubleSide});
+const tRing = new THREE.Mesh(new THREE.RingGeometry(.28, .34, 48), ringM(ACC)); tRing.rotation.x = -Math.PI / 2; tRing.position.copy(T).add(V(0, .01, 0)); scene.add(tRing);
+const xRing = new THREE.Mesh(new THREE.RingGeometry(2.2, 2.5, 64), ringM(ACC)); xRing.rotation.x = -Math.PI / 2; xRing.position.set(S.x, .06, S.z); scene.add(xRing);
+// fan discs on the pod (deeper blue = force) for "מדחפים משלו"
+const fans = [0, 1, 2, 3].map(i => { const f = pod.getObjectByName('fan' + i) || pod.getObjectByName('rotor' + i); const m = new THREE.Mesh(new THREE.CircleGeometry(.09, 24), new THREE.MeshStandardMaterial({color: FORCE, roughness: .5, transparent: true, opacity: 0, side: THREE.DoubleSide})); m.rotation.x = -Math.PI / 2; m.position.y = .01; f && f.add(m); return m; });
+const HOV = 100.4;                                           // drone height above the hand
 st.frame(t => {
-  M('shoulderR').rotation.set(-2.9, 0, -.1); M('elbowR').rotation.x = -.15; M('head').rotation.x = -.5;
-  man.updateMatrixWorld(true);
-  const hand = (M('handR') || M('elbowR')).getWorldPosition(V3());
-  const sway = Math.sin(t * 2.2) * .03;
-  parcel.position.set(hand.x + sway, hand.y + .55 - .12 * sm(0, 3, t), hand.z); parcel.rotation.y = t * .3;
-  const dy = 100; dd.position.set(hand.x, hand.y + dy, hand.z); dd.rotation.y = t * .15;
-  const d = dd.getObjectByName('drone'); for (let i = 0; i < 4; i++) { const p = dd.getObjectByName('prop' + i); if (p) p.rotation.y = t * 40 * (i % 2 ? -1 : 1); }
-  const p0 = parcel.position.clone().add(V(0, .25, 0)), p1 = dd.position.clone().add(V(0, -.3, 0));
-  line.position.copy(p0).lerp(p1, .5); line.scale.set(1, p0.distanceTo(p1), 1);
-  // camera (Ziv 2026-11-20): runs tight along the line, then climbs over the drone and looks down
-  const up = sm(.8, 3.0, t), over = sm(2.75, 3.6, t);
-  const ty = hand.y + .6 + (dy - 2.2) * up;
-  const ride = V(hand.x + .55, ty + .3, hand.z + .4);                        // ~1 m beside the line
-  const rideT = parcel.position.clone();                                       // Ziv: look DOWN the line at the parcel + person shrinking below
-  const top0 = V(hand.x + 2.2, hand.y + dy + 5.2, hand.z + 1.8), topT = dd.position.clone().add(V(0, -.9, 0));
-  const start = V(hand.x + 2.6, hand.y + 1.6, hand.z + 2.0), startT = V(hand.x, hand.y + .3, hand.z);
-  const k0 = sm(.5, 1.0, t);
-  const cpv = start.clone().lerp(ride, k0).lerp(top0, over), ctv = startT.clone().lerp(rideT, k0).lerp(topT, over);
-  const h = Math.round(100 * sm(.8, 3.0, t));
-  return {cp: cpv, ct: ctv, noFlash: true, overlay: t2 => {
-    const c = st.ctx; c.save(); c.globalAlpha = sm(.3, .7, t2);
-    const X = 900, Y = 1050; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.beginPath(); c.moveTo(X, Y - 380); c.lineTo(X, Y); c.stroke();
-    const yy = Y - 380 * h / 100; c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(X, yy, 14, 0, Math.PI * 2); c.fill();
-    c.fillStyle = '#fff'; c.font = '900 64px Rubik'; c.textAlign = 'right'; c.direction = 'rtl'; c.fillText(h + ' מ׳', X - 30, yy + 22);
-    c.restore(); }};
+  city.sea && city.sea.update(t);
+  // ---------- drone + line + pod ----------
+  // hook (0–A3): pod already at the hand, full line. Story (A8→): line goes out from the drone (8–9), pod rides down (10–12), steers to the table (13–15),
+  // drops the parcel (16), reels up (17), drone flies on (18), back above for the outro.
+  const off = V(0, 0, 0);
+  const fly = sm(A[18], B[18], t) * (1 - sm(A[20] - .2, A[20] + .4, t));
+  dr.position.set(H.x + 40 * fly, H.y + HOV + 4 * fly, H.z - 25 * fly); dr.rotation.y = t * .05; dr.rotation.z = -.12 * win(t, A[18], B[18], .5);
+  for (let i = 0; i < 6; i++) { const p = dr.getObjectByName('prop' + i); if (p) p.rotation.y = t * 40 * (i % 2 ? -1 : 1); }
+  let len;
+  if (t < A[8]) len = HOV - .9;                                                               // hook (and the "why not land" detour)
+  else if (t < A[16]) len = 2 + (HOV - 1.6) * sm(A[8] + .2, B[12], t);                       // out from the drone, pod comes down to the terrace
+  else len = (HOV - .3) * (1 - sm(A[17], B[17] + .3, t)) + .9;                                // reel up
+  const sway = t < A[13] ? 1 : .15;
+  teth.set(Math.max(.9, len), t, sway);
+  // steer: from straight under the drone to the table (13–15), stay there until the reel-up
+  const steer = sm(A[13] + .3, B[15], t) * (1 - sm(A[17], A[17] + .4, t));
+  const above = pod.position.clone(), tgt = T.clone().add(V(0, .55 - .27 * sm(A[15], B[15], t), 0));
+  if (t >= A[8]) { const k = steer; pod.position.lerp(V(tgt.x, Math.max(tgt.y, pod.position.y), tgt.z), k); if (k > .99) pod.position.copy(tgt); }
+  if (t < A[3]) pod.position.copy(H.clone().add(V(0, .55 - .1 * sm(0, 3, t), 0)));                                   // hook: hovering just above the hand
+  // re-aim the line to the pod's real position
+  { dr.updateMatrixWorld(true); const a = dr.getObjectByName('lineOut').getWorldPosition(V3()), e = pod.position.clone().add(V(0, .35, 0)), L = teth.line;
+    L.position.copy(a).lerp(e, .5); L.scale.set(1, Math.max(.001, a.distanceTo(e)), 1); L.quaternion.setFromUnitVectors(V(0, 1, 0), a.clone().sub(e).normalize()); }
+  doors.set(sm(A[16], A[16] + .4, t) * (1 - sm(A[17] + .2, A[17] + .6, t)), .5 * sm(A[16] + .3, A[16] + .7, t) * (t < A[17] + .2 ? 1 : 0));
+  // parcel stays on the table after the drop
+  if (t > A[16] + .7) { if (parcel.parent === pod) { scene.attach(parcel); } parcel.position.set(T.x, T.y + .12, T.z); } else if (parcel.parent !== pod) pod.attach(parcel);
+  fans.forEach(f => f.material.opacity = .8 * win(t, A[13], B[15] + .3, .3));
+  tRing.material.opacity = .9 * win(t, A[14], A[17], .3); tRing.scale.setScalar(1 + .15 * Math.sin(t * 6) * win(t, A[14], B[15], .2));
+  // ghost drone trying to land on the street (3–4) + ✕ ring
+  const gk = sm(A[3] + .2, A[4] + .3, t); ghost.visible = t > A[3] && t < A[5]; ghost.position.set(S.x, 30 - 26 * gk, S.z); ghost.rotation.y = t * .05;
+  xRing.material.opacity = .9 * win(t, A[4], A[8], .3);
+  // ---------- camera ----------
+  const sh = (tt, tg, o, z = 1) => [tt, [tg[0] + o[0] * z, tg[1] + o[1] * z, tg[2] + o[2] * z], tg];
+  let cp, ct;
+  const up = sm(.8, B[2] - .3, t), over = sm(B[2] - .55, A[3] + .1, t);
+  if (t < A[3] + .1) {                                        // HOOK (approved): start at hand + pod, ride the line looking down, over the drone
+    const ty = H.y + .6 + (HOV - 2.2) * up;
+    const ride = V(H.x + .55, ty + .3, H.z + .4), rideT = pod.position.clone();
+    const top0 = V(H.x + 2.2, H.y + HOV + 5.2, H.z + 1.8), topT = dr.position.clone().add(V(0, -.9, 0));
+    const start = V(H.x + 2.6, H.y + 1.6, H.z + 2.0), startT = V(H.x, H.y + .3, H.z), k0 = sm(.5, 1.0, t);
+    cp = start.clone().lerp(ride, k0).lerp(top0, over); ct = startT.clone().lerp(rideT, k0).lerp(topT, over);
+  } else {
+    const Dp = dr.position, Pp = pod.position, Ss = [S.x, 2, S.z];
+    [cp, ct] = camPath(t, [
+      sh(A[3] + .1, [Dp.x, Dp.y - .9, Dp.z], [2.2, 5.2, 1.8]),
+      sh(A[3] + 1.0, [S.x, 8, S.z], [30, 40, 30]), sh(A[4] + .2, [S.x, 4, S.z], [16, 14, 18]),                 // dive: ghost tries to land, ✕
+      sh(A[5] + .1, [S.x - 4, 4, S.z - 2], [5, 4, 8]),                                                            // trees
+      sh(A[6] + .2, [S.x + 5, 8, S.z], [-6, 1.5, 7]),                                                             // wires
+      sh(A[7] + .1, [S.x, 1.0, S.z - 3], [5, 3, 7]), sh(B[7], [S.x, 1.0, S.z - 3], [4.2, 2.6, 6.2]),                                                        // people
+      sh(A[8] + .3, [Dp.x, Dp.y - 2, Dp.z], [4, 3, 5]), sh(B[9], [Dp.x, Dp.y - 8, Dp.z], [3, 4, 4]),            // back up: drone lets the line out
+      sh(A[10] + .3, [Pp.x, Pp.y, Pp.z], [1.4, 1.2, 1.8]), sh(A[11] + .4, [Pp.x, Pp.y, Pp.z], [1.1, .8, 1.4]),  // re-hook: follow the pod down
+      sh(A[12] + .2, [Pp.x, Pp.y, Pp.z], [.9, .5, 1.1]), sh(A[13] + .1, [Pp.x, Pp.y, Pp.z], [1.0, .9, 1.2]),
+      sh(A[14] + .3, [T.x, T.y + .6, T.z], [2.4, 1.8, 2.8]), sh(B[15], [T.x, T.y + .4, T.z], [1.8, 1.3, 2.2]),  // steering to the table
+      sh(A[16] + .3, [T.x, T.y + .3, T.z], [1.6, 1.2, 2.0]),
+      sh(A[17] + .3, [T.x, T.y + 3, T.z], [3, 2.5, 4]), sh(B[17], [Pp.x, Pp.y, Pp.z], [3, 2, 4]),                // reel up, follow
+      sh(A[18] + .2, [Dp.x, Dp.y, Dp.z], [10, 6, 14]), sh(B[18], [Dp.x, Dp.y - 20, Dp.z], [30, 30, 40]),          // drone flies off over the roofs
+      sh(A[19] + .1, [D.x, D.y + 1.2, D.z], [3, 1.5, 4]), sh(B[19], [D.x, D.y + 1.2, D.z], [2.4, 1.3, 3.4]),     // the door nobody rang
+      sh(A[20], [H.x, H.y + HOV - .9, H.z], [2.2, 5.2, 1.8]), sh(END, [H.x, H.y + HOV - .9, H.z], [2.2, 5.2, 1.8], 1.03)]);  // outro = end of the hook (loop)
+  }
+  const h = Math.round(100 * sm(.8, B[2] - .3, t));
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const c = st.ctx;
+    // height counter (hook)
+    const ca = sm(.3, .7, t2) * (1 - sm(A[3] - .2, A[3] + .2, t2));
+    if (ca > .01) { c.save(); c.globalAlpha = ca; const X = 900, Y = 1050; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.beginPath(); c.moveTo(X, Y - 380); c.lineTo(X, Y); c.stroke();
+      const yy = Y - 380 * h / 100; c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(X, yy, 14, 0, Math.PI * 2); c.fill();
+      c.fillStyle = '#fff'; c.font = '900 64px Rubik'; c.textAlign = 'right'; c.direction = 'rtl'; c.fillText(h + ' מ׳', X - 30, yy + 22); c.restore(); }
+    // ✕ on the street spot
+    const xk = win(t2, A[4], A[5] + .2, .25); if (xk > .01) { const [x, y, z] = st.proj(V(S.x, 3, S.z)); if (z < 1) { c.save(); c.globalAlpha = xk; c.strokeStyle = '#fff'; c.lineWidth = 16; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(x - 60, y - 60); c.lineTo(x + 60, y + 60); c.moveTo(x + 60, y - 60); c.lineTo(x - 60, y + 60); c.stroke(); c.restore(); } }
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y, z] = st.proj(p); if (z < 1) st.callout(Math.min(900, Math.max(180, x + dx)), Math.min(1150, Math.max(420, y + dy)), lab, x, y, win(t2, a, b, .25)); } };
+    L(A[5], A[6], 'עצים', V(S.x - 4, 5, S.z - 2), 120, -260);
+    L(A[6], A[7], 'חוטי חשמל', V(S.x + 5, 8.3, S.z + 7), -120, -240);
+    L(A[7], A[8], 'אנשים', people[0].getWorldPosition(V3()).add(V(0, 1.8, 0)), 100, -240);
+    L(A[12], A[13] + .2, 'רובוט', pod.position, 140, -260);
+    L(A[13] + .2, A[14] + .3, 'מדחפים', pod.position, -160, -240);
+    L(A[19], A[20], '🔔 אף אחד לא צלצל', D.clone().add(V(0, 1.2, 0)), 0, -260);
+  }};
 });
 st.ready();
 </script></body></html>
