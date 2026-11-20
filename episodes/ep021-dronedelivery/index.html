@@ -28,6 +28,7 @@ const door = city.hero.getObjectByName('roofDoor'), D = door.getWorldPosition(V3
 const dr = (await st.model('drone/winchDrone')).object; scene.add(dr);
 const pod = (await st.model('drone/droidPod')).object; scene.add(pod);
 const teth = tether(scene, dr, pod), doors = podDoors(pod);
+pod.updateMatrixWorld(true); const PODLOW = pod.position.y - new THREE.Box3().setFromObject(pod).min.y + .01;   // origin → bottom of the pod (so it sits ON the table)
 const parcel = pod.getObjectByName('parcel');
 // street spot for "why not land" (east street of the hero cell), wires + people there
 const S = V(32, 0, H.z + 6);
@@ -65,6 +66,7 @@ st.frame(t => {
   const above = pod.position.clone(), tgt = T.clone().add(V(0, .55 - .27 * sm(A[15], B[15], t), 0));
   if (t >= A[8]) { const k = steer; pod.position.lerp(V(tgt.x, Math.max(tgt.y, pod.position.y), tgt.z), k); }   // no snap (jump at 22.3 s)
   if (t < A[3]) pod.position.copy(H.clone().add(V(0, .55 - .1 * sm(0, 3, t), 0)));                                   // hook: hovering just above the hand
+  { const dx = pod.position.x - T.x, dz = pod.position.z - T.z; if (dx * dx + dz * dz < .5) pod.position.y = Math.max(pod.position.y, T.y + PODLOW); }   // never inside the table (Ziv)
   // re-aim the line to the pod's real position
   { dr.updateMatrixWorld(true); const a = dr.getObjectByName('lineOut').getWorldPosition(V3()), e = (pod.getObjectByName('hook') || pod).getWorldPosition(V3()), L = teth.line;   // line ends exactly on the pod's ring (Ziv)
     L.position.copy(a).lerp(e, .5); L.scale.set(1, Math.max(.001, a.distanceTo(e)), 1); L.quaternion.setFromUnitVectors(V(0, 1, 0), a.clone().sub(e).normalize()); }
