@@ -6,3 +6,4 @@
 4. sky over a Tel-Aviv street filled with dozens of drones crossing paths | שמיים מלאים רחפנים | "תסתכלו למעלה. בעוד כמה שנים יעופו פה מאות רחפני משלוחים."
 5. two drones on a collision course, freeze frame | מי מונע התנגשות? | "שני רחפנים, אותו רחוב, אותו גובה... מי עוצר אותם?"
 6. a drone falling, parachute pops | ואם הוא נופל? | "רחפן משלוחים מעל הראש שלכם... ומה אם הוא נופל?"
+# Ziv picked hook A + visual hook 1 (endless line, counter 0→100 m, drone reveal). Draft hook video sent 2026-11-20.

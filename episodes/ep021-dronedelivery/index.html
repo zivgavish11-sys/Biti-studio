@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP021-dronedelivery — hook draft (Ziv: visual hook 1 "the endless line"). Timeline ESTIMATED.
+// frame 0: hand up on a Tel-Aviv rooftop, parcel hanging just above it on a thin line going out of frame; camera rises along the line, counter 0 → 100 m, the drone is revealed.
+import {studio, THREE, sm, camPath, V} from '/engine/lib/core.js';
+import {varyCity} from '/engine/props/fx-city.js';
+const st = await studio({
+  look: 'hero', episode: 21, fog: .002, outro: 'card', sky: 'sunset',
+  keys: ['חבל', 'מאה'],
+  hookEnd: 3.4, hook: ['המשלוח הבא שלכם', 'על <span class="pill">חבל</span>'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+st.stage({r: 160, grid: 0, spot: [4, 30, 6], target: [0, 10, 0]});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+await P('citycorner/streetCorner', {x: 0, z: 0});
+const bau = await P('citycorner/bauhausCorner', {x: 13.25, z: -13.25}); try { varyCity(bau, 1921); } catch (e) {}
+const sf = await P('citycorner/storefront', {x: -10, z: -13}); try { varyCity(sf, 1922); } catch (e) {}
+const cf = await P('citycorner/cafe', {x: -12, z: 12, ry: Math.PI}); try { varyCity(cf, 1923); } catch (e) {}
+for (const [x, z, h] of [[30, -30, 11], [-30, -32, 13], [34, 10, 9], [-34, 30, 12]]) await P('outdoor/4Story', {x, z, h});
+{ let sd = 7; const rnd = () => (sd = (sd * 9301 + 49297) % 233280) / 233280; const names = ['outdoor/4Story', 'outdoor/3Story_Balcony', 'outdoor/2Story_Balcony'];
+  for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, r = 26 + rnd() * 50, x = 11.5 + Math.cos(a) * r, z = -11.5 + Math.sin(a) * r;
+    if (Math.abs(x) < 9 || Math.abs(z) < 9) continue; await P(names[i % 3], {x, z, h: 7 + rnd() * 9, ry: Math.round(rnd() * 4) * Math.PI / 2}); }
+  for (let i = 0; i < 14; i++) { const a = rnd() * Math.PI * 2, r = 18 + rnd() * 45; await P(i % 2 ? 'outdoor/PalmTree_1' : 'outdoor/CommonTree_1', {x: 11.5 + Math.cos(a) * r, z: -11.5 + Math.sin(a) * r, h: 5 + rnd() * 3}); } }
+const top = new THREE.Box3().setFromObject(bau).max.y;
+// person on the rooftop, arm up
+const man = await P('people/mannequin-walk', {x: 11.5, y: top, z: -11.5, ry: -2.3});
+const M = n => man.getObjectByName(n);
+// drone 100 m above the parcel
+const dd = await P('drone/deliveryDrone', {scale: 1.2});
+const parcel = dd.getObjectByName('parcel'), teth = dd.getObjectByName('tether');
+if (teth) teth.visible = false;
+scene.attach(parcel);
+const line = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1, 6), new THREE.MeshStandardMaterial({color: 0xe8ecff, roughness: .5})); scene.add(line);
+const V3 = () => new THREE.Vector3();
+st.frame(t => {
+  M('shoulderR').rotation.set(-2.9, 0, -.1); M('elbowR').rotation.x = -.15; M('head').rotation.x = -.5;
+  man.updateMatrixWorld(true);
+  const hand = (M('handR') || M('elbowR')).getWorldPosition(V3());
+  const sway = Math.sin(t * 2.2) * .03;
+  parcel.position.set(hand.x + sway, hand.y + .55 - .12 * sm(0, 3, t), hand.z); parcel.rotation.y = t * .3;
+  const dy = 100; dd.position.set(hand.x, hand.y + dy, hand.z); dd.rotation.y = t * .15;
+  const d = dd.getObjectByName('drone'); for (let i = 0; i < 4; i++) { const p = dd.getObjectByName('prop' + i); if (p) p.rotation.y = t * 40 * (i % 2 ? -1 : 1); }
+  const p0 = parcel.position.clone().add(V(0, .25, 0)), p1 = dd.position.clone().add(V(0, -.3, 0));
+  line.position.copy(p0).lerp(p1, .5); line.scale.set(1, p0.distanceTo(p1), 1);
+  // camera: starts at the hand + parcel, rises along the line to the drone
+  const up = sm(.9, 3.4, t);
+  const ty = hand.y + .5 + (dy - .5) * up;
+  const tg = [hand.x, ty, hand.z];
+  const off = [3.6 + 2.2 * up, 3.4 + 2.6 * up, 3.0 + 2.0 * up];
+  const [cp, ct] = camPath(t, [[0, [tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]], tg], [END, [tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]], tg]]);
+  const h = Math.round(100 * sm(.9, 3.4, t));
+  return {cp: V(tg[0] + off[0], tg[1] + off[1], tg[2] + off[2]), ct: V(...tg), noFlash: true, overlay: t2 => {
+    const c = st.ctx; c.save(); c.globalAlpha = sm(.3, .7, t2);
+    const X = 900, Y = 1050; c.strokeStyle = '#8ea6ff'; c.lineWidth = 6; c.beginPath(); c.moveTo(X, Y - 380); c.lineTo(X, Y); c.stroke();
+    const yy = Y - 380 * h / 100; c.fillStyle = '#8ea6ff'; c.beginPath(); c.arc(X, yy, 14, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#fff'; c.font = '900 64px Rubik'; c.textAlign = 'right'; c.direction = 'rtl'; c.fillText(h + ' מ׳', X - 30, yy + 22);
+    c.restore(); }};
+});
+st.ready();
+</script></body></html>
