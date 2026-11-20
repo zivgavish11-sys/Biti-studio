@@ -58,12 +58,12 @@ st.frame(t => {
   if (t < A[8]) len = HOV - .9;                                                               // hook (and the "why not land" detour)
   else if (t < A[16]) len = 2 + (HOV - 1.6) * sm(A[8] + .2, B[12], t);                       // out from the drone, pod comes down to the terrace
   else len = (HOV - .3) * (1 - sm(A[17], B[17] + .3, t)) + .9;                                // reel up
-  const sway = t < A[13] ? 1 : .15;
+  const sway = 1 - .85 * sm(A[13] - .6, A[13] + .4, t);   // smooth (was a step → pod + camera jumped at 17.9 s)
   teth.set(Math.max(.9, len), t, sway);
   // steer: from straight under the drone to the table (13–15), stay there until the reel-up
   const steer = sm(A[13] + .3, B[15], t) * (1 - sm(A[17], A[17] + .4, t));
   const above = pod.position.clone(), tgt = T.clone().add(V(0, .55 - .27 * sm(A[15], B[15], t), 0));
-  if (t >= A[8]) { const k = steer; pod.position.lerp(V(tgt.x, Math.max(tgt.y, pod.position.y), tgt.z), k); if (k > .99) pod.position.copy(tgt); }
+  if (t >= A[8]) { const k = steer; pod.position.lerp(V(tgt.x, Math.max(tgt.y, pod.position.y), tgt.z), k); }   // no snap (jump at 22.3 s)
   if (t < A[3]) pod.position.copy(H.clone().add(V(0, .55 - .1 * sm(0, 3, t), 0)));                                   // hook: hovering just above the hand
   // re-aim the line to the pod's real position
   { dr.updateMatrixWorld(true); const a = dr.getObjectByName('lineOut').getWorldPosition(V3()), e = pod.position.clone().add(V(0, .35, 0)), L = teth.line;
@@ -102,8 +102,8 @@ st.frame(t => {
       sh(A[16] + .3, [T.x, T.y + .3, T.z], [1.6, 1.2, 2.0]),
       sh(A[17] + .3, [T.x, T.y + 3, T.z], [3, 2.5, 4]), sh(B[17], [Pp.x, Pp.y, Pp.z], [3, 2, 4]),                // reel up, follow
       sh(A[18] + .2, [Dp.x, Dp.y, Dp.z], [10, 6, 14]), sh(B[18], [Dp.x, Dp.y - 20, Dp.z], [30, 30, 40]),          // drone flies off over the roofs
-      sh(A[19] + .1, [D.x, D.y + 1.2, D.z], [3, 1.5, 4]), sh(B[19], [D.x, D.y + 1.2, D.z], [2.4, 1.3, 3.4]),     // the door nobody rang
-      [A[20], [H.x + 5.5, H.y + HOV + 5.5, H.z + .6], [H.x - 4, H.y + HOV - 3, H.z]], [END, [H.x + 5.6, H.y + HOV + 5.6, H.z + .6], [H.x - 4, H.y + HOV - 3, H.z]]]);  // outro = end of the hook (loop)
+      sh(A[19] + .1, [D.x, D.y + 1.2, D.z], [3, 1.5, 4]), sh(B[19], [D.x, D.y + 1.2, D.z], [2.4, 1.3, 3.4]), sh(END, [D.x, D.y + 1.2, D.z], [2.2, 1.2, 3.2])]);
+    if (t > A[20] - .05) { const k = sm(A[20] - .05, END, t); cp = V(H.x + 5.5 + .1 * k, H.y + HOV + 5.5 + .1 * k, H.z + .6); ct = V(H.x - 4, H.y + HOV - 3, H.z); }   // clean cut to the outro (was a 100 m whip in 0.3 s at 29.9 s)
   }
   const h = Math.round(100 * (1 - sm(.5, B[2] - .2, t)));
   return {cp, ct, noFlash: true, overlay: t2 => {
