@@ -10,7 +10,7 @@ import {tlvCity, tether, podDoors} from '/engine/props/fx-tlv.js';
 const st = await studio({
   look: 'hero', episode: 21, fog: .0016, outro: 'card',
   keys: ['חבל', 'מאה', 'נוחת', 'עצים', 'חשמל', 'גבוה', 'רובוט', 'מדחפים', 'בדיוק', 'לשולחן', 'נגלל', 'בפעמון'],
-  hookEnd: 4.0, hook: ['המשלוח הבא שלכם', 'על <span class="pill">חבל</span>'],
+  hookEnd: 4.0, hook: ['ככה יגיעו משלוחים', 'ל<span class="pill">תל אביב</span>?'],
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
@@ -80,16 +80,17 @@ st.frame(t => {
   const sh = (tt, tg, o, z = 1) => [tt, [tg[0] + o[0] * z, tg[1] + o[1] * z, tg[2] + o[2] * z], tg];
   let cp, ct;
   const up = sm(.8, B[2] - .3, t), over = sm(B[2] - .55, A[3] + .1, t);
-  if (t < A[3] + .1) {                                        // HOOK (approved): start at hand + pod, ride the line looking down, over the drone
-    const ty = H.y + .6 + (HOV - 2.2) * up;
+  if (t < A[3] + .1) {                                        // HOOK v3 (Ziv 2026-11-20): start over the drone, ride DOWN the line looking down, land at the hand + pod on the terrace; counter 100 → 0
+    const dn = sm(.5, B[2] - .2, t), land = sm(B[2] - .45, A[3] + .1, t);
+    const ty = H.y + HOV - 1.5 - (HOV - 2.4) * dn;
     const ride = V(H.x + .55, ty + .3, H.z + .4), rideT = pod.position.clone();
-    const top0 = V(H.x + 2.2, H.y + HOV + 5.2, H.z + 1.8), topT = dr.position.clone().add(V(0, -.9, 0));
-    const start = V(H.x + 2.6, H.y + 1.6, H.z + 2.0), startT = V(H.x, H.y + .3, H.z), k0 = sm(.5, 1.0, t);
-    cp = start.clone().lerp(ride, k0).lerp(top0, over); ct = startT.clone().lerp(rideT, k0).lerp(topT, over);
+    const top0 = V(H.x + 5.5, H.y + HOV + 5.5, H.z + .6), topT = dr.position.clone().add(V(-4, -3, 0));   // look west: sea + beach in the frame (Tel Aviv)
+    const end = V(H.x + 2.6, H.y + 1.6, H.z + 2.0), endT = V(H.x, H.y + .3, H.z), k0 = sm(.15, .6, t);
+    cp = top0.clone().lerp(ride, k0).lerp(end, land); ct = topT.clone().lerp(rideT, k0).lerp(endT, land);
   } else {
     const Dp = dr.position, Pp = pod.position, Ss = [S.x, 2, S.z];
     [cp, ct] = camPath(t, [
-      sh(A[3] + .1, [Dp.x, Dp.y - .9, Dp.z], [2.2, 5.2, 1.8]),
+      sh(A[3] + .1, [H.x, H.y + .3, H.z], [2.6, 1.3, 2.0]),
       sh(A[3] + 1.0, [S.x, 8, S.z], [30, 40, 30]), sh(A[4] + .2, [S.x, 4, S.z], [16, 14, 18]),                 // dive: ghost tries to land, ✕
       sh(A[5] + .1, [S.x - 4, 4, S.z - 2], [5, 4, 8]),                                                            // trees
       sh(A[6] + .2, [S.x + 5, 8, S.z], [-6, 1.5, 7]),                                                             // wires
@@ -102,9 +103,9 @@ st.frame(t => {
       sh(A[17] + .3, [T.x, T.y + 3, T.z], [3, 2.5, 4]), sh(B[17], [Pp.x, Pp.y, Pp.z], [3, 2, 4]),                // reel up, follow
       sh(A[18] + .2, [Dp.x, Dp.y, Dp.z], [10, 6, 14]), sh(B[18], [Dp.x, Dp.y - 20, Dp.z], [30, 30, 40]),          // drone flies off over the roofs
       sh(A[19] + .1, [D.x, D.y + 1.2, D.z], [3, 1.5, 4]), sh(B[19], [D.x, D.y + 1.2, D.z], [2.4, 1.3, 3.4]),     // the door nobody rang
-      sh(A[20], [H.x, H.y + HOV - .9, H.z], [2.2, 5.2, 1.8]), sh(END, [H.x, H.y + HOV - .9, H.z], [2.2, 5.2, 1.8], 1.03)]);  // outro = end of the hook (loop)
+      [A[20], [H.x + 5.5, H.y + HOV + 5.5, H.z + .6], [H.x - 4, H.y + HOV - 3, H.z]], [END, [H.x + 5.6, H.y + HOV + 5.6, H.z + .6], [H.x - 4, H.y + HOV - 3, H.z]]]);  // outro = end of the hook (loop)
   }
-  const h = Math.round(100 * sm(.8, B[2] - .3, t));
+  const h = Math.round(100 * (1 - sm(.5, B[2] - .2, t)));
   return {cp, ct, noFlash: true, overlay: t2 => {
     const c = st.ctx;
     c.save(); c.fillStyle = 'rgba(10,12,40,.16)'; c.fillRect(0, 0, 1080, 1920); c.restore();   // QA glare fix: white Bauhaus roofs too bright (whole episode, matte dim)
