@@ -229,6 +229,15 @@
    "look": "hero-v2",
    "topic": "איך שומרים על הרובוט בבית מפריצה? (3 steps, follow-up to ep019)",
    "posted": "scheduled 2026-11-21T18:00+02:00 via Buffer by video (IG 6b0000d1738ce4635f9abab8, FB 6b0000d2d5f8acdd0d8254d7, TikTok 6b0000d2d5f8acdd0d825547). Media on branch media-ep020-protect (delete after all sent)."
+  },
+  {
+   "slug": "ep021-dronedelivery",
+   "date": "2026-11-20",
+   "format": "long",
+   "look": "hero-v2",
+   "topic": "איך רחפן מביא משלוח בלי לנחות? (Zipline P2 tether, Tel-Aviv kit)",
+   "hook": "ככה יגיעו משלוחים לתל אביב? (camera rides down the line 100→0)",
+   "posted": "scheduled 2026-11-22T18:00+02:00 via Buffer by video (IG 6b00a01444c3619113570840, FB 6b00a0156f199ec35b772e5d, TikTok 6b00a01673831df01480945f). Media on branch media-ep021-dronedelivery (delete after all sent)."
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
