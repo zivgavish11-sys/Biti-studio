@@ -22,7 +22,7 @@ const city = await tlvCity(st, {cols: 4, rows: 4, hero: {col: 1, row: 1, slot: 1
 const spot = city.heroSpot, V3 = () => new THREE.Vector3();
 const table = city.hero.getObjectByName('table'), T = table.getWorldPosition(V3()); T.y += .02 + new THREE.Box3().setFromObject(table).max.y - table.getWorldPosition(V3()).y;
 const H = T.clone();   // Ziv 2026-11-20: the robot lands on the table; the person waits next to it (no reaching)
-const man = (await st.prop('people/mannequin-walk', {x: T.x + 1.1, y: spot.y, z: T.z + .7, ry: 0, h: 1.72, tint: 1})).object; man.lookAt(T.x, man.position.y, T.z);
+const man = (await st.prop('people/mannequin-walk', {x: T.x - .3, y: spot.y, z: T.z - 1.0, ry: 0, h: 1.72, tint: 1})).object; man.lookAt(T.x, man.position.y, T.z);
 { const u = city.hero.getObjectByName('umbrella'); if (u) u.visible = false; }
 const door = city.hero.getObjectByName('roofDoor'), D = door.getWorldPosition(V3());
 const dr = (await st.model('drone/winchDrone')).object; scene.add(dr);
@@ -92,7 +92,7 @@ st.frame(t => {
   const dive = tt => { const k = sm(5.6, A[5] - .45, tt); const tg = [S.x, 8 - 4 * k, S.z - .5 * k]; const o = lerpV([30, 40, 30], [11, 8, 15.5], k); return [V(tg[0] + o.x, tg[1] + o.y, tg[2] + o.z), V(...tg)]; };
   const trees = push(A[5] - .05, A[6] - .35, [S.x - 4, 4, S.z - 2], [8, 6, 12.5], [6.8, 5.2, 10.6]);          // less zoom (Ziv)
   const wires = push(A[6] + .05, A[7] - .35, [S.x + 4.6, 7.6, S.z + 5], [-9.5, 2.5, 10], [-8, 2.1, 8.6]);    // wires across the frame (Ziv)
-  const people = push(A[7] + .05, B[7], [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
+  const peopleShot = push(A[7] + .05, B[7], [S.x, 1.0, S.z - 3], [5, 3, 7], [3.8, 2.4, 5.6]);
   const follow = tt => camPath(tt, [
       sh(A[8] + .9, [Dp.x, Dp.y - 2, Dp.z], [4, 3, 5]), sh(B[9], [Pp.x, Pp.y + 1, Pp.z], [3, 3, 4]),             // the drone lets the line out → follow the pod
       sh(A[10] + .3, [Pp.x, Pp.y, Pp.z], [1.4, 1.2, 1.8]), sh(A[11] + .4, [Pp.x, Pp.y, Pp.z], [1.1, .8, 1.4]),
@@ -104,7 +104,7 @@ st.frame(t => {
   const door = tt => { const k = sm(A[19] + .3, A[20] - .4, tt); return [V(D.x + 3 - .6 * k, D.y + 2.7 - .2 * k, D.z + 4 - .6 * k), V(D.x, D.y + 1.2, D.z)]; };
   const outro = tt => { const k = sm(A[20], END, tt); return [V(H.x + 5.5 + .1 * k, H.y + HOV + 5.5 + .1 * k, H.z + .6), V(H.x - 4, H.y + HOV - 3, H.z)]; };
   // [shot, until] — between shots the camera flies over a window [until, nextStart] with an eased arc
-  const SH = [[shotHook, 4.5], [dive, A[5] - .45], [trees, A[6] - .35], [wires, A[7] - .35], [people, B[7] - .1], [follow, B[18]], [door, A[20] - .4], [outro, 1e9]];
+  const SH = [[shotHook, 4.5], [dive, A[5] - .45], [trees, A[6] - .35], [wires, A[7] - .35], [peopleShot, B[7] - .1], [follow, B[18]], [door, A[20] - .4], [outro, 1e9]];
   const FROM = [0, 5.6, A[5] - .05, A[6] + .05, A[7] + .05, A[8] + .9, A[19] + .3, A[20] + .7];   // when each shot is fully on screen
   const ee = k => k * k * k * (k * (6 * k - 15) + 10);
   let si = 0; while (si < SH.length - 1 && t >= FROM[si + 1]) si++;
