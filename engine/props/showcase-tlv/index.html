@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-20 run 12 — Tel-Aviv neighbourhood kit (tlv/*) + winch drone + droid pod + reaching person, one world (ep021-dronedelivery).
+// Render: python3 tools/render.py frames engine/props/showcase-tlv 1,4,7,10,13
+import {studio, THREE, camKF, V, sm} from '/engine/lib/core.js';
+import {tlvCity, tether, podDoors} from '/engine/props/fx-tlv.js';
+const st = await studio({look: 'hero', fog: .0016, hook: ['השכונה', 'מלמעלה'], hookEnd: 2.5, scenes: (A, B, E) => [0, 3, 6, 9, 12, E]});
+const {scene} = st;
+st.stage({r: 900, grid: 0, spot: null});
+const sun = new THREE.DirectionalLight(0xdfe3ff, 1.6); sun.position.set(-120, 220, 90); sun.castShadow = true; Object.assign(sun.shadow.camera, {left: -140, right: 140, top: 140, bottom: -140, near: 1, far: 600});
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; scene.add(sun, sun.target);
+const city = await tlvCity(st, {cols: 4, rows: 4, hero: {col: 1, row: 1, slot: 1}, boulevardAfter: 1});
+const spot = city.heroSpot;
+const man = (await st.prop('people/mannequin-reach', {x: spot.x, y: spot.y, z: spot.z, ry: .6, tint: 1})).object;
+const hand = () => { man.updateMatrixWorld(true); return man.getObjectByName('handR').getWorldPosition(V(0, 0, 0)); };
+const dr = (await st.model('drone/winchDrone')).object; scene.add(dr);
+const pod = (await st.model('drone/droidPod')).object; scene.add(pod);
+const teth = tether(scene, dr, pod), doors = podDoors(pod);
+const H = hand(); let n = 0;
+scene.traverse(o => { if (o.isMesh || o.isInstancedMesh) n += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3 * (o.count || 1); }); console.warn('tris', Math.round(n));
+st.frame(t => {
+  city.sea && city.sea.update(t);
+  // drone hovers 100 m above the hand; line length shrinks as the pod comes down to the hand
+  const len = t < 6 ? 99.3 - 0 : 99.3 - 2 * sm(6, 8, t);
+  dr.position.set(H.x, H.y + 100.4, H.z); dr.rotation.y = t * .05;
+  for (let i = 0; i < 6; i++) dr.getObjectByName('prop' + i).rotation.y = t * 40 * (i % 2 ? -1 : 1);
+  teth.set(len, t, t < 3.4 ? .2 : 1); doors.set(sm(3.4, 4.4, t) * (t < 6 ? 1 : 0));
+  let cp, ct;
+  if (t < 3) [cp, ct] = camKF(t, [[0, [H.x + 70, 120, H.z + 95], [H.x - 30, 0, H.z - 10]], [3, [H.x + 60, 110, H.z + 85], [H.x - 30, 0, H.z - 10]]]);      // wide: city + boulevard + beach + sea
+  else if (t < 6) [cp, ct] = camKF(t, [[3, [H.x + 2.6, H.y + 2.2, H.z + 2.4], [H.x, H.y + .2, H.z]], [6, [H.x + 2.2, H.y + 2.6, H.z + 2.0], [H.x, H.y + .2, H.z]]]); // pod at the hand, terrace
+  else if (t < 9) { const e = teth.end(); cp = V(dr.position.x + .7, dr.position.y - .6, dr.position.z + .5); ct = e; }                               // down the line from the drone
+  else if (t < 12) [cp, ct] = camKF(t, [[9, [H.x + 14, 30, 39.5 + 22], [H.x + 4, 0, 39.5]], [12, [H.x - 6, 28, 39.5 + 20], [H.x - 8, 0, 39.5]]]); // boulevard
+  else { const bx = city.bounds.x0 - 20; [cp, ct] = camKF(t, [[12, [bx + 30, 40, H.z + 40], [bx - 20, -1, H.z]], [15, [bx + 26, 38, H.z + 30], [bx - 22, -1, H.z - 6]]]); } // beach + sea
+  return {cp, ct, noFlash: true}; });
+st.ready();
+</script></body></html>

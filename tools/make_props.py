@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Export the in-house procedural prop kit (engine/props/kit.js) to GLB files.
-Usage: make_props.py [name-filter]   (kit.js + kit-pro.js; filter "pro/" = the realistic news kit)   → engine/assets/models/<folder>/<name>.glb
+Usage: make_props.py [name-filter]   (kit.js + kit-pro.js + kit-tlv.js; filter "tlv/" = Tel-Aviv kit; filter "pro/" = the realistic news kit)   → engine/assets/models/<folder>/<name>.glb
 Also: make_props.py --preview OUT.jpg  → contact sheet of all props in the classic look (for review).
 """
 import sys, os, base64, threading, http.server, functools
@@ -14,12 +14,14 @@ import * as THREE from 'three';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
 import {KIT as KIT0} from '/engine/props/kit.js';
 import {KITPRO} from '/engine/props/kit-pro.js';
-const KIT = {...KIT0, ...KITPRO};
+import {KITTLV, BAKE, bake} from '/engine/props/kit-tlv.js';
+const KIT = {...KIT0, ...KITPRO, ...KITTLV};
 window.exportAll = async (filter) => {
   const out = {};
   for (const [k, fn] of Object.entries(KIT)) {
     if (filter && !k.includes(filter)) continue;
-    const ab = await new GLTFExporter().parseAsync(fn(), {binary: true});
+    let o = fn(); if (BAKE[k]) bake(o, BAKE[k]);
+    const ab = await new GLTFExporter().parseAsync(o, {binary: true});
     let s = ''; const u = new Uint8Array(ab); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000));
     out[k] = btoa(s);
   }
