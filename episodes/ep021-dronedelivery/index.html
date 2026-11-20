@@ -61,8 +61,8 @@ st.frame(t => {
   // camera (Ziv 2026-11-20): runs tight along the line, then climbs over the drone and looks down
   const up = sm(.8, 3.0, t), over = sm(2.75, 3.6, t);
   const ty = hand.y + .6 + (dy - 2.2) * up;
-  const ride = V(hand.x + .75, ty + .15, hand.z + .55);                        // ~1 m beside the line
-  const rideT = V(hand.x, ty - .35, hand.z);                                   // looking along the line, slightly down (city drops away)
+  const ride = V(hand.x + .55, ty + .3, hand.z + .4);                        // ~1 m beside the line
+  const rideT = parcel.position.clone();                                       // Ziv: look DOWN the line at the parcel + person shrinking below
   const top0 = V(hand.x + 2.2, hand.y + dy + 5.2, hand.z + 1.8), topT = dd.position.clone().add(V(0, -.9, 0));
   const start = V(hand.x + 2.6, hand.y + 1.6, hand.z + 2.0), startT = V(hand.x, hand.y + .3, hand.z);
   const k0 = sm(.5, 1.0, t);
