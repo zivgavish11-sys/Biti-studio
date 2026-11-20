@@ -1,0 +1,65 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP019-hack — LONG + hero look. visual.md v1 + hook v2 (Ziv: red "נפרץ" alert with warning signs above the robot).
+// Timeline is ESTIMATED until Ziv records. Phrases: 0 hook | 1 חוקרים כבר עשו את זה | 2 בלי לגעת בו | 3 איך | ...
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+const st = await studio({
+  look: 'hero', episode: 19, fog: .012, outro: 'card',
+  keys: ['לפרוץ', 'בלי', 'מפתח', 'פקודה', 'שליטה', 'בלוטוס'],
+  hookEnd: 3.0, hook: ['יהיה אפשר לפרוץ', 'לרובוט <span class="pill">שלכם</span>?'],
+  scenes: (A, B, END) => [0, END],
+});
+const {scene, A, B, END} = st;
+st.stage({r: 60, grid: 0, spot: [1.5, 6, 3], target: [0, .6, 0]});
+const P = async (n, o = {}) => (await st.prop(n, {tint: 1, ...o})).object;
+await P('home2056/livingRoom', {x: 0, z: -.6});
+await P('home2056/sofaModern', {x: -1.4, z: -1.9});
+await P('home2056/loungeSet', {x: -.6, z: .1});
+await P('home2056/planterTall', {x: -3.0, z: -2.5});
+const warm = new THREE.PointLight(0xffd9a8, 3, 6, 1.6); warm.position.set(2.5, 1.5, -2.5); scene.add(warm);
+const bot = await P('robots/humanoid', {x: .9, z: .2, ry: -.35});
+const J = n => bot.getObjectByName(n), V3 = () => new THREE.Vector3();
+// the researcher outside the window, phone up
+const man = await P('people/mannequin-scan', {x: .2, z: -3.9, ry: 0});
+// chest screen on the robot
+let CS = {k: 0};
+const chest = st.screen([.26, .16], (c, t, W, H) => {
+  c.fillStyle = '#141838'; c.fillRect(0, 0, W, H);
+  const k = CS.k; c.textAlign = 'center'; c.font = `800 ${H * .27}px Rubik`; c.direction = 'rtl';
+  c.fillStyle = k < .5 ? '#8ea6ff' : '#f0502a';
+  c.fillText('מחובר ל:', W / 2, H * .42); c.fillText(k < .5 ? 'בעלים' : 'מישהו אחר', W / 2, H * .8);
+}); J('torso').add(chest.mesh);
+// Bluetooth dots: phone -> robot head
+const N = 26, dots = new THREE.InstancedMesh(new THREE.SphereGeometry(.045, 10, 8), new THREE.MeshStandardMaterial({color: 0x8ea6ff, roughness: .6}), N); scene.add(dots);
+const M = new THREE.Matrix4();
+st.frame(t => {
+  bot.updateMatrixWorld(true); man.updateMatrixWorld(true);
+  const hit = 1;                                                // frame 0 = already hacked (strongest moment)
+  J('head').rotation.y = -.55 - .08 * Math.sin(t * 9) * (1 - sm(0, 1.2, t));  // head jerked toward the window
+  J('shoulderL').rotation.set(-.1, 0, .12); J('shoulderR').rotation.set(-.1, 0, -.12); J('elbowL').rotation.x = J('elbowR').rotation.x = -.3;
+  CS.k = 1; chest.update(t);
+  chest.mesh.position.set(0, .34, .15);
+  const ph = man.getObjectByName('phone') || man, hd = J('head');
+  const p0 = ph.getWorldPosition(V3()), p1 = hd.getWorldPosition(V3()).add(V(0, .05, 0));
+  for (let i = 0; i < N; i++) { const u = ((i / N + t * .9) % 1); const p = p0.clone().lerp(p1, u); p.y += Math.sin(u * Math.PI) * .35;
+    const s = u < hit ? 1 : 0; M.makeScale(s, s, s).setPosition(p); dots.setMatrixAt(i, M); }
+  dots.instanceMatrix.needsUpdate = true;
+  const H0 = hd.getWorldPosition(V3());
+  const T = [H0.x - .25, H0.y - .2, H0.z - .6];
+  const sh = (tt, tg, off, z) => [tt, [tg[0] + off[0] * z, tg[1] + off[1] * z, tg[2] + off[2] * z], tg];
+  const [cp, ct] = camPath(t, [sh(0, T, [1.0, 1.25, 3.0], 1.0), sh(1.5, T, [.85, 1.15, 2.8], .93), sh(3.2, T, [.6, 1.05, 2.6], .86), sh(END, T, [1.1, .9, 2.6], 1.0)]);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    // red "נפרץ!" alert with warning triangles above the head (matte, gentle blink)
+    const a = 1; if (a <= 0) return; const [x, y, z] = st.proj(H0.clone().add(V(0, .42, 0))); if (z > 1) return;
+    const c = st.ctx; c.save(); c.globalAlpha = a * (.85 + .15 * Math.cos(t2 * 7));
+    const w = 380, h = 120, X = x - w / 2, Y = Math.max(600, y - h - 20);
+    c.fillStyle = '#f0502a'; c.beginPath(); c.roundRect(X, Y, w, h, 24); c.fill();
+    const tri = cx => { c.fillStyle = '#fff'; c.beginPath(); c.moveTo(cx, Y + 26); c.lineTo(cx + 34, Y + 92); c.lineTo(cx - 34, Y + 92); c.closePath(); c.fill();
+      c.fillStyle = '#f0502a'; c.font = '900 50px Rubik'; c.textAlign = 'center'; c.fillText('!', cx, Y + 86); };
+    tri(X + 58); tri(X + w - 58);
+    c.fillStyle = '#fff'; c.font = '900 72px Rubik'; c.textAlign = 'center'; c.direction = 'rtl'; c.fillText('נפרץ!', x, Y + 86);
+    c.restore(); }};
+});
+st.ready();
+</script></body></html>
