@@ -9,3 +9,4 @@
 # Ziv picked hook A + visual hook 1 (endless line, counter 0→100 m, drone reveal). Draft hook video sent 2026-11-20.
 # Script v1 2026-11-20 (to Ziv first). Mechanism = Zipline P2 (per company: hovers ~100 m/300 ft, lowers a steerable droid on a tether, spot as small as a table, droid reels back). Other systems (Wing) lower from lower heights → caption must name Zipline; factcheck to judge the hook's generality.
 # Factcheck: hook too general → 'אולי' + 'כמעט'. TTS reads 'מגובה' as 'backed up' (Ziv) → avoid the word. Options sent: A 'מכמעט מאה מטר למעלה' / B 'באורך של כמעט מגרש כדורגל' (rec).
+# Ziv 2026-11-20: keep the original hook text as is (overrides factcheck softening). Mitigation: caption names Zipline P2 + 'כ־90 מטר (300 רגל)'. TTS: 'מגובה' misread → suggest niqqud on that one word (מִגֹּבַהּ) when recording.
