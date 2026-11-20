@@ -57,3 +57,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-20 video ep019-hack script.txt: OK. Read IEEE Spectrum + Hackaday. 1 optional soften (קיבלו→יכלו לקבל שליטה מלאה; demo = reboot only) → inbox/video. Not scheduled; no push.
 - 2026-11-20 video ep020-protect script.txt: OK. Read Kaspersky + Bitdefender (guest network), Red Hot Cyber/SentinelOne (UniPwn BLE). No fixes; notes vs overclaims → inbox/video. Not scheduled; no push.
 - 2026-11-20 video ep021-dronedelivery script.txt: hook too general (~100 m = Zipline P2 only, 300 ft≈91 m; Wing lowers from lower) → soften to 'יש רחפני משלוחים... כמעט מאה מטר' + name Zipline in caption. Rest OK (PopSci, Engadget, Wing blog) → inbox/video. Not scheduled; no push.
+- 2026-11-20 video ep019/ep020 captions (deep facts): ep019 1 soften (SSID → SSID+password, per Spectrum); timeline/demo/worm/fixes OK. ep020 OK (PSTI gov.uk). → inbox/video. Not scheduled; no push.
