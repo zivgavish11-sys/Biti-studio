@@ -6,7 +6,7 @@
 import {studio, THREE, sm, camPath, V} from '/engine/lib/core.js';
 import {varyCity} from '/engine/props/fx-city.js';
 const st = await studio({
-  look: 'hero', episode: 21, fog: .002, outro: 'card', sky: 'sunset',
+  look: 'hero', episode: 21, fog: .002, outro: 'card',
   keys: ['חבל', 'מאה'],
   hookEnd: 3.4, hook: ['המשלוח הבא שלכם', 'על <span class="pill">חבל</span>'],
   scenes: (A, B, END) => [0, END],
@@ -23,6 +23,14 @@ for (const [x, z, h] of [[30, -30, 11], [-30, -32, 13], [34, 10, 9], [-34, 30, 1
   for (let i = 0; i < 26; i++) { const a = rnd() * Math.PI * 2, r = 26 + rnd() * 50, x = 11.5 + Math.cos(a) * r, z = -11.5 + Math.sin(a) * r;
     if (Math.abs(x) < 9 || Math.abs(z) < 9) continue; await P(names[i % 3], {x, z, h: 7 + rnd() * 9, ry: Math.round(rnd() * 4) * Math.PI / 2}); }
   for (let i = 0; i < 14; i++) { const a = rnd() * Math.PI * 2, r = 18 + rnd() * 45; await P(i % 2 ? 'outdoor/PalmTree_1' : 'outdoor/CommonTree_1', {x: 11.5 + Math.cos(a) * r, z: -11.5 + Math.sin(a) * r, h: 5 + rnd() * 3}); } }
+// hero palette (Ziv 2026-11-20: "חרגת מההגדרות"): everything monochrome indigo by brightness, textures off; only the accent stays light blue
+const IND = [new THREE.Color(0x262c66), new THREE.Color(0x4750a8), new THREE.Color(0x6d74c4), new THREE.Color(0xb9bdf0)];
+const indigo = (root, keep = () => false) => root.traverse(o => { if (!o.isMesh || keep(o)) return; const ms = Array.isArray(o.material) ? o.material : [o.material];
+  o.material = ms.map(m => { const c = (m.color || new THREE.Color(1, 1, 1)).clone(); let l = c.r * .3 + c.g * .55 + c.b * .15; if (m.map) l = Math.max(l, .45);
+    const i = Math.min(2.999, l * 3.4), a = Math.floor(i); const col = IND[a].clone().lerp(IND[a + 1], i - a);
+    return new THREE.MeshStandardMaterial({color: col, roughness: .85, metalness: 0, transparent: m.transparent, opacity: m.opacity}); });
+  if (o.material.length === 1) o.material = o.material[0]; });
+scene.children.forEach(o => { if (o.isMesh && o.geometry && o.geometry.type === 'CircleGeometry') return; if (o.type === 'Group' || o.type === 'Object3D') indigo(o); });
 const top = new THREE.Box3().setFromObject(bau).max.y;
 // person on the rooftop, arm up
 const man = await P('people/mannequin-walk', {x: 11.5, y: top, z: -11.5, ry: -2.3});
@@ -32,6 +40,12 @@ const dd = await P('drone/deliveryDrone', {scale: 1.2});
 const parcel = dd.getObjectByName('parcel'), teth = dd.getObjectByName('tether');
 if (teth) teth.visible = false;
 scene.attach(parcel);
+indigo(dd);
+// parcel: plain light box + light-blue band (accent), no coloured groceries
+parcel.traverse(o => { if (!o.isMesh) return; const n = o.name + (o.parent ? o.parent.name : '');
+  if (/band/.test(n)) o.material = new THREE.MeshStandardMaterial({color: 0x8ea6ff, roughness: .7});
+  else if (/box/.test(n)) o.material = new THREE.MeshStandardMaterial({color: 0xd9dbf5, roughness: .85});
+  else o.visible = false; });
 const line = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, 1, 6), new THREE.MeshStandardMaterial({color: 0xe8ecff, roughness: .5})); scene.add(line);
 const V3 = () => new THREE.Vector3();
 st.frame(t => {
