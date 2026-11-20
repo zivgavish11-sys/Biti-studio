@@ -363,8 +363,59 @@ export function robotaxiPro() {
   return root;
 }
 
+// ---------- general pro additions (Media 2026-11-20 run 12, Ziv: "add general things") ----------
+/** eVTOL air taxi (generic, 4 seats): fuselage, canopy glass, high wing + V-tail, 6 tilt-rotor pods ('tilt0..5' rotate .x 0 → −π/2 for cruise; 'rotor0..5' spin .y with see-through 'disc{i}'), skids. ~12 m span. Faces +z. */
+function evtolPro() {
+  const g = grp('evtol');
+  const body = slathe([[0, -3.6], [.35, -3.3], [.75, -2.4], [.95, -1], [.95, .6], [.75, 1.8], [.4, 2.8], [0, 3.2]], MP.shell, 'fuselage', 30, 48);
+  body.rotation.x = Math.PI / 2; body.scale.set(1.25, 1.2, 1.05); body.position.y = 1.45; g.add(body);
+  const can = mesh(new THREE.SphereGeometry(.9, 40, 24, 0, Math.PI * 2, 0, Math.PI / 2.1), MP.glass, 'canopy'); can.scale.set(1.1, .75, 2.0); can.position.set(0, 1.85, 1.45); g.add(can);
+  for (const s of [-1, 1]) g.add(at(rbox(.02, .75, 1.0, .01, MP.seam, 'door'), s * .93, 1.35, .3));
+  const wing = ext([[-6, 0], [6, 0], [5.6, -1.1], [-5.6, -1.1]], .16, MP.shell, 'wing'); wing.rotation.x = -Math.PI / 2; wing.position.set(0, 2.15, .2); g.add(wing);
+  g.add(at(rbox(.5, .5, 1.3, .15, MP.shell2, 'pylon'), 0, 1.95, -.3));
+  for (const s of [-1, 1]) { const t = rbox(.08, 1.5, 1.0, .04, MP.shell, 'tail'); t.rotation.set(-.35, 0, s * .6); t.position.set(s * .45, 2.0, -3.0); g.add(t); }
+  const pods = [[-5.6, .2], [-3.2, .2], [-1.5, -2.6], [1.5, -2.6], [3.2, .2], [5.6, .2]];
+  pods.forEach(([x, z], i) => { const tl = grp('tilt' + i); tl.position.set(x, 2.2, z + (i === 2 || i === 3 ? 0 : .5)); g.add(tl);
+    if (i === 2 || i === 3) g.add(at(rbox(.22, .22, 3.2, .1, MP.shell2, 'boom'), x, 2.1, -1.2));
+    tl.add(at(slathe([[0, -.6], [.17, -.4], [.19, .2], [.12, .55], [0, .65]], MP.shell2, 'nacelle', 12, 28), 0, 0, 0, Math.PI / 2));
+    const r = grp('rotor' + i); r.position.set(0, .3, .1); tl.add(r); r.add(at(cyl(.09, .09, .1, MP.dark, null, 24), 0, 0, 0));
+    for (let k = 0; k < 5; k++) { const b = rbox(1.25, .025, .14, .012, MP.graphite); b.position.set(Math.cos(k / 5 * Math.PI * 2) * .65, 0, Math.sin(k / 5 * Math.PI * 2) * .65); b.rotation.y = -k / 5 * Math.PI * 2; r.add(b); }
+    const disc = mesh(new THREE.CircleGeometry(1.3, 48), Object.assign(S(0xdfe3ea, .6), {transparent: true, opacity: .14, depthWrite: false, side: THREE.DoubleSide}), 'disc' + i); disc.rotation.x = -Math.PI / 2; disc.castShadow = false; r.add(disc); });
+  for (const s of [-1, 1]) { g.add(at(cyl(.05, .05, 3.2, MP.graphite, 'skid', 12), s * .7, .08, .2, Math.PI / 2)); for (const z of [-.6, 1]) g.add(at(cyl(.04, .04, 1.0, MP.graphite, null, 10), s * .62, .58, z, 0, 0, s * .2)); }
+  g.add(at(rbox(.6, .03, .05, .01, MP.accent, 'navStripe'), 0, 1.0, 2.6));
+  return g;
+}
+/** surgical robot (generic patient-side cart, 4 arms; no brand). arm i: 'a{i}j1' (.y), 'a{i}j2' (.x), 'a{i}j3' (.x), 'a{i}tool' (shaft + jaw). ~2.3 m. Faces +z. */
+function surgicalPro() {
+  const g = grp('surgicalRobot');
+  g.add(at(rbox(1.0, .35, 1.2, .12, MP.shell2, 'base'), 0, .25, 0)); for (const [x, z] of [[-.4, -.5], [.4, -.5], [-.4, .5], [.4, .5]]) g.add(at(cyl(.07, .07, .06, MP.rubber, null, 20), x, .05, z, 0, 0, Math.PI / 2));
+  g.add(at(slathe([[.2, 0], [.22, .6], [.18, 1.4], [.2, 1.55]], MP.shell, 'column', 12, 40), 0, .42, -.15));
+  g.add(at(rbox(1.5, .18, .45, .08, MP.shell, 'boom'), 0, 2.05, .05)); g.add(at(rbox(.28, .1, .28, .05, MP.glass, 'boomCam'), 0, 1.92, .2));
+  [-.6, -.2, .2, .6].forEach((x, i) => { const j1 = grp('a' + i + 'j1'); j1.position.set(x, 1.95, .1); j1.rotation.y = x * .25; g.add(j1);
+    j1.add(at(actuator(.07, .1, null, MP.dark), 0, -.04, 0, 0, 0, Math.PI / 2));
+    const j2 = grp('a' + i + 'j2'); j2.position.y = -.1; j1.add(j2); j2.rotation.x = .9; j2.add(limb(.06, .05, .55, MP.shell, 'a' + i + 'up'));
+    const j3 = grp('a' + i + 'j3'); j3.position.y = -.55; j2.add(j3); j3.rotation.x = -1.6; j3.add(actuator(.055, .09, null, MP.dark)); j3.add(limb(.05, .04, .5, MP.shell2, 'a' + i + 'fore'));
+    const tool = grp('a' + i + 'tool'); tool.position.y = -.5; j3.add(tool); tool.add(at(rbox(.07, .16, .07, .02, MP.graphite), 0, -.08, 0)); tool.add(at(cyl(.005, .005, .45, MP.alloy, 'shaft', 10), 0, -.38, 0)); tool.add(at(rbox(.012, .03, .008, .003, MP.alloy, 'jaw'), 0, -.62, 0));
+    tool.add(at(cyl(.058, .058, .012, MP.accent, null, 24), 0, .01, 0)); });
+  return g;
+}
+/** generic glass office tower (business-district feel, no real tower): curtain wall + mullions, lobby + canopy, setback crown, rooftop plant + mast. 30×30×120 m. Nodes: curtain, lobby, crown, plant. */
+function officeTowerPro(h = 120) {
+  const g = grp('officeTower'), W = 30, glass = S(0x1c2a38, .08, .6), mull = S(0x8d939b, .55, .45);
+  g.add(at(rbox(W, h, W, 1.2, glass, 'curtain'), 0, h / 2, 0));
+  const ms = []; for (let x = -W / 2; x <= W / 2 + .01; x += 1.5) for (const s of [-1, 1]) { ms.push(new THREE.BoxGeometry(.12, h, .25).translate(x, h / 2, s * (W / 2 + .05))); ms.push(new THREE.BoxGeometry(.25, h, .12).translate(s * (W / 2 + .05), h / 2, x)); }
+  for (let y = 4.2; y < h; y += 3.9) for (const s of [-1, 1]) { ms.push(new THREE.BoxGeometry(W + .3, .35, .3).translate(0, y, s * (W / 2 + .08))); ms.push(new THREE.BoxGeometry(.3, .35, W + .3).translate(s * (W / 2 + .08), y, 0)); }
+  g.add(merged(ms, mull, 'mullions'));
+  g.add(at(rbox(W + 4, 7, W + 4, .5, S(0x2a2e34, .4, .5), 'lobby'), 0, 3.5, 0)); g.add(at(rbox(W + 6, .5, W + 6, .2, MP.shell2, 'canopy'), 0, 7.2, 0));
+  g.add(at(rbox(W * .7, 10, W * .7, .8, glass, 'crown'), 0, h + 5, 0)); g.add(at(rbox(W * .72, .4, W * .72, .2, mull), 0, h + 10, 0));
+  const pl = grp('plant'); pl.position.y = h; g.add(pl); for (let i = 0; i < 4; i++) pl.add(at(rbox(3, 2.2, 2.4, .2, MP.shell2), -W / 2 + 3 + (i % 2) * 4, 1.1, W / 2 - 3 - Math.floor(i / 2) * 3.2));
+  pl.add(at(cyl(.15, .15, 12, mull, 'mast', 10), W / 2 - 3, 6, -W / 2 + 3));
+  return g;
+}
+
 export const KITPRO = {
   'pro/humanoid': humanoidPro, 'pro/quadruped': quadrupedPro, 'pro/industrialArm': () => industrialArmPro(), 'pro/amr': amrPro, 'pro/palletLoad': palletLoad,
   'pro/liquidHandler': liquidHandler, 'pro/serviceRobot': serviceRobot, 'pro/espressoBar': espressoBar, 'pro/robotaxi': robotaxiPro,
+  'pro/evtol': evtolPro, 'pro/surgicalRobot': surgicalPro, 'pro/officeTower': () => officeTowerPro(),
 };
 export const KITPRO_FN = Object.fromEntries(Object.entries(KITPRO).map(([k, v]) => [k.slice(4), v]));

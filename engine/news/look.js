@@ -169,8 +169,9 @@ export function setup({renderer, scene, cam, composer, preset = 'studio', reflec
   return {
     key, rimL, rimR, fill, cyc, mirror, P,
     /** aim the key light + DOF at the hero */
-    focus(target) { key.target.position.copy(target); key.position.copy(target).add(new THREE.Vector3(-3.2, 6.5, 5));
-      rimL.target.position.copy(target); rimR.target.position.copy(target); rimL.position.copy(target).add(new THREE.Vector3(-4.5, 1.1, -4.5)); rimR.position.copy(target).add(new THREE.Vector3(4.8, .8, -4.2)); if (bokeh) bokeh.uniforms.focus.value = cam.position.distanceTo(target); },
+    focus(target) { const k = Math.max(1, cam.position.distanceTo(target) / 12); if (cam.far < cam.position.distanceTo(target) * 4) { cam.far = cam.position.distanceTo(target) * 4; cam.updateProjectionMatrix(); } key.distance = rimL.distance = rimR.distance = 30 * k; key.intensity = P.keyI * k ** 1.45; rimL.intensity = P.rimI * 7 * k ** 1.35; rimR.intensity = P.rimI * 6 * k ** 1.35; key.target.position.copy(target); key.position.copy(target).add(new THREE.Vector3(-3.2, 6.5, 5).multiplyScalar(k));
+      rimL.target.position.copy(target); rimR.target.position.copy(target); rimL.position.copy(target).add(new THREE.Vector3(-4.5, 1.1, -4.5).multiplyScalar(k)); rimR.position.copy(target).add(new THREE.Vector3(4.8, .8, -4.2).multiplyScalar(k)); if (bokeh) bokeh.uniforms.focus.value = cam.position.distanceTo(target);
+      if (scene.fog && scene.fog.isFog) { const d = cam.position.distanceTo(target); scene.fog.near = Math.max(14, d * 1.3); scene.fog.far = Math.max(34, d * 3); } },   // big heroes (eVTOL, towers) stay out of the fog
     aperture(a) { if (bokeh) bokeh.uniforms.aperture.value = a; },
     render() { composer.render(); },
   };
