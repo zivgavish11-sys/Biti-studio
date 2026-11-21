@@ -12,6 +12,7 @@ const st = await studio({
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
+const DOG = A[8] + 2.66;   // "והכלב" starts after the pause added for the humanoid (Ziv 2026-11-21)
 const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
 const ACC = st.HERO_ACC;
 st.stage({r: 200, grid: 0, spot: null});
@@ -167,7 +168,7 @@ st.frame(t => {
     sh(0, TW, OW, 1.0), sh(A[1] + .3, TW, OW, .82),                                   // hook: the villa, drone flying in
     sh(A[2] + .2, TD, OD, 1.6), sh(B[3], TD, OD, 1.25),                                 // vote: drone over the pad
     sh(A[4] - .1, TM, OM, 1.25), sh(B[5], TM, OM, .95), sh(B[6] - .2, TM, OM, 1.1),     // names on its station
-    sh(A[7] + .1, [-5.2, .2, 2.8], [0, 8, 7.5], 1.0), sh(A[8] + .7, [6.2, .8, 2.2], [0, 8, 7.5], 1.0), sh(A[8] + 1.9, [-5.2, .3, 9.0], [0, 8, 7.5], 1.0), sh(B[8], [-5.2, .3, 9.0], [0, 8, 7.5], .95),   // pan: vacuum → humanoid → dog
+    sh(A[7] + .1, TV, OV, 1.4), sh(A[8] - .3, TV, OV, 1.05), sh(A[8] + .3, TK, OK, 1.25), sh(DOG - .3, TK, OK, .95), sh(DOG + .3, TY, OY, 1.2), sh(B[8] + .2, TY, OY, .95),   // vacuum → humanoid → dog (Ziv: show them longer)
     sh(A[9] + .3, TD, OD, 1.5), sh(B[10], TD, OD, 1.05),                                // drone lands on the roof
     sh(A[11] + .4, TW, OW, .75), sh(B[13], TW, OW, .9),                                 // every 25 followers: the whole house
     sh(A[14] + .2, TM, OM, 1.2), sh(B[16], TM, OM, 1.0),                                // your name: the empty plate
@@ -176,9 +177,9 @@ st.frame(t => {
   return {cp, ct, noFlash: true, overlay: t2 => {
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
     if (t2 > A[2] - .1 && t2 < B[3] + .5) { const [x, y] = st.proj(ROOF.clone().add(V(0, 2.4, 0))); st.counter(540, 470, 'רחפן 2 · מכונית 0', '', '#8ea6ff', win(t2, A[2] - .1, B[3] + .5, .25), 52); }
-    L(A[7], A[8] + .4, 'שואב', vac.position.clone().add(V(0, .2, 0)), 0, -260);
-    L(A[8] + .4, A[8] + 1.6, 'שוטף כלים', V(6.7, 1.75, 2.1), 0, -260);
-    L(A[8] + 1.6, B[8] + .3, 'כלב', dog.position.clone().add(V(0, .8, 0)), 0, -260);
+    L(A[7], A[8] - .1, 'שואב רובוטי', vac.position.clone().add(V(0, .2, 0)), 0, -300);
+    L(A[8] + .2, DOG - .1, 'רובוט ששוטף כלים', V(6.7, 1.75, 2.1), -120, -150);
+    L(DOG + .2, B[8] + .3, 'כלב רובוטי', dog.position.clone().add(V(0, .8, 0)), 0, -320);
     L(A[9] + .2, B[10] + .3, 'רחפן קניות', dd.position.clone().add(V(0, .5, 0)), 0, -300);
     L(A[19], END - .3, 'שף?', V(4.6, 2.5, 4.3), -40, -320); L(A[20], END - .3, 'בריכה?', poolBot.position.clone().add(V(0, .3, 0)), 40, -300);
     const ca = win(t2, A[11] + .2, B[13] + .4, .3);
