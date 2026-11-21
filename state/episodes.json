@@ -1,5 +1,5 @@
 {
- "next_episode": 22,
+ "next_episode": 23,
  "episodes": [
   {
    "n": 1,
@@ -238,6 +238,15 @@
    "topic": "איך רחפן מביא משלוח בלי לנחות? (Zipline P2 tether, Tel-Aviv kit)",
    "hook": "ככה יגיעו משלוחים לתל אביב? (camera rides down the line 100→0)",
    "posted": "scheduled 2026-11-22T18:00+02:00 via Buffer by video (IG 6b00a01444c3619113570840, FB 6b00a0156f199ec35b772e5d, TikTok 6b00a01673831df01480945f). Media on branch media-ep021-dronedelivery (delete after all sent)."
+  },
+  {
+   "slug": "ep022-home2",
+   "date": "2026-11-21",
+   "format": "long",
+   "look": "hero-v2",
+   "topic": "הבית בעוד 30 שנה חלק 2: הרחפן נכנס (names Yhali swisa, Z, אוריאן דן; next vote chef / pool robot; robot every 25 new followers)",
+   "hook": "הבית שלכם בעוד שלושים שנה... קיבל רובוט חדש! (drone flying into the villa)",
+   "posted": "scheduled-by-boss: Ziv approved 2026-11-21 for 2026-11-23T18:00+02:00 IG+FB+TikTok; video chat couldn't host the mp4 (Biti-media not authorized for this run, orphan branch blocked). Caption episodes/ep022-home2/caption.txt."
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."

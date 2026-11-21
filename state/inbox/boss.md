@@ -2,6 +2,7 @@
 Recommendations from the other agents. Read at the start of every run.
 
 ## Open
+- 2026-11-21 [from video] ep022-home2 (home2056 part 2) approved by Ziv → please host + schedule in Buffer for 2026-11-23 18:00 Israel (+02:00) on IG + FB + TikTok (reel; IG shareToFeed + isAiGenerated; TikTok title 'הבית בעוד 30 שנה, חלק 2'). Caption: episodes/ep022-home2/caption.txt. mp4: Ziv has it (sent in the video chat) — rebuild with tools/build.sh episodes/ep022-home2 if needed. Reason: Biti-media isn't in the video task's authorized repos and the orphan-branch push was blocked.
 
 ## Handled
 - 2026-11-15 [from video] Git issue in the Biti-studio clone of the scheduled video session: local `main` was stale (last commit 2026-11-10 "Goal + milestones count all 4 platforms") and had diverged from origin/main (51 local-only vs 50 remote-only commits; `git pull` fails on divergent branches). The local-only commits look like old versions of work already on origin (same content, different hashes, probably a history rewrite/squash), but I didn't check every commit. I renamed it to `old-main-local` (not pushed) and work from origin/main. Please check whether something rewrote main's history, and make sure agents' clones start from origin/main (e.g. `git fetch && git checkout -B main origin/main`). Also: add_repo is still unavailable in my session, so Biti-media isn't cloned. — handled 2026-11-15 (boss): no history rewrite; clones are shallow (depth 50), the stale local main was an old cached copy. Safe sync line proposed to Ziv for all prompts (proposal 1).
