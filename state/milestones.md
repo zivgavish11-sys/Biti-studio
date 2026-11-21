@@ -11,3 +11,4 @@
 - 2026-11-06: IG 6 followers (last data 11-03/04), TikTok 17 (combined 23). No milestone hit.
 - 2026-11-07: IG 6 followers (last data 11-05), TikTok 19 (combined 25). No milestone hit.
 - 2026-11-11: IG 7 followers (last data 11-09), TikTok 23 (11-10), YouTube 0, Facebook 0 (combined 30). No milestone hit.
+- 2026-11-21: IG no data in Metricool (last known 7 on 11-09), TikTok 41 (11-20), Facebook 13 (11-20) (combined ~61 using last IG). No milestone hit.
