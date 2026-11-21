@@ -1,0 +1,29 @@
+# Deletes temporary media-* branches (mp4 hosting for Buffer) once their last commit is 14+ days old.
+# Approved by Ziv 2026-11-21 (boss proposal 2). Posts are long sent by then.
+name: cleanup media branches
+on:
+  schedule:
+    - cron: '17 3 * * 1'   # Mondays 03:17 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: delete old media-* branches
+        run: |
+          cutoff=$(date -d '14 days ago' +%s)
+          for b in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin/media-*); do
+            name=${b#origin/}
+            ts=$(git log -1 --format=%ct "$b")
+            if [ "$ts" -lt "$cutoff" ]; then
+              echo "deleting $name"
+              git push origin --delete "$name"
+            else
+              echo "keeping $name"
+            fi
+          done
