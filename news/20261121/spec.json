@@ -1,0 +1,63 @@
+{
+ "date_label": "חדשות היום · 21.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "XPENG תציג ב־25.11 את הרובוט דמוי האדם IRON באירוע AI Day",
+    "לפי ניקיי: מהנדסי רובוטיקה סינים נדחו בבקשות ויזה לארה״ב לקראת CES"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": {"name": "pro/humanoid", "x": 0.2, "z": 0, "ry": -0.5, "az": 0.35},
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "25.11",
+   "statSub": "XPENG AI Day, גואנגג'ואו",
+   "statColor": "cyan",
+   "title": "XPENG מציגה את<br><span class=\"pill\">IRON</span> בעוד ארבעה ימים",
+   "text": "לפי הודעת החברה, הרובוט דמוי האדם IRON יהיה הכוכב של אירוע AI Day. הוא בגובה כ־170 ס״מ, עם 76 דרגות חופש בגוף ו־21 בכל יד. לדברי XPENG, הגרסה האחרונה יצאה ב־8.9 מקו הייצור החדש שלה.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "XPENG (הודעה לעיתונות)",
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": {"name": "pro/humanoid", "x": 0, "z": 0, "ry": 0.25, "az": 0.3, "pose": {"shoulderR": -0.3, "elbowR": -0.5}},
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "15",
+   "statSub": "מהנדסים של חברה אחת, לפי ניקיי",
+   "statColor": "orange",
+   "title": "ויזה לארה״ב?<br><span class=\"pill\">נדחו</span>",
+   "text": "לפי ניקיי, מהנדסים של XPENG ושל EngineAI נתקלו בסירובי ויזה לקראת תערוכת CES. לפי הדיווח, יצרנית סינית אחת לפחות ביטלה השתתפות, ובחברה אחת כל 15 אנשי הצוות הטכני נדחו.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "Nikkei Asia, Table.Briefings",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {"name": "pro/humanoid", "x": 0, "z": 0, "ry": 3.0, "az": -0.35},
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {"name": "pro/quadruped", "ry": 0.3, "az": 0.4},
+    "color": "cyan"
+   }
+  }
+ ]
+}
