@@ -1,4 +1,5 @@
 # ep022-home2 — visual script (hero-v2, the exact ep014 villa; one world, continuous camera)
+Approved by Ziv 2026-11-21 (v1). On-screen counter: "+25 עוקבים = רובוט חדש" only, no total (fact-check).
 1. "הבית שלכם בעוד שלושים שנה... קיבל רובוט חדש!" — frame 0: high 3/4 over the whole villa, the drone already flying in from the sky toward the house (mid-action). Hook text on screen.
 2. "הצבעתם, והרחפן ניצח." — vote card floats over the garage: רחפן 2 · מכונית 0, the drone side lights up.
 3. "השואב, הרובוט ששוטף כלים והכלב כבר עובדים פה." — quick fly-by: vacuum in the living room → humanoid at the sink → dog in the yard (same as part 1).
