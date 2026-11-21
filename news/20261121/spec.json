@@ -11,7 +11,13 @@
    "scene": {
     "robot": false,
     "look": "studio",
-    "hero": {"name": "pro/humanoid", "x": 0.2, "z": 0, "ry": -0.5, "az": 0.35},
+    "hero": {
+     "name": "pro/humanoid",
+     "x": 0.2,
+     "z": 0,
+     "ry": -0.5,
+     "az": 0.35
+    },
     "color": "cyan"
    },
    "topShade": 0.35
@@ -28,7 +34,18 @@
    "scene": {
     "robot": false,
     "look": "studio",
-    "hero": {"name": "pro/humanoid", "x": 0, "z": 0, "ry": 0.25, "az": 0.3, "pose": {"shoulderR": -0.3, "elbowR": -0.5}},
+    "hero": {
+     "name": "pro/humanoid",
+     "x": 0,
+     "z": 0,
+     "ry": 0.25,
+     "az": 0.3,
+     "pose": {
+      "shoulderR": -0.3,
+      "elbowR": -0.5
+     },
+     "frac": 1.15
+    },
     "color": "cyan"
    },
    "topShade": 0.35
@@ -45,7 +62,14 @@
    "scene": {
     "robot": false,
     "look": "cool",
-    "hero": {"name": "pro/humanoid", "x": 0, "z": 0, "ry": 3.0, "az": -0.35},
+    "hero": {
+     "name": "pro/humanoid",
+     "x": 0,
+     "z": 0,
+     "ry": 3.0,
+     "az": -0.35,
+     "frac": 1.15
+    },
     "color": "orange"
    },
    "topShade": 0.35
@@ -55,7 +79,11 @@
    "scene": {
     "robot": false,
     "look": "cool",
-    "hero": {"name": "pro/quadruped", "ry": 0.3, "az": 0.4},
+    "hero": {
+     "name": "pro/quadruped",
+     "ry": 0.3,
+     "az": 0.4
+    },
     "color": "cyan"
    }
   }
