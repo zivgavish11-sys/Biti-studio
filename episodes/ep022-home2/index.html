@@ -12,7 +12,7 @@ const st = await studio({
   scenes: (A, B, END) => [0, END],
 });
 const {scene, A, B, END} = st;
-const DOG = A[8] + 2.66;   // "והכלב" starts after the pause added for the humanoid (Ziv 2026-11-21)
+const DOG = A[8] + 2.03;   // "והכלב" starts after the pause added for the humanoid (Ziv 2026-11-21)
 const M = (c, o = {}) => new THREE.MeshStandardMaterial({color: c, roughness: .8, ...o});
 const ACC = st.HERO_ACC;
 st.stage({r: 200, grid: 0, spot: null});
