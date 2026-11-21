@@ -80,3 +80,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 
 - 2026-11-20 (Ziv, media chat, approved media proposals 1+2): reels test the realistic **pro-v3** look (real world + real light + realistic robots + silhouettes; brand accent light-blue, captions unchanged) on 4 videos **from ep022** (ep019–ep021 already built, stay hero-v2). Engine engine/lib/look-pro.js; rule in docs/agents/video.md. Proposal 3: media keeps adding general assets and invests per script in each reel/carousel (docs/agents/media.md).
 - 2026-11-20 (Ziv, video chat): home2056 series — from part 2 a new robot every 25 new followers (was 10); part 2 adds one robot (drone, won the vote). Names may include a commenter who didn't follow (Ziv's call). Logged in docs/series/home2056.md.
+- 2026-11-21 (Ziv, video chat): ep022-home2 (home2056 part 2) = exactly the same house as part 1, only the drone added, in the hero-v2 look; the pro-v3 test moves to ep023–ep026.
