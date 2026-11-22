@@ -4,7 +4,7 @@
 // Usage (one line after the scene is built, before st.ready()):
 //   import {proLook} from '/engine/lib/look-pro.js';
 //   const PL = await proLook(st, {mode: 'outdoor' | 'studio', preset: 'warm'|'cool'|'studio', robots: [bot], people: [kid, man], focus: V(x, y, z)});
-//   in st.frame: PL.update(t, focusPoint?) (moves the sun shadow box / DOF with the camera target)
+//   exposure: outdoor only, e.g. .8 for bright white-plaster scenes (pool kit). in st.frame: PL.update(t, focusPoint?) (moves the sun shadow box / DOF with the camera target)
 // Our own code → CC0.
 import * as THREE from 'three';
 import {Sky} from 'three/addons/objects/Sky.js';
@@ -13,7 +13,7 @@ import {ShaderPass} from 'three/addons/postprocessing/ShaderPass.js';
 import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import * as LOOK from '/engine/news/look.js';
 
-const ACC = new Set([0x8ea6ff, 0x2ee6ff, 0xf0502a]);              // brand colours are never re-coloured
+const ACC = new Set([0x8ea6ff, 0x2ee6ff, 0xf0502a, 0x4f6fe0]);              // brand colours (+ deep blue 230V/force 2026-11-22; materials with userData.real are kept too) are never re-coloured
 // hero-palette colours of our kits → real-world colours (tlv/*, citycorner/*, home2056/*, fx-tlv ground)
 export const REAL = {
   0xc3c6f2: [0xf1ede6, .85], 0xaeb2ea: [0xe9e2d6, .85], 0x9a9fe2: [0xd8d0c3, .85], 0x6d74c4: [0x8b8680, .8], 0xd9dbf5: [0xf6f4ef, .75],
@@ -33,7 +33,7 @@ const near = (h) => { if (REAL[h]) return REAL[h]; let best = null, bd = 9e9; co
 /** recolour a hero-palette object to real-world materials (keeps screens with textures, transparent glass/discs and brand accents). Unknown indigo → warm neutral by brightness. */
 export function realWorld(root) {
   root.traverse(m => { if (!(m.isMesh || m.isInstancedMesh)) return; const ms = Array.isArray(m.material) ? m.material : [m.material];
-    const out = ms.map(src => { if (!src || !src.color || src.map || src.isShaderMaterial) return src; const h = hx(src.color);
+    const out = ms.map(src => { if (!src || !src.color || src.map || src.isShaderMaterial || (src.userData && src.userData.real)) return src; const h = hx(src.color);
       if (ACC.has(h)) return src; const t = near(h);
       if (src.transparent && src.opacity < .9 && !t) return src;
       let col, rough = .8, metal = 0;
@@ -51,7 +51,7 @@ const GrainVig = {
     void main(){ vec4 c = texture2D(tDiffuse, vUv); float v = smoothstep(.9, .3, length((vUv - .5) * vec2(1., .8))); c.rgb *= mix(1. - vig, 1., v); c.rgb += (h(vUv * 1920.) - .5) * grain * (1. - c.rgb * .6); gl_FragColor = c; }`,
 };
 /** switch a built hero-look scene to pro-v3. */
-export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea} = {}) {
+export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea, exposure = 1} = {}) {
   const {scene, renderer, cam, composer} = st;
   const skip = new Set([...robots, ...people]);
   scene.children.forEach(o => { if (!skip.has(o)) realWorld(o); });
@@ -77,7 +77,7 @@ export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [
   scene.fog = new THREE.Fog(haze, 260, 1400);
   composer.passes.slice().forEach(p => composer.removePass(p)); composer.addPass(new RenderPass(scene, cam)); composer.addPass(new OutputPass()); composer.addPass(new ShaderPass(GrainVig));
   // the shadow box follows what the camera looks at, sized to the view (sharp on a rooftop, wide over the city)
-  function update(t, f) { const tg = f || focus || new THREE.Vector3(); const dist = cam.position.distanceTo(tg); const R = Math.min(220, Math.max(8, dist * .9));
+  function update(t, f) { renderer.toneMappingExposure = exposure; const tg = f || focus || new THREE.Vector3(); const dist = cam.position.distanceTo(tg); const R = Math.min(220, Math.max(8, dist * .9));
     const c = S.shadow.camera; c.left = c.bottom = -R; c.right = c.top = R; c.near = 1; c.far = R * 6 + 400; c.updateProjectionMatrix();
     S.target.position.copy(tg); S.position.copy(tg).addScaledVector(sd, R * 2 + 150); }
   update(0); return {sun: S, sky, update};

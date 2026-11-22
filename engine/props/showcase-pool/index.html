@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-22 run 13 — backyard pool kit for ep023-poolbot (pro-v3 outdoor), one world, camera chain:
+// wide → wall socket → power box cutaway (coils not touching, field jumps the gap) → robot under water (sealed motor cutaway) → panel RCD trips → child + floating cable tangle → instruction page.
+// Render: python3 tools/render.py frames engine/props/showcase-pool 1,3.4,6,8.6,11,13.4,15
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {poolWater, floatCable, fieldPulse, rcdTrip, instructionPage} from '/engine/props/fx-pool.js';
+const st = await studio({look: 'hero', fog: .001, hook: ['רובוט הבריכה', 'יכול <span class="pill">להרוג</span>?'], hookEnd: 2.4, keys: ['להרוג?', '230', 'מגנטי', 'אטום', 'פחת', 'הצף'], scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const W3 = o => o.getWorldPosition(new THREE.Vector3());
+const yard = await M('pool/backyard'); yard.updateMatrixWorld(true);
+const S = n => W3(yard.getObjectByName(n));
+const sock = await M('pool/wallSocket'); sock.position.copy(S('socketSpot'));
+const box = await M('pool/powerBox'); box.position.copy(S('psuSpot'));
+const panel = await M('pool/electricPanel'); panel.position.copy(S('panelSpot')); panel.position.z += .02;
+const bot = await M('pool/poolBot'); bot.position.copy(S('robotSpot')); bot.rotation.y = .7;
+const kid = await M('people/mannequin-childTread'); const sw = S('swimSpot'); kid.position.set(sw.x, sw.y - 1.0, sw.z); kid.rotation.y = -.5;
+scene.updateMatrixWorld(true);
+// mains cable socket → box in-port
+const ip = W3(box.getObjectByName('inPort')), so = W3(sock.getObjectByName('cableOut'));
+const mm = new THREE.MeshStandardMaterial({color: 0x2f3338, roughness: .55}); mm.userData.real = true;
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([so, V(so.x, .05, so.z + .1), V((so.x + ip.x) / 2, .02, (so.z + ip.z) / 2), V(ip.x, .05, ip.z + .05), ip]), 80, .007, 8), mm));
+const water = poolWater(yard, {amp: .012, caustics: .3});
+const cable = floatCable(scene, {from: W3(box.getObjectByName('outPort')), edge: S('copingSpot'), robot: bot, waterY: -.12});
+const page = instructionPage(st, {w: .5}); page.mesh.position.set(.2, 1.35, 4.3); page.mesh.rotation.set(-.1, -.15, .03);
+const lp = st.screen(panel.getObjectByName('labelPlate'), (c, t, W, H) => { c.fillStyle = '#fbfaf6'; c.fillRect(0, 0, W, H); c.fillStyle = '#1b1d22'; c.font = `700 ${H * .6}px Rubik`; c.textAlign = 'center'; c.fillText('ממסר פחת', W / 2, H * .75); }, {light: .6});
+const bs = st.screen(box.getObjectByName('screen'), (c, t, W, H) => { c.fillStyle = '#0e1418'; c.fillRect(0, 0, W, H); c.fillStyle = '#8ea6ff'; c.font = `700 ${H * .42}px Rubik`; c.textAlign = 'center'; c.fillText('02:00', W / 2, H * .62); }, {light: .5});
+// ghosting (x-ray): fade a shell group
+const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .85 * k; m.material.depthWrite = k < .5; }); };
+const boxGhost = ghostable(box.getObjectByName('shell')), botGhost = ghostable(bot.getObjectByName('shell'));
+const hf = bot.getObjectByName('housingFront');
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [-.5, .7, .55], exposure: .8});
+st.frame(t => {
+  water.update(t, {disturb: [sw.x, sw.z, win(t, 11.6, 15.6, .6)]});
+  const tangle = sm(12.4, 13.6, t); kid.updateMatrixWorld(true);
+  cable.update(t, {tangle, leg: W3(kid.getObjectByName('ankleR')), glow: win(t, 6.4, 9.4, .4)});
+  const kick = Math.sin(t * 3); kid.getObjectByName('hipL').rotation.x = .2 + .3 * kick; kid.getObjectByName('hipR').rotation.x = -.25 - .3 * kick * (1 - tangle);
+  boxGhost(win(t, 4.2, 7.0, .5)); fieldPulse(box, t, win(t, 4.6, 7.0, .4));
+  botGhost(win(t, 7.4, 10.0, .5)); hf.visible = !(t > 7.9 && t < 9.8);
+  bot.getObjectByName('rotor').rotation.x = t * 20; bot.getObjectByName('impeller').rotation.y = t * 25; bot.getObjectByName('brushF').rotation.x = bot.getObjectByName('brushB').rotation.x = t * 6;
+  rcdTrip(panel, sm(10.6, 11.2, t)); panel.getObjectByName('door').rotation.y = -1.9;
+  page.update(t, sm(14.2, 15.0, t)); lp.update(t); bs.update(t);
+  const [cp, ct] = camPath(t, [
+    [0, [6.5, 5.0, 9.5], [0, -.4, 1]], [1.8, [5.5, 2.6, 2.0], [3.4, .5, -5.4]], [3.2, [3.95, .85, -5.0], [3.4, .4, -6]],
+    [4.4, [5.05, 1.05, -4.05], [4.7, .78, -4.9]], [6.6, [4.85, .92, -4.35], [4.7, .76, -4.9]],
+    [7.8, [-.6, -.95, 2.5], [-1.4, -1.33, 1.6]], [9.6, [-.9, -1.05, 2.25], [-1.4, -1.36, 1.6]],
+    [10.6, [-4.45, 1.62, -5.25], [-4.9, 1.5, -6]], [11.6, [-4.6, 1.58, -5.45], [-4.9, 1.52, -6]],
+    [12.6, [3.0, 1.3, 3.9], [1.2, -.4, 1.4]], [13.8, [2.4, .9, 3.0], [1.2, -.6, 1.4]],
+    [14.8, [.5, 1.5, 5.4], [.2, 1.35, 4.3]], [16, [.6, 1.6, 5.6], [.2, 1.35, 4.3]]]);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true};
+});
+st.ready();
+</script></body></html>

@@ -34,3 +34,4 @@
 - tlv/* (Bauhaus blocks A–E + hero terrace block, boulevard, promenade/beach, ficus, palm, solar heater, skyline towers), drone/winchDrone, drone/droidPod, people/mannequin-reach — in-house (Media pro, engine/props/kit-tlv.js), generic, CC0, 2026-11-20. FX helpers engine/props/fx-tlv.js — in-house, CC0.
 - pro/evtol, pro/surgicalRobot, pro/officeTower — in-house (Media pro, engine/props/kit-pro.js), generic, CC0, 2026-11-20. engine/lib/look-pro.js — in-house, CC0.
 - pro/humanoidXray, pro/smartphone, pro/servo — in-house (Media pro, engine/props/kit-pro.js), generic, no brands, CC0, 2026-11-20 (run 13).
+- pool/* (backyard, wallSocket, powerBox, poolBot, electricPanel), people/mannequin-tread, people/mannequin-childTread — in-house (Media pro, engine/props/kit-pool.js), generic, no brands, CC0, 2026-11-22. FX engine/props/fx-pool.js — in-house, CC0.
