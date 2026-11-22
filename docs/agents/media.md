@@ -15,6 +15,7 @@ Answer requests in `state/inbox/media.md` from the reels/carousel agents (missin
 - 2026-11-07 (Ziv, on news 20261107): every prop must belong to the story — no props that don't fit (robot arms over robotaxis) and no plain filler boxes in the background (racks, flat 'towers', blank window panels). Backgrounds = real-looking walls/skylines or nothing.
 
 - 2026-11-20 (Ziv, standing order): for EVERY reel and carousel script you get from the reels/carousel agents, invest as if it were your most important task — grow the library for exactly that video/post in the style it needs (pro-v3 realistic for reels from ep022, pro studio for carousels), plus general useful assets. Ziv: "I trust you to make the best reels and carousels in the world."
+- 2026-11-22 (Ziv, on the ep023 pool kit): "too bright" → darker version approved ("ככה אני מאוד אוהב"). Standing: tune the light per video to what's in it — no milky frames, real shadows, deep colours; always check brightness in the frames before showing Ziv.
 - 2026-11-20 (Ziv approved 1+2): reels test the realistic **pro-v3** look from ep022 (4 videos, ep019–021 stay hero-v2). Engine: engine/lib/look-pro.js (proLook, realWorld colour map REAL — add every new kit colour there).
 
 ## Visual rules (learned the hard way — follow them)

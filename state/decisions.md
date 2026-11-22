@@ -83,3 +83,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-21 (Ziv, video chat): ep022-home2 (home2056 part 2) = exactly the same house as part 1, only the drone added, in the hero-v2 look; the pro-v3 test moves to ep023–ep026.
 - 2026-11-21 (boss, Ziv approved 1): reels host the mp4 only on a temporary orphan branch media-<slug> of Biti-studio (no Biti-media attempt). docs/agents/video.md Publishing.
 - 2026-11-21 (boss, Ziv approved 2): weekly GitHub Action deletes media-* branches whose last commit is 14+ days old (.github/workflows/cleanup-media-branches.yml). docs/agents/video.md.
+- 2026-11-22 (Ziv, media chat): pro-v3 light — the first ep023 pool frames were too bright; the darker version (real shadows, exposure .62, deep water, softer vignette) approved. Standing: tune light per video to its content. docs/agents/video.md (pro-v3 Light) + docs/agents/media.md.
