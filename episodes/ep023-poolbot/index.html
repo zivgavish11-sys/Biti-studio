@@ -33,9 +33,9 @@ const bs = st.screen(box.getObjectByName('screen'), (c, t, W, H) => { c.fillStyl
 const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .94 * k; m.material.depthWrite = k < .5; }); };
 const boxGhost = ghostable(box.getObjectByName('shell')), botGhost = ghostable(bot.getObjectByName('shell'));
 const hf = bot.getObjectByName('housingFront');
-const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .62, vig: .18, env: .28, fill: .2, sunI: 2.6});
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .41, vig: .32, env: .28, fill: .2, sunI: 2.6});
 // camera spots (from media's showcase-pool)
-const KID0 = [[3.4, 1.7, 4.6], [1.2, -.35, 1.4]], KID1 = [[2.4, .9, 3.0], [1.2, -.6, 1.4]];
+const KID0 = [[2.6, 2.6, 3.9], [1.0, -.6, 1.2]], KID1 = [[2.4, .9, 3.0], [1.2, -.6, 1.4]];
 const WIDE = [[6.5, 5.0, 9.5], [0, -.4, 1]], SOCKW = [[5.5, 2.6, 2.0], [3.4, .5, -5.4]], SOCK = [[3.95, .85, -5.0], [3.4, .4, -6]];
 const BOXW = [[5.05, 1.05, -4.05], [4.7, .78, -4.9]], BOXC = [[4.85, .92, -4.35], [4.7, .76, -4.9]];
 const BOTW = [[-.6, -.95, 2.5], [-1.4, -1.33, 1.6]], BOTC = [[-.9, -1.05, 2.25], [-1.4, -1.36, 1.6]];
@@ -56,7 +56,7 @@ st.frame(t => {
   rcdTrip(panel, sm(A[22] + .3, A[22] + .8, t)); panel.getObjectByName('door').rotation.y = -1.9;
   page.update(t, sm(A[28] - .2, A[29], t)); lp.update(t); bs.update(t);
   const [cp, ct] = camPath(t, [
-    k(0, KID0), k(A[2] - .2, WIDE), k(A[3] + .4, SOCKW), k(A[5], SOCK), k(B[6], SOCK),
+    k(0, KID0), k(1.3, [[2.4, 2.4, 3.6], [1.0, -.6, 1.2]]), k(A[2] - .1, WIDE), k(A[3] + .4, SOCKW), k(A[5], SOCK), k(B[6], SOCK),
     k(A[7] + .2, BOXW), k(A[9] + .3, BOXW), k(A[12], BOXC), k(B[17], BOXC),
     k(A[18] + .8, BOTW), k(A[19] + .4, BOTC), k(B[19] + .2, BOTC),
     k(A[20] + .4, PANW), k(A[22] + .2, PANC), k(B[23], PANC),
