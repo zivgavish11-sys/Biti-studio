@@ -1,5 +1,95 @@
-{"date_label":"חדשות היום · 22.11","slides":[
-{"type":"cover","title":"מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?","bullets":["וויימו הגישה שני ריקולים: רכב עלול להיכנס לנתיב מהיר סגור, לפי רויטרס","ג'ון דיר רכשה את Orchard Robotics, מצלמות AI שסורקות מטעים"],"scene":{"robot":false,"look":"cool","hero":[{"name":"pro/robotaxi","x":-0.5,"z":0,"ry":0.5},{"name":"vehicles/farmRobot","x":0.7,"z":0.3,"ry":-0.6}],"color":"cyan"},"topShade":0.35},
-{"type":"story","stat":"2","statSub":"ריקולים ב־NHTSA, לפי רויטרס","statColor":"pink","title":"וויימו מגישה<br><span class=\"pill\">ריקול</span> כפול","text":"לפי רויטרס, האחד על רכב שעלול להיכנס ולהמשיך בנתיב מהיר סגור, והשני על תגובה לפקודות ידניות של שוטרים בצמתים. וויימו מסרה שלא היו התנגשויות או פציעות באירועי הנתיב הסגור.","cta":"רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות","source":"Reuters, The Truth About Cars","scene":{"robot":false,"look":"cool","hero":{"name":"pro/robotaxi","x":0,"z":0,"ry":0.4,"az":0.35,"frac":1.15},"color":"pink"},"topShade":0.35},
-{"type":"story","stat":"95%+","statSub":"דיוק חיזוי יבול, לפי המייסד","statColor":"orange","title":"ג'ון דיר קנתה<br>את <span class=\"pill\">Orchard</span>","text":"לפי AgFunderNews, ג'ון דיר רכשה את Orchard Robotics, שמפתחת מצלמות AI שמותקנות על טרקטורים וסורקות מטעים וכרמים. תנאי העסקה לא פורסמו. לדברי המייסד, החברה תמשיך לפעול כחברת בת.","cta":"רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות","source":"AgFunderNews, Yahoo Finance","scene":{"robot":false,"look":"cool","hero":{"name":"vehicles/farmRobot","x":0,"z":0,"ry":0.6,"az":0.35,"frac":1.1},"color":"orange"},"topShade":0.35},
-{"type":"follow","scene":{"robot":false,"look":"cool","hero":{"name":"pro/amr","ry":0.3,"az":0.4},"color":"cyan"}}]}
+{
+ "date_label": "חדשות היום · 22.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "וויימו הגישה שני ריקולים: רכב עלול להיכנס לנתיב מהיר סגור, לפי רויטרס",
+    "ג'ון דיר רכשה את Orchard Robotics, מצלמות AI שסורקות מטעים"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": [
+     {
+      "name": "pro/robotaxi",
+      "x": -1.6,
+      "z": 0,
+      "ry": 0.9
+     },
+     {
+      "name": "vehicles/farmRobot",
+      "x": 1.8,
+      "z": 0.2,
+      "ry": -0.6
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "2",
+   "statSub": "ריקולים ב־NHTSA, לפי רויטרס",
+   "statColor": "pink",
+   "title": "וויימו מגישה<br><span class=\"pill\">ריקול</span> כפול",
+   "text": "לפי רויטרס, האחד על רכב שעלול להיכנס ולהמשיך בנתיב מהיר סגור, והשני על תגובה לפקודות ידניות של שוטרים בצמתים. וויימו מסרה שלא היו התנגשויות או פציעות באירועי הנתיב הסגור.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Reuters, The Truth About Cars",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/robotaxi",
+     "x": 0,
+     "z": 0,
+     "ry": 1.0,
+     "az": 0.2,
+     "frac": 1.15,
+     "el": 0.12
+    },
+    "color": "pink"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "95%+",
+   "statSub": "דיוק חיזוי יבול, לפי המייסד",
+   "statColor": "orange",
+   "title": "ג'ון דיר קנתה<br>את <span class=\"pill\">Orchard</span>",
+   "text": "לפי AgFunderNews, ג'ון דיר רכשה את Orchard Robotics, שמפתחת מצלמות AI שמותקנות על טרקטורים וסורקות מטעים וכרמים. תנאי העסקה לא פורסמו. לדברי המייסד, החברה תמשיך לפעול כחברת בת.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "AgFunderNews, Yahoo Finance",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "vehicles/farmRobot",
+     "x": 0,
+     "z": 0,
+     "ry": 0.6,
+     "az": 0.35,
+     "frac": 1.1
+    },
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/amr",
+     "ry": 0.3,
+     "az": 0.4
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}
