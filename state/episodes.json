@@ -1,5 +1,5 @@
 {
- "next_episode": 23,
+ "next_episode": 24,
  "episodes": [
   {
    "n": 1,
@@ -247,6 +247,15 @@
    "topic": "הבית בעוד 30 שנה חלק 2: הרחפן נכנס (names Yhali swisa, Z, אוריאן דן; next vote chef / pool robot; robot every 25 new followers)",
    "hook": "הבית שלכם בעוד שלושים שנה... קיבל רובוט חדש! (drone flying into the villa)",
    "posted": "scheduled 2026-11-23T18:00+02:00 via Buffer by boss (IG 6b01af46142c9575191f93d3, FB 6b01af47846b0ee90716720a, TikTok 6b01ae830247969092dce951). Rebuilt by boss (QA pass, 33.6 s). Media on branch media-ep022-home2 (delete after all sent)."
+  },
+  {
+   "slug": "ep023-poolbot",
+   "date": "2026-11-24",
+   "format": "long",
+   "look": "pro-v3",
+   "topic": "רובוט הבריכה יכול להרוג אותך? (isolation transformer → low voltage → sealed motor; RCD wall side; manuals: stay out, cable)",
+   "hook": "רובוט הבריכה... יכול להרוג אותך? (child next to the floating cable)",
+   "posted": "scheduled 2026-11-24T18:00+02:00 via Buffer (IG 6b032919cc364169c171d959, FB 6b03291a846b0ee907a5b90c, TikTok 6b03291abf5d5a73b6ac41a9). 54.4 s (Ziv asked ~50 s; QA duration FAIL accepted, all else PASS). Media on branch media-ep023-poolbot."
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
