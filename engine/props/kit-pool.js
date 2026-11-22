@@ -9,8 +9,8 @@ import {mannequin} from './kit.js';
 const R = (color, rough = .8, metal = 0, extra = {}) => { const m = new THREE.MeshStandardMaterial({color, roughness: rough, metalness: metal, ...extra}); m.userData.real = true; return m; };
 export const PM = {
   plaster: R(0xd8d3ca, .9), plaster2: R(0xcbc5ba, .9), stone: R(0xc9bda6, .85), coping: R(0xd9d3c7, .7), deck: R(0x9c7656, .75), deck2: R(0x8c6a4c, .75),
-  poolWall: R(0xbcd6d9, .6), poolFloor: R(0xaacbcf, .65), tile: R(0x3f8aa6, .35), grout: R(0xcfe2e4, .7),
-  water: R(0x2f9fbf, .04, 0, {transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide}),
+  poolWall: R(0x8fb6be, .6), poolFloor: R(0x7ea8b2, .65), tile: R(0x2e6f8c, .35), grout: R(0xcfe2e4, .7),
+  water: R(0x1c7896, .04, 0, {transparent: true, opacity: .7, depthWrite: false, side: THREE.DoubleSide}),
   glass: R(0x1c2a33, .06, .2, {transparent: true, opacity: .75}), frame: R(0x3a3d42, .45, .6), steel: R(0xc9ced4, .22, .9), chrome: R(0xe2e6ea, .12, 1),
   leaf: R(0x4f6b33, .9), leaf2: R(0x5f7f3d, .9), leaf3: R(0x6f8a52, .9), olive: R(0x7c8a5f, .9), trunk: R(0x6b5744, .95), soil: R(0x4b3a2c, 1), pot: R(0xc9b8a2, .85),
   fabric: R(0xf3efe7, .9), fabric2: R(0xd9d3c8, .9), wood: R(0xa57a52, .7),

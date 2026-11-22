@@ -51,7 +51,7 @@ const GrainVig = {
     void main(){ vec4 c = texture2D(tDiffuse, vUv); float v = smoothstep(.9, .3, length((vUv - .5) * vec2(1., .8))); c.rgb *= mix(1. - vig, 1., v); c.rgb += (h(vUv * 1920.) - .5) * grain * (1. - c.rgb * .6); gl_FragColor = c; }`,
 };
 /** switch a built hero-look scene to pro-v3. */
-export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea, exposure = 1, env = .55, fill = .45, sunI = 2.2} = {}) {
+export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea, exposure = 1, vig = .35, env = .55, fill = .45, sunI = 2.2} = {}) {
   const {scene, renderer, cam, composer} = st;
   const skip = new Set([...robots, ...people]);
   scene.children.forEach(o => { if (!skip.has(o)) realWorld(o); });
@@ -76,7 +76,7 @@ export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [
   scene.traverse(m => { if (m.isMesh && !m.isSky && m.material && !(m.material.transparent && m.material.opacity < .7) && !m.material.isShaderMaterial) { m.castShadow = m.receiveShadow = true; } });   // st.model() GLBs come without receiveShadow → flat, milky frames (Ziv 2026-11-22 'too bright')
   scene.add(S, S.target); const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x8a7d6a, fill); scene.add(hemi);
   scene.fog = new THREE.Fog(haze, 260, 1400);
-  composer.passes.slice().forEach(p => composer.removePass(p)); composer.addPass(new RenderPass(scene, cam)); composer.addPass(new OutputPass()); composer.addPass(new ShaderPass(GrainVig));
+  composer.passes.slice().forEach(p => composer.removePass(p)); composer.addPass(new RenderPass(scene, cam)); composer.addPass(new OutputPass()); { const gv = new ShaderPass(GrainVig); gv.uniforms.vig.value = vig; composer.addPass(gv); }
   // the shadow box follows what the camera looks at, sized to the view (sharp on a rooftop, wide over the city)
   function update(t, f) { renderer.toneMappingExposure = exposure; const tg = f || focus || new THREE.Vector3(); const dist = cam.position.distanceTo(tg); const R = Math.min(220, Math.max(8, dist * .9));
     const c = S.shadow.camera; c.left = c.bottom = -R; c.right = c.top = R; c.near = 1; c.far = R * 6 + 400; c.updateProjectionMatrix();

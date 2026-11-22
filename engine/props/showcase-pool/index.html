@@ -23,7 +23,7 @@ scene.updateMatrixWorld(true);
 const ip = W3(box.getObjectByName('inPort')), so = W3(sock.getObjectByName('cableOut'));
 const mm = new THREE.MeshStandardMaterial({color: 0x2f3338, roughness: .55}); mm.userData.real = true;
 scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([so, V(so.x, .05, so.z + .1), V((so.x + ip.x) / 2, .02, (so.z + ip.z) / 2), V(ip.x, .05, ip.z + .05), ip]), 80, .007, 8), mm));
-const water = poolWater(yard, {amp: .012, caustics: .3});
+const water = poolWater(yard, {amp: .012, caustics: .22});
 const cable = floatCable(scene, {from: W3(box.getObjectByName('outPort')), edge: S('copingSpot'), robot: bot, waterY: -.12});
 const page = instructionPage(st, {w: .5}); page.mesh.position.set(.2, 1.35, 4.3); page.mesh.rotation.set(-.1, -.15, .03);
 const lp = st.screen(panel.getObjectByName('labelPlate'), (c, t, W, H) => { c.fillStyle = '#fbfaf6'; c.fillRect(0, 0, W, H); c.fillStyle = '#1b1d22'; c.font = `700 ${H * .6}px Rubik`; c.textAlign = 'center'; c.fillText('ממסר פחת', W / 2, H * .75); }, {light: .6});
@@ -32,7 +32,7 @@ const bs = st.screen(box.getObjectByName('screen'), (c, t, W, H) => { c.fillStyl
 const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .94 * k; m.material.depthWrite = k < .5; }); };
 const boxGhost = ghostable(box.getObjectByName('shell')), botGhost = ghostable(bot.getObjectByName('shell'));
 const hf = bot.getObjectByName('housingFront');
-const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .62, env: .28, fill: .2, sunI: 2.6});
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .62, vig: .18, env: .28, fill: .2, sunI: 2.6});
 st.frame(t => {
   water.update(t, {disturb: [sw.x, sw.z, win(t, 11.6, 15.6, .6)]});
   const tangle = sm(12.4, 13.6, t); kid.updateMatrixWorld(true);

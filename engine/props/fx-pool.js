@@ -9,7 +9,7 @@ const ss = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a)));
  *  const W = poolWater(yard, {amp: .012, caustics: .32});  st.frame: W.update(t, {disturb: [x, z, k]?}) — disturb = ripple rings at a point (robot / child), k 0..1. */
 export function poolWater(yard, {amp = .012, caustics = .32} = {}) {
   const w = yard.getObjectByName('water'), pos = w.geometry.attributes.position, y0 = Float32Array.from(pos.array);
-  w.material = w.material.clone(); Object.assign(w.material, {roughness: .03, opacity: .58}); w.material.userData.real = true; w.receiveShadow = false; w.castShadow = false;
+  w.material = w.material.clone(); Object.assign(w.material, {roughness: .03, opacity: .7}); w.material.userData.real = true; w.receiveShadow = false; w.castShadow = false;
   const cf = yard.getObjectByName('causticFloor');
   const cm = new THREE.ShaderMaterial({transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: {t: {value: 0}, k: {value: caustics}},
     vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
