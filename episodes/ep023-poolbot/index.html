@@ -1,0 +1,78 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP023-poolbot — LONG, pro-v3 test #1 (outdoor), media's pool/* kit (fx-pool.js). Visual script approved by Ziv 2026-11-22.
+// Phrases: 0-1 hook | 2-3 socket | 4-6 230V | 7-8 box | 9-12 coils not touching | 13-17 field → low V | 18-19 cable → sealed motor | 20-23 RCD | 24-26 crawls | 27 re-hook | 28-29 page | 30-34 cable tangle | 35-38 payoff | 39-40 card
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {poolWater, floatCable, fieldPulse, rcdTrip, instructionPage} from '/engine/props/fx-pool.js';
+const st = await studio({look: 'hero', episode: 23, fog: .001, outro: 'card',
+  hook: ['רובוט הבריכה', 'יכול <span class="pill">להרוג</span> אותך?'], hookEnd: 2.5,
+  keys: ['להרוג', '230', 'בחוץ', 'נוגעים', 'מגנטי', 'נמוך', 'ואטומים', 'פחת', 'זוחל', 'המטורף', 'פציעה', 'להסתבך', 'בעיקר'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const W3 = o => o.getWorldPosition(new THREE.Vector3());
+const yard = await M('pool/backyard'); yard.updateMatrixWorld(true);
+const S = n => W3(yard.getObjectByName(n));
+const sock = await M('pool/wallSocket'); sock.position.copy(S('socketSpot'));
+const box = await M('pool/powerBox'); box.position.copy(S('psuSpot'));
+const panel = await M('pool/electricPanel'); panel.position.copy(S('panelSpot')); panel.position.z += .02;
+const bot = await M('pool/poolBot'); const R0 = S('robotSpot'); bot.position.copy(R0); bot.rotation.y = .7;
+const kid = await M('people/mannequin-childTread'); const sw = S('swimSpot'); kid.position.set(sw.x, sw.y - 1.0, sw.z); kid.rotation.y = -.5;
+scene.updateMatrixWorld(true);
+const ip = W3(box.getObjectByName('inPort')), so = W3(sock.getObjectByName('cableOut')), op = W3(box.getObjectByName('outPort'));
+const mm = new THREE.MeshStandardMaterial({color: 0x2f3338, roughness: .55}); mm.userData.real = true;
+const C0 = new THREE.Color(0x2f3338), CF = new THREE.Color(0x4f6fe0);
+scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([so, V(so.x, .05, so.z + .1), V((so.x + ip.x) / 2, .02, (so.z + ip.z) / 2), V(ip.x, .05, ip.z + .05), ip]), 80, .007, 8), mm));
+const water = poolWater(yard, {amp: .012, caustics: .22});
+const cable = floatCable(scene, {from: op, edge: S('copingSpot'), robot: bot, waterY: -.12});
+const page = instructionPage(st, {w: .5}); page.mesh.position.set(.2, 1.35, 4.3); page.mesh.rotation.set(-.1, -.15, .03);
+const lp = st.screen(panel.getObjectByName('labelPlate'), (c, t, W, H) => { c.fillStyle = '#fbfaf6'; c.fillRect(0, 0, W, H); c.fillStyle = '#1b1d22'; c.font = `700 ${H * .6}px Rubik`; c.textAlign = 'center'; c.fillText('ממסר פחת', W / 2, H * .75); }, {light: .6});
+const bs = st.screen(box.getObjectByName('screen'), (c, t, W, H) => { c.fillStyle = '#0e1418'; c.fillRect(0, 0, W, H); c.fillStyle = '#8ea6ff'; c.font = `700 ${H * .42}px Rubik`; c.textAlign = 'center'; c.fillText('מתח נמוך', W / 2, H * .62); }, {light: .5});
+const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .94 * k; m.material.depthWrite = k < .5; }); };
+const boxGhost = ghostable(box.getObjectByName('shell')), botGhost = ghostable(bot.getObjectByName('shell'));
+const hf = bot.getObjectByName('housingFront');
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .62, vig: .18, env: .28, fill: .2, sunI: 2.6});
+// camera spots (from media's showcase-pool)
+const KID0 = [[3.4, 1.7, 4.6], [1.2, -.35, 1.4]], KID1 = [[2.4, .9, 3.0], [1.2, -.6, 1.4]];
+const WIDE = [[6.5, 5.0, 9.5], [0, -.4, 1]], SOCKW = [[5.5, 2.6, 2.0], [3.4, .5, -5.4]], SOCK = [[3.95, .85, -5.0], [3.4, .4, -6]];
+const BOXW = [[5.05, 1.05, -4.05], [4.7, .78, -4.9]], BOXC = [[4.85, .92, -4.35], [4.7, .76, -4.9]];
+const BOTW = [[-.6, -.95, 2.5], [-1.4, -1.33, 1.6]], BOTC = [[-.9, -1.05, 2.25], [-1.4, -1.36, 1.6]];
+const PANW = [[-4.55, 1.72, -4.6], [-4.95, 1.55, -6]], PANC = [[-4.7, 1.66, -4.85], [-4.95, 1.55, -6]];
+const PAGE = [[.5, 1.5, 5.4], [.2, 1.35, 4.3]], PAGEC = [[.6, 1.6, 5.6], [.2, 1.35, 4.3]];
+const k = (t, s) => [t, s[0], s[1]];
+st.frame(t => {
+  water.update(t, {disturb: [sw.x, sw.z, .35 + .65 * win(t, A[31], B[34] + .5, .6)]});
+  const tangle = sm(A[33], B[33], t); kid.updateMatrixWorld(true);
+  // crawl: robot drives slowly along the floor on "רק זוחל"
+  const cr = sm(A[24] - .3, B[26] + 1, t); bot.position.set(R0.x + .9 * cr * Math.sin(.7), R0.y, R0.z + .9 * cr * Math.cos(.7));
+  cable.update(t, {tangle, leg: W3(kid.getObjectByName('ankleR')), glow: win(t, A[18] - .2, B[19], .4)});
+  const kick = Math.sin(t * 3); kid.getObjectByName('hipL').rotation.x = .2 + .3 * kick; kid.getObjectByName('hipR').rotation.x = -.25 - .3 * kick * (1 - tangle);
+  mm.color.copy(C0).lerp(CF, win(t, A[5], B[8], .4) * (.7 + .3 * Math.sin(t * 8)));
+  boxGhost(win(t, A[9] - .2, A[18] + .3, .5)); fieldPulse(box, t, win(t, A[13] - .1, B[17], .4));
+  botGhost(win(t, A[19] - .4, B[19] + .8, .5)); hf.visible = !(t > A[19] && t < B[19] + .6);
+  bot.getObjectByName('rotor').rotation.x = t * 20; bot.getObjectByName('impeller').rotation.y = t * 25; bot.getObjectByName('brushF').rotation.x = bot.getObjectByName('brushB').rotation.x = t * 6;
+  rcdTrip(panel, sm(A[22] + .3, A[22] + .8, t)); panel.getObjectByName('door').rotation.y = -1.9;
+  page.update(t, sm(A[28] - .2, A[29], t)); lp.update(t); bs.update(t);
+  const [cp, ct] = camPath(t, [
+    k(0, KID0), k(A[2] - .2, WIDE), k(A[3] + .4, SOCKW), k(A[5], SOCK), k(B[6], SOCK),
+    k(A[7] + .2, BOXW), k(A[9] + .3, BOXW), k(A[12], BOXC), k(B[17], BOXC),
+    k(A[18] + .8, BOTW), k(A[19] + .4, BOTC), k(B[19] + .2, BOTC),
+    k(A[20] + .4, PANW), k(A[22] + .2, PANC), k(B[23], PANC),
+    k(A[24] + .4, BOTW), k(B[26], BOTW), k(A[27] + .3, WIDE),
+    k(A[28] + .3, PAGE), k(B[29], PAGEC),
+    k(A[30] + .5, KID0), k(A[33], KID1), k(B[34], KID1),
+    k(A[35] + .3, WIDE), k(A[37] + .2, KID0), k(END, KID0)]);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
+    L(A[5], B[6] + .2, '230 וולט', so, 0, -260);
+    L(A[7] + .3, B[8] + .3, 'רחוק מהמים', W3(box), -60, -300);
+    L(A[15], B[17] + .2, 'מתח נמוך', op, 60, -260);
+    L(A[19] + .2, B[19] + .4, 'מנוע אטום', W3(bot.getObjectByName('motor')), 0, -280);
+    L(A[33] + .2, B[38], 'הכבל', W3(kid.getObjectByName('ankleR')), 0, -280);
+  }};
+});
+st.ready();
+</script></body></html>
