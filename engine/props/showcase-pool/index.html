@@ -29,10 +29,10 @@ const page = instructionPage(st, {w: .5}); page.mesh.position.set(.2, 1.35, 4.3)
 const lp = st.screen(panel.getObjectByName('labelPlate'), (c, t, W, H) => { c.fillStyle = '#fbfaf6'; c.fillRect(0, 0, W, H); c.fillStyle = '#1b1d22'; c.font = `700 ${H * .6}px Rubik`; c.textAlign = 'center'; c.fillText('ממסר פחת', W / 2, H * .75); }, {light: .6});
 const bs = st.screen(box.getObjectByName('screen'), (c, t, W, H) => { c.fillStyle = '#0e1418'; c.fillRect(0, 0, W, H); c.fillStyle = '#8ea6ff'; c.font = `700 ${H * .42}px Rubik`; c.textAlign = 'center'; c.fillText('02:00', W / 2, H * .62); }, {light: .5});
 // ghosting (x-ray): fade a shell group
-const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .85 * k; m.material.depthWrite = k < .5; }); };
+const ghostable = o => { const ms = []; o.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .94 * k; m.material.depthWrite = k < .5; }); };
 const boxGhost = ghostable(box.getObjectByName('shell')), botGhost = ghostable(bot.getObjectByName('shell'));
 const hf = bot.getObjectByName('housingFront');
-const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [-.5, .7, .55], exposure: .8});
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid], focus: V(0, 0, 0), sun: [.55, .5, -.5], exposure: .62, env: .28, fill: .2, sunI: 2.6});
 st.frame(t => {
   water.update(t, {disturb: [sw.x, sw.z, win(t, 11.6, 15.6, .6)]});
   const tangle = sm(12.4, 13.6, t); kid.updateMatrixWorld(true);

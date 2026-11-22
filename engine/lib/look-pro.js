@@ -4,7 +4,7 @@
 // Usage (one line after the scene is built, before st.ready()):
 //   import {proLook} from '/engine/lib/look-pro.js';
 //   const PL = await proLook(st, {mode: 'outdoor' | 'studio', preset: 'warm'|'cool'|'studio', robots: [bot], people: [kid, man], focus: V(x, y, z)});
-//   exposure: outdoor only, e.g. .8 for bright white-plaster scenes (pool kit). in st.frame: PL.update(t, focusPoint?) (moves the sun shadow box / DOF with the camera target)
+//   exposure: outdoor only, e.g. .8 for bright white-plaster scenes; env/fill/sunI tune sky reflections / sky fill / sun (less env+fill = more contrast, Ziv 2026-11-22 'too bright'). in st.frame: PL.update(t, focusPoint?) (moves the sun shadow box / DOF with the camera target)
 // Our own code → CC0.
 import * as THREE from 'three';
 import {Sky} from 'three/addons/objects/Sky.js';
@@ -51,7 +51,7 @@ const GrainVig = {
     void main(){ vec4 c = texture2D(tDiffuse, vUv); float v = smoothstep(.9, .3, length((vUv - .5) * vec2(1., .8))); c.rgb *= mix(1. - vig, 1., v); c.rgb += (h(vUv * 1920.) - .5) * grain * (1. - c.rgb * .6); gl_FragColor = c; }`,
 };
 /** switch a built hero-look scene to pro-v3. */
-export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea, exposure = 1} = {}) {
+export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [], people = [], focus = null, sun = [-.55, .62, .45], haze = 0xd9e2ea, exposure = 1, env = .55, fill = .45, sunI = 2.2} = {}) {
   const {scene, renderer, cam, composer} = st;
   const skip = new Set([...robots, ...people]);
   scene.children.forEach(o => { if (!skip.has(o)) realWorld(o); });
@@ -70,10 +70,11 @@ export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [
   const sky = new Sky(); sky.scale.setScalar(4500); const U = sky.material.uniforms; U.turbidity.value = 4; U.rayleigh.value = 1.1; U.mieCoefficient.value = .004; U.mieDirectionalG.value = .8;
   const sd = new THREE.Vector3(...sun).normalize(); U.sunPosition.value.copy(sd);
   const envScene = new THREE.Scene(); envScene.add(sky.clone()); const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(envScene, .02).texture; pm.dispose();
-  scene.add(sky); scene.background = null; scene.environmentIntensity = .55;
+  scene.add(sky); scene.background = null; scene.environmentIntensity = env;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  const S = new THREE.DirectionalLight(0xfff1de, 2.2); S.castShadow = true; S.shadow.mapSize.set(4096, 4096); S.shadow.bias = -.0003; S.shadow.normalBias = .03; S.shadow.radius = 3;
-  scene.add(S, S.target); const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x8a7d6a, .45); scene.add(hemi);
+  const S = new THREE.DirectionalLight(0xfff1de, sunI); S.castShadow = true; S.shadow.mapSize.set(4096, 4096); S.shadow.bias = -.0003; S.shadow.normalBias = .03; S.shadow.radius = 3;
+  scene.traverse(m => { if (m.isMesh && !m.isSky && m.material && !(m.material.transparent && m.material.opacity < .7) && !m.material.isShaderMaterial) { m.castShadow = m.receiveShadow = true; } });   // st.model() GLBs come without receiveShadow → flat, milky frames (Ziv 2026-11-22 'too bright')
+  scene.add(S, S.target); const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x8a7d6a, fill); scene.add(hemi);
   scene.fog = new THREE.Fog(haze, 260, 1400);
   composer.passes.slice().forEach(p => composer.removePass(p)); composer.addPass(new RenderPass(scene, cam)); composer.addPass(new OutputPass()); composer.addPass(new ShaderPass(GrainVig));
   // the shadow box follows what the camera looks at, sized to the view (sharp on a rooftop, wide over the city)
