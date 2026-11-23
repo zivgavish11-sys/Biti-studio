@@ -123,3 +123,24 @@ TikTok 32 (11-14) → 37 (11-18) = +1.2/day. Facebook 1 (11-14) → 6 (11-15) �
 - Best-performing topics = personal stake in a home/consumer robot (spying vacuum, braking car, pushed robot). Weakest = trivia story with no personal stake (pokemon 186 IG).
 - Facebook behaves like IG now: ep013 reach 3338 (Biti episodes only; FB news posts 0–8).
 - Carousels on IG/FB are dead (3–11 views); TikTok flat 216–408, no follows or comment uptick visible.
+
+## Review 2026-11-23 (#6, analytics)
+Sources: IG + FB + TikTok via Buffer post metrics (updated 23.11 ~03:00); TikTok followers/FB followers via Metricool. Metricool IG reels + IG followers EMPTY for the 3rd review in a row → no IG avg watch / 3s-hold / follows (hook-hold tracking impossible without screenshots). ep021 is <24 h (fresh).
+| Episode | Format / look | IG views (reach) | IG saves/shares | FB reach (impr.) | TikTok views / shares / comments | Notes |
+|---|---|---|---|---|---|---|
+| #14 home1 | long hero (series) | 218 (182) | 1/0 | 203 (232) | 374 / 1 / **11** | series CTA "comment בית" → 11 TikTok comments (most of any post) |
+| #15 pokemon, #16 robotaxi | – | see review #5 | | | | |
+| #17 safehome | long hero | 505 (443) | 2/0 | 234 (250) | 532 / 0 / 0 | final |
+| #18 flail | long hero (viral clip) | 135 (117) | 1/0 | 191 (207) | 229 / 1 / 0 | weak |
+| #19 hack | long hero | 136 (116) | 1/0 | **1491** (1569) | 373 / 1 / 2 | FB 2nd best ever, IG/TikTok flat |
+| #20 protect (follow-up to #19) | long hero | 122 (109) | 1/0 | 247 (254) | 355 / 0 / 0 | worst IG of the hero era |
+| #21 dronedelivery | long hero | 232 (206) @<24 h | 1/0 | 306 (317) | 124 / 1 / 0 @<24 h | too early on TikTok |
+| carousels 11-17..11-22 | – | 1 like each (views not returned) | – | 191–250 reach on FB | 310, 385, 181, 324, 238, 355?, 84 (11-22 @<24 h) / 0–1 shares | no CTA uptick; TikTok carousel comments not visible |
+### Followers (Metricool)
+TikTok 34 (11-17) → 37 → 38 → 41 → 42 (11-21/22) = +2/day. Facebook 12 → 13 (+1 in 5 days, the FB surge of 11-15..16 stopped). IG unknown (last known 7). Total ≈ 62 vs ~11/day needed.
+### Findings
+- Hero-era IG: breakouts ep012 1365, ep013 1596, ep016 1686, ep017 505 (11-13..11-17); since then 5 in a row 122–232 (ep014 218, ep018 135, ep019 136, ep020 122, ep021 232) = back to the old ~120 ceiling. Look did not change (hero throughout) → look is not the driver; topic/hook is.
+- What the breakouts shared: first line puts the viewer in the picture ("can they hack MY vacuum", "who brakes faster, YOU or the car", "does the robot kick back"). The last five open on a third party/lab story or a how-to (attacked its operators, hack a robot, protect a robot, delivery without landing, home in 30 years).
+- Follow-up ep020 (3-step protection) did worse than its parent ep019 on IG/FB; no uptick on TikTok. Cliffhanger chain ("בפרק הבא") didn't pull people to the next part.
+- FB reach is spiky and independent of IG/TikTok (ep019 1491 while IG 136) — can't be predicted from the other two.
+- Series ep014 got the most TikTok comments (11) but IG/TikTok views are ordinary; no visible follow jump.
