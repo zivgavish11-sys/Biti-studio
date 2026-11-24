@@ -1,4 +1,4 @@
-# ep025-windowbot — visual script (pro-v3 test #3, frame0 eye-level test #2). Draft sent to Ziv 2026-11-25.
+# ep025-windowbot — visual script (pro-v3 test #3, frame0 eye-level test #2). Ziv approved 2026-11-25.
 World: a white Tel-Aviv apartment block, 10th-floor window (inside living room + outside facade + street far below), daylight. Robot = robots/windowCleaner (pad, ring, rope) — media to make a pro-v3 version with an x-ray 'fan', 'seal' ring, 'pressureSensor', 'battery'. Accent #8ea6ff = signal (sensor), #4f6fe0 = force/air (air arrows, pressure).
 1. hook (0–3 s) — EYE LEVEL inside the room, by the open window: the robot on the outside of the glass, street 10 floors down behind it. Title: "מה מחזיק אותו?"
 2. "אז מה מחזיק אותו?" — camera slides out past the robot and down the facade → high wide: tiny robot on a big white building.
