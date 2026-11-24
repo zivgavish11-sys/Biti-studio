@@ -4,4 +4,4 @@ Hook options sent to Ziv 2026-11-25:
 2. frame0: close on the robot on the glass, street far below | text: הוא לא נדבק לחלון | spoken: הרובוט הזה לא נדבק לחלון... משהו בלתי נראה דוחף אותו.
 3. frame0: a hand pulls the plug, robot mid-window | text: מה קורה כשנגמר החשמל? | spoken: שולפים לו את התקע... באמצע חלון בקומה עשר.
 4. frame0: wide, robot climbing straight up the glass | text: למה הוא לא נופל? | spoken: הרובוט הזה מטפס על זכוכית חלקה... בלי ידיים.
-Picked: (waiting)
+Picked: 1 (Ziv 2026-11-25)
