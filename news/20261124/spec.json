@@ -1,0 +1,94 @@
+{
+ "date_label": "חדשות היום · 24.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "Embo גייסה 110 מיליון דולר לפיתוח \"מוח\" לרובוטים דמויי אדם, לפי הדיווח",
+    "coprod השוויצרית גייסה 6 מיליון דולר לרכיבים מודולריים לבניית רובוטים"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": -1.4,
+      "z": 0,
+      "ry": 0.5
+     },
+     {
+      "name": "pro/industrialArm",
+      "x": 1.8,
+      "z": 0.2,
+      "ry": -0.6
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "$110M",
+   "statSub": "סבב סיד, בהובלת a16z",
+   "statColor": "cyan",
+   "title": "Embo גייסה<br>למען <span class=\"pill\">מוח</span> לרובוטים",
+   "text": "לפי הדיווח, Embo מפתחת מודלי AI לרובוטים דמויי אדם על בסיס \"מודלי עולם\". בסבב השתתפו גם Khosla Ventures, DST Global ו־NVentures של אנבידיה. לפי Dealroom, אין עדיין מוצר ציבורי או לקוחות מוצהרים.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Unite.AI, Dealroom",
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": {
+     "name": "pro/humanoid",
+     "x": 0,
+     "z": 0,
+     "ry": 0.4,
+     "az": 0.25,
+     "frac": 1.1
+    },
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "$6M",
+   "statSub": "סבב פרה־סיד",
+   "statColor": "orange",
+   "title": "coprod בונה<br>רובוט <span class=\"pill\">מודולרי</span>",
+   "text": "לפי SiliconANGLE, coprod השוויצרית מפתחת רכיבי חומרה מודולריים (מנועים, סוללה, חיישנים) שמקצרים את בניית הרובוט. לפי החברה, השקת הרכיבים הראשונים צפויה בתחילת השנה הבאה.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "SiliconANGLE, Unite.AI",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/industrialArm",
+     "x": 0,
+     "z": 0,
+     "ry": 0.6,
+     "az": 0.3,
+     "frac": 1.1
+    },
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/serviceRobot",
+     "ry": 0.3,
+     "az": 0.4
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}
