@@ -1,0 +1,36 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-25 run 16 — window-robot kit for ep025-windowbot (pro-v3 daylight, frame0 eye level inside the room).
+// eye level inside → high wide outside (tiny robot on the white block) → fan x-ray + air out → air pushes it on the glass → cables to the plug + anchor (unplug).
+// Render: python3 tools/render.py frames engine/props/showcase-window 1,4,7,10,13
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {spinBot, airField, fanStream, pressureArrows, sealPress, sensorLight, cables} from '/engine/props/fx-window.js';
+const st = await studio({look: 'hero', fog: .001, hook: ['מה מחזיק', '<span class="pill">אותו</span>?'], hookEnd: 2.4, keys: ['מאוורר', 'דוחף', 'ביטחון'], scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const W3 = o => o.getWorldPosition(new THREE.Vector3());
+const room = await M('buildings/tlvWindowRoom'); room.updateMatrixWorld(true);
+const bot = await M('robots/windowBotPro'); bot.position.copy(W3(room.getObjectByName('robotSpot')));
+scene.updateMatrixWorld(true);
+const air = airField(bot), fs = fanStream(bot), ar = pressureArrows(bot), cb = cables(scene, room, bot);
+const ghost = (() => { const ms = []; bot.getObjectByName('shell').traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .93 * k; m.material.depthWrite = k < .5; }); })();
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [], focus: V(0, 1.5, 0), sun: [-.5, .7, .6], exposure: .5, env: .2, fill: .15, sunI: 2.6});
+const B = W3(bot);
+st.frame(t => {
+  spinBot(bot, t, {fan: 1, pads: 1});
+  ghost(win(t, 5.6, 8.6, .5)); fs.update(t, win(t, 6, 8.6, .4));
+  air.update(t, {k: win(t, 8.8, 11.4, .4), push: sm(9.4, 10.4, t)}); ar.set(t, win(t, 9.6, 11.4, .4)); sealPress(bot, win(t, 9.8, 11.4, .3)); sensorLight(bot, win(t, 10.2, 11.4, .3));
+  cb.update({unplug: sm(13, 13.6, t)});
+  const [cp, ct] = camPath(t, [
+    [0, [.75, 1.55, -1.6], [-.3, 1.2, .6]], [2, [.7, 1.55, -1.45], [-.3, 1.2, .6]],
+    [3.4, [-6, 4.5, 16], [0, -6, 0]], [5, [-7, 3, 18], [0, -9, 0]],
+    [6.2, [B.x + .25, B.y + .2, B.z + .45], [B.x, B.y, B.z + .04]], [8.4, [B.x + .3, B.y + .1, B.z + .4], [B.x, B.y, B.z + .04]],
+    [9.4, [B.x + .9, B.y + .15, B.z + .5], [B.x, B.y, B.z + .08]], [11.4, [B.x + .95, B.y + .1, B.z + .35], [B.x, B.y, B.z + .08]],
+    [12.4, [1.6, 1.6, -1.6], [.9, .6, -.2]], [14, [1.5, 1.4, -1.4], [1.2, .5, -.25]]]);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true, fov: t < 2.6 ? 70 : 55};
+});
+st.ready();
+</script></body></html>

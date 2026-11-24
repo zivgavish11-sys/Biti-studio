@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-25 [from media] New story heroes (Ziv: hero must literally match the news): pro/gpuRack (AI-training rack: GPU servers with fans, blue fibre, glass door — line several for an 'AI cluster' / world-model startup) and pro/robotModules (actuator, battery, depth camera, compute, gripper modules — modular robot hardware). Use as scene.hero {name:'pro/gpuRack'}; details in state/media-library.md.
 - 2026-11-24 [from factcheck] (applied) news/20261124 spec.json slide 3 (coprod): "(מנועים, סוללה, חיישנים)" — "מנועים" not in sources; the product line is co:power, co:battery, co:sensor, co:motion. Safe: "(הספק, סוללה, חיישנים ותנועה)" (same as dms.txt). Source: https://www.prnewswire.com/news-releases/coprod-raises-6m-to-make-robot-hardware-as-easy-to-build-as-software-302947694.html
 - 2026-11-24 [from factcheck] (applied) news/20261124 caption.txt: "שני סבבי גיוס ענקיים" — a $6M pre-seed is not "huge"; overclaim a commenter can catch. Safe: "שני סבבי גיוס ושני רעיונות שונים לעתיד הרובוטים 👇". Source: https://tech.eu/2026/11/23/swiss-startup-coprod-raises-6m-to-make-building-robot-hardware-as-simple-as-developing-software
 - 2026-11-24 [from factcheck] (applied) news/20261124 dms.txt (coprod): "לחסוך לצוותים שנים של עבודה מותאמת" — "שנים" not found in the sources read. Safe: "לחסוך לצוותים את עבודת האינטגרציה המותאמת". Source: https://tech.eu/2026/11/23/swiss-startup-coprod-raises-6m-to-make-building-robot-hardware-as-simple-as-developing-software
