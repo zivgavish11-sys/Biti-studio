@@ -35,3 +35,4 @@
 - pro/evtol, pro/surgicalRobot, pro/officeTower — in-house (Media pro, engine/props/kit-pro.js), generic, CC0, 2026-11-20. engine/lib/look-pro.js — in-house, CC0.
 - pro/humanoidXray, pro/smartphone, pro/servo — in-house (Media pro, engine/props/kit-pro.js), generic, no brands, CC0, 2026-11-20 (run 13).
 - pool/* (backyard, wallSocket, powerBox, poolBot, electricPanel), people/mannequin-tread, people/mannequin-childTread — in-house (Media pro, engine/props/kit-pool.js), generic, no brands, CC0, 2026-11-22. FX engine/props/fx-pool.js — in-house, CC0.
+- farm/* (orchard, appleTree, appleTreeLow, pickerDrone, groundUnit, apple), space/deepProbe — in-house (Media pro, engine/props/kit-farm.js), generic, no brands/mission names, CC0, 2026-11-24 (run 15). FX engine/props/fx-farm.js — in-house, CC0.

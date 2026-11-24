@@ -85,3 +85,8 @@ Image sent: before/after of the 20.11 cover (news/20261120 vs news/_lookkit slid
 ## Proposals sent 2026-11-20 (run 13, pro humanoidXray/smartphone/servo) — both ✗ (Ziv 2026-11-20: 1 "לא", 2 "לדחות" after the explanation), don't re-ask
 1. Small parts (servo, chip) always next to a real hand/coin for scale.
 2. Energy episodes: battery drains cell by cell + a % screen, same effect every time = recognisable signature.
+
+## Proposals sent 2026-11-24 (run 15, orchard + picker drones, deep-space probe) — waiting for Ziv's OK
+1. Reels: frame 0 at human eye level (~1.6 m, as if the viewer stands in the scene — the backyard, the street, the orchard row), the high wide shot only at 2–3 s. Backs analytics review #6: the breakouts put the viewer in the picture.
+2. "Slow-motion moment": the one key mechanical moment of each episode (apple picked, brake squeezes, coil field jumps) plays at half speed for ~1.5 s, same way every time = a recognisable signature. Test on 3–4 reels, one change at a time.
+Image sent: engine/props/showcase-farm (t 1, 5.5, 9, 11).
