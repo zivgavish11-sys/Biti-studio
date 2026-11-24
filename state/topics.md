@@ -43,3 +43,12 @@
 - ❌ רובוט בית שאדם שולט בו מרחוק (1X NEO)
 - ❌ שחמט קל, לקפל חולצה קשה (מורבק)
 - ❌ סגרו עין אחת — ראייה סטריאו
+
+## Israeli questions from Ziv (2026-11-25) — to make later
+- ⭐ האם הרובוט מבין עברית וסלנג ישראלי? (how speech → text → meaning works; why Hebrew/slang is hard) — strong Israeli angle
+- ⭐ מתי נוכל לקנות רובוט לבית וכמה זה יעלה? (what's on sale today vs pre-orders; phrase prices carefully)
+- ⭐ אילו מטלות בית רובוט באמת יודע לעשות היום? (floors/windows/pool/lawn yes; laundry/dishes still hard — why)
+- מותר להפעיל רובוט הומנואידי בשבת? — very Israeli + shareable, but halachic: only as "what rabbis/institutes say" (e.g. Zomet), verify carefully; ask Ziv before
+- רובוטים יחליפו עובדים בבנייה, חקלאות וסיעוד? — strong emotion, off the home-robot mission unless via a home angle (care robot at home)
+- ✅ covered: בטוח ליד ילדים/חיות (ep017), פרטיות/מצלם (ep013, ep019–020)
+- skip for now: צה"ל ורובוטים במנהרות (security/sensitive), חלק ישראל בתעשייה (fits the news carousel more), סוללה וטעינה (Ziv rejected humanoid battery 2026-11-13)
