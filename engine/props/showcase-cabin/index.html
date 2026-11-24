@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-25 run 16 — car cabin + night highway kit for ep024-drowsy (pro-v3 night, frame0 eye level).
+// eye level from the passenger seat → out through the windshield, high 3/4 → column x-ray + angle sensor → wire pulse to the ecu → cluster coffee alert.
+// Render: python3 tools/render.py frames engine/props/showcase-cabin 1,4,7,10,13
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {highway, driverRig, columnXray, wirePulse, cabinLight, steerGraph, clusterAlert} from '/engine/props/fx-cabin.js';
+const st = await studio({look: 'hero', fog: .001, hook: ['האוטו יודע', 'שאתם <span class="pill">נרדמים</span>?'], hookEnd: 2.4, keys: ['חיישן', 'משיכה', 'התראה'], scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const W3 = o => o.getWorldPosition(new THREE.Vector3());
+const road = await M('road/nightHighway'), car = await M('car/cabinCar'), drv = await M('people/mannequin-driver');
+car.updateMatrixWorld(true); drv.position.copy(W3(car.getObjectByName('driverSpot')));
+const hw = highway(scene, road, {car}), rig = driverRig(drv, car), xr = columnXray(car), wp = wirePulse(car), cab = cabinLight(scene, car);
+const gs = {k: 0, mode: 'awake'}; const graph = st.screen([.5, .28], (c, t, W, H) => steerGraph(c, t, W, H, gs), {light: .7}); graph.mesh.position.set(.75, 1.25, .2); graph.mesh.rotation.set(-.2, Math.PI + .5, 0); scene.add(graph.mesh);
+const cs = {k: 0}; const clu = st.screen(car.getObjectByName('cluster'), (c, t, W, H) => clusterAlert(c, t, W, H, cs), {light: .8});
+const PL = await proLook(st, {mode: 'night', robots: [], people: [drv], focus: V(0, 1, 0), exposure: 1.1});
+const sp = W3(car.getObjectByName('sensorSpot'));
+st.frame(t => {
+  hw.update(t, {speed: 25, laneX: .25 * sm(9, 12, t)});
+  const wig = .05 * Math.sin(t * 2.3) + .025 * Math.sin(t * 5.1);
+  rig.update({steer: wig, drowsy: win(t, .3, 2.6, .6) * .5});
+  xr.set(win(t, 6, 9.4, .5)); wp.set(sm(9, 11, t)); cab.set(1 - .7 * win(t, 3, 6, .5));
+  gs.k = sm(6.5, 8.5, t); graph.update(t); cs.k = sm(12, 12.8, t); clu.update(t);
+  const [cp, ct] = camPath(t, [
+    [0, [-.45, 1.15, -.72], [.6, 1.12, -.05]], [2, [-.43, 1.16, -.66], [.6, 1.1, .0]],
+    [3.2, [-3.5, 5.5, -9], [0, .8, 1]], [5, [-4.5, 6.5, -11], [0, .6, 2]],
+    [6.4, [-.12, .98, -.12], [sp.x, sp.y, sp.z]], [8.6, [-.08, .95, -.05], [sp.x, sp.y, sp.z]],
+    [10, [-.2, .78, .0], [.25, .7, .4]], [11.4, [-.18, .75, .05], [.2, .62, .45]],
+    [12.4, [.37, 1.2, -.2], [.37, .92, .43]], [14, [.37, 1.18, -.16], [.37, .92, .43]]]);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true, fov: t < 2.6 ? 78 : 55};   // eye level inside the cabin needs a wide lens (portrait 55° sees only ~34° across)
+});
+st.ready();
+</script></body></html>

@@ -65,6 +65,7 @@ export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [
     if (focus) L.focus(focus);
     return {L, update(t, f) { if (f) L.focus(f); }};
   }
+  if (mode === 'night') return nightMode(st, {exposure, vig, env, fill, sunI, focus});   // media 2026-11-25 (ep024 night highway)
   // outdoor: physical sky (background + reflections) + sun with soft shadows + sky fill, light haze, grain/vignette (no bloom)
   const kill = []; scene.traverse(o => { if (o.isLight) kill.push(o); }); kill.forEach(o => o.parent && o.parent.remove(o));
   const sky = new Sky(); sky.scale.setScalar(4500); const U = sky.material.uniforms; U.turbidity.value = 4; U.rayleigh.value = 1.1; U.mieCoefficient.value = .004; U.mieDirectionalG.value = .8;
@@ -81,5 +82,30 @@ export async function proLook(st, {mode = 'outdoor', preset = 'warm', robots = [
   function update(t, f) { renderer.toneMappingExposure = exposure; const tg = f || focus || new THREE.Vector3(); const dist = cam.position.distanceTo(tg); const R = Math.min(220, Math.max(8, dist * .9));
     const c = S.shadow.camera; c.left = c.bottom = -R; c.right = c.top = R; c.near = 1; c.far = R * 6 + 400; c.updateProjectionMatrix();
     S.target.position.copy(tg); S.position.copy(tg).addScaledVector(sd, R * 2 + 150); }
+  update(0); return {sun: S, sky, update};
+}
+
+/** night (media 2026-11-25, ep024-drowsy): dark blue night sky gradient, faint cool moon light with soft shadows, dim sky fill, dark haze; the scene's own lights
+ * (streetlights from fx-cabin.js highway(), car lamps) do the rest. Real reflections from a dim env with a few warm "street" patches. No bloom, grain + vignette.
+ * proLook(st, {mode:'night', exposure: 1.1, env: .35, fill: .12, sunI: .35}) */
+function nightMode(st, {exposure = 1.1, vig = .35, env = .35, fill = .12, sunI = .35, focus = null} = {}) {
+  const {scene, renderer, cam, composer} = st;
+  const kill = []; scene.traverse(o => { if (o.isLight && !o.userData.keep) kill.push(o); }); kill.forEach(o => o.parent && o.parent.remove(o));
+  const skyM = new THREE.ShaderMaterial({side: THREE.BackSide, depthWrite: false, fog: false, uniforms: {},
+    vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.); }',
+    fragmentShader: 'varying vec3 vP; void main(){ float h = clamp(vP.y, -0.1, 1.); vec3 hor = vec3(.075,.085,.13), top = vec3(.008,.012,.03); vec3 c = mix(hor, top, smoothstep(0., .45, h)); c += vec3(.05,.035,.02) * exp(-abs(h) * 22.); gl_FragColor = vec4(c, 1.); }'});
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(3000, 32, 16), skyM); sky.isSky = true; sky.frustumCulled = false; scene.add(sky);
+  const envScene = new THREE.Scene(); envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), skyM));
+  for (let i = 0; i < 8; i++) { const p = new THREE.Mesh(new THREE.PlaneGeometry(6, 2), new THREE.MeshBasicMaterial({color: i % 3 ? 0xffd9a8 : 0xdfe6ff, side: THREE.DoubleSide})); const a = i / 8 * Math.PI * 2; p.position.set(Math.cos(a) * 40, 14 + (i % 2) * 6, Math.sin(a) * 40); p.lookAt(0, 0, 0); envScene.add(p); }
+  const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(envScene, .02).texture; pm.dispose(); scene.environmentIntensity = env; scene.background = null;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const sd = new THREE.Vector3(-.35, .8, .45).normalize();
+  const S = new THREE.DirectionalLight(0xaebfff, sunI); S.castShadow = true; S.shadow.mapSize.set(2048, 2048); S.shadow.bias = -.0003; S.shadow.normalBias = .03; S.shadow.radius = 4;
+  scene.traverse(m => { if (m.isMesh && !m.isSky && m.material && !(m.material.transparent && m.material.opacity < .7) && !m.material.isShaderMaterial) { m.castShadow = m.receiveShadow = true; } });
+  scene.add(S, S.target); scene.add(new THREE.HemisphereLight(0x3a4a78, 0x0c0b0a, fill));
+  scene.fog = new THREE.Fog(0x0b0e16, 60, 700);
+  composer.passes.slice().forEach(p => composer.removePass(p)); composer.addPass(new RenderPass(scene, cam)); composer.addPass(new OutputPass()); { const gv = new ShaderPass(GrainVig); gv.uniforms.vig.value = vig; gv.uniforms.grain.value = .045; composer.addPass(gv); }
+  function update(t, f) { renderer.toneMappingExposure = exposure; const tg = f || focus || new THREE.Vector3(); const R = Math.min(60, Math.max(4, cam.position.distanceTo(tg) * .9));
+    const c = S.shadow.camera; c.left = c.bottom = -R; c.right = c.top = R; c.near = 1; c.far = R * 6 + 200; c.updateProjectionMatrix(); S.target.position.copy(tg); S.position.copy(tg).addScaledVector(sd, R * 2 + 80); }
   update(0); return {sun: S, sky, update};
 }

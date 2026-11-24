@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Export the in-house procedural prop kit (engine/props/kit.js) to GLB files.
-Usage: make_props.py [name-filter]   (kit.js + kit-pro.js + kit-tlv.js; filter "tlv/" = Tel-Aviv kit; filter "pro/" = the realistic news kit; "pool/" = backyard pool kit; "farm/" = orchard + picker drone; space/deepProbe)   → engine/assets/models/<folder>/<name>.glb
+Usage: make_props.py [name-filter]   (kit.js + kit-pro.js + kit-tlv.js; filter "tlv/" = Tel-Aviv kit; filter "pro/" = the realistic news kit; "pool/" = backyard pool kit; "farm/" = orchard + picker drone; "car/" = ep024 cabin car (+ road/nightHighway, people/mannequin-driver); space/deepProbe)   → engine/assets/models/<folder>/<name>.glb
 Also: make_props.py --preview OUT.jpg  → contact sheet of all props in the classic look (for review).
 """
 import sys, os, base64, threading, http.server, functools
@@ -17,7 +17,8 @@ import {KITPRO} from '/engine/props/kit-pro.js';
 import {KITTLV, BAKE, bake} from '/engine/props/kit-tlv.js';
 import {KITPOOL} from '/engine/props/kit-pool.js';
 import {KITFARM} from '/engine/props/kit-farm.js';
-const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM};
+import {KITCABIN} from '/engine/props/kit-cabin.js';
+const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM, ...KITCABIN};
 window.exportAll = async (filter) => {
   const out = {};
   for (const [k, fn] of Object.entries(KIT)) {
