@@ -1,5 +1,5 @@
 {
- "next_episode": 24,
+ "next_episode": 26,
  "episodes": [
   {
    "n": 1,
@@ -256,6 +256,26 @@
    "topic": "רובוט הבריכה יכול להרוג אותך? (isolation transformer → low voltage → sealed motor; RCD wall side; manuals: stay out, cable)",
    "hook": "רובוט הבריכה... יכול להרוג אותך? (child next to the floating cable)",
    "posted": "scheduled 2026-11-24T18:00+02:00 via Buffer (IG 6b032919cc364169c171d959, FB 6b03291a846b0ee907a5b90c, TikTok 6b03291abf5d5a73b6ac41a9). 54.4 s (Ziv asked ~50 s; QA duration FAIL accepted, all else PASS). Media on branch media-ep023-poolbot."
+  },
+  {
+   "slug": "ep024-drowsy",
+   "date": "2026-11-25",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "איך האוטו יודע שאתם נרדמים? (steering-angle sensor, personal baseline, drift + sharp correction, coffee alert)",
+   "hook": "האוטו שלכם יכול לדעת שאתם עייפים... לפני שאתם שמים לב (eye level from the passenger seat)",
+   "posted": "scheduled 2026-11-25T18:00+02:00 via Buffer (IG 6b06018bbc79b3715eaec182, FB 6b06018cd3db961366183171, TikTok 6b06018dbbd94e836970ca27). 42.6 s, QA pass. Media on branch media-ep024-drowsy."
+  },
+  {
+   "slug": "ep025-windowbot",
+   "date": "2026-11-25",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "איך רובוט החלונות נדבק לזכוכית ולא נופל? (fan + seal → small pressure difference, pressure sensor, backup battery, safety cable)",
+   "hook": "אין לו דבק, אין לו ידיים... והוא תלוי על חלון בקומה עשר (eye level inside the room)",
+   "posted": "scheduled 2026-11-26T18:00+02:00 via Buffer (IG 6b0601a29dd8377af121edd9, FB 6b0601a39dd8377af121ee09, TikTok 6b0601a3bbd94e836970cfcd). 41.5 s, QA pass after darker light. Media on branch media-ep025-windowbot."
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."

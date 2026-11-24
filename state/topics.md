@@ -52,3 +52,5 @@
 - רובוטים יחליפו עובדים בבנייה, חקלאות וסיעוד? — strong emotion, off the home-robot mission unless via a home angle (care robot at home)
 - ✅ covered: בטוח ליד ילדים/חיות (ep017), פרטיות/מצלם (ep013, ep019–020)
 - skip for now: צה"ל ורובוטים במנהרות (security/sensitive), חלק ישראל בתעשייה (fits the news carousel more), סוללה וטעינה (Ziv rejected humanoid battery 2026-11-13)
+- ✅ #24 איך האוטו יודע שאתם נרדמים (חיישן זווית הגה)
+- ✅ #25 איך רובוט החלונות נדבק לזכוכית (הפרש לחץ)
