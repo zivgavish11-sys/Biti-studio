@@ -4,4 +4,4 @@ Hook options sent to Ziv 2026-11-25:
 2. frame0: driver silhouette, head dipping, wheel mid-turn | text: האוטו יודע שאתם נרדמים | spoken: האוטו שלכם יודע שאתם עייפים... לפני שאתם יודעים.
 3. frame0: close on hands on wheel, tiny jitter trail | text: הידיים שלכם מלשינות | spoken: הידיים שלכם על ההגה... מלשינות עליכם.
 4. frame0: wide car at night, no camera on driver | text: גם בלי מצלמה | spoken: גם בלי מצלמה עליכם... האוטו יודע שאתם נרדמים.
-Picked: (waiting)
+Picked: 2 (Ziv 2026-11-25)
