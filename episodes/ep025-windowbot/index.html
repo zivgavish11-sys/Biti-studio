@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP025-windowbot — LONG, pro-v3 test #3 (daylight), frame0 eye-level test #2. Media's window kit (fx-window.js). Visual script approved by Ziv 2026-11-25.
+// Phrases: 0-2 hook | 3 question | 4-5 fan | 6-7 seal | 8 re-hook | 9-11 outside air pushes | 12-16 pressure difference | 17 sensor | 18-19 leak → stop
+//          20-21 power cut → backup battery | 22-23 safety cable | 24-25 card
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, sm, win, camPath, V} from '/engine/lib/core.js';
+import {spinBot, airField, fanStream, pressureArrows, sealPress, sensorLight, cables} from '/engine/props/fx-window.js';
+const st = await studio({look: 'hero', episode: 25, fog: .001, outro: 'card',
+  hook: ['מה מחזיק', '<span class="pill">אותו</span>?'], hookEnd: 2.4,
+  keys: ['דבק', 'מאוורר', 'גומי', 'המטורף', 'נדבק', 'דוחף', 'להצמיד', 'חיישן', 'עוצר', 'גיבוי', 'ביטחון'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const W3 = o => o.getWorldPosition(new THREE.Vector3());
+const room = await M('buildings/tlvWindowRoom'); room.updateMatrixWorld(true);
+const bot = await M('robots/windowBotPro'); bot.position.copy(W3(room.getObjectByName('robotSpot')));
+scene.updateMatrixWorld(true);
+const air = airField(bot), fs = fanStream(bot), ar = pressureArrows(bot), cb = cables(scene, room, bot);
+const ghost = (() => { const ms = []; bot.getObjectByName('shell').traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .93 * k; m.material.depthWrite = k < .5; }); })();
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [], focus: V(0, 1.5, 0), sun: [-.5, .7, .6], exposure: .27, vig: .3, env: .12, fill: .12, sunI: 2.4});
+const P = W3(bot), N = n => W3(bot.getObjectByName(n));
+const EYE0 = [[.55, 1.55, -1.05], [P.x, P.y - .05, P.z]], EYE1 = [[.5, 1.55, -.92], [P.x, P.y - .05, P.z]];
+const WIDE = [[P.x - 2.5, P.y + 1.2, P.z + 6], [P.x, P.y - 1.9, P.z]], WIDE2 = [[P.x - 3.2, P.y + .8, P.z + 7.5], [P.x, P.y - 2.6, P.z]];
+const FAN = [[P.x + .25, P.y + .2, P.z + .45], [P.x, P.y, P.z + .04]], FANC = [[P.x + .3, P.y + .1, P.z + .4], [P.x, P.y, P.z + .04]];
+const SIDE = [[P.x + .9, P.y + .15, P.z + .5], [P.x, P.y, P.z + .08]], SIDEC = [[P.x + .95, P.y + .1, P.z + .35], [P.x, P.y, P.z + .08]];
+const AIRW = [[P.x + 1.7, P.y + .5, P.z + 1.6], [P.x, P.y - .05, P.z]];
+const CAB = [[1.6, 1.6, -1.6], [.9, .6, -.2]], CAB2 = [[1.5, 1.4, -1.4], [1.2, .5, -.25]];
+const k = (t, s) => [t, s[0], s[1]];
+st.frame(t => {
+  const stop = win(t, A[19] - .1, B[19] + .5, .2);                       // leak → robot stops (pads), fan keeps holding
+  spinBot(bot, t, {fan: 1, pads: 1 - stop});
+  ghost(Math.max(win(t, A[4] - .3, B[7] + .2, .5), win(t, A[17] - .2, B[21] + .3, .5)));
+  fs.update(t, win(t, A[4], B[5] + .3, .4));
+  const leak = win(t, A[18], B[19] + .3, .3);
+  air.update(t, {k: Math.max(win(t, A[8], B[16] + .2, .4), win(t, A[18] - .1, B[19] + .3, .3)), push: sm(A[10], B[11], t), leak});
+  ar.set(t, win(t, A[10], B[16] + .3, .4)); sealPress(bot, win(t, A[6] - .2, B[7] + .3, .3) + win(t, A[13], B[16], .3) * .6);
+  sensorLight(bot, win(t, A[17] - .1, B[19] + .3, .3));
+  cb.update({unplug: sm(A[20], A[20] + .5, t)});
+  const [cp, ct] = camPath(t, [
+    k(0, EYE0), k(A[3] - .2, EYE1), k(A[3] + .6, WIDE), k(B[3] + .4, WIDE2),
+    k(A[4] + .5, FAN), k(B[5], FANC), k(A[6] + .4, SIDE), k(B[7], SIDEC),
+    k(A[8] + .5, AIRW), k(B[11], AIRW), k(A[12] + .5, SIDE), k(B[16], SIDEC),
+    k(A[17] + .4, FAN), k(B[17], FANC), k(A[18] + .3, AIRW), k(B[19], AIRW),
+    k(A[20] + .3, CAB), k(A[21] + .4, FAN), k(B[21], FANC), k(A[22] + .3, CAB2), k(B[23], CAB),
+    k(A[24] - .2, EYE1), k(END, EYE0)]);
+  PL.update(t, ct);
+  const eye = t < A[3] + .1 || t > A[24] - .3;
+  return {cp, ct, noFlash: true, fov: eye ? 70 : 55, overlay: t2 => {
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a && t2 < b) { const [x, y] = st.proj(p); st.callout(x + dx, y + dy, lab, x, y, win(t2, a, b, .25)); } };
+    L(A[4] + .4, B[5] + .2, 'מאוורר', N('fan'), 0, -300);
+    L(A[6] + .3, B[7] + .2, 'גומי אוטם', N('seal'), 0, -300);
+    L(A[17] + .3, B[19], 'חיישן לחץ', N('pressureSensor'), 0, -300);
+    L(A[21] + .2, B[21] + .2, 'סוללת גיבוי', N('battery'), 0, -300);
+    L(A[22] + .4, B[23] + .2, 'עיגון', W3(room.getObjectByName('anchor')), 0, -280);
+  }};
+});
+st.ready();
+</script></body></html>
