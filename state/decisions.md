@@ -86,3 +86,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-22 (Ziv, media chat): pro-v3 light — the first ep023 pool frames were too bright; the darker version (real shadows, exposure .62, deep water, softer vignette) approved. Standing: tune light per video to its content. docs/agents/video.md (pro-v3 Light) + docs/agents/media.md.
 - 2026-11-24 (Ziv, media chat, approved media proposal 1): reels open at human eye level (~1.6 m, viewer stands in the scene); high wide shot only at 2–3 s. Test on 3–4 reels, tag frame0:'eye'. docs/agents/video.md Visual rules. Proposal 2 (slow-motion moment) not approved.
 - 2026-11-25 (Ziv, video chat): no jokes in Biti scripts any more (removed the "one cute joke per episode" rule) — docs/agents/video.md §2.
+- 2026-11-25 (Ziv, news chat): hero image on each news story slide must relate directly to the story shown. Rule added to docs/agents/news.md.
