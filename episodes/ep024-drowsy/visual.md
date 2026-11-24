@@ -1,4 +1,4 @@
-# ep024-drowsy — visual script (pro-v3 test #2, frame0 eye-level test #1). Draft sent to Ziv 2026-11-25.
+# ep024-drowsy — visual script (pro-v3 test #2, frame0 eye-level test #1). Ziv approved 2026-11-25.
 World: one night Israeli highway (dark asphalt, white lane dashes, streetlights) + the car cabin. Camera flies between cabin ↔ outside. Accent #8ea6ff = signal (sensor, graph, wire); #4f6fe0 = force (the jerk). Key words red: חיישן · משיכה · התראה.
 1. hook (0–3 s) — EYE LEVEL from the passenger seat: grey driver silhouette, hands on the wheel, head dips a little; highway lights stream through the windshield. On-screen title: "האוטו יודע שאתם נרדמים?"
 2. "אז איך הוא יודע?" — camera backs out through the windshield and rises → high 3/4 wide: the car alone on the night highway.
