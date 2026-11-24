@@ -1,0 +1,7 @@
+ep025-windowbot — איך רובוט החלונות נדבק לזכוכית ולא נופל? (fan pulls air out under a seal → low pressure → outside air presses it to the glass; pressure sensor; backup battery + safety rope)
+Hook options sent to Ziv 2026-11-25:
+1. frame0: eye level at an open high window over a Tel-Aviv street, robot on the glass | text: מה מחזיק אותו? | spoken: אין לו דבק, אין לו ידיים... והוא תלוי על חלון בקומה עשר.
+2. frame0: close on the robot on the glass, street far below | text: הוא לא נדבק לחלון | spoken: הרובוט הזה לא נדבק לחלון... משהו בלתי נראה דוחף אותו.
+3. frame0: a hand pulls the plug, robot mid-window | text: מה קורה כשנגמר החשמל? | spoken: שולפים לו את התקע... באמצע חלון בקומה עשר.
+4. frame0: wide, robot climbing straight up the glass | text: למה הוא לא נופל? | spoken: הרובוט הזה מטפס על זכוכית חלקה... בלי ידיים.
+Picked: (waiting)
