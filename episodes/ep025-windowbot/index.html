@@ -19,9 +19,9 @@ const bot = await M('robots/windowBotPro'); bot.position.copy(W3(room.getObjectB
 scene.updateMatrixWorld(true);
 const air = airField(bot), fs = fanStream(bot), ar = pressureArrows(bot), cb = cables(scene, room, bot);
 const ghost = (() => { const ms = []; bot.getObjectByName('shell').traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; ms.push(m); } }); return k => ms.forEach(m => { m.material.opacity = 1 - .93 * k; m.material.depthWrite = k < .5; }); })();
-const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [], focus: V(0, 1.5, 0), sun: [-.5, .7, .6], exposure: .27, vig: .3, env: .12, fill: .12, sunI: 2.4});
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [], focus: V(0, 1.5, 0), sun: [-.5, .7, .6], exposure: .1, vig: .45, env: .1, fill: .08, sunI: 1.5});
 const P = W3(bot), N = n => W3(bot.getObjectByName(n));
-const EYE0 = [[.55, 1.55, -1.05], [P.x, P.y - .05, P.z]], EYE1 = [[.5, 1.55, -.92], [P.x, P.y - .05, P.z]];
+const EYE0 = [[.95, 1.5, -2.1], [P.x, P.y - .05, P.z]], EYE1 = [[.85, 1.52, -1.85], [P.x, P.y - .05, P.z]];
 const WIDE = [[P.x - 2.5, P.y + 1.2, P.z + 6], [P.x, P.y - 1.9, P.z]], WIDE2 = [[P.x - 3.2, P.y + .8, P.z + 7.5], [P.x, P.y - 2.6, P.z]];
 const FAN = [[P.x + .25, P.y + .2, P.z + .45], [P.x, P.y, P.z + .04]], FANC = [[P.x + .3, P.y + .1, P.z + .4], [P.x, P.y, P.z + .04]];
 const SIDE = [[P.x + .9, P.y + .15, P.z + .5], [P.x, P.y, P.z + .08]], SIDEC = [[P.x + .95, P.y + .1, P.z + .35], [P.x, P.y, P.z + .08]];
