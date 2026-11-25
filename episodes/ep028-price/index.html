@@ -31,7 +31,7 @@ const orb = await M('robots/bitiOrb'); orb.position.set(.05, 1.75, -.6);
 const glass = new THREE.Mesh(new THREE.CylinderGeometry(.035, .03, .11, 24, 1, true), new THREE.MeshStandardMaterial({color: 0xdfe8ff, roughness: .08, metalness: .1, transparent: true, opacity: .6, side: THREE.DoubleSide}));
 scene.updateMatrixWorld(true);
 const TJ = n => tall.getObjectByName(n), SJ = n => small.getObjectByName(n);
-const PL = await proLook(st, {mode: 'outdoor', robots: [small, tall], people: [kid, man], focus: V(0, 1, -1), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .26, env: .13, fill: .1, sunI: 2.2});
+const PL = await proLook(st, {mode: 'outdoor', robots: [small, tall], people: [kid, man], focus: V(0, 1, -1), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .1, vig: .45, env: .1, fill: .08, sunI: 2.2});
 // after proLook: dark alloy for the cheap one, soft light-grey knit for the expensive one (brand light-blue accents kept)
 small.traverse(m => { if (m.isMesh && m.material && m.material.color && m.material.color.getHex() !== 0x8ea6ff) { m.material = m.material.clone(); m.material.color.multiplyScalar(.38); m.material.metalness = .6; m.material.roughness = .35; } });
 const knit = new THREE.MeshStandardMaterial({color: 0xcfc8bc, roughness: 1, metalness: 0});
