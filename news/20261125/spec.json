@@ -1,0 +1,94 @@
+{
+ "date_label": "חדשות היום · 25.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "Uber, Nuro ו־Lucid הוציאו את הנהג מהרובוטקסי בקליפורניה",
+    "רובוט דמוי אדם החל לשמש קונסיירז' במלון בסינגפור, לפי החברה"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": [
+     {
+      "name": "pro/robotaxi",
+      "x": -1.5,
+      "z": 0,
+      "ry": 0.6
+     },
+     {
+      "name": "pro/humanoid",
+      "x": 1.7,
+      "z": 0.2,
+      "ry": -0.5
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "0",
+   "statSub": "נהגי בטיחות ברכבים",
+   "statColor": "cyan",
+   "title": "רובוטקסי <span class=\"pill\">בלי נהג</span><br>ב־Bay Area",
+   "text": "לפי ההודעה המשותפת, Nuro, Lucid ו־Uber החלו בבדיקות על כבישים ציבוריים בלי נהג בטיחות ב־Lucid Gravity, בארבע ערים בעמק הסיליקון. נסיעות עובדים יתחילו בקרוב, והשקה לציבור צפויה ברבעון הראשון של 2027.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "BusinessWire, TechCrunch, Electrek",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/robotaxi",
+     "x": 0,
+     "z": 0,
+     "ry": 0.5,
+     "az": 0.3,
+     "frac": 1.1
+    },
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "67",
+   "statSub": "שם הרובוט: Six Seven",
+   "statColor": "orange",
+   "title": "רובוט <span class=\"pill\">קונסיירז'</span><br>במלון בסינגפור",
+   "text": "לפי החברה, YYForce הציבה רובוט דמוי אדם בלובי של Novotel Singapore on Stevens. הוא עונה לאורחים על מסעדות ואירועים ומציע המלצות לטיול, עם שבבי NVIDIA Jetson. זו הודעה של החברה, בלי אימות עצמאי.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "PR Newswire, Investing.com",
+   "scene": {
+    "robot": false,
+    "look": "warm",
+    "hero": {
+     "name": "pro/humanoid",
+     "x": 0,
+     "z": 0,
+     "ry": 0.4,
+     "az": 0.25,
+     "frac": 1.1
+    },
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": {
+     "name": "pro/serviceRobot",
+     "ry": 0.3,
+     "az": 0.4
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}
