@@ -488,3 +488,4 @@ export const KITPRO = {
   'pro/humanoidXray': humanoidXrayPro, 'pro/smartphone': smartphonePro, 'pro/servo': servoPro,
 };
 export const KITPRO_FN = Object.fromEntries(Object.entries(KITPRO).map(([k, v]) => [k.slice(4), v]));
+export const PROH = {MP, S, mesh, at, grp, rbox, cyl, lathe, slathe, ext, roundPoly, limb, actuator, seamRing, tube};

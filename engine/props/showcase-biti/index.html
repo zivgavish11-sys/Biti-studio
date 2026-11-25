@@ -1,0 +1,39 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-25 run 17 — Biti's 3 directions in the ep026 kitchen (pro-v3) + the mid-video follow moment.
+// t 1 = A bitiOrb · t 2 = B bitiPetite · t 3 = C bitiTile + face on the TV · t 4.6–6.2 = midFollow (caption "עוד הסברים כאלה? תעקבו").
+// Render: python3 tools/render.py frames engine/props/showcase-biti 1,2,3,5.6
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V} from '/engine/lib/core.js';
+import {bitiFace, hover, point} from '/engine/props/fx-biti.js';
+import {midFollow} from '/engine/lib/follow-mid.js';
+const st = await studio({look: 'hero', fog: .001, hook: [], hookEnd: 0, keys: ['תעקבו'], scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const room = await M('buildings/kitchenLiving'); room.updateMatrixWorld(true);
+const bot = await M('pro/humanoid'); bot.position.copy(S(room, 'robotSpot')); bot.rotation.y = .35;
+const J = n => bot.getObjectByName(n); J('shoulderR').rotation.set(-.9, 0, .55); J('elbowR').rotation.x = -.7; J('head').rotation.set(.12, -.5, 0);
+const bag = await M('everyday/crumpledBag'); scene.remove(bag); J('wristR').add(bag); bag.position.set(0, -.12, .02);
+const man = await M('people/mannequin-sit'); man.position.copy(S(room, 'seatSpot')); man.rotation.y = -Math.PI / 2;
+room.getObjectByName('lid').rotation.x = -.0;
+const orb = await M('robots/bitiOrb'); orb.position.set(-.1, 1.58, -1.75); orb.rotation.y = -.05;
+const pet = await M('robots/bitiPetite'); pet.position.set(-.25, 0, -1.65); pet.rotation.y = .45;
+{ const P = n => pet.getObjectByName(n); P('shoulderL').rotation.set(-1.25, 0, .15); P('elbowL').rotation.x = -.15; P('head').rotation.set(.08, .25, 0); }
+const tile = await M('robots/bitiTile'); tile.position.set(-.1, 1.6, -1.6); tile.rotation.y = .45;
+scene.updateMatrixWorld(true);
+const fTile = st.screen(tile.getObjectByName('screen'), (c, t, W, H) => bitiFace(c, t, W, H, {mood: 'smile'}), {light: .35});
+const fTv = st.screen(room.getObjectByName('screen'), (c, t, W, H) => { c.fillStyle = '#05070d'; c.fillRect(0, 0, W, H); const s = H; c.save(); c.translate((W - s) / 2, 0); bitiFace(c, t, s, s, {mood: 'wonder'}); c.restore(); }, {light: .3});
+const MF = midFollow(st, {at: 4.6, dur: 1.6, slot: 'biti'});
+const PL = await proLook(st, {mode: 'outdoor', robots: [bot], people: [man], focus: V(.5, 1.1, -2), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .36, env: .16, fill: .1, sunI: 2.2});
+st.frame(t => {
+  const d = t < 1.5 ? 'A' : t < 2.5 ? 'B' : t < 3.5 ? 'C' : 'C';
+  orb.visible = d === 'A'; pet.visible = d === 'B'; tile.visible = d === 'C';
+  hover(orb, t); point(orb, 1); hover(tile, t, {amp: .015}); fTile.update(t); fTv.update(t); MF.update(t);
+  const cp = [-.75, 1.5, .55], ct = [.3, 1.15, -1.95];
+  PL.update(t, V(...ct));
+  return {cp: V(...cp), ct: V(...ct), noFlash: true, fov: 62};
+});
+st.ready();
+</script></body></html>
