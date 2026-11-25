@@ -83,7 +83,7 @@ st.frame(t => {
   pbot.position.copy(PB0); const cl = sm(A[11] - .2, B[11], t); pbot.position.z = PB0.z - (PB0.z - (-.85 + 0)) * Math.min(1, cl * 2); pbot.position.y = PB0.y + 1.2 * sm(.45, 1, cl); pbot.rotation.x = -Math.PI / 2 * sm(.35, .55, cl);
   const [mx, mz, mr] = mowP(t); mower.position.set(mx, 0, mz); mower.rotation.y = mr; const bl = mower.getObjectByName('blade'); bl && (bl.rotation.y = t * 30);
   stripes.forEach((s, i) => { s.scale.y = Math.max(.001, Math.min(1, sm(A[12] - .5, B[12], t) * 6 - i)); });
-  tele.visible = t > A[18] && t < B[19] + .4; hum.visible = t > A[18] - .4 && t < A[20] + .2;
+  tele.visible = t > A[18] && t < B[19] + .4; hum.visible = t > A[18] - .4 && t < A[20] + .2; op.visible = hum.visible;
   // Biti: hook (0.3–2.6 s, curious, points at the shirt) · twist (surprise → happy for the follow card) · end card (happy / wink)
   const on = win(t, -1, 2.6, .3) + win(t, A[20] - .1, B[24] + .3, .3) + sm(A[28] - .2, A[28] + .3, t);
   orb.visible = on > .02; orb.scale.setScalar((.6 + .4 * sm(A[28] - .3, A[28] + .2, t)) * Math.max(.001, Math.min(1, on)));
