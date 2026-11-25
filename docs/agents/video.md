@@ -135,6 +135,7 @@ In step 6 above: "pinned comment" now means the question line at the end of the 
 - A visual change every 2–3 seconds (angle, zoom, chip, counter, highlight) and a new scene every 4–6 s. Never a static shot longer than ~3 s.
 - Frame 0 is already mid-action (camera moving, something happening). The re-hook moment gets a visual shift (color/scene change).
 - The last frame echoes the first frame's composition so the replay loops smoothly.
+- **Text is never hidden (Ziv 2026-11-25):** in some videos on-screen text was covered by an object. Every text (captions, hook title, floating screens, callouts, labels) must be fully readable — draw text overlays on top (renderOrder high + depthTest off for in-scene labels/screens, or move the object/camera), keep 3D objects out of the caption/hook zones, and check every preview frame and the QA contact sheet for covered text before sending.
 - Captions must match the voice word for word. Captions are **calm**: no shake/jump/scale — only the active-word highlight changes and each line fades in (Ziv, 2026-11-03).
 - Episode badge "פרק #N" is automatic (pass `episode:` to studio()). Brand + badge sit in one row at y≈232 and the hook starts at y 322 — below Instagram's top bar (Ziv 2026-11-06: they were hidden under 'Reels/Friends' and the icons). Keep all overlays below y≈220.
 - **Sound** (Ziv 2026-11-04): voice + soft, quiet, pleasant background music only. **No sound effects** (no whooshes/beeps). build.sh no longer mixes sfx; music.py has no drums; music at volume 0.14 under the voice.

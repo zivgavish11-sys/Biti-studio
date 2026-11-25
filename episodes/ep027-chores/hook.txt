@@ -1,5 +1,5 @@
 ep027-chores — "מה רובוט באמת יודע לעשות בבית היום?" (batch 26–28)
-Hook options sent 2026-11-25 (waiting for Ziv's pick):
+Ziv picked A (2026-11-25): show what robots can and cannot do (not a "why it can't fold" video); comment CTA → next episode explains one. Hook options sent 2026-11-25 (waiting for Ziv's pick):
 A. frame0: robot vacuum gliding past a sofa with a crumpled T-shirt on it, eye level | text: "רצפה ✓ חולצה ✗" | voice: "רובוט כבר שוטף לכם רצפה, חלונות ובריכה... אבל לקפל חולצה?"
 B. frame0: a laundry-folding machine with a half-folded shirt stuck in it | text: "פשטו רגל בגלל חולצה" | voice: "חברה שלמה פשטה רגל... כי הרובוט שלה התקשה לקפל חולצות." (Laundroid, 2019 — verify)
 C. frame0: robot arms over a laundry pile, a person's hand helping | text: "8,000 דולר... ועדיין צריך עזרה" | voice: "רובוט קיפול כביסה עולה אלפי דולרים... ועדיין צריך עזרה מבן אדם." (Weave — verify)
