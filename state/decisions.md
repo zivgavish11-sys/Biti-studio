@@ -90,3 +90,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-25 (Ziv, news chat): news agent asks Media for a matching hero model per story on every run (inbox/media.md). Rule in docs/agents/news.md.
 - 2026-11-25 (Ziv, video chat): on-screen text must always be fully visible, never covered by an object (some videos had text hidden). docs/agents/video.md Visual rules.
 - 2026-11-25 (Ziv, video chat): scripts must be crafted ("תשקיע בכל טקסט, זה הבסיס של הסרטון") — no generic/amateur explanations. docs/agents/video.md §2.
+- 2026-11-25 (boss, Ziv): research on views→follows (IG profile-visit rate 0.15% vs 1-3% benchmark) → Biti returns on screen as a short, classy recurring character (hook, mid twist + follow line, end card; explanation never on her). Media designs 3 looks, Ziv picks; then rule into docs/agents/video.md. Metric: profile-visit rate per reel from Ziv's IG screenshots, target >0.5%.
