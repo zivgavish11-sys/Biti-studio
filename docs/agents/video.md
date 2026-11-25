@@ -50,6 +50,9 @@ Right after the twist / surprise moment of every script, one short spoken line: 
 - **Biti on screen = `robots/bitiOrb` (Ziv chose 2026-11-25, "with personality"):** small hovering pebble (Ø .32 m), pearl shell, black-glass face screen, light-blue eyes, ear fins. Drive her only via `import {orbRig} from '/engine/props/fx-biti.js'` → `const B = orbRig(st, orb)` and `B.update(t, {mood, look:[x,y], talk, point})` each frame (mood: curious · surprise · think · happy · wink · smile · calm). Load with `st.model('robots/bitiOrb')`; do NOT pass her in proLook `robots:` (her colours are final).
   Usage (approved plan): **hook** 1–2 s in the first 2–3 s, curious, hovering ~1.4–1.6 m next to the subject and pointing at it (`point: 1`); **twist** 1–2 s reacting (surprise/think) + she is there for the mid follow (happy; card slot shows her face); **end card** happy/wink. Otherwise off-frame or part of the scene (points at the object) — never parked in a corner, never the subject of a shot, never bigger than the subject. Demo: engine/props/showcase-orb (t 1, 2, 3, 5.6).
 
+### CTA tracking (Ziv 2026-11-25)
+For every episode add to its entry in state/episodes.json: `"cta": {"mid_follow_s": <second or null>, "end": "follow"|"question", "question": "<text or null>", "biti": [<seconds where Biti is on screen>] or []}`. Fill it when you schedule.
+
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 **One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
 1. Setup: `cd engine && npm i --silent` ; `python3 -c "import scipy" || pip install --break-system-packages -q scipy`.
