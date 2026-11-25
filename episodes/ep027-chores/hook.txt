@@ -5,3 +5,4 @@ B. frame0: a laundry-folding machine with a half-folded shirt stuck in it | text
 C. frame0: robot arms over a laundry pile, a person's hand helping | text: "8,000 דולר... ועדיין צריך עזרה" | voice: "רובוט קיפול כביסה עולה אלפי דולרים... ועדיין צריך עזרה מבן אדם." (Weave — verify)
 D. frame0: humanoid holding a shirt that flops out of shape | text: "למה אין רובוט כביסה?" | voice: "למה עדיין אין רובוט שמקפל לכם כביסה?"
 Visual hook: eye-level living room, crumpled T-shirt on the sofa arm in front, vacuum passes under it leaving a wet shine; window bot + pool bot working through the glass door; rise to wide at 2-3 s. On-screen text (Ziv pick 3): "מה רובוט באמת יודע לעשות?" — fully visible from frame 0. ✓ next to each robot, ✗ next to each chore.
+Ziv 2026-11-25: no spoken end follow line in ep027 (mid follow line + comment ask); the visual end card with the Follow button stays, over the comment line.
