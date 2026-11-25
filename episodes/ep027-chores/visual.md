@@ -11,3 +11,4 @@ One world: an Israeli house cutaway (living room + kitchen) with a backyard (poo
 9. Mid follow line: "עוד הסברים כאלה? תעקבו" for 1.5 s, caption style, centre (media will design the final look).
 10. "איטי, לא תמיד מצליח" — a second sock slips from the gripper; then a line on the floor between the ✓ side and the ✗ side slides toward the ✗ side ("הגבול זז").
 11. Comment ask — three ✗ cards "כביסה · מדיח · בישול" with a comment icon; the end card + Follow button over this line. Last frame echoes frame 0 (sofa + shirt).
+Ziv approved visual v1 (2026-11-25); length ~52 s accepted (option A).
