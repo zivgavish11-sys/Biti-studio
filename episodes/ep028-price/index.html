@@ -10,8 +10,8 @@
 import {proLook} from '/engine/lib/look-pro.js';
 import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
 import {orbRig} from '/engine/props/fx-biti.js';
-import {midFollow} from '/engine/lib/follow-mid.js';
-const st = await studio({look: 'hero', episode: 28, fog: .001, outro: 'card', outroAt: 26, endQ: 'הייתם לוקחים רובוט במנוי? כן או לא',
+import {midFollow, endQuestion} from '/engine/lib/follow-mid.js';
+const st = await studio({look: 'hero', episode: 28, fog: .001, outro: 'card', outroAt: 26,
   hook: ['<span class="pill">6,000$</span> מול', '<span class="pill">20,000$</span>'], hookEnd: 3.0,
   keys: ['אופנוע', 'מכונית', 'בבית', 'משלמים', 'מנוע', 'תמסורת', 'וחיישן', 'עשרות', 'ילד', 'למפתחים', 'אדם', 'רך', 'מעשרים', 'כוס', 'המטורף', 'מראש', 'חודשי', 'ליסינג', 'הברית', 'ירד', 'במנוי'],
   scenes: (A, B, E) => [0, E]});
@@ -22,8 +22,8 @@ const room = await M('buildings/kitchenLiving'); room.updateMatrixWorld(true);
 const hBox = o => new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y;
 // small (child height ~1.23 m) on a pivot group so it can cartwheel
 const SP = new THREE.Group(); SP.position.set(-.55, .62, -1.0); scene.add(SP);
-const small = await M('pro/humanoid', SP); small.scale.setScalar(1.23 / hBox(small)); small.position.y = -.62;
-const tall = await M('pro/humanoid'); tall.scale.setScalar(1.66 / hBox(tall)); tall.position.set(.6, 0, -1.0); tall.rotation.y = -.15;
+const small = await M('pro/humanoidMini', SP); small.scale.setScalar(1.23 / hBox(small)); small.position.y = -.62;   // media ep028 kit (real materials)
+const tall = await M('pro/humanoidSoft'); tall.scale.setScalar(1.7 / hBox(tall)); tall.position.set(.6, 0, -1.0); tall.rotation.y = -.15;
 const kid = await M('people/mannequin-child'); kid.position.set(-1.25, 0, -1.25); kid.rotation.y = .4; kid.scale.setScalar(1.2 / hBox(kid));
 const man = await M('people/mannequin-walk'); man.position.set(1.3, 0, -1.75); man.rotation.y = -.4; man.scale.setScalar(1.72 / hBox(man));
 const orb = await M('robots/bitiOrb'); orb.position.set(.05, 1.75, -.6);
@@ -31,14 +31,12 @@ const orb = await M('robots/bitiOrb'); orb.position.set(.05, 1.75, -.6);
 const glass = new THREE.Mesh(new THREE.CylinderGeometry(.035, .03, .11, 24, 1, true), new THREE.MeshStandardMaterial({color: 0xdfe8ff, roughness: .08, metalness: .1, transparent: true, opacity: .6, side: THREE.DoubleSide}));
 scene.updateMatrixWorld(true);
 const TJ = n => tall.getObjectByName(n), SJ = n => small.getObjectByName(n);
-const PL = await proLook(st, {mode: 'outdoor', robots: [small, tall], people: [kid, man], focus: V(0, 1, -1), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .1, vig: .45, env: .1, fill: .08, sunI: 2.2});
+const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid, man], focus: V(0, 1, -1), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .1, vig: .45, env: .1, fill: .08, sunI: 2.2});
 // after proLook: dark alloy for the cheap one, soft light-grey knit for the expensive one (brand light-blue accents kept)
-small.traverse(m => { if (m.isMesh && m.material && m.material.color && m.material.color.getHex() !== 0x8ea6ff) { m.material = m.material.clone(); m.material.color.multiplyScalar(.38); m.material.metalness = .6; m.material.roughness = .35; } });
-const knit = new THREE.MeshStandardMaterial({color: 0xcfc8bc, roughness: 1, metalness: 0});
-tall.traverse(m => { if (m.isMesh && m.material && m.material.color && !/face|visor|eye/i.test(m.name) && m.material.color.getHex() !== 0x8ea6ff) m.material = knit; });
 const wR = TJ('wristR'); wR.add(glass); glass.position.set(0, -.1, .045);
 const rig = orbRig(st, orb);
 const MF = midFollow(st, {at: A[22], dur: B[23] + .3 - A[22], timer: true});
+const EQ = endQuestion(st, {at: A[26], q: 'הייתם לוקחים רובוט במנוי?', options: ['כן', 'לא']});
 // joints we light up (dozens): every joint node the rig has
 const JN = []; tall.traverse(o => { if (/^(neck|head|torso|pelvis|shoulder|elbow|wrist|hip|knee|ankle|f[LR]\d|thumb)/.test(o.name)) JN.push(o); });
 const HAND = []; tall.traverse(o => { if (/^(f[R]\d_\d|thumbR_\d|wristR)$/.test(o.name)) HAND.push(o); });
@@ -53,7 +51,7 @@ const TL = [[-.5, 1.5, 1.5], [.85, 1.0, -1.3]], HND = [[1.0, 1.25, -.35], [.7, 1
 const SPOT = [[.6, 1.6, 2.2], [.6, 1.0, -1.0]], SPOT2 = [[.6, 1.5, 1.8], [.6, 1.0, -1.0]], USA = [[-.4, 2.6, 3.4], [.05, 1.0, -1.0]];
 const k = (t, s) => [t, V(...s[0]), V(...s[1])];
 st.frame(t => {
-  MF.update(t);
+  MF.update(t); EQ.update(t);
   // cheap one: cartwheel in the hook and on "לפעלולים"
   SP.rotation.z = -Math.PI * 2 * (sm(.2, 2.2, t) + sm(A[11] - .1, B[11] + .3, t));
   const gk = sm(A[14] + .4, A[16] + .4, t) * (1 - sm(A[17], A[17] + .4, t));          // reach + gentle grip on the glass
@@ -62,10 +60,11 @@ st.frame(t => {
   // dim the room on the re-hook (stage feel), back for the USA beat
   kid.visible = t > A[9] - .4 && t < B[11] + .4; man.visible = t > A[12] - .4 && t < B[13] + .4;
   const on = win(t, -1, 2.8, .3) + win(t, A[17] - .1, B[23] + .3, .3) + sm(A[26] - .2, A[26] + .3, t);
-  orb.visible = on > .02; orb.scale.setScalar(.55 * Math.max(.001, Math.min(1, on)));
+  orb.visible = on > .02; orb.scale.setScalar((.55 + .45 * sm(A[26] - .3, A[26] + .2, t)) * Math.max(.001, Math.min(1, on)));
   const tw = sm(A[17], A[17] + .5, t) * (1 - sm(B[23], B[23] + .5, t));
-  const op2 = V(.05, 1.75, -.6).lerp(V(1.0, 1.45, -.75), tw); orb.position.x = op2.x; orb.position.z = op2.z;
-  rig.update(t, {mood: t < 3 ? 'curious' : t < A[22] ? 'surprise' : t < A[27] ? 'happy' : 'wink', point: t < 2.8 ? 1 : 0, look: [0, -.2]});
+  const endK = sm(A[26] - .3, A[26] + .2, t);
+  const op2 = V(.05, 1.75, -.6).lerp(V(1.0, 1.45, -.75), tw).lerp(V(.05, 1.18, 1.15), endK); orb.position.x = op2.x; orb.position.z = op2.z;
+  rig.update(t, {mood: t < 3 ? 'curious' : t < A[22] ? 'surprise' : t < A[26] ? 'happy' : t < B[28] + .1 ? 'ask' : 'happy', point: t < 2.8 ? 1 : 0, look: [0, -.2], talk: t > A[26] && t < B[28] ? .5 + .4 * Math.sin(t * 17) : 0});
   orb.position.y += op2.y - 1.75; orb.lookAt(st.cam.position.x, orb.position.y, st.cam.position.z);
   const [cp, ct] = camPath(t, [
     k(0, EYE0), k(B[3], EYE1), k(A[4] + .5, WIDE), k(A[5] + .4, XR), k(B[6], JNT), k(A[7] + .3, XR2), k(B[8], XR),
@@ -89,7 +88,7 @@ st.frame(t => {
       JN.slice(0, Math.max(n, 1)).forEach(o => { const [x, y, z] = P(o.getWorldPosition(new THREE.Vector3())); if (z < 1) { c.beginPath(); c.arc(x, y, 9, 0, 7); c.fillStyle = '#8ea6ff'; c.fill(); c.lineWidth = 3; c.strokeStyle = '#fff'; c.stroke(); } });
       c.restore(); const el = S(tall, 'elbowR');
       if (el && t2 < B[6] + .3) { const [x, y] = P(el); st.callout(Math.min(820, x + 160), y - 300, 'מנוע', x, y, win(t2, A[5], B[6] + .3, .25), 44); st.callout(Math.max(260, x - 170), y - 200, 'תמסורת', x, y, win(t2, A[6] - .1, B[6] + .3, .25), 44); st.callout(Math.min(820, x + 140), y + 230, 'חיישן', x, y, win(t2, A[6] + .3, B[6] + .3, .25), 44); }
-      if (t2 > A[7]) box(540, 520, `${n} מפרקים`, win(t2, A[7], B[8] + .3, .3), {size: 64}); }
+      if (t2 > A[7]) box(540, 520, 'עשרות מפרקים', win(t2, A[7], B[8] + .3, .3), {size: 64}); }   // factcheck: no number (rig count ≠ real count)
     // 9-13: height lines
     const hl = (p, h, lab, al) => { if (al < .02) return; const [x0, y0] = P(p), [, y1] = P(p.clone().add(V(0, h, 0))); c.save(); c.globalAlpha = al; c.strokeStyle = '#fff'; c.lineWidth = 4; c.setLineDash([14, 10]); c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.stroke(); c.setLineDash([]); c.restore(); box(x0, y1 - 50, lab, al, {size: 44}); };
     hl(V(-.95, 0, -1.0), 1.23, 'גובה של ילד', win(t2, A[9], B[9] + .4, .3));
