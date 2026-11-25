@@ -1,6 +1,6 @@
 ep028-price — "מתי יהיה לי רובוט דמוי אדם בבית, וכמה זה יעלה?" (batch 26–28)
 Facts in hand: Unitree R1 from ~$5,900 (announced 7/2025; dev/hobby platform, not a home helper); 1X NEO $20,000 or $499/month, US deliveries started 2026, partly via a remote human operator. Verify everything at fact-check.
-Hook options sent 2026-11-25 (waiting for Ziv's pick):
+Ziv picked A (2026-11-25). Hook options sent 2026-11-25 (waiting for Ziv's pick):
 A. frame0: two humanoids side by side, price tags | text: "6,000$ מול 20,000$" | voice: "רובוט דמוי אדם אחד עולה כמו אופנוע. השני, כמו מכונית... ורק אחד מהם נבנה לעבוד אצלכם בבית."
 B. frame0: humanoid at a front door with a delivery box | text: "רובוט במנוי חודשי?!" | voice: "כבר אפשר להזמין רובוט דמוי אדם לבית... במנוי חודשי."
 C. frame0: humanoid on a price scale / car next to it | text: "למה הוא עולה כמו מכונית?" | voice: "רובוט דמוי אדם לבית עולה היום כמו מכונית. למה?"
