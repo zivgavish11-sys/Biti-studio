@@ -1,5 +1,5 @@
 {
- "next_episode": 26,
+ "next_episode": 29,
  "episodes": [
   {
    "n": 1,
@@ -276,6 +276,68 @@
    "topic": "איך רובוט החלונות נדבק לזכוכית ולא נופל? (fan + seal → small pressure difference, pressure sensor, backup battery, safety cable)",
    "hook": "אין לו דבק, אין לו ידיים... והוא תלוי על חלון בקומה עשר (eye level inside the room)",
    "posted": "scheduled 2026-11-26T18:00+02:00 via Buffer (IG 6b0601a29dd8377af121edd9, FB 6b0601a39dd8377af121ee09, TikTok 6b0601a3bbd94e836970cfcd). 41.5 s, QA pass after darker light. Media on branch media-ep025-windowbot."
+  },
+  {
+   "slug": "ep026-hebrew",
+   "date": "2026-11-27",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "הרובוט מבין עברית וסלנג? (voice → text → context: cameras / what was said / what people mean; far less Hebrew than English; a good robot asks back)",
+   "hook": "תגידו לרובוט תעיף את זה... הוא יזרוק את זה לפח, או מהחלון?",
+   "posted": "scheduled 2026-11-27T18:00+02:00 via Buffer (IG 6b06ad576212ba833caf65b9, FB 6b06ad589b09b0a4a8ac790e, TikTok 6b06ad5985ddf25108ec0810). 38.8 s, QA pass. Media branch media-ep026-hebrew.",
+   "cta": {
+    "mid_follow_s": null,
+    "end": "follow",
+    "question": null,
+    "biti": []
+   }
+  },
+  {
+   "slug": "ep027-chores",
+   "date": "2026-11-28",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "מה רובוט באמת יודע לעשות בבית היום? (can: vacuum+mop+self-empty, window, pool, mower; not yet: laundry, dishwasher, cooking; twist: vacuum arm picks socks)",
+   "hook": "רובוט כבר שוטף לכם רצפה, חלונות ובריכה... אבל לקפל חולצה?",
+   "posted": "scheduled 2026-11-28T18:00+02:00 via Buffer (IG 6b06b0a785ddf25108ed61b9, FB 6b06b0a885ddf25108ed623d, TikTok 6b06b0a9d8190259b88f7c27). 52.8 s (Ziv accepted the length; QA duration fail only). Media branch media-ep027-chores.",
+   "cta": {
+    "mid_follow_s": 38.83,
+    "end": "question",
+    "question": "איזו מטלה לתת לרובוט? כביסה / מדיח / בישול",
+    "biti": [
+     0,
+     2.6,
+     33.3,
+     40.7,
+     45.2,
+     52.8
+    ]
+   }
+  },
+  {
+   "slug": "ep028-price",
+   "date": "2026-11-29",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "כמה עולה רובוט דמוי אדם לבית? (joint = motor+transmission+sensor ×dozens; cheap dev humanoid vs home humanoid; pre-order + monthly like leasing; mostly US)",
+   "hook": "רובוט דמוי אדם אחד עולה כמו אופנוע. השני, כמו מכונית...",
+   "posted": "scheduled 2026-11-29T18:00+02:00 via Buffer (IG 6b06ab2d4a87dbb2cee5db23, FB 6b06ab2d9b09b0a4a8aba8fa, TikTok 6b06ab2ed8190259b88d05da). 43 s, QA pass. Media branch media-ep028-price.",
+   "cta": {
+    "mid_follow_s": 33.59,
+    "end": "question",
+    "question": "הייתם לוקחים רובוט במנוי? כן / לא",
+    "biti": [
+     0,
+     2.8,
+     27.8,
+     35.5,
+     41.5,
+     43.0
+    ]
+   }
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
