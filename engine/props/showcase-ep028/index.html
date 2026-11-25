@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-25 — ep028-price kit demo (pro-v3 studio) + the end comment question card (outro:'card' + endQuestion).
+// t 1 hook: mini in a handstand + soft robot holding a glass, price tags, height lines, Biti curious · t 3.6 end card with the question.
+// Render: python3 tools/render.py frames engine/props/showcase-ep028 1,3.6
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm} from '/engine/lib/core.js';
+import {acrobat, heightLine, gripGlass, priceTag, jointDots} from '/engine/props/fx-ep028.js';
+import {orbRig} from '/engine/props/fx-biti.js';
+import {endQuestion} from '/engine/lib/follow-mid.js';
+const st = await studio({look: 'hero', outro: 'card', fog: .001, hook: [], hookEnd: 0, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const mini = await M('pro/humanoidMini'); mini.position.set(-.7, 0, 0); mini.rotation.y = .5;
+const soft = await M('pro/humanoidSoft'); soft.position.set(.55, 0, -.1); soft.rotation.y = -.35;
+const glass = await M('everyday/glass'); scene.remove(glass);
+const gg = gripGlass(soft, glass, 'R'); { const J = n => soft.getObjectByName(n); J('shoulderR').rotation.set(-.6, 0, -.1); J('elbowR').rotation.x = -1.0; J('head').rotation.set(.15, -.2, 0); }
+const orb = await M('robots/bitiOrb'); orb.position.set(-.05, 1.55, .5); orb.rotation.y = .1;
+scene.updateMatrixWorld(true);
+const rig = orbRig(st, orb), hl1 = heightLine(scene, [-1.35, .1], 1.3), hl2 = heightLine(scene, [1.25, -.1], 1.75), jd = jointDots(soft);
+const tags = [['6,000$', [-.75, 1.75, .3]], ['20,000$', [.6, 2.15, .2]]].map(([w, p]) => { const s = st.screen([.62, .2], (c, t, W, H) => priceTag(c, t, W, H, {text: w}), {light: .5}); s.mesh.position.set(...p); scene.add(s.mesh); return s; });
+const EQ = endQuestion(st, {at: 2.0, q: 'הייתם לוקחים רובוט במנוי?', options: ['כן', 'לא']});
+const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [], focus: V(0, 1, 0)});
+st.frame(t => {
+  acrobat(mini, {mode: 'handstand', k: 1, base: V(-.7, 0, 0)}); gg.set(.8); jd.set(0); hl1.set(1); hl2.set(1);
+  tags.forEach(s => { s.update(t); s.mesh.visible = t < 2; });
+  rig.update(t, {mood: t < 2 ? 'curious' : 'happy', look: [.3, -.2]}); EQ.update(t);
+  const cp = [0, 1.45, 4.6], ct = [0, 1.05, 0]; PL.update(t, V(...ct));
+  return {cp: V(...cp), ct: V(...ct), noFlash: true, fov: 50};
+});
+st.ready();
+</script></body></html>
