@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-25 — ep026-hebrew kit + FX demo (pro-v3 daylight). t 1 hook (eye level, window open, two throw arcs) · t 3 wide + sound wave sofa → robot · t 5 page stream into the head · t 7 English vs Hebrew towers + slang.
+// Render: python3 tools/render.py frames engine/props/showcase-hebrew 1,3,5,7
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm} from '/engine/lib/core.js';
+import {soundWave, throwArcs, pageStream, textTowers, holdBag, binLid, windowOpen} from '/engine/props/fx-hebrew.js';
+const st = await studio({look: 'hero', fog: .001, hook: [], hookEnd: 0, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const room = await M('buildings/kitchenLiving'); room.updateMatrixWorld(true);
+const bot = await M('pro/humanoid'); bot.position.copy(S(room, 'robotSpot')); bot.rotation.y = .5;
+const J = n => bot.getObjectByName(n); J('shoulderR').rotation.set(-.85, 0, .25); J('elbowR').rotation.x = -.6; J('head').rotation.set(.15, -.3, 0);
+const bag = await M('everyday/crumpledBag'); scene.remove(bag); holdBag(bot, bag);
+const man = await M('people/mannequin-sit'); man.position.copy(S(room, 'seatSpot')); man.rotation.y = -Math.PI / 2;
+scene.updateMatrixWorld(true);
+const B0 = S(bot, 'wristR'), head = S(bot, 'head').add(V(0, .12, 0)), mouth = S(man, 'head').add(V(0, .12, 0));
+const arcs = throwArcs(scene, B0, [S(room, 'binMouth'), S(room, 'windowOut')], {h: .6});
+const wave = soundWave(scene, mouth, head), pages = pageStream(scene, head, {from: head.clone().add(V(1.6, 1.4, 1.6))});
+const tw = textTowers(st, [0, 0, 7]);
+const PL = await proLook(st, {mode: 'outdoor', robots: [bot], people: [man], focus: V(.5, 1.1, -1.5), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .3, env: .16, fill: .1, sunI: 2.2});
+st.frame(t => {
+  windowOpen(room, 1); binLid(room, t > 6 ? 1 : .0);
+  arcs.set([sm(.2, .9, t), sm(.5, 1.2, t)], {pulse: 0}); wave.update(t, t > 2.4 && t < 3.6 ? 1 : 0); pages.update(t, t > 4.4 && t < 5.6 ? 1 : 0);
+  tw.set({en: sm(6.2, 6.8, t), he: sm(6.4, 6.8, t), slang: sm(6.7, 6.95, t)});
+  const shots = [[[-1.2, 1.6, .9], [.9, 1.2, -2.2]], [[-2.8, 4.6, 4.2], [.9, .6, -.8]], [[head.x - 1.3, head.y + .5, head.z + 1.6], head.toArray()], [[-.4, 2.4, 11.8], [.1, 1.8, 7]]];
+  const [cp, ct] = shots[Math.min(3, Math.floor((t - .5) / 2))]; PL.update(t, V(...ct));
+  return {cp: V(...cp), ct: V(...ct), noFlash: true, fov: t < 2 ? 66 : 55};
+});
+st.ready();
+</script></body></html>
