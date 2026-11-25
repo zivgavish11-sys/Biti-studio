@@ -94,3 +94,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-25 Ziv: mid follow line in every reel from now (spoken + on-screen, right after the twist); docs/agents/video.md.
 - 2026-11-25 Ziv: mid follow line + Biti on screen start from ep027.
 - 2026-11-25 [media] Ziv chose Biti direction 1 (bitiOrb, small hovering pebble) "but with a bit of personality" → expressive screen face (moods) + ear fins + body language (fx-biti.js orbRig). Personality preview sent; final look rules go into docs/agents/video.md after his OK.
+- 2026-11-25 [media] Ziv approved ("כן וכן"): Biti = bitiOrb with personality (orbRig moods) and the mid follow moment component (engine/lib/follow-mid.js midFollow), both from ep027 → rules in docs/agents/video.md.
