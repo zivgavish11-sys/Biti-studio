@@ -1,0 +1,7 @@
+ep026-hebrew — "הרובוט מבין עברית וסלנג?" (batch 26–28 with ep027-chores, ep028-price; Ziv 2026-11-25: build all 3)
+Hook options sent 2026-11-25 (waiting for Ziv's pick):
+A. frame0: robot arm holding a cup next to an open window, eye level | text: "'תעיף את זה'?" | voice: "תגידו לרובוט 'תעיף את זה'... הוא יזרוק את זה לפח, או מהחלון?"
+B. frame0: box set down tilted on its side | text: "'שים את זה בצד'" | voice: "אמרתם לרובוט 'שים את זה בצד'... והוא שם את זה על הצד."
+C. frame0: huge pile of English pages vs a few Hebrew pages | text: "עברית = פירורים" | voice: "על אנגלית, הרובוט למד מהררים של טקסט. על עברית? פירורים."
+D. frame0: robot head tilted, speech bubble "סבבה, יאללה" | text: "הוא יבין 'סבבה'?" | voice: "הרובוט שלכם יבין 'יאללה, סבבה, אחלה'?"
+Not sent: homograph "ספר/ספר" (speech has vowels, only the text loses them — weak/arguable), "הוא לא שומע מילים, הוא שומע רעש".
