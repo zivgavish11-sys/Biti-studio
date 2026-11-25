@@ -45,7 +45,7 @@ Ziv may work on several reels at once (~40 s each): first agree topic + script f
 Order per reel (Ziv 2026-11-15): hook (Ziv picks) → script (fact-checked, Ziv OKs) → **visual script** (shot by shot, Ziv OKs) → Ziv records. One reel at a time, step by step; repeat for the next reel. Build nothing until Ziv says the batch is done.
 
 ### Mid follow line (Ziv 2026-11-25)
-Right after the twist / surprise moment of every script, one short spoken line: "עוד הסברים כאלה? תעקבו" (in the TTS text), also shown as on-screen text for ~1.5 s. Keep the end follow card. Biti on screen comes later (media is designing 3 looks; wait for Ziv's pick) — leave room for her at the hook, the twist and the end card; the explanation is never on her.
+Right after the twist / surprise moment of every script, one short spoken line: "עוד הסברים כאלה? תעקבו" (in the TTS text), also shown on screen for ~1.5 s. **The look of this on-screen follow moment is designed and built by the media agent** (Ziv 2026-11-25) — use its component once ready; until then a plain caption-style text. Keep the end follow card. Biti on screen comes later (media is designing 3 looks; wait for Ziv's pick) — leave room for her at the hook, the twist and the end card; the explanation is never on her.
 
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
 **One open episode at a time (Ziv, 2026-11-03):** if an episode folder exists that is not yet in `state/episodes.json` and is waiting for Ziv (recording/approval), do NOT send new ideas — remind him in one line and continue that episode. New ideas only when nothing is open.
