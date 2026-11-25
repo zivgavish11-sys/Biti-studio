@@ -19,19 +19,23 @@ function eyes(parent, r, dx, y, w, h, z0 = 0) {
     const e = mesh(new THREE.CapsuleGeometry(w / 2, Math.max(.001, h - w), 6, 20), BM.eye, n); e.scale.z = .35; at(e, x, y, z + .001, 0, Math.atan2(x, z), 0); parent.add(e); }
 }
 
-/** A — **robots/bitiOrb**: small hovering pebble, Ø 0.32 m. Origin = centre of the body (hover it ~1.3–1.6 m high, next to the subject).
- * Nodes: 'body' (bob/tilt), 'shell', 'face' (black glass band), **eyeL/eyeR** (blink .scale.y → .1; look = move 'eyes' group .position.x ±.01), 'ring' (champagne equator + light-blue line; slow spin .rotation.y),
- * 'earL/earR', **'pointer'** (thin arm on her right: .scale.x 0 → 1 = extend, aim with .rotation.z/.y; spot 'tip'), 'hoverDisc' (see-through light-blue disc under her, no glow). Spots faceSpot, tip. */
+/** A — **robots/bitiOrb** (Ziv chose A 2026-11-25, "with a bit of personality"): small hovering pebble, Ø 0.32 m. Origin = centre of the body (hover ~1.3–1.6 m high, next to the subject).
+ * Personality = expressive screen face + ear fins + body language (drive it all with fx-biti.js orbRig(st, orb)).
+ * Nodes: 'body' (bob/tilt), 'shell', **'face'** (black-glass band = screen, userData.aspect 2 → st.screen + bitiFace moods), 'eyes' (mesh eyes eyeL/eyeR — hidden fallback when no screen),
+ * **'earL'/'earR'** (fins: .rotation.z perk +/droop −, mirrored), 'ring' (champagne equator + light-blue line), **'pointer'** → 'pointerArm' (.scale.x 0 → 1 = extend; spot 'tip'), 'hoverDisc'. Spots faceSpot, tip. */
 export function bitiOrb() {
   const g = grp('bitiOrb'), b = grp('body'); g.add(b); const r = .16;
   const sh = mesh(new THREE.SphereGeometry(r, 72, 56), BM.pearl, 'shell'); sh.scale.y = .94; b.add(sh);
-  const face = faceCap(r * 1.006, 1.25, .62, -.08, BM.glass, 'face'); face.scale.y = .94; b.add(face);
-  const ey = grp('eyes'); b.add(ey); eyes(ey, r * 1.006, .042, .028, .02, .034);
+  const face = faceCap(r * 1.006, 1.3, .66, -.08, BM.glass, 'face'); face.scale.y = .94; face.userData.aspect = 2; b.add(face);
+  const ey = grp('eyes'); b.add(ey); eyes(ey, r * 1.006, .042, .028, .02, .034); ey.visible = false;
   const ring = grp('ring'); at(ring, 0, -.052, 0); b.add(ring);
   ring.add(at(mesh(new THREE.TorusGeometry(r * .985, .006, 12, 96), BM.champ), 0, 0, 0, Math.PI / 2));
   ring.add(at(mesh(new THREE.TorusGeometry(r * .99, .0022, 8, 96), BM.acc, 'ringLine'), 0, -.008, 0, Math.PI / 2));
-  for (const [n, s] of [['earL', 1], ['earR', -1]]) { const e = grp(n); at(e, s * r * .93, .01, 0, 0, 0, s * Math.PI / 2); b.add(e);
-    e.add(cyl(.036, .04, .02, BM.champ, null, 48)); e.add(at(cyl(.028, .028, .004, BM.graphite, null, 40), 0, .011, 0)); e.add(at(cyl(.006, .006, .003, BM.acc, null, 16), 0, .0135, 0)); }
+  const fin = roundPoly([[-.02, 0], [.02, 0], [.022, .035], [.006, .06], [-.014, .05]], .012);
+  for (const [n, s] of [['earL', 1], ['earR', -1]]) { const e = grp(n); at(e, s * r * .74, r * .58, -.01, 0, 0, -s * .78); b.add(e);   // fin root sits on the shell, tip points up/out
+    e.add(at(cyl(.016, .018, .012, BM.graphite, null, 24), 0, -.002, 0));
+    const f = ext(s > 0 ? fin.map(([x, y]) => [-x, y]) : fin, .012, BM.champ, n + 'Fin', .004); at(f, 0, 0, 0); e.add(f);
+    const edge = ext((s > 0 ? fin.map(([x, y]) => [-x, y]) : fin).map(([x, y]) => [x * .55, y * .82 + .006]), .0135, BM.acc, n + 'Line', .002); e.add(edge); }
   const p = grp('pointer'); at(p, -r * .9, -.03, .03, 0, -.35, -.35); b.add(p);   // her right side = −x (she faces +z)
   const arm = grp('pointerArm'); p.add(arm); arm.add(at(cyl(.005, .006, .13, BM.champ, null, 16), -.065, 0, 0, 0, 0, Math.PI / 2));
   arm.add(at(mesh(new THREE.SphereGeometry(.011, 24, 16), BM.pearl), -.135, 0, 0)); arm.add(at(mesh(new THREE.TorusGeometry(.011, .0018, 8, 32), BM.acc), -.128, 0, 0, 0, Math.PI / 2, 0));
