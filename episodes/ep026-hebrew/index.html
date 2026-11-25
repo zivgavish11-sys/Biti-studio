@@ -77,8 +77,8 @@ st.frame(t => {
     // 8-10: the word splits into two meanings
     const wd = win(t2, A[8] - .1, B[10] + .4, .3);
     box(540, 470, 'תעיף', wd * (1 - sm(A[9] - .2, A[9] + .2, t2)), {size: 70});
-    box(330, 520, 'לזרוק לפח', wd * sm(A[9] - .1, A[9] + .3, t2), {icon: '🗑️ '});
-    box(760, 620, 'להעיף באוויר', wd * sm(A[10] - .1, A[10] + .3, t2), {icon: '🪟 '});
+    box(300, 640, 'לזרוק לפח', wd * sm(A[9] - .1, A[9] + .3, t2), {icon: '🗑️ '});
+    box(770, 760, 'להעיף באוויר', wd * sm(A[10] - .1, A[10] + .3, t2), {icon: '🪟 '});
     // 12-14: context callouts (white, on top of everything)
     const L = (a, b, lab, p, dx, dy) => { if (t2 > a - .1 && t2 < b + .4) { const [x, y] = P(p); st.callout(Math.min(880, Math.max(200, x + dx)), y + dy, lab, x, y, win(t2, a, b + .3, .25), 44); } };
     L(A[12], B[14], 'מה המצלמות רואות', S(bot, 'wristR'), 0, -330);
