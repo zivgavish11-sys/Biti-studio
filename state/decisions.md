@@ -99,3 +99,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-25 Ziv: from ep027 two CTAs in two places — mid = follow, end = short comment question (one-word answer), replacing the spoken follow ending; end card keeps follow button visually. docs/agents/video.md.
 - 2026-11-25 Ziv: end comment question moved to start from ep028 (ep027 already sent).
 - 2026-11-25 Ziv: track CTA placement + Biti per episode (episodes.json cta tag); review ~6.12 vs baseline ep017–ep026 (boss).
+- 2026-11-25 [media] Ziv approved the end comment question card v2 (no white box: open white question + dark pills; Biti big in front asking; the episode's own world behind) — from ep028 → docs/agents/video.md.
