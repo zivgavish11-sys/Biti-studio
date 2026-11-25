@@ -31,7 +31,7 @@ export function midFollow(st, {at, dur = 1.6, top = 330, slot = 'biti', side = '
     const k = sm(at, at + .25, t) * (1 - sm(at + dur - .25, at + dur, t)); el.style.opacity = k; card.style.transform = `translateY(${(1 - sm(at, at + .3, t)) * 24}px)`;
     const tp = at + dur * press, pk = sm(tp - .1, tp, t) * (1 - sm(tp, tp + .12, t));
     btn.style.transform = `scale(${1 - .06 * pk})`; const on = t >= tp; btn.classList.toggle('on', on); btn.textContent = on ? '✓ עוקבים' : '+ עקבו';
-    if (c && k > 0) bitiFace(c, t, 224, 224, {mood: 'smile', talk: t < tp ? .35 + .3 * Math.sin(t * 18) : 0});
+    if (c && k > 0) bitiFace(c, t, 224, 224, {mood: t < tp ? 'smile' : 'happy', talk: t < tp ? .35 + .3 * Math.sin(t * 18) : 0});
   }
   return {el, update};
 }
