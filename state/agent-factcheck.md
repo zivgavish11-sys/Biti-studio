@@ -69,3 +69,4 @@ _Not defined yet._ Interview started 2026-11-03 (Q1 sent: block vs. warn). Until
 - 2026-11-24 video ep024-drowsy caption.txt deep-facts block — OK, no problems (7 claims checked).
 - 2026-11-24 video ep025-windowbot caption.txt deep-facts block — OK, no problems (Ecovacs W2 5,500 Pa ≈5.4% atm, Hobot UPS+alarm, rope, pressure sensor). Not scheduled; no push.
 - 2026-11-25 news/20261125 spec+caption+dms: Nuro/Lucid/Uber (BusinessWire, TechCrunch) + YYForce (PRNewswire, Investing) core OK. 2 fixes: cover 'הוציאו את הנהג'→'החלו בדיקות…בלי נהג'; YYForce 'הציבה'→'מציבה' (PR says 'will be deployed'); 1 optional → inbox/news. Goes out today 18:00 → push.
+- 2026-11-25 video ep026-hebrew script.txt: 1 fix — line 3 'קודם הופך לטקסט' universal (native speech models exist) → 'ברוב הרובוטים היום'. 1 optional — line 5 'מה יש לכם ביד' needs cameras, not language brain. Hebrew<<English data, KnowNo asking OK → inbox/video. Script stage; no push.
