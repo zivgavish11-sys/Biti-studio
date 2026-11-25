@@ -43,6 +43,7 @@ export function midFollow(st, {at, dur = 1.6, top = 330, slot = 'biti', side = '
 }
 
 // ---------- End comment question (Media pro 2026-11-25, for the new ending from ep028: one short question, one-word answer) ----------
+// style 'open' (default, Ziv 2026-11-25: no white box): big white question text over the scene + dark pills with a light-blue ring; style 'card' = the first white-box version.
 // Sits on top of core's outro:'card' (scene shrinks into a card, Follow button stays visual). White box in the caption family at y≈350: the question (dark bold) +
 // answer chips (e.g. כן / לא) + a small comment bubble 'כתבו בתגובות'. Fade + 24 px rise at `at`, stays to the end. The bottom caption still shows the spoken question.
 //   const EQ = endQuestion(st, {at: <render-time s of the question line>, q: 'הייתם לוקחים רובוט במנוי?', options: ['כן', 'לא']});  st.frame(t => { EQ.update(t); ... })
@@ -53,10 +54,14 @@ const css2 = `
 #eq .row{display:flex;align-items:center;gap:18px}
 #eq .op{font:700 44px/1 Rubik;padding:16px 46px 18px;border-radius:999px;background:#eef0f7;color:#0a0c1c;box-shadow:inset 0 0 0 3px #8ea6ff}
 #eq .cm{display:flex;align-items:center;gap:10px;font:500 30px Rubik;color:#5c6176}
-#eq .cm svg{width:40px;height:40px}`;
-export function endQuestion(st, {at, q, options = ['כן', 'לא'], top = 350} = {}) {
+#eq .cm svg{width:40px;height:40px}
+#eq.open .card{background:none;box-shadow:none;padding:0;gap:22px}
+#eq.open .q{color:#fff;font:700 66px/1.15 Rubik;text-shadow:0 4px 18px rgba(0,0,0,.85)}
+#eq.open .op{background:rgba(10,12,28,.72);color:#fff;box-shadow:inset 0 0 0 4px #8ea6ff;font:700 52px/1 Rubik;padding:18px 58px 20px}
+#eq.open .cm{color:#e7e9f3;text-shadow:0 2px 10px rgba(0,0,0,.8)}`;
+export function endQuestion(st, {at, q, options = ['כן', 'לא'], top = 350, style = 'open'} = {}) {
   if (!document.getElementById('eqcss')) { const s = document.createElement('style'); s.id = 'eqcss'; s.textContent = css2; document.head.appendChild(s); }
-  const el = document.createElement('div'); el.id = 'eq'; el.className = 'ov'; el.style.top = top + 'px';
+  const el = document.createElement('div'); el.id = 'eq'; el.className = 'ov' + (style === 'open' ? ' open' : ''); el.style.top = top + 'px';
   el.innerHTML = `<div class="card"><div class="q">${q}</div><div class="row">${options.map(o => `<div class="op">${o}</div>`).join('')}</div>
     <div class="cm"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H10l-4.5 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="none" stroke="#8ea6ff" stroke-width="2.2" stroke-linejoin="round"/></svg>כתבו בתגובות</div></div>`;
   document.body.appendChild(el); const card = el.querySelector('.card'); const ops = [...el.querySelectorAll('.op')];

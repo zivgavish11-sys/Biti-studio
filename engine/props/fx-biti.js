@@ -18,7 +18,7 @@ export function bitiFace(c, t, W, H, {mood = 'smile', look = 0, talk = 0, bg = t
   if (mood === 'happy') { arcEye(L); arcEye(R); }
   else if (mood === 'wink') { pill(L, S * .2); c.lineWidth = lw * 1.25; c.beginPath(); c.moveTo(R - S * .06, cy + S * .01); c.quadraticCurveTo(R, cy - S * .03, R + S * .06, cy + S * .01); c.stroke(); }
   else if (mood === 'surprise') { for (const x of [L, R]) { c.beginPath(); c.ellipse(x, cy, S * .068, S * .085 * (1 - .9 * bl), 0, 0, Math.PI * 2); c.fill(); } }
-  else if (mood === 'curious') { pill(L, S * .25); pill(R, S * .15); c.lineWidth = lw * .9; c.beginPath(); c.moveTo(R - S * .06, cy - S * .13); c.lineTo(R + S * .06, cy - S * .16); c.stroke(); }
+  else if (mood === 'curious' || mood === 'ask') { pill(L, S * .25); pill(R, S * (mood === 'ask' ? .2 : .15)); c.lineWidth = lw * .9; c.beginPath(); c.moveTo(R - S * .06, cy - S * .13); c.lineTo(R + S * .06, cy - S * .16); c.stroke(); }
   else if (mood === 'think') { pill(L, S * .17); pill(R, S * .17); }
   else { const h = S * (mood === 'calm' ? .16 : .2); pill(L, h); pill(R, h); }
   // mouth
@@ -34,7 +34,7 @@ export function hover(o, t, {base = null, amp = .025} = {}) { if (!o.userData.ba
 export function point(orb, k) { const a = orb.getObjectByName('pointerArm'); if (a) a.scale.x = Math.max(.001, k); }
 // body language per mood: [tilt z, nod x, earL, earR, bounce]
 const POSE = { smile: [0, 0, 0, 0, 0], calm: [0, .04, -.15, -.15, 0], happy: [.06, -.05, .3, .3, 1], wink: [.14, -.03, .25, .05, .5],
-  curious: [.26, .06, .3, -.25, 0], surprise: [0, -.14, .45, .45, 0], think: [-.12, -.12, -.1, .25, 0] };
+  curious: [.26, .06, .3, -.25, 0], ask: [.18, .02, .35, .1, 0], surprise: [0, -.14, .45, .45, 0], think: [-.12, -.12, -.1, .25, 0] };
 export function orbRig(st, orb) {
   const body = orb.getObjectByName('body'), eL = orb.getObjectByName('earL'), eR = orb.getObjectByName('earR'), e0 = [eL.rotation.z, eR.rotation.z];
   let state = {mood: 'smile', look: 0, talk: 0};
