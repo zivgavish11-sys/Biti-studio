@@ -44,7 +44,7 @@ In step 3.4 send Ziv **2 preview frames** (frame 0 + one mid-episode frame), not
 Ziv may work on several reels at once (~40 s each): first agree topic + script for each reel, one reel at a time in the chat (fact-check each script); then Ziv sends all recordings together (save each raw mp3 at once); then build them all, send previews, and after his OK schedule each on its own day (18:00 Israel). Earliest due date first.
 Order per reel (Ziv 2026-11-15): hook (Ziv picks) → script (fact-checked, Ziv OKs) → **visual script** (shot by shot, Ziv OKs) → Ziv records. One reel at a time, step by step; repeat for the next reel. Build nothing until Ziv says the batch is done.
 
-### Mid follow line (Ziv 2026-11-25)
+### Mid follow line + Biti on screen (Ziv 2026-11-25) — **from ep027**
 Right after the twist / surprise moment of every script, one short spoken line: "עוד הסברים כאלה? תעקבו" (in the TTS text), also shown on screen for ~1.5 s. **The look of this on-screen follow moment is designed and built by the media agent** (Ziv 2026-11-25) — use its component once ready; until then a plain caption-style text. Keep the end follow card. Biti on screen comes later (media is designing 3 looks; wait for Ziv's pick) — leave room for her at the hook, the twist and the end card; the explanation is never on her.
 
 ### 1) Morning: three ideas (scheduled every day at 09:00 Manila time, or whenever Ziv asks)
