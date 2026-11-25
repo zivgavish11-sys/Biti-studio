@@ -9,3 +9,4 @@ World: one Israeli kitchen/living room (home2056/livingRoom + kitchenRun), reali
 7. Re-hook (visual shift, stage goes dark) — two stacks: a giant English tower vs a small Hebrew stack; on "וסלנג?" a thin sliver on top (סבבה, יאללה, תעיף).
 8. Payoff — back in the room: the robot stops, arm down, a screen above it: "לזרוק לפח?"; the person nods; the robot drops the bag in the bin.
 9. Outro — grouper card + Follow; the last frame echoes frame 0 (robot by the window).
+Ziv approved visual v1 (2026-11-25).
