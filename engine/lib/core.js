@@ -134,6 +134,8 @@ export async function studio(opts = {}) {
   const cardfr = el('<div id="cardfr"></div>'); body.appendChild(cardfr);
   const fbtn = el('<div id="fbtn">Follow</div>'); body.appendChild(fbtn);
   const capEl = el('<div id="cap" class="ov"></div>'); body.appendChild(capEl);
+  // end question (Ziv 2026-11-25, from ep028): the comment question stays on screen under the end card (white caption-style box, never covered)
+  const endQ = opts.endQ ? el(`<div id="endq" class="ov" style="top:1560px;text-align:center;opacity:0"><div style="display:inline-block;background:#fff;color:#0a0c1c;border-radius:18px;padding:14px 36px 18px;font:700 58px/1.25 Rubik;direction:rtl;box-shadow:0 10px 26px rgba(0,0,0,.45);max-width:900px">${opts.endQ}</div></div>`) : null; if (endQ) body.appendChild(endQ);
   const flash = el('<div id="flash" class="ov"></div>'); body.appendChild(flash);
 
   const renderer = new THREE.WebGLRenderer({canvas: c, antialias: true, preserveDrawingBuffer: true});
@@ -297,11 +299,12 @@ export async function studio(opts = {}) {
     let fl = 0; for (let i = 1; i < S.length - 1; i++) fl += 0.22 * Math.max(0, 1 - Math.abs(t - S[i]) * 9); flash.style.opacity = r.noFlash ? 0 : fl;
     if (opts.outro === 'card') {
       // grouper-style ending (Ziv 2026-11-13): on the last spoken line the whole scene shrinks into a rounded card (scene keeps playing inside), a Follow button pops in (outline -> filled accent on "תעקבו")
-      const la = A[A.length - 1], lb = B[B.length - 1], k = sm(la - 0.15, la + 0.35, t), f = sm(lb - 0.45, lb - 0.2, t);
+      const la = opts.outroAt != null ? A[opts.outroAt] : A[A.length - 1], lb = B[B.length - 1], k = sm(la - 0.15, la + 0.35, t), f = sm(lb - 0.45, lb - 0.2, t);
       const sc = 1 - 0.38 * k, tf = `translateY(${-60 * k}px) scale(${sc})`, rad = `${70 * k / sc}px`;
       for (const cv of [c, o]) { cv.style.transform = tf; cv.style.borderRadius = rad; }
       cardfr.style.transform = tf; cardfr.style.borderRadius = rad; cardfr.style.borderWidth = `${3 * k / sc}px`; cardfr.style.opacity = k;
       fbtn.style.opacity = sm(la + 0.15, la + 0.45, t);
+      if (endQ) endQ.style.opacity = sm(la + 0.2, la + 0.6, t);
       fbtn.style.background = f > 0 ? `rgba(142,166,255,${f})` : 'transparent'; fbtn.style.borderColor = f > .5 ? '#8ea6ff' : '#fff'; fbtn.style.color = f > .5 ? '#0a0c1c' : '#fff';
       fbtn.style.transform = `translateX(-50%) scale(${1 + 0.08 * Math.sin(Math.PI * Math.min(1, f))})`;
       for (const id of ['vig', 'brand', 'chips', 'extra']) { const e = document.getElementById(id); if (e) e.style.opacity = 1 - k; }

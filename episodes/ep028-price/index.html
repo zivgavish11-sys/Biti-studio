@@ -1,0 +1,121 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP028-price — pro-v3 daylight in the ep026 kitchen-living (home), frame0 eye-level. Generic robots (no brand replicas): small = pro/humanoid at child height, dark alloy;
+// tall = pro/humanoid at adult height in a soft knit cover. Mid follow (timer) after the twist, Biti orb hook / twist / end card, end = comment question (Ziv 2026-11-25).
+// Phrases: 0-3 hook (motorbike vs car, only one built for home) | 4 what do you pay for | 5-6 joint = motor + transmission + sensor | 7-8 dozens of joints
+//          9-11 cheap: child height, developers, stunts | 12-13 expensive: adult height, soft body | 14-16 20+ joints per hand, glass | 17 re-hook | 18-21 pre-order, monthly, like leasing
+//          22-23 MID FOLLOW | 24 mostly USA | 25 forecasts: price will drop | 26-28 question card
+// All text on the overlay canvas / DOM (never covered by 3D — Ziv rule 2026-11-25).
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
+import {orbRig} from '/engine/props/fx-biti.js';
+import {midFollow} from '/engine/lib/follow-mid.js';
+const st = await studio({look: 'hero', episode: 28, fog: .001, outro: 'card', outroAt: 26, endQ: 'הייתם לוקחים רובוט במנוי? כן או לא',
+  hook: ['<span class="pill">6,000$</span> מול', '<span class="pill">20,000$</span>'], hookEnd: 3.0,
+  keys: ['אופנוע', 'מכונית', 'בבית', 'משלמים', 'מנוע', 'תמסורת', 'וחיישן', 'עשרות', 'ילד', 'למפתחים', 'אדם', 'רך', 'מעשרים', 'כוס', 'המטורף', 'מראש', 'חודשי', 'ליסינג', 'הברית', 'ירד', 'במנוי'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END} = st;
+const M = async (n, g = scene) => { const o = (await st.model(n)).object; g.add(o); return o; };
+const S = (o, n) => { const q = o.getObjectByName(n); return q ? q.getWorldPosition(new THREE.Vector3()) : null; };
+const room = await M('buildings/kitchenLiving'); room.updateMatrixWorld(true);
+const hBox = o => new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y;
+// small (child height ~1.23 m) on a pivot group so it can cartwheel
+const SP = new THREE.Group(); SP.position.set(-.55, .62, -1.0); scene.add(SP);
+const small = await M('pro/humanoid', SP); small.scale.setScalar(1.23 / hBox(small)); small.position.y = -.62;
+const tall = await M('pro/humanoid'); tall.scale.setScalar(1.66 / hBox(tall)); tall.position.set(.6, 0, -1.0); tall.rotation.y = -.15;
+const kid = await M('people/mannequin-child'); kid.position.set(-1.25, 0, -1.25); kid.rotation.y = .4; kid.scale.setScalar(1.2 / hBox(kid));
+const man = await M('people/mannequin-walk'); man.position.set(1.3, 0, -1.75); man.rotation.y = -.4; man.scale.setScalar(1.72 / hBox(man));
+const orb = await M('robots/bitiOrb'); orb.position.set(.05, 1.75, -.6);
+// glass in the tall robot's right hand
+const glass = new THREE.Mesh(new THREE.CylinderGeometry(.035, .03, .11, 24, 1, true), new THREE.MeshStandardMaterial({color: 0xdfe8ff, roughness: .08, metalness: .1, transparent: true, opacity: .6, side: THREE.DoubleSide}));
+scene.updateMatrixWorld(true);
+const TJ = n => tall.getObjectByName(n), SJ = n => small.getObjectByName(n);
+const PL = await proLook(st, {mode: 'outdoor', robots: [small, tall], people: [kid, man], focus: V(0, 1, -1), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .26, env: .13, fill: .1, sunI: 2.2});
+// after proLook: dark alloy for the cheap one, soft light-grey knit for the expensive one (brand light-blue accents kept)
+small.traverse(m => { if (m.isMesh && m.material && m.material.color && m.material.color.getHex() !== 0x8ea6ff) { m.material = m.material.clone(); m.material.color.multiplyScalar(.38); m.material.metalness = .6; m.material.roughness = .35; } });
+const knit = new THREE.MeshStandardMaterial({color: 0xcfc8bc, roughness: 1, metalness: 0});
+tall.traverse(m => { if (m.isMesh && m.material && m.material.color && !/face|visor|eye/i.test(m.name) && m.material.color.getHex() !== 0x8ea6ff) m.material = knit; });
+const wR = TJ('wristR'); wR.add(glass); glass.position.set(0, -.1, .045);
+const rig = orbRig(st, orb);
+const MF = midFollow(st, {at: A[22], dur: B[23] + .3 - A[22], timer: true});
+// joints we light up (dozens): every joint node the rig has
+const JN = []; tall.traverse(o => { if (/^(neck|head|torso|pelvis|shoulder|elbow|wrist|hip|knee|ankle|f[LR]\d|thumb)/.test(o.name)) JN.push(o); });
+const HAND = []; tall.traverse(o => { if (/^(f[R]\d_\d|thumbR_\d|wristR)$/.test(o.name)) HAND.push(o); });
+const curl = k => { tall.traverse(o => { const m = /^f(R)(\d)_(\d)$/.exec(o.name); if (m) o.rotation.x = -.55 * k; if (/^thumbR_\d$/.test(o.name)) o.rotation.z = .5 * k; }); };
+const poseTall = k => { TJ('shoulderR').rotation.set(-.55 * k, 0, .05); TJ('elbowR').rotation.x = -1.0 * k; TJ('wristR').rotation.set(0, 0, 0); };
+poseTall(1); tall.updateMatrixWorld(true); const WR = S(tall, 'wristR'); poseTall(.55);
+const EYE0 = [[.05, 1.45, 2.4], [.05, 1.0, -1.0]], EYE1 = [[.05, 1.42, 2.1], [.05, 1.0, -1.0]];
+const WIDE = [[-1.6, 3.6, 3.2], [.05, .8, -1.0]], XR = [[1.5, 1.6, .9], [.6, 1.0, -1.0]], XR2 = [[1.2, 1.45, .6], [.6, 1.1, -1.0]];
+const JNT = [[1.05, 1.45, -.35], [.78, 1.25, -1.0]], SM = [[-1.9, 1.3, 1.2], [-.8, .7, -1.1]], SM2 = [[-1.6, 1.2, .9], [-.8, .65, -1.1]];
+const HNDW = [[WR.x + .35, WR.y + .18, WR.z + .55], WR.toArray()], HNDW2 = [[WR.x + .28, WR.y + .12, WR.z + .45], WR.toArray()];
+const TL = [[-.5, 1.5, 1.5], [.85, 1.0, -1.3]], HND = [[1.0, 1.25, -.35], [.7, 1.0, -.9]], HND2 = [[.95, 1.2, -.45], [.7, 1.0, -.9]];
+const SPOT = [[.6, 1.6, 2.2], [.6, 1.0, -1.0]], SPOT2 = [[.6, 1.5, 1.8], [.6, 1.0, -1.0]], USA = [[-.4, 2.6, 3.4], [.05, 1.0, -1.0]];
+const k = (t, s) => [t, V(...s[0]), V(...s[1])];
+st.frame(t => {
+  MF.update(t);
+  // cheap one: cartwheel in the hook and on "לפעלולים"
+  SP.rotation.z = -Math.PI * 2 * (sm(.2, 2.2, t) + sm(A[11] - .1, B[11] + .3, t));
+  const gk = sm(A[14] + .4, A[16] + .4, t) * (1 - sm(A[17], A[17] + .4, t));          // reach + gentle grip on the glass
+  poseTall(.55 + .45 * gk); curl(sm(A[16] - .1, A[16] + .6, t) * (1 - sm(A[17], A[17] + .4, t)));
+  glass.visible = t < A[17] + .3 || t > A[26];
+  // dim the room on the re-hook (stage feel), back for the USA beat
+  kid.visible = t > A[9] - .4 && t < B[11] + .4; man.visible = t > A[12] - .4 && t < B[13] + .4;
+  const on = win(t, -1, 2.8, .3) + win(t, A[17] - .1, B[23] + .3, .3) + sm(A[26] - .2, A[26] + .3, t);
+  orb.visible = on > .02; orb.scale.setScalar(.55 * Math.max(.001, Math.min(1, on)));
+  const tw = sm(A[17], A[17] + .5, t) * (1 - sm(B[23], B[23] + .5, t));
+  const op2 = V(.05, 1.75, -.6).lerp(V(1.0, 1.45, -.75), tw); orb.position.x = op2.x; orb.position.z = op2.z;
+  rig.update(t, {mood: t < 3 ? 'curious' : t < A[22] ? 'surprise' : t < A[27] ? 'happy' : 'wink', point: t < 2.8 ? 1 : 0, look: [0, -.2]});
+  orb.position.y += op2.y - 1.75; orb.lookAt(st.cam.position.x, orb.position.y, st.cam.position.z);
+  const [cp, ct] = camPath(t, [
+    k(0, EYE0), k(B[3], EYE1), k(A[4] + .5, WIDE), k(A[5] + .4, XR), k(B[6], JNT), k(A[7] + .3, XR2), k(B[8], XR),
+    k(A[9] + .4, SM), k(B[11], SM2), k(A[12] + .4, TL), k(B[13], TL), k(A[14] + .4, HNDW), k(B[16], HNDW2),
+    k(A[17] + .5, SPOT), k(B[23], SPOT2), k(A[24] + .4, USA), k(B[25], USA), k(A[26] + .3, EYE1), k(END, EYE0)]);
+  PL.update(t, ct);
+  const eye = t < A[4] || t > A[26] + .2;
+  return {cp, ct, noFlash: true, fov: eye ? 60 : 55, overlay: t2 => {
+    const c = st.ctx, P = v => st.proj(v);
+    const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
+      const w = c.measureText(txt).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;
+      c.fillStyle = fg; c.textAlign = 'center'; c.fillText(txt, x, y + size * .36); c.restore(); };
+    const over = (p, txt, al, dy, o = {}) => { const [x, y, z] = P(p); if (z > 1) return; box(Math.min(860, Math.max(220, x)), Math.max(470, y + dy), txt, al, o); };
+    // price tags (hook + end)
+    const tags = win(t2, 3.0, B[3] + .6, .3) + sm(A[26], A[26] + .4, t2);   // after the hook title fades (never under it)
+    over(V(-.55, 1.3, -1.0), '6,000$', tags, -60, {size: 56}); over(V(.6, 1.75, -1.0), '20,000$', tags, -60, {size: 56});
+    over(V(.6, 1.75, -1.0), '🏠 לבית', win(t2, A[3] + .1, B[3] + .5, .3), 40, {size: 46, bg: '#8ea6ff'});
+    // 5-8: joints light up + counter; one joint explained
+    const jk = win(t2, A[5] - .2, B[8] + .3, .3);
+    if (jk > .02) { const n = Math.round(JN.length * sm(A[7], B[8] - .3, t2)); c.save(); c.globalAlpha = jk;
+      JN.slice(0, Math.max(n, 1)).forEach(o => { const [x, y, z] = P(o.getWorldPosition(new THREE.Vector3())); if (z < 1) { c.beginPath(); c.arc(x, y, 9, 0, 7); c.fillStyle = '#8ea6ff'; c.fill(); c.lineWidth = 3; c.strokeStyle = '#fff'; c.stroke(); } });
+      c.restore(); const el = S(tall, 'elbowR');
+      if (el && t2 < B[6] + .3) { const [x, y] = P(el); st.callout(Math.min(820, x + 160), y - 300, 'מנוע', x, y, win(t2, A[5], B[6] + .3, .25), 44); st.callout(Math.max(260, x - 170), y - 200, 'תמסורת', x, y, win(t2, A[6] - .1, B[6] + .3, .25), 44); st.callout(Math.min(820, x + 140), y + 230, 'חיישן', x, y, win(t2, A[6] + .3, B[6] + .3, .25), 44); }
+      if (t2 > A[7]) box(540, 520, `${n} מפרקים`, win(t2, A[7], B[8] + .3, .3), {size: 64}); }
+    // 9-13: height lines
+    const hl = (p, h, lab, al) => { if (al < .02) return; const [x0, y0] = P(p), [, y1] = P(p.clone().add(V(0, h, 0))); c.save(); c.globalAlpha = al; c.strokeStyle = '#fff'; c.lineWidth = 4; c.setLineDash([14, 10]); c.beginPath(); c.moveTo(x0, y0); c.lineTo(x0, y1); c.stroke(); c.setLineDash([]); c.restore(); box(x0, y1 - 50, lab, al, {size: 44}); };
+    hl(V(-.95, 0, -1.0), 1.23, 'גובה של ילד', win(t2, A[9], B[9] + .4, .3));
+    over(V(-.55, 1.0, -1.0), '💻 למפתחים', win(t2, A[10], B[11] + .3, .3), -380, {size: 46});
+    hl(V(1.05, 0, -1.0), 1.66, 'גובה של אדם', win(t2, A[12], B[12] + .4, .3));
+    over(V(.6, 1.2, -1.0), 'גוף רך', win(t2, A[13] - .1, B[13] + .4, .3), -330, {size: 46});
+    // 14-16: hand joints + grip gauge
+    const hk = win(t2, A[14], B[16] + .3, .3);
+    if (hk > .02) { c.save(); c.globalAlpha = hk; HAND.forEach(o => { const [x, y, z] = P(o.getWorldPosition(new THREE.Vector3())); if (z < 1) { c.beginPath(); c.arc(x, y, 8, 0, 7); c.fillStyle = '#8ea6ff'; c.fill(); c.lineWidth = 2; c.strokeStyle = '#fff'; c.stroke(); } }); c.restore();
+      box(540, 500, 'יותר מ־20 מפרקים ביד', win(t2, A[15], B[16] + .3, .3), {size: 54});
+      const g = sm(A[16], A[16] + .7, t2) * .45, al = win(t2, A[16] - .1, B[16] + .3, .3); c.save(); c.globalAlpha = al; st.rr(240, 1120, 600, 36, 18); c.fillStyle = 'rgba(255,255,255,.9)'; c.fill(); st.rr(246, 1126, 588 * g, 24, 12); c.fillStyle = '#8ea6ff'; c.fill(); c.restore();
+      box(540, 1060, 'כוח אחיזה: עדין', al, {size: 40}); }
+    // 18-21: lease card
+    const lk = win(t2, A[18] - .1, B[21] + .4, .3);
+    if (lk > .02) { c.save(); c.globalAlpha = lk; const y = 560 + 20 * (1 - sm(A[18], A[18] + .4, t2)); st.rr(190, y, 700, 330, 30); c.fillStyle = '#fff'; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 26; c.fill(); c.shadowBlur = 0;
+      c.direction = 'rtl'; c.textAlign = 'right'; c.fillStyle = '#0a0c1c'; c.font = '700 54px Rubik'; c.fillText('הזמנה מוקדמת', 840, y + 90);
+      c.font = '700 46px Rubik'; c.globalAlpha = lk * sm(A[20] - .1, A[20] + .3, t2); c.fillStyle = '#0a0c1c'; c.fillText('מנוי חודשי: 499$', 840, y + 180);
+      c.globalAlpha = lk * sm(A[21] - .1, A[21] + .3, t2); st.rr(240, y + 220, 340, 72, 36); c.fillStyle = '#8ea6ff'; c.fill(); c.fillStyle = '#0a0c1c'; c.textAlign = 'center'; c.fillText('כמו ליסינג', 410, y + 270); c.restore(); }
+    // 24-25: where + forecast
+    box(540, 520, 'בעיקר בארצות הברית', win(t2, A[24] - .1, B[24] + .3, .3), {size: 56});
+    box(540, 640, 'שאר העולם: מ־2027', win(t2, A[24] + .5, B[24] + .3, .3) * .85, {size: 42, bg: 'rgba(255,255,255,.75)'});
+    const fk = win(t2, A[25] - .1, B[25] + .4, .3);
+    if (fk > .02) { c.save(); c.globalAlpha = fk; st.rr(200, 470, 680, 380, 28); c.fillStyle = 'rgba(255,255,255,.94)'; c.fill(); c.strokeStyle = '#0a0c1c'; c.lineWidth = 4; c.beginPath(); c.moveTo(260, 520); c.lineTo(260, 800); c.lineTo(840, 800); c.stroke();
+      const d = sm(A[25], B[25], t2); c.strokeStyle = '#8ea6ff'; c.lineWidth = 9; c.setLineDash([22, 16]); c.beginPath(); c.moveTo(280, 560); for (let i = 1; i <= 20; i++) { const u = i / 20 * d; c.lineTo(280 + 540 * u, 560 + 200 * Math.sqrt(u)); } c.stroke(); c.setLineDash([]);
+      c.fillStyle = '#0a0c1c'; c.font = '700 40px Rubik'; c.direction = 'rtl'; c.textAlign = 'right'; c.fillText('מחיר · תחזית', 840, 535); c.restore(); }
+  }};
+});
+st.ready();
+</script></body></html>

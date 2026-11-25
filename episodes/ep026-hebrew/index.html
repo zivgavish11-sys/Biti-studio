@@ -1,0 +1,93 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP026-hebrew — pro-v3 test #4 (daylight interior), frame0 eye-level. Media ep026 kit (buildings/kitchenLiving + fx-hebrew.js). Visual v1 approved by Ziv 2026-11-25.
+// Phrases: 0 hook תגידו לרובוט תעיף את זה | 1 לפח | 2 מהחלון | 3-4 איך הוא יודע | 5-6 קול → טקסט | 7 מילים לא מספיק | 8-10 תעיף = לזרוק / להעיף
+//          11-14 הקשר (מצלמות / אמרתם קודם / אנשים מתכוונים) | 15-16 למד מטקסט | 17 re-hook | 18-19 עברית מול אנגלית | 20-21 סלנג
+//          22-26 רובוט טוב שואל: לזרוק לפח? | 27-28 outro card (first video of the batch: end stays "תעקבו", no mid follow — Ziv)
+// All text on the overlay canvas / DOM (never covered by 3D — Ziv rule 2026-11-25).
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
+import {soundWave, throwArcs, pageStream, textTowers, holdBag, binLid, windowOpen} from '/engine/props/fx-hebrew.js';
+const st = await studio({look: 'hero', episode: 26, fog: .001, outro: 'card', outroAt: 27,
+  hook: ['תעיף <span class="pill">את זה</span>?'], hookEnd: 2.2,
+  keys: ['תעיף', 'לפח', 'מהחלון', 'לטקסט', 'ההקשר', 'המצלמות', 'קודם', 'טקסט', 'המטורף', 'עברית', 'אנגלית', 'וסלנג', 'לשאול'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END} = st;
+const M = async n => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const room = await M('buildings/kitchenLiving'); room.updateMatrixWorld(true);
+const bot = await M('pro/humanoid'); bot.position.copy(S(room, 'robotSpot')); const RY0 = 2.6, RY1 = .64; bot.rotation.y = RY0;   // frame 0: facing the open window (3/4 back), payoff: turns to the person on the sofa
+const J = n => bot.getObjectByName(n);
+const bag = await M('everyday/crumpledBag'); scene.remove(bag); holdBag(bot, bag);
+const fly = await M('everyday/crumpledBag'); fly.visible = false;
+const man = await M('people/mannequin-sit'); man.position.copy(S(room, 'seatSpot')); man.rotation.y = -Math.PI / 2;
+const pose = (raise, turn) => { J('shoulderR').rotation.set(-.3 - .95 * raise, 0, .15 * raise + .05); J('elbowR').rotation.x = -.25 - .15 * raise; J('head').rotation.set(.1, 0, 0); bot.rotation.y = RY0 + (RY1 - RY0) * turn; };
+pose(1, 0); scene.updateMatrixWorld(true);
+const B0 = S(bot, 'wristR'), head = S(bot, 'head').add(V(0, .12, 0)), mouth = S(man, 'head').add(V(0, .12, 0));
+const BIN = S(room, 'binMouth'), OUT = S(room, 'windowOut');
+const arcs = throwArcs(scene, B0, [BIN, OUT], {h: .6});
+const wave = soundWave(scene, mouth, head), pages = pageStream(scene, head, {from: head.clone().add(V(1.6, 1.4, 1.6))});
+const TW = V(0, 0, 7), tw = textTowers(st, TW.toArray());
+const PL = await proLook(st, {mode: 'outdoor', robots: [bot], people: [man], focus: V(.5, 1.1, -1.5), sun: [.45, .8, .55], haze: 0xe8e0d4, exposure: .24, env: .12, fill: .09, sunI: 2.2});
+const MID = B0.clone().lerp(BIN, .5).lerp(OUT, .25);
+const EYE0 = [[2.2, 1.6, -.05], [.75, 1.3, -2.45]], EYE1 = [[2.0, 1.58, -.3], [.8, 1.3, -2.45]];
+const WIDE = [[-2.8, 4.6, 4.2], [.9, .6, -.8]], WIDE2 = [[-3.3, 4.2, 3.4], [.7, .7, -1.0]];
+const HEAD = [[head.x - 1.3, head.y + .5, head.z + 1.6], head.toArray()], HEADC = [[head.x - .95, head.y + .3, head.z + 1.15], head.toArray()];
+const ARC = [[MID.x - 2.4, MID.y + 1.6, MID.z + 2.6], MID.toArray()], ARC2 = [[MID.x - 2.0, MID.y + 1.2, MID.z + 2.9], MID.toArray()];
+const CTX = [[-1.0, 4.2, 5.4], [1.9, .8, -.9]], CTX2 = [[-.5, 3.8, 5.8], [2.0, .8, -.8]];
+const PG = [[head.x - 2.2, head.y + 1.0, head.z + 2.4], head.toArray()];
+const TWR = [[TW.x - .5, 2.9, TW.z + 6.2], [TW.x, 2.3, TW.z]], TWR2 = [[TW.x + .6, 2.6, TW.z + 5.6], [TW.x, 2.1, TW.z]];
+const ASK = [[.1, 2.3, 3.6], [1.95, 1.1, -1.0]], ASK2 = [[.4, 2.1, 3.2], [1.95, 1.1, -1.0]];
+const k = (t, s) => [t, s[0].map ? V(...s[0]) : s[0], s[1].map ? V(...s[1]) : s[1]];
+const sel = (t, a, b) => sm(a, a + .35, t) * (1 - sm(b - .2, b + .2, t));
+st.frame(t => {
+  windowOpen(room, 1);
+  const tossK = sm(A[26] + .5, A[26] + 1.3, t);                       // "לזרוק לפח?" → nod → into the bin
+  binLid(room, sm(A[26] + .2, A[26] + .6, t));
+  const ask = sm(A[22], A[23], t), raise = 1 - ask * .85;
+  pose(raise, ask * (1 - sm(A[27], A[27] + .6, t)) + 0);
+  const back = sm(A[27] + .2, END - .3, t); if (back > 0) pose(raise + (1 - raise) * back, 0);   // loop: back to frame-0 pose
+  bag.visible = tossK < .02 || back > .5; fly.visible = !bag.visible && tossK < 1 && back <= .5;
+  if (fly.visible) fly.position.copy(arcs.point(0, tossK));
+  man.getObjectByName('head') && (man.getObjectByName('head').rotation.x = .25 * Math.sin(Math.PI * sm(A[26] - .1, A[26] + .5, t)) * (t < A[26] + .6 ? 1 : 0));
+  const arcK = Math.max(win(t, -1, B[2] + .3, .3), win(t, A[8], B[10] + .3, .3), win(t, A[11], B[14], .3) * .7);
+  arcs.set([arcK + sm(A[11], A[12], t) * win(t, A[11], B[14], .3) * .3, arcK * (1 - .6 * win(t, A[11], B[14], .3))], {pulse: win(t, A[8], B[10], .3)});
+  wave.update(t, win(t, A[3], B[6], .3));
+  pages.update(t, win(t, A[15], B[16] + .3, .3));
+  tw.set({en: sm(A[18], A[18] + .6, t) * (1 - sm(A[22] - .2, A[22] + .3, t)), he: sm(A[18] + .3, A[19], t) * (1 - sm(A[22] - .2, A[22] + .3, t)), slang: sm(A[20], A[20] + .4, t) * (1 - sm(A[22] - .2, A[22] + .3, t))});
+  const [cp, ct] = camPath(t, [
+    k(0, EYE0), k(B[2] - .2, EYE1), k(A[3] + .7, WIDE), k(B[4], WIDE2),
+    k(A[5] + .5, HEAD), k(B[6], HEADC), k(A[7] + .5, ARC), k(B[10], ARC2),
+    k(A[11] + .5, CTX), k(B[14], CTX2), k(A[15] + .5, PG), k(B[16], HEAD),
+    k(A[17] + .6, TWR), k(B[21], TWR2), k(A[22] + .6, ASK), k(B[26], ASK2),
+    k(A[27] + .3, EYE1), k(END, EYE0)]);
+  PL.update(t, ct);
+  const eye = t < A[3] + .2 || t > A[27] + .2;
+  return {cp, ct, noFlash: true, fov: eye ? 66 : 55, overlay: t2 => {
+    const c = st.ctx, P = v => st.proj(v);
+    const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c', icon = ''} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl'; const s = icon + txt;
+      const w = c.measureText(s).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;
+      c.fillStyle = fg; c.textAlign = 'center'; c.fillText(s, x, y + size * .36); c.restore(); };
+    // 5-6: voice → text, typed in a floating box joined to the head
+    const ty = win(t2, A[6] - .1, B[6] + .6, .3);
+    if (ty > .02) { const [hx, hy] = P(head); const full = 'תעיף את זה', n = Math.max(1, Math.round(full.length * sm(A[6], B[6] - .2, t2)));
+      c.save(); c.globalAlpha = ty; c.setLineDash([12, 10]); c.strokeStyle = '#8ea6ff'; c.lineWidth = 4; c.beginPath(); c.moveTo(hx, hy - 30); c.lineTo(540, 560); c.stroke(); c.restore();
+      box(540, 520, full.slice(0, n) + (n < full.length ? '|' : ''), ty, {size: 64}); }
+    // 8-10: the word splits into two meanings
+    const wd = win(t2, A[8] - .1, B[10] + .4, .3);
+    box(540, 470, 'תעיף', wd * (1 - sm(A[9] - .2, A[9] + .2, t2)), {size: 70});
+    box(330, 520, 'לזרוק לפח', wd * sm(A[9] - .1, A[9] + .3, t2), {icon: '🗑️ '});
+    box(760, 620, 'להעיף באוויר', wd * sm(A[10] - .1, A[10] + .3, t2), {icon: '🪟 '});
+    // 12-14: context callouts (white, on top of everything)
+    const L = (a, b, lab, p, dx, dy) => { if (t2 > a - .1 && t2 < b + .4) { const [x, y] = P(p); st.callout(Math.min(880, Math.max(200, x + dx)), y + dy, lab, x, y, win(t2, a, b + .3, .25), 44); } };
+    L(A[12], B[14], 'מה המצלמות רואות', S(bot, 'wristR'), 0, -330);
+    L(A[13], B[14], 'מה אמרתם קודם', mouth, 0, -260);
+    L(A[14], B[14], 'מה אנשים מתכוונים', head, 0, -420);
+    // 18-21: tower labels are drawn by textTowers; 23-26: the robot asks back
+    const q = win(t2, A[25] - .1, A[26] + 1.2, .3);
+    if (q > .02) { const [hx, hy] = P(head); box(Math.min(820, Math.max(260, hx)), Math.max(420, hy - 170), 'לזרוק לפח?', q, {size: 62, bg: '#8ea6ff'}); }
+  }};
+});
+st.ready();
+</script></body></html>
