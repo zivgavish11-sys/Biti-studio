@@ -97,3 +97,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-25 [media] Ziv approved ("כן וכן"): Biti = bitiOrb with personality (orbRig moods) and the mid follow moment component (engine/lib/follow-mid.js midFollow), both from ep027 → rules in docs/agents/video.md.
 - 2026-11-25 [media] Ziv picked mid follow version B (small real timer with hundredths 'ההסבר ממשיך בעוד', draining line, inside the card) → `timer: true` in docs/agents/video.md.
 - 2026-11-25 Ziv: from ep027 two CTAs in two places — mid = follow, end = short comment question (one-word answer), replacing the spoken follow ending; end card keeps follow button visually. docs/agents/video.md.
+- 2026-11-25 Ziv: end comment question moved to start from ep028 (ep027 already sent).
