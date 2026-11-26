@@ -1,0 +1,120 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP030-backseat — pro-v3 daylight, sunny Israeli open-air parking lot (media run 19c kit), frame0 eye level at the rear window. Hook title by Ziv: "איך הרכב יודע שנשאר תינוק מאחור?"
+// Phrases: 0-1 hook (ceiling radar feels a baby breathing) | 2-3 how does it know | 4-9 most cars: door logic + reminder | 10-14 just a guess (bag)
+//          15-18 ceiling radar, waves down, echo back | 19-20 any movement changes the echo | 21-25 breathing + sub-mm | 26-27 TWIST through the blanket
+//          28-29 MID FOLLOW | 30-33 bag vs baby | 34-37 locked & left → horn + phone (model-dependent) | 38-39 question card
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
+import {orbRig} from '/engine/props/fx-biti.js';
+import {midFollow, endQuestion} from '/engine/lib/follow-mid.js';
+import {waveFan, echoDots, breathe, seeThrough, drawBreath, paintCar} from '/engine/props/fx-radar.js';
+import {cabinLight} from '/engine/props/fx-cabin.js';
+const st = await studio({look: 'hero', episode: 30, fog: .001, outro: 'card', outroAt: 38,
+  hook: ['איך הרכב יודע', 'שנשאר <span class="pill">תינוק</span> מאחור?'], hookEnd: 3.4,
+  keys: ['נושם', 'מאחור?', 'תזכורת,', 'זוכר,', 'האחורית', 'ניחוש.', 'תיק,', 'סתם.', 'בתקרה.', 'הד', 'תזוזה,', 'נשימה.', 'ממילימטר.', 'המטורף:', 'השמיכה!', 'תיק,', 'שנושם.', 'בדגם,', 'לצפור,', 'לטלפון.', 'באוטו?'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END} = st;
+const M = async (n, g = scene) => { const o = (await st.model(n)).object; g.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const lot = await M('outdoor/parkingLot'); lot.updateMatrixWorld(true);
+const car = await M('car/familyCar'); car.position.copy(S(lot, 'carSpot')); car.updateMatrixWorld(true);
+for (const [i, c] of [[2, 'blue'], [4, 'black'], [8, 'red'], [9, 'white']]) { const o = await M('car/sedanLite'); paintCar(o, c); o.position.copy(S(lot, 'bayB' + i)); }
+for (const [i, c] of [[3, 'silver'], [5, 'white'], [6, 'sand'], [10, 'blue']]) { const o = await M('car/sedanLite'); paintCar(o, c); o.position.copy(S(lot, 'bayA' + i)); o.rotation.y = Math.PI; }
+const seat = await M('everyday/infantSeat'); seat.position.copy(S(car, 'rearSeatSpot')); seat.rotation.y = Math.PI; seat.updateMatrixWorld(true);
+const BQ = seat.getObjectByName('babySpot').getWorldQuaternion(new THREE.Quaternion());
+const baby = await M('people/mannequin-baby'); baby.position.copy(S(seat, 'babySpot')); baby.quaternion.copy(BQ);
+const bl = await M('everyday/blanket'); bl.position.copy(S(seat, 'babySpot')).add(V(0, .02, 0)); bl.quaternion.copy(BQ);
+// the bag sits on the middle seat, next to the infant seat (no overlap)
+const bag = await M('everyday/babyBag'); bag.position.copy(S(car, 'rearSeatSpot')).add(V(.48, -.02, 0));
+const mom = await M('people/mannequin-walk');
+const orb = await M('robots/bitiOrb'); orb.position.set(0, 1.6, 0);
+scene.updateMatrixWorld(true);
+const CS = S(car, 'rearSeatSpot'), RAD = S(car, 'ceilingRadarSpot'), CH = () => S(baby, 'chestSpot');
+const door = car.getObjectByName('rearDoorR'), canopy = seat.getObjectByName('canopy'), handle = seat.getObjectByName('handle'), bodyG = car.getObjectByName('body');
+const fan = waveFan(scene, RAD, {mode: 'cone', dir: V(0, -1, 0), vAngle: .7, range: 1.1, speed: .8});
+const dot = echoDots(scene, {r: .015});
+const cabin = cabinLight(scene, car, {power: 1.0});
+const GRAPH = st.screen([.9, .45], (c, t, W, H) => drawBreath(c, t, W, H, {mode: t > A[30] - .3 ? 'compare' : 'baby', k: sm(A[19], A[21] + .6, t) || (t > A[30] ? 1 : 0), ruler: sm(A[24], A[24] + .5, t) * (1 - sm(B[25] + .2, B[25] + .6, t))}), {light: .6});
+const scr = GRAPH.mesh; scene.add(scr); scr.position.copy(CS).add(V(-1.45, .78, 0)); scr.rotation.y = -Math.PI / 2;
+const PL = await proLook(st, {mode: 'outdoor', preset: 'warm', robots: [], people: [mom, baby], focus: CS, exposure: .5, env: .22, fill: .16, sunI: 2.6, sun: [.5, .6, .5], vig: .3});
+const rig = orbRig(st, orb);
+const MF = midFollow(st, {at: A[28], dur: B[29] + .3 - A[28], timer: true});
+const EQ = endQuestion(st, {at: A[38], q: 'הייתם רוצים רדאר כזה באוטו?', options: ['כן', 'לא']});
+const k = (t, s) => [t, V(...s[0]), V(...s[1])];
+const cx = CS.x, cy = CS.y, cz = CS.z; 
+// shots (relative to the rear seat). Car faces +z, right side (open door) = −x.
+const EYE0 = [[cx - 1.45, 1.6, cz - .55], [cx, cy + .22, cz - .05]], EYE1 = [[cx - 1.3, 1.6, cz - .35], [cx, cy + .22, cz - .05]];
+const WIDE = [[cx - 8, 14, cz + 16], [cx, 0, cz]], WIDE2 = [[cx - 10, 7, cz - 8], [cx - 2, 0, cz - 3]];
+const DOOR = [[cx - 3.4, 1.6, cz - 1.4], [cx - .4, .8, cz + .1]], DOOR2 = [[cx - 3.0, 1.5, cz - .9], [cx - .3, .8, cz + .1]];
+const DASH = [[cx - .25, 1.25, cz + 1.3], [cx + .35, 1.0, cz + 2.4]];
+const SEATW = [[cx - 2.2, 1.95, cz - .8], [cx, cy + .2, cz - .05]], RADC = [[cx - 1.4, 1.05, cz - .15], [cx, 1.35, cz]];
+const FAN = [[cx - 1.9, 1.7, cz - 1.0], [cx, cy + .45, cz]], CHC = [[cx - .85, 1.75, cz - .6], [cx, cy + .25, cz - .05]];
+const GR = [[cx - 3.1, 1.3, cz + .9], [cx - 1.0, 1.0, cz]], CMP = [[cx - 3.2, 1.45, cz + .2], [cx - .4, .9, cz]];
+const LOCK = [[cx - 7, 2.2, cz + 5], [cx - 2, .9, cz - 1]], END1 = [[cx - 3.4, 1.55, cz + .4], [cx, .95, cz]];
+st.frame(t => {
+  MF.update(t); EQ.update(t);
+  // door: open in the hook (eye at the open rear window), opens on "פתחתם את הדלת", for the bag, for the inside shots; closed when locked
+  // door opens only on "פתחתם את הדלת" and for the bag; the inside is shown by an x-ray of the body (grouper style), not through the door
+  const dk = Math.min(1, win(t, A[6], B[7] + .4, .4) + win(t, A[11] - .2, B[12] + .3, .4));
+  door.rotation.y = 1.15 * dk; canopy.visible = false; if (handle) handle.rotation.x = -1.4;   // carry handle folded back so the baby reads
+  const gk = Math.min(1, win(t, -1, 3.8, .3) + win(t, A[15] - .2, B[33] + .4, .4) + sm(A[38] - .4, A[38], t));
+  seeThrough(bodyG, gk, {min: .1});
+  cabin.set(.6 + .4 * gk);
+  bag.visible = win(t, A[11] - .3, B[14] + .3, .3) + win(t, A[30] - .3, B[33] + .3, .3) > .5;
+  // waves from the ceiling radar + chest echo dot
+  fan.update(t, Math.min(1, win(t, -1, 3.8, .3) + win(t, A[16], B[27] + .3, .3) + win(t, A[30], B[33] + .3, .3)));
+  const ph = breathe(baby, t); const chs = CH();
+  dot.set(t < 3.8 || (t > A[18] && t < B[27]) ? [chs.add(V(0, .05 + .012 * ph, 0))] : [], {size: .022});
+  seeThrough(bl, win(t, A[27] - .1, B[29] + .3, .3));
+  GRAPH.update(t); scr.visible = win(t, A[19], B[25] + .3, .3) + win(t, A[30] - .3, B[33] + .3, .3) > .02;
+  // parent: walks away from the car in the wide shot and on the lock beat
+  const walk = Math.max(sm(2.6, 6.6, t), sm(A[34], B[37], t) * (t > A[34] ? 1 : 0));
+  mom.visible = (t > 2.3 && t < 7) || (t > A[34] - .2 && t < B[37] + .4); mom.position.set(cx - 2.2 - 6 * walk, 0, cz - 1.0 - 3 * walk); mom.rotation.y = -Math.PI * .75;
+  // camera
+  const KF = [k(0, EYE0), k(2.2, EYE1), k(3.0, WIDE), k(B[3], WIDE2), k(A[4] + .3, DOOR), k(B[5], DOOR2), k(A[7] + .2, DOOR2), k(B[7], SEATW),
+    k(A[8] + .3, DASH), k(B[9], DASH), k(A[10] + .3, SEATW), k(B[14], SEATW), k(A[15] + .3, RADC), k(B[16], RADC), k(A[17] + .3, FAN), k(B[20], FAN),
+    k(A[21] + .3, CHC), k(B[23], CHC), k(A[24] + .3, GR), k(B[25], GR), k(A[26] + .3, CHC), k(B[27], CHC), k(A[28] + .3, SEATW), k(B[29], SEATW),
+    k(A[30] + .3, CMP), k(B[33], CMP), k(A[34] + .3, LOCK), k(B[37], LOCK), k(A[38] + .3, END1), k(END, END1)];
+  const [cp, ct] = camPath(t, KF);
+  // Biti: hook (flies in, points at the ceiling), twist + mid follow, end card big in front
+  const F = ct.clone().sub(cp).normalize(), Rv = new THREE.Vector3().crossVectors(F, V(0, 1, 0)).normalize();
+  const camFront = (f, r, u) => cp.clone().addScaledVector(F, f).addScaledVector(Rv, r).add(V(0, u, 0));
+  const on = win(t, .4, 3.0, .3) + win(t, A[26] - .1, B[29] + .3, .3) + sm(A[38] - .2, A[38] + .3, t);
+  orb.visible = on > .02; const endK = sm(A[38] - .3, A[38] + .2, t);
+  const op = t < 3.2 ? camFront(1.2, -.65 + .4 * sm(.3, 1.0, t), .18) : t < A[38] - .3 ? camFront(1.1, -.42, .14) : camFront(2.2, 0, -.02);
+  orb.scale.setScalar((.55 + .45 * endK + .12 * win(t, .8, 2.2, .4)) * Math.max(.001, Math.min(1, on)));
+  rig.update(t, {mood: t < 3.2 ? 'curious' : t < A[28] ? 'surprise' : t < A[38] ? 'happy' : t < B[39] + .1 ? 'ask' : 'happy', point: t > .9 && t < 3.0 ? 1 : 0, look: [0, -.1], talk: t > A[38] && t < B[39] ? .5 + .4 * Math.sin(t * 17) : 0});
+  orb.position.set(op.x, op.y + (orb.position.y - 1.6), op.z); orb.lookAt(cp.x, orb.position.y, cp.z);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true, fov: t < 2.8 ? 58 : 52, overlay: t2 => {
+    const c = st.ctx, P = v => st.proj(v);
+    const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
+      const w = c.measureText(txt).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;
+      c.fillStyle = fg; c.textAlign = 'center'; c.fillText(txt, x, y + size * .36); c.restore(); };
+    const over = (p, txt, al, dy, o = {}) => { const [x, y, zz] = P(p); if (zz > 1) return; box(Math.min(860, Math.max(220, x)), Math.min(1100, Math.max(470, y + dy)), txt, al, o); };
+    const card = (y, lines, al, {w = 720} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; const h = 60 + lines.length * 74; st.rr(540 - w / 2, y, w, h, 28); c.fillStyle = '#fff'; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 24; c.fill(); c.shadowBlur = 0;
+      c.direction = 'rtl'; c.textAlign = 'right'; lines.forEach(([txt, o = {}], i) => { c.globalAlpha = al * (o.a ?? 1); c.font = `700 ${o.size || 48}px Rubik`; c.fillStyle = o.fg || '#0a0c1c'; c.fillText(txt, 540 + w / 2 - 40, y + 78 + i * 74); }); c.restore(); };
+    // 4-5 doesn't see the child
+    box(540, 480, 'לא רואה את הילד', win(t2, A[5] - .1, B[5] + .4, .3), {size: 54});
+    // 6-7 memory: rear door opened
+    card(470, [['🧠 זוכר:', {size: 44}], ['הדלת האחורית נפתחה', {size: 50}]], win(t2, A[6], B[7] + .4, .3), {w: 660});
+    // 8-9 reminder at the end of the trip
+    card(470, [['⚠️ בדקו את המושב האחורי', {size: 48}]], win(t2, A[8] + .2, B[9] + .5, .3), {w: 760});
+    // 10-14 just a guess: same reminder for a bag
+    box(540, 480, 'רק ניחוש', win(t2, A[10], B[10] + .4, .3), {size: 56, bg: '#8ea6ff'});
+    card(470, [['⚠️ בדקו את המושב האחורי', {size: 48}], ['…אבל זה רק תיק', {size: 44, a: sm(A[12], A[12] + .4, t2)}]], win(t2, A[11] + .3, B[12] + .4, .3), {w: 760});
+    over(CS.clone().add(V(0, .55, 0)), '?', win(t2, A[13], B[14] + .4, .3), -40, {size: 90});
+    // 15-18 radar
+    over(RAD, 'רדאר בתקרה', win(t2, A[16] - .1, B[18] + .3, .3), -120, {size: 46, bg: '#8ea6ff'});
+    // 26-27 twist
+    box(540, 480, 'עובר דרך השמיכה', win(t2, A[27] - .1, B[27] + .5, .3), {size: 56, bg: '#8ea6ff'});
+    // 34-37 locked and left
+    const lk = win(t2, A[34], B[37] + .4, .3);
+    card(470, [['🔒 האוטו ננעל', {size: 46}], ['📢 צפירה', {size: 50, a: sm(A[36], A[36] + .4, t2)}], ['📱 יש תנועה במושב האחורי', {size: 44, a: sm(A[37], A[37] + .4, t2)}]], lk, {w: 740});
+    box(540, 1110, 'תלוי בדגם', win(t2, A[35], B[37] + .4, .3), {size: 42, bg: 'rgba(255,255,255,.85)'});
+  }};
+});
+st.ready();
+</script></body></html>
