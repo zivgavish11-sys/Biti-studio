@@ -104,3 +104,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 
 - 2026-11-27 (Ziv → video): reels are ~50 s or longer and explain properly; no short explanations. Rule in docs/agents/video.md §2. Applied from ep029–030.
 - 2026-11-27 (Ziv → media, after the side-by-side demo): camera v3 test on ep032–ep036 (5 videos): ramp & hold, lens + depth of field, breathing; NO motion blur (he declined the longer render). Tag camera:'v3'. At ep036 the video agent reminds Ziv to compare these videos with the others. Rule in docs/agents/video.md. Blender: not now (one-shot test after this test).
+- 2026-11-27 (Ziv → media): build the Blender infrastructure now; the Blender test itself starts after ep036 (after the camera-v3 test). Infra in tools/blender/.

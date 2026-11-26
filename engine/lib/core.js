@@ -314,5 +314,6 @@ export async function studio(opts = {}) {
     composer.render(); await new Promise(res => requestAnimationFrame(() => res())); return true;
   };
   await document.fonts.ready;
+  window.__studio = api;   // media 2026-11-27: Blender bridge (tools/blender) reads the scene from here
   return api;
 }
