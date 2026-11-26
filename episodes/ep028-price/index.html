@@ -11,6 +11,8 @@ import {proLook} from '/engine/lib/look-pro.js';
 import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
 import {orbRig} from '/engine/props/fx-biti.js';
 import {midFollow, endQuestion} from '/engine/lib/follow-mid.js';
+import {camV3} from '/engine/lib/cam-v3.js';   // media 2026-11-27 camera test (?cam=v3 only; default render unchanged)
+const CAMV3 = new URLSearchParams(location.search).get('cam') === 'v3';
 const st = await studio({look: 'hero', episode: 28, fog: .001, outro: 'card', outroAt: 26,
   hook: ['<span class="pill">6,000$</span> מול', '<span class="pill">20,000$</span>'], hookEnd: 3.0,
   keys: ['אופנוע', 'מכונית', 'בבית', 'משלמים', 'מנוע', 'תמסורת', 'וחיישן', 'עשרות', 'ילד', 'למפתחים', 'אדם', 'רך', 'מעשרים', 'כוס', 'המטורף', 'מראש', 'חודשי', 'ליסינג', 'הברית', 'ירד', 'במנוי'],
@@ -35,6 +37,7 @@ const PL = await proLook(st, {mode: 'outdoor', robots: [], people: [kid, man], f
 // after proLook: dark alloy for the cheap one, soft light-grey knit for the expensive one (brand light-blue accents kept)
 const wR = TJ('wristR'); wR.add(glass); glass.position.set(0, -.1, .045);
 const rig = orbRig(st, orb);
+const C3 = CAMV3 ? camV3(st) : null;
 const MF = midFollow(st, {at: A[22], dur: B[23] + .3 - A[22], timer: true});
 const EQ = endQuestion(st, {at: A[26], q: 'הייתם לוקחים רובוט במנוי?', options: ['כן', 'לא']});
 // joints we light up (dozens): every joint node the rig has
@@ -66,13 +69,14 @@ st.frame(t => {
   const op2 = V(.05, 1.75, -.6).lerp(V(1.0, 1.45, -.75), tw).lerp(V(.05, 1.18, 1.15), endK); orb.position.x = op2.x; orb.position.z = op2.z;
   rig.update(t, {mood: t < 3 ? 'curious' : t < A[22] ? 'surprise' : t < A[26] ? 'happy' : t < B[28] + .1 ? 'ask' : 'happy', point: t < 2.8 ? 1 : 0, look: [0, -.2], talk: t > A[26] && t < B[28] ? .5 + .4 * Math.sin(t * 17) : 0});
   orb.position.y += op2.y - 1.75; orb.lookAt(st.cam.position.x, orb.position.y, st.cam.position.z);
-  const [cp, ct] = camPath(t, [
+  const KF = [
     k(0, EYE0), k(B[3], EYE1), k(A[4] + .5, WIDE), k(A[5] + .4, XR), k(B[6], JNT), k(A[7] + .3, XR2), k(B[8], XR),
     k(A[9] + .4, SM), k(B[11], SM2), k(A[12] + .4, TL), k(B[13], TL), k(A[14] + .4, HNDW), k(B[16], HNDW2),
-    k(A[17] + .5, SPOT), k(B[23], SPOT2), k(A[24] + .4, USA), k(B[25], USA), k(A[26] + .3, EYE1), k(END, EYE0)]);
+    k(A[17] + .5, SPOT), k(B[23], SPOT2), k(A[24] + .4, USA), k(B[25], USA), k(A[26] + .3, EYE1), k(END, EYE0)];
+  let [cp, ct] = camPath(t, KF), fovV3 = null; if (C3) { const r = C3.path(t, KF); cp = r.cp; ct = r.ct; fovV3 = r.fov; }
   PL.update(t, ct);
   const eye = t < A[4] || t > A[26] + .2;
-  return {cp, ct, noFlash: true, fov: eye ? 60 : 55, overlay: t2 => {
+  return {cp, ct, noFlash: true, fov: fovV3 ?? (eye ? 60 : 55), overlay: t2 => {
     const c = st.ctx, P = v => st.proj(v);
     const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
       const w = c.measureText(txt).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;

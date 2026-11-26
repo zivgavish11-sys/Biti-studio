@@ -28,6 +28,7 @@ def open_page(p, epdir, port):
     pg.on("pageerror", lambda e: print("pageerror:", e))
     rel = os.path.relpath(os.path.abspath(epdir), REPO)
     q = f"?style={os.environ['STYLE']}" if os.environ.get("STYLE") else ""  # STYLE=clean -> clean look
+    if os.environ.get("QUERY"): q += ("&" if q else "?") + os.environ["QUERY"]   # e.g. QUERY=cam=v3 (media 2026-11-27 camera test)
     pg.goto(f"http://127.0.0.1:{port}/{rel}/index.html{q}")
     pg.wait_for_function("window.ready===true", timeout=120000)
     return b, pg
@@ -36,6 +37,8 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("mode"); ap.add_argument("epdir"); ap.add_argument("arg", nargs="?")
     ap.add_argument("--from", dest="a", type=float, default=0.0); ap.add_argument("--to", dest="b", type=float, default=None)
     ap.add_argument("--scale", type=float, default=1.0); ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--mblur", type=int, default=1, help="motion blur: sub-frames per frame (e.g. 6); 1 = off")
+    ap.add_argument("--shutter", type=float, default=.5, help="shutter as a fraction of the frame (0.5 = 180 deg)")
     o = ap.parse_args()
     srv = serve(o.port)
     with sync_playwright() as p:
@@ -57,7 +60,17 @@ def main():
                                    "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p", "-r", "30", tmp], stdin=subprocess.PIPE)
             n = int(round((end - o.a) * 30)); t0 = time.time()
             for i in range(n):
-                pg.evaluate(f"renderAt({(o.a + i / 30) / o.scale})"); ff.stdin.write(pg.screenshot(type="jpeg", quality=92))
+                if o.mblur > 1:   # average sub-frames across the shutter (centred on the frame time) = real motion blur
+                    import numpy as np, io
+                    from PIL import Image
+                    acc = None
+                    for s in range(o.mblur):
+                        ts = o.a + i / 30 + (s / (o.mblur - 1) - .5) * o.shutter / 30
+                        pg.evaluate(f"renderAt({ts / o.scale})"); im = np.asarray(Image.open(io.BytesIO(pg.screenshot(type="png"))).convert("RGB"), dtype=np.float32)
+                        acc = im if acc is None else acc + im
+                    b2 = io.BytesIO(); Image.fromarray((acc / o.mblur).clip(0, 255).astype("uint8")).save(b2, "JPEG", quality=92); ff.stdin.write(b2.getvalue())
+                else:
+                    pg.evaluate(f"renderAt({(o.a + i / 30) / o.scale})"); ff.stdin.write(pg.screenshot(type="jpeg", quality=92))
                 if i % 150 == 0: print(f"frame {i}/{n} {round(time.time()-t0)}s", flush=True)
             ff.stdin.close(); rc = ff.wait()
             if rc == 0: os.replace(tmp, o.arg)
