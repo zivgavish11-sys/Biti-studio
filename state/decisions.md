@@ -101,3 +101,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-25 Ziv: track CTA placement + Biti per episode (episodes.json cta tag); review ~6.12 vs baseline ep017–ep026 (boss).
 - 2026-11-25 [media] Ziv approved the end comment question card v2 (no white box: open white question + dark pills; Biti big in front asking; the episode's own world behind) — from ep028 → docs/agents/video.md.
 - 2026-11-26 (Ziv, video chat): Biti never covered when on screen; Biti a bit bigger or flies in from the side (attention without overdoing); robots obey physics (no driving through objects); a fresh creative set every episode (ep026–028 reused one house); media treats every task as the most important job. docs/agents/video.md + inbox/media.
+
+- 2026-11-27 (Ziv → video): reels are ~50 s or longer and explain properly; no short explanations. Rule in docs/agents/video.md §2. Applied from ep029–030.
