@@ -33,7 +33,7 @@ const deckPts = boxPoints(road.getObjectByName('deck'), .6, {faces: ['-z']}).fil
 const gantryPts = boxPoints(road.getObjectByName('gantry'), .5, {faces: ['bottom']}).filter(p => Math.abs(p.x) < 5.5);
 const manPts = discPoints(MAN, .35, .12);
 const jamPts = boxPoints(jam[0], .35, {faces: ['-z']});
-const trip = echoTrip(scene, V(0, .5, 0), V(0, 1.5, BE.z));
+const TRF = V(0, .5, 0), TRT = V(0, 1.5, 60); const trip = echoTrip(scene, TRF, TRT);   // factcheck: a target 60 m ahead = 400 ns, same as the caption
 const bumper = ['bumperF', 'grille'].map(n => car.getObjectByName(n)).filter(Boolean), shell = car.getObjectByName('radarShell');
 const PL = await proLook(st, {mode: 'outdoor', preset: 'warm', robots: [], people: [], focus: V(0, 1, 40), exposure: .28, env: .16, fill: .12, sunI: 2.6, sun: [.4, .6, -.6], vig: .36});
 const rig = orbRig(st, orb);
@@ -66,6 +66,7 @@ st.frame(t => {
   else if (t > A[35] - .1 && t < B[37] + .3) pts = [...dots.flatten(deckPts, 1.0, .85 * flat), ...dots.flatten(jamPts, 1.0, .85 * flat)];
   dots.set(pts, {k: pts.length ? 1 : 0, size: (t > A[7] - .2 && t < B[7] + .3) ? .06 : size});
   // echo trip (time → distance)
+  TRF.copy(RS); TRT.set(RS.x, 1.5, RS.z + 60);
   trip.at(t > A[8] && t < B[9] ? sm(A[8], A[8] + 2.2, t) * .999 : 0);
   // camera
   const cz = car.position.z;
@@ -111,7 +112,7 @@ st.frame(t => {
     // radar behind the front
     over(RS, 'רדאר', win(t2, A[5] - .2, B[7] + .2, .3), -230, {size: 48, bg: '#8ea6ff'});
     // time → distance
-    const tu = sm(A[8], A[8] + 2.2, t2); drawTimer(cvT.getContext('2d'), t2, 560, 300, {u: tu, dist: Math.round(BE.z - zCar(t2))}); blit(cvT, 260, 470, win(t2, A[8], B[9] + .4, .3));
+    const tu = sm(A[8], A[8] + 2.2, t2); drawTimer(cvT.getContext('2d'), t2, 560, 300, {u: tu, dist: 60}); blit(cvT, 260, 470, win(t2, A[8], B[9] + .4, .3));
     // wave change → speed
     drawDoppler(cvD.getContext('2d'), t2, 700, 330, {mode: 'toward', tag: 'הגל חוזר דחוס → מתקרב'}); blit(cvD, 190, 470, win(t2, A[10], B[11] + .4, .3));
     // across, not up: side view smear
