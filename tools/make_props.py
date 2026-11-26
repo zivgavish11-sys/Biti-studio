@@ -26,7 +26,8 @@ import {KITCHORES} from '/engine/props/kit-chores.js';
 import {KIT028} from '/engine/props/kit-ep028.js';
 import {KITSHOW} from '/engine/props/kit-showroom.js';
 import {KIT031} from '/engine/props/kit-ep031.js';
-const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM, ...KITCABIN, ...KITWINDOW, ...KITNEWS, ...KITBITI, ...KITHOME26, ...KITCHORES, ...KIT028, ...KITSHOW, ...KIT031};
+import {KIT029} from '/engine/props/kit-ep029.js';
+const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM, ...KITCABIN, ...KITWINDOW, ...KITNEWS, ...KITBITI, ...KITHOME26, ...KITCHORES, ...KIT028, ...KITSHOW, ...KIT031, ...KIT029};
 window.exportAll = async (filter) => {
   const out = {};
   for (const [k, fn] of Object.entries(KIT)) {

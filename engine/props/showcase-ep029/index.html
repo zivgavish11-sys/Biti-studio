@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-27 — ep029 kit check: t 1 frame0 (shoulder eye level, car → overpass, echo wall under the bridge) · 2 high wide braking (brake lights)
+// t 3 radar x-ray on the bumper + flat wave fan · 4 gantry + manhole echoes · 5 jam beyond the bridge · 6 new radar: dots at true heights
+// Render: python3 tools/render.py frames engine/props/showcase-ep029 1,2,3,4,5,6
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V} from '/engine/lib/core.js';
+import {waveFan, echoDots, wallPoints, boxPoints, discPoints, brakes, paintCar} from '/engine/props/fx-radar.js';
+const st = await studio({look: 'hero', fog: .001, hook: [], hookEnd: 0, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async (n) => { const o = (await st.model(n)).object; scene.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const road = await M('road/dayHighway'); road.updateMatrixWorld(true);
+const car = await M('car/radarSedan'); car.updateMatrixWorld(true);
+const jam = []; for (let i = 0; i < 4; i++) { const c = await M('car/sedanLite'); paintCar(c, ['blue', 'red', 'white', 'black'][i]); c.position.copy(S(road, 'jamSpot' + i)); jam.push(c); }
+const BR = brakes(car);
+const fan = waveFan(scene, V(0, 0, 0), {mode: 'flat', hAngle: 1.1, vAngle: .12, range: 45});
+const dots = echoDots(scene, {r: .09});
+const under = S(road, 'bridgeEdge'); const wall = wallPoints(V(0, 0, under.z), 9, 5.2, .45, .15);
+const gantryPts = boxPoints(road.getObjectByName('gantry'), .5, {faces: ['bottom']}).filter(p => Math.abs(p.x) < 5.5);
+const manPts = discPoints(S(road, 'manholeSpot'), .35, .12);
+const deckPts = boxPoints(road.getObjectByName('deck'), .6, {faces: ['-z']}).filter(p => Math.abs(p.x) < 5.5);
+const PL = await proLook(st, {mode: 'outdoor', preset: 'warm', robots: [], people: [], focus: V(0, 1, 30), exposure: .62, env: .28, fill: .2, sunI: 2.6, sun: [.4, .6, -.6]});
+st.frame(t => {
+  const sh = Math.max(1, Math.min(6, Math.floor(t + .001)));
+  car.position.set(0, 0, sh === 1 ? 15 : sh === 2 ? 48 : sh === 6 ? 52 : 20); car.updateMatrixWorld(true);
+  car.rotation.x = sh === 2 ? .025 : 0; BR.set(sh === 2 ? 1 : 0);
+  fan.group.position.copy(S(car, 'radarSpot')); fan.update(t, sh === 3 || sh === 1 ? 1 : 0);
+  car.getObjectByName('radarShell').visible = sh !== 3;
+  const pts = sh === 1 ? wall : sh === 4 ? [...gantryPts, ...manPts] : sh === 6 ? deckPts : [];
+  dots.set(sh === 1 ? dots.flatten(wall, .5, .0) : pts, {k: 1, size: sh === 4 ? .07 : .09});
+  const v = [null, [[-7.0, 1.6, 2], [0, 2.2, 55]], [[-14, 16, 30], [0, 0, 52]], [[1.9, .75, 25.2], [0, .5, 22.4]], [[-6, 2.5, 4], [0, 3.5, 22]], [[-9, 9, 40], [3, 0, 80]], [[-10, 4, 40], [0, 3.5, 58]]][sh];
+  PL.update(t, V(...v[1])); return {cp: V(...v[0]), ct: V(...v[1]), noFlash: true, fov: 50};
+});
+st.ready();
+</script></body></html>

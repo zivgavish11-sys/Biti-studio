@@ -34,7 +34,7 @@ const tube = (pts, r, m, name, seg = 64) => { const v = pts.map(p => new THREE.V
 /** quad from 4 corners (counter-clockwise seen from the front) */
 const quad = (a, b, c, d, m, name) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute([...a, ...b, ...c, ...a, ...c, ...d], 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1], 2)); g.computeVertexNormals(); const o = mesh(g, m, name); o.castShadow = false; return o; };
 /** side-window polygon in the plane x = xx (z,y points) */
-const sidePoly = (xx, pts, m, name) => { const s = new THREE.Shape(); pts.forEach(([z, y], i) => i ? s.lineTo(z, y) : s.moveTo(z, y)); const g = new THREE.ShapeGeometry(s); g.rotateY(-Math.PI / 2); g.translate(xx, 0, 0); const o = mesh(g, m, name); o.castShadow = false; return o; };
+export const sidePoly = (xx, pts, m, name) => { const s = new THREE.Shape(); pts.forEach(([z, y], i) => i ? s.lineTo(z, y) : s.moveTo(z, y)); const g = new THREE.ShapeGeometry(s); g.rotateY(-Math.PI / 2); g.translate(xx, 0, 0); const o = mesh(g, m, name); o.castShadow = false; return o; };
 const rng = seed => { let s = seed * 9301 + 49297; return () => (s = (s * 9301 + 49297) % 233280) / 233280; };
 
 // ---------- the car ----------
@@ -43,13 +43,13 @@ const ARCH = [[1.35, .37], [-1.35, .37]], WR = .32;
 const bottomY = z => { for (const [c, r] of ARCH) { const d = Math.abs(z - c); if (d < r) return .33 + Math.sqrt(r * r - d * d); } return .3; };
 const topY = z => z > 2.05 ? .6 + .2 * Math.cos(Math.min(1, (z - 2.05) / .2) * Math.PI / 2) : z > .9 ? .8 + (.96 - .8) * Math.pow((2.05 - z) / 1.15, .7) : z > -1.7 ? .96 + .03 * (z - .9) / -2.6 : z > -2.1 ? .99 - .04 * (-1.7 - z) / .4 : .95 - .33 * Math.sin(Math.min(1, (-2.1 - z) / .15) * Math.PI / 2);
 /** a body section between z0..z1 (side profile extruded over width w, centred at x) */
-function section(z0, z1, w, x, m, name, n = 40) {
+export function section(z0, z1, w, x, m, name, n = 40) {
   const s = new THREE.Shape(); const zs = []; for (let i = 0; i <= n; i++) zs.push(z0 + (z1 - z0) * i / n);
   zs.forEach((z, i) => i ? s.lineTo(z, bottomY(z)) : s.moveTo(z, bottomY(z))); for (let i = n; i >= 0; i--) s.lineTo(zs[i], topY(zs[i]));
   const g = new THREE.ExtrudeGeometry(s, {depth: w, bevelEnabled: true, bevelThickness: .06, bevelSize: .05, bevelSegments: 4, curveSegments: 4}); g.rotateY(-Math.PI / 2); g.translate(x + w / 2, 0, 0);
   return mesh(g, m, name);
 }
-function wheel(name, x, z) { const g = grp(name); at(g, x, WR, z);
+export function wheel(name, x, z) { const g = grp(name); at(g, x, WR, z);
   const spin = grp(name + 'Spin'); g.add(spin);
   spin.add(at(mesh(new THREE.TorusGeometry(WR - .075, .075, 14, 32), CMAT.tyre), 0, 0, 0, 0, Math.PI / 2));
   spin.add(at(cyl(WR - .1, WR - .1, .2, CMAT.tyre, null, 32), 0, 0, 0, 0, 0, Math.PI / 2));
