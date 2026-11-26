@@ -17,3 +17,9 @@ World: NEW — daytime Israeli intercity highway (Ayalon-style), concrete overpa
 9. 28–33 new radar: echoes stack in height, bridge dots rise above the car, car drives under smoothly.
 10. end question card, highway behind, Biti big centred above Follow.
 - Ziv approved visual script v1 on 2026-11-27.
+
+## Visual script v2 additions (lengthened script, 2026-11-27)
+- after shot 3: echo timing — a pulse goes out, a clock counts until it returns → distance tag; a moving car's echo returns "stretched/squeezed" (wave spacing changes) → speed tag.
+- "scan across, not up": radar beam drawn as a wide flat fan across the lanes, thin in height.
+- "עכשיו תחשבו מה קורה מתחת לגשר": camera flies back to the bridge (return to an earlier object).
+- camera beat: a windshield camera view with a sharp bridge shadow on the road and sun glare, outlined as a fake "obstacle" box.
