@@ -1,4 +1,4 @@
-# Blender bridge (media 2026-11-27, Ziv: build the infrastructure now, start the Blender test after ep036)
+# Blender bridge (media 2026-11-27) — FROZEN by Ziv 2026-11-27 (still comparison looked "not very different"; render ~50× slower). Parked, not in use.
 Our episodes stay written in three.js (scene, camera, captions, Biti, follow moments). The bridge re-renders the 3D in Blender Cycles and puts our overlay back on top.
 
 Setup (each cloud session, ~2 min): `pip install bpy==5.3.0 --break-system-packages`   (Blender 5.3 as a Python module; download.blender.org is blocked, PyPI works)
