@@ -40,7 +40,7 @@ def main():
     ap.add_argument("--light")
     ap.add_argument("--sheet")
     ap.add_argument("--min", type=float, default=14)  # short format 15-20 s (Ziv 2026-11-06)
-    ap.add_argument("--max", type=float, default=46)
+    ap.add_argument("--max", type=float, default=95)  # Ziv 2026-11-27: ~50 s+ explained properly
     ap.add_argument("--outro", type=float, default=0)  # seconds at the end that are the grouper card outro (dark frame around the card is intended)
     a = ap.parse_args()
     v = a.video
