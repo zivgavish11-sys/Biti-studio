@@ -103,3 +103,4 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-26 (Ziv, video chat): Biti never covered when on screen; Biti a bit bigger or flies in from the side (attention without overdoing); robots obey physics (no driving through objects); a fresh creative set every episode (ep026–028 reused one house); media treats every task as the most important job. docs/agents/video.md + inbox/media.
 
 - 2026-11-27 (Ziv → video): reels are ~50 s or longer and explain properly; no short explanations. Rule in docs/agents/video.md §2. Applied from ep029–030.
+- 2026-11-27 (Ziv → media, after the side-by-side demo): camera v3 test on ep032–ep036 (5 videos): ramp & hold, lens + depth of field, breathing; NO motion blur (he declined the longer render). Tag camera:'v3'. At ep036 the video agent reminds Ziv to compare these videos with the others. Rule in docs/agents/video.md. Blender: not now (one-shot test after this test).
