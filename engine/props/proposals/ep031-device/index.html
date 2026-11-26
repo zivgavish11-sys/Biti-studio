@@ -25,14 +25,14 @@ const dev = new THREE.Group(); dev.position.set(.1, .92, .02); scene.add(dev);
 const bodyM = mat(0xf6f4f0, .42);
 const N = 8, R = .045, H = .018, GAP = .005, rims = [];
 for (let i = 0; i < N; i++) {
-  const r = R * (1.15 - .065 * i);
+  const r = R * (1.5 - .17 * i);
   const d = real(new THREE.Mesh(new THREE.CylinderGeometry(r, r, H, 64), bodyM)); d.position.y = i * (H + GAP) + H / 2; d.castShadow = true; dev.add(d);
   if (i < N - 1) {
     const m = new THREE.MeshBasicMaterial({color: 0xd8dde8}); m.userData.real = true;
     const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * .985, r * .985, GAP, 64, 1, true), m); rim.position.y = i * (H + GAP) + H + GAP / 2; dev.add(rim); rims.push(m);
   }
 }
-const cap = real(new THREE.Mesh(new THREE.SphereGeometry(R * (1.15 - .065 * (N - 1)), 64, 16, 0, Math.PI * 2, 0, Math.PI / 2), bodyM)); cap.scale.y = .18; cap.position.y = N * (H + GAP) - GAP; dev.add(cap);
+const cap = real(new THREE.Mesh(new THREE.SphereGeometry(R * (1.5 - .17 * (N - 1)), 64, 16, 0, Math.PI * 2, 0, Math.PI / 2), bodyM)); cap.scale.y = .18; cap.position.y = N * (H + GAP) - GAP; dev.add(cap);
 const glow = new THREE.PointLight(0x8ea6ff, 0, .5); glow.position.set(0, .1, .08); dev.add(glow);
 const OFF = new THREE.Color(0xd8dde8), ON = new THREE.Color(0x7f9bff);
 const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [], focus: V(.1, 1.0, .02), exposure: .5, vig: .28});
