@@ -6,3 +6,4 @@
   - Volvo EX90 interior radar: detects tiny movements, e.g. a sleeping infant breathing; warns if someone is left. Sources: Volvo press D00620BF6B8EC5A6, KBB, InsideEVs.
   - Euro NCAP awards points for child presence detection (CPD protocol v13).
 - Phrase carefully: not every car has it; "חלק מהמכוניות".
+- Hook 1 picked by Ziv 2026-11-27 ("הוא מרגיש תינוק נושם"). Same flow as ep029: recording text only after the fact-checker passes.

@@ -16,3 +16,4 @@ World: NEW — daytime Israeli intercity highway (Ayalon-style), concrete overpa
 8. mid follow card + Biti surprise→happy.
 9. 28–33 new radar: echoes stack in height, bridge dots rise above the car, car drives under smoothly.
 10. end question card, highway behind, Biti big centred above Follow.
+- Ziv approved visual script v1 on 2026-11-27.
