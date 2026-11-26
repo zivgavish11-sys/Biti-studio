@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Export the in-house procedural prop kit (engine/props/kit.js) to GLB files.
-Usage: make_props.py [name-filter]   (kit.js + kit-pro.js + kit-tlv.js; filter "tlv/" = Tel-Aviv kit; filter "pro/" = the realistic news kit; "pool/" = backyard pool kit; "farm/" = orchard + picker drone; "windowBotPro"/"tlvWindowRoom" = ep025 window kit; "car/" = ep024 cabin car (+ road/nightHighway, people/mannequin-driver); space/deepProbe; "biti" = Biti directions; kitchenLiving/crumpledBag/mannequin-sit = ep026; suvRobotaxi/conciergeDesk = news)   → engine/assets/models/<folder>/<name>.glb
+Usage: make_props.py [name-filter]   (kit.js + kit-pro.js + kit-tlv.js; filter "tlv/" = Tel-Aviv kit; filter "pro/" = the realistic news kit; "pool/" = backyard pool kit; "farm/" = orchard + picker drone; "windowBotPro"/"tlvWindowRoom" = ep025 window kit; "car/" = ep024 cabin car (+ road/nightHighway, people/mannequin-driver); space/deepProbe; "biti" = Biti directions; kitchenLiving/crumpledBag/mannequin-sit = ep026; suvRobotaxi/conciergeDesk = news; showroom/geofenceMap/restaurant = run 18)   → engine/assets/models/<folder>/<name>.glb
 Also: make_props.py --preview OUT.jpg  → contact sheet of all props in the classic look (for review).
 """
 import sys, os, base64, threading, http.server, functools
@@ -24,7 +24,8 @@ import {KITBITI} from '/engine/props/kit-biti.js';
 import {KITHOME26} from '/engine/props/kit-home26.js';
 import {KITCHORES} from '/engine/props/kit-chores.js';
 import {KIT028} from '/engine/props/kit-ep028.js';
-const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM, ...KITCABIN, ...KITWINDOW, ...KITNEWS, ...KITBITI, ...KITHOME26, ...KITCHORES, ...KIT028};
+import {KITSHOW} from '/engine/props/kit-showroom.js';
+const KIT = {...KIT0, ...KITPRO, ...KITTLV, ...KITPOOL, ...KITFARM, ...KITCABIN, ...KITWINDOW, ...KITNEWS, ...KITBITI, ...KITHOME26, ...KITCHORES, ...KIT028, ...KITSHOW};
 window.exportAll = async (filter) => {
   const out = {};
   for (const [k, fn] of Object.entries(KIT)) {

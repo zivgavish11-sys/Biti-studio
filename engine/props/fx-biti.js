@@ -49,3 +49,39 @@ export function orbRig(st, orb) {
     point(orb, pk);
   } };
 }
+// ── Media pro 2026-11-26 (video inbox, Ziv): attention moments + "never covered" ─────────────────────────────
+// flyIn(orb, t, {at, from, dur, dist, pop}) — Biti enters from the side (eased, small overshoot), arrives a bit bigger (pop) and settles to 1 in ~0.8 s.
+//   Call every frame AFTER rig.update (it offsets position/scale on top of the hover). from: 'left'|'right'|'up'. Returns progress 0..1.
+//   Before `at` she is hidden (visible=false), so she is never seen floating in place before the entrance.
+const easeOutBack = (x, s = 1.4) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2);
+export function flyIn(orb, t, {at = 0, from = 'left', dur = .7, dist = 1.1, pop = 1.18, cam = null} = {}) {
+  const k = Math.min(1, Math.max(0, (t - at) / dur)); orb.visible = t >= at;
+  if (!orb.userData.s0) orb.userData.s0 = orb.scale.x;
+  const e = easeOutBack(k), off = (1 - e) * dist;
+  const dir = new orb.position.constructor(from === 'up' ? 0 : from === 'left' ? -1 : 1, from === 'up' ? 1 : 0, 0);
+  if (cam) dir.applyQuaternion(cam.quaternion);              // 'left' = screen-left when a camera is given
+  const prev = orb.userData.flyOff; if (prev) orb.position.sub(prev);   // safe to call every frame even if nothing resets x/z
+  orb.userData.flyOff = dir.multiplyScalar(off).clone(); orb.position.add(orb.userData.flyOff);
+  const settle = t < at + dur ? pop * Math.min(1, k * 1.6) + (1 - Math.min(1, k * 1.6)) * .6 : 1 + (pop - 1) * Math.max(0, 1 - (t - at - dur) / .8);
+  orb.scale.setScalar(orb.userData.s0 * settle); orb.rotation.z = (1 - k) * (from === 'right' ? .5 : -.5);
+  return k;
+}
+// attention(orb, t, {at, dur, amt}) — one-second "look here" beat in place: a small grow + ear perk + hop, then back. No glow, no flash.
+export function attention(orb, t, {at = 0, dur = 1, amt = .14} = {}) {
+  const x = (t - at) / dur; if (x < 0 || x > 1) return 0; const k = Math.sin(Math.PI * x);
+  if (!orb.userData.s0) orb.userData.s0 = orb.scale.x;
+  orb.scale.setScalar(orb.userData.s0 * (1 + amt * k)); orb.position.y += .03 * Math.sin(Math.PI * Math.min(1, x * 2));
+  for (const n of ['earL', 'earR']) { const e = orb.getObjectByName(n); if (e) e.rotation.z += (n === 'earL' ? .35 : -.35) * k; }
+  return k;
+}
+// screenBox(obj, cam, W=1080, H=1920) → {x0,y0,x1,y1} pixel rect of Biti on the frame — check it against overlay rects (follow card, captions y≈1290, hook):
+//   Ziv 2026-11-26: Biti is NEVER covered. Use overlaps(screenBox(orb, cam), {x0,y0,x1,y1}) in QA or to slide her aside.
+export function screenBox(obj, cam, W = 1080, H = 1920) {
+  const box = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 };
+  obj.updateWorldMatrix(true, true); const b3 = new (Object.getPrototypeOf(obj.position).constructor)();
+  obj.traverse(o => { if (!o.isMesh || !o.visible) return; o.geometry.computeBoundingBox(); const g = o.geometry.boundingBox;
+    for (let i = 0; i < 8; i++) { b3.set(i & 1 ? g.max.x : g.min.x, i & 2 ? g.max.y : g.min.y, i & 4 ? g.max.z : g.min.z).applyMatrix4(o.matrixWorld).project(cam);
+      const x = (b3.x + 1) / 2 * W, y = (1 - b3.y) / 2 * H; box.x0 = Math.min(box.x0, x); box.x1 = Math.max(box.x1, x); box.y0 = Math.min(box.y0, y); box.y1 = Math.max(box.y1, y); } });
+  return box;
+}
+export const overlaps = (a, b, pad = 12) => !(a.x1 + pad < b.x0 || b.x1 + pad < a.x0 || a.y1 + pad < b.y0 || b.y1 + pad < a.y0);

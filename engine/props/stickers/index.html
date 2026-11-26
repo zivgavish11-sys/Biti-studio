@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent}canvas{display:block}</style></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-26 — Biti story stickers (boss inbox): bitiOrb + orbRig-style moods on a TRANSPARENT background.
+// ?pose=point|surprise|wave|think  → tools/stickers.py renders + trims → engine/assets/stickers/biti-<pose>.png
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {bitiFace} from '/engine/props/fx-biti.js';
+const pose = new URLSearchParams(location.search).get('pose') || 'point';
+const N = 1400, cv = document.createElement('canvas'); document.body.appendChild(cv);
+const r = new THREE.WebGLRenderer({canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true});
+r.setSize(N, N); r.setClearColor(0, 0); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0; r.outputColorSpace = THREE.SRGBColorSpace;
+const scene = new THREE.Scene(); const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .55;
+const key = new THREE.DirectionalLight(0xfff4e6, 2.2); key.position.set(-1.2, 1.6, 2); scene.add(key);
+const rim = new THREE.DirectionalLight(0xc8d2ff, 1.6); rim.position.set(1.5, .8, -1.6); scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x2a2c40, .35));
+const cam = new THREE.PerspectiveCamera(24, 1, .05, 20);
+const orb = (await new GLTFLoader().loadAsync('/engine/assets/models/robots/bitiOrb.glb')).scene; scene.add(orb);
+const G = n => orb.getObjectByName(n);
+G('hoverDisc').visible = false;
+const face = G('face'); face.geometry.computeBoundingBox();
+const fc = document.createElement('canvas'); fc.width = 1024; fc.height = 512; const fx = fc.getContext('2d'); const tex = new THREE.CanvasTexture(fc); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+face.material = new THREE.MeshStandardMaterial({map: tex, emissiveMap: tex, emissive: 0xffffff, emissiveIntensity: .5, roughness: .35});
+// pose table: face mood/look, body tilt z / nod x, ear perk L/R, pointer (arm extension + group rotation), yaw
+const P = {
+  point:    {mood: 'happy',    look: [-.5, 0],  tz: .1,  nx: 0,    eL: .25, eR: .25, arm: 1,  prot: [0, -.35, -.25], yaw: .45},
+  surprise: {mood: 'surprise', look: [0, .1],   tz: 0,   nx: -.16, eL: .5,  eR: .5,  arm: 0,  yaw: -.15},
+  wave:     {mood: 'happy',    look: [.15, 0],  tz: -.14, nx: -.04, eL: .3, eR: .35, arm: .85, prot: [0, -.25, -1.25], yaw: .2},
+  think:    {mood: 'think',    look: [.55, .7], tz: -.12, nx: -.14, eL: -.1, eR: .28, arm: 0, yaw: -.3},
+}[pose];
+const b = G('body'); b.rotation.set(P.nx, 0, P.tz); orb.rotation.y = P.yaw;
+G('earL').rotation.z += P.eL; G('earR').rotation.z -= P.eR;
+G('pointerArm').scale.x = Math.max(.001, P.arm); if (P.prot) G('pointer').rotation.set(...P.prot);
+bitiFace(fx, 1.0, 1024, 512, {mood: P.mood, look: P.look}); tex.needsUpdate = true;
+orb.updateMatrixWorld(true);
+const box = new THREE.Box3().setFromObject(orb), c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3());
+const d = Math.max(s.x, s.y) * 1.25 / (2 * Math.tan(THREE.MathUtils.degToRad(12)));
+cam.position.set(c.x + d * .08, c.y + d * .12, c.z + d); cam.lookAt(c);
+r.render(scene, cam); window.ready = true;
+</script></body></html>

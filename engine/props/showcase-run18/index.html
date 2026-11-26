@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-26 run 18 — new worlds: t 1 = pro/showroom (soft humanoid at the counter + SUV robotaxi on the podium) · t 2 = pro/geofenceMap (zone expansion) · t 3 = buildings/restaurant (service robot on a nav path).
+// Render: python3 tools/render.py frames engine/props/showcase-run18 1,2,3
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V} from '/engine/lib/core.js';
+import {navPath, obstacles, track} from '/engine/props/fx-path.js';
+const st = await studio({look: 'hero', fog: .001, hook: [], hookEnd: 0, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async (n, x = 0, z = 0) => { const o = (await st.model(n)).object; o.position.x += x; o.position.z += z; scene.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const room = await M('pro/showroom'); room.updateMatrixWorld(true);
+const car = await M('pro/suvRobotaxi'); car.position.copy(S(room, 'carSpot')); car.rotation.y = -.6;
+const bot = await M('pro/humanoidSoft'); bot.position.copy(S(room, 'robotSpot')); bot.rotation.y = .25;
+const map = await M('pro/geofenceMap', 30, 0); map.updateMatrixWorld(true);
+const taxi = await M('pro/suvRobotaxi'); taxi.scale.setScalar(.12); taxi.position.copy(S(map, 'carSpot')); taxi.rotation.y = .62;
+const rest = await M('buildings/restaurant', 60, 0); rest.updateMatrixWorld(true);
+const sr = await M('pro/serviceRobot'); const T0 = S(rest, 'runnerStart'), T1 = S(rest, 'table3Spot');
+const obs = obstacles(scene, ['table0', 'table1', 'table2', 'table3', 'pass', 'bar'].map(n => rest.getObjectByName(n)), {pad: .05});
+const trk = track(navPath([T0.x, T0.z], [T1.x, T1.z], obs, {radius: .32}), {speed: .5});
+scene.updateMatrixWorld(true);
+const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [], focus: V(0, 1, 0), exposure: .8});
+st.frame(t => {
+  const p = trk.at((t % 1) * trk.dur); sr.position.set(p.x, 0, p.z); sr.rotation.y = p.ry;
+  map.getObjectByName('zoneNew').scale.setScalar(Math.min(1, .25 + (t % 1) * .9));
+  const v = t < 1.5 ? [[-.2, 2.8, 11.5], [-1.2, 1.0, -.8]] : t < 2.5 ? [[30.6, 5.2, 5.6], [30, 0, -.2]] : [[63.5, 3.2, 6.2], [59.6, .8, -.8]];
+  PL.update(t, V(...v[1])); return {cp: V(...v[0]), ct: V(...v[1]), noFlash: true, fov: 50};
+});
+st.ready();
+</script></body></html>
