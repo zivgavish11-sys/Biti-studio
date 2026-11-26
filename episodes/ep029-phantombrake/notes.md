@@ -25,3 +25,4 @@ World: NEW — daytime Israeli intercity highway (Ayalon-style), concrete overpa
 - camera beat: a windshield camera view with a sharp bridge shadow on the road and sun glare, outlined as a fake "obstacle" box.
 - Ziv approved visual v2 additions on 2026-11-27.
 - 2026-11-27 recording received (raw-voice.mp3). Ziv: hook title on screen = "למה הרכב בולם בלי סיבה?" (replaces "בשבילו, הגשר הזה הוא קיר").
+- align: fixed phrases 35–40 by hand from raw silences (align drifted at the end).
