@@ -27,6 +27,7 @@ const P = {
   point:    {mood: 'happy',    look: [-.5, 0],  tz: .1,  nx: 0,    eL: .25, eR: .25, arm: 1,  prot: [0, -.35, -.25], yaw: .45},
   surprise: {mood: 'surprise', look: [0, .1],   tz: 0,   nx: -.16, eL: .5,  eR: .5,  arm: 0,  yaw: -.15},
   wave:     {mood: 'happy',    look: [.15, 0],  tz: -.14, nx: -.04, eL: .3, eR: .35, arm: .85, prot: [0, -.25, -1.25], yaw: .2},
+  curious:  {mood: 'curious',  look: [-.35, .25], tz: .26, nx: .06, eL: .35, eR: -.2, arm: 0, yaw: .3},
   think:    {mood: 'think',    look: [.55, .7], tz: -.12, nx: -.14, eL: -.1, eR: .28, arm: 0, yaw: -.3},
 }[pose];
 const b = G('body'); b.rotation.set(P.nx, 0, P.tz); orb.rotation.y = P.yaw;

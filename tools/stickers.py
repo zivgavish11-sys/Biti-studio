@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw, ImageFilter
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(REPO, 'engine/assets/stickers'); ACC = (142, 166, 255, 255)
-POSES = (sys.argv[1] if len(sys.argv) > 1 else 'point,surprise,wave,think').split(',')
+POSES = (sys.argv[1] if len(sys.argv) > 1 else 'point,surprise,wave,think,curious').split(',')
 class Q(http.server.SimpleHTTPRequestHandler):
     def log_message(self, *a): pass
 def marks(im, pose):
@@ -21,6 +21,10 @@ def marks(im, pose):
         for k, s in enumerate((.035, .05, .07)):
             cx, cy, R = X + W * (.95 + k * .1), Y + H * (.05 - k * .09), W * s
             d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=ACC)
+    elif pose == 'curious':   # small question mark by the raised ear
+        cx, cy, R = X + W * 1.02, Y + H * .02, W * .07
+        d.arc([cx - R, cy - R, cx + R, cy + R], 180, 400, fill=ACC, width=lw); d.line([cx + R * .35, cy + R * .95, cx, cy + R * 1.5], fill=ACC, width=lw)
+        d.ellipse([cx - lw * .7, cy + R * 2.1 - lw * .7, cx + lw * .7, cy + R * 2.1 + lw * .7], fill=ACC)
     elif pose == 'surprise':
         for a in (-62, -90, -118):
             ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a)); cx, cy = X + W / 2, Y + H * .45
