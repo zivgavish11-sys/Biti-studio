@@ -8,3 +8,4 @@
 - Hook 3 picked 2026-11-27 (AC before you enter), + show hook 4 '10 אפליקציות. קול אחד.' mid-video. Ziv: explain the product fully. Script v1 written; device name in the video = none yet ("קוראים לו בשם") — ask Ziv if it's Biti.
 - Ziv 2026-11-27: the device is NOT Biti; Ziv approves the product look before building.
 - 2026-11-27 recording received. Ziv picked look 2: lamp — white glowing sphere on a wooden base, no screen, light 'breathes' when called. Image for approval pending.
+- align: fixed phrases 40–46 by hand (end drift).
