@@ -11,3 +11,4 @@
 - align: fixed phrases 40–46 by hand (end drift).
 - Ziv 2026-11-27 sent a reference (the AI cone 'Lana' from Netflix's Too Hot to Handle): wants white body + light-blue band that brightens when called. We keep an ORIGINAL shape (not a cone / not that prop): white rounded capsule on a short white base, light-blue band between them. Sketch v2 in engine/props/proposals/ep031-device.
 - Ziv rejected the capsule; asked to copy the Netflix cone — declined (known TV prop). New options sent; Ziv picked 'disc tower': 8 white discs (Ø ~9 cm, ~19 cm tall), light-blue rims between them light up bottom→top with the voice. Sketch v3 in engine/props/proposals/ep031-device (pending OK).
+- Ziv: bottom discs wider, narrowing gradually upward → sketch v3b (stepped taper, top ≈ 63% of bottom Ø).
