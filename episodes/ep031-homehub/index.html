@@ -37,7 +37,7 @@ const paths = floorPaths(scene, [R1, R2]);
 const c1 = new THREE.CatmullRomCurve3(R1.map(p => V(p.x, 0, p.z)), false, 'centripetal'), c2 = new THREE.CatmullRomCurve3(R2.map(p => V(p.x, 0, p.z)), false, 'centripetal');
 const flap = apt.getObjectByName('flap'), leaf = apt.getObjectByName('mamad').getObjectByName('leaf'), fdoor = apt.getObjectByName('fridge').getObjectByName('door');
 const flames = ['flame0', 'flame1'].map(n => apt.getObjectByName(n)).filter(Boolean);
-const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [man, walkA, walkK], focus: D, exposure: .62});
+const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [man, walkA, walkK], focus: D, exposure: .5, vig: .3});
 const MF = midFollow(st, {at: A[38], dur: B[39] + .3 - A[38], timer: true, slot: 'logo'});
 const EQ = endQuestion(st, {at: A[45], q: 'הייתם קונים כזה לבית?', options: ['כן', 'לא']});
 const k = (t, s) => [t, V(...s[0]), V(...s[1])];
@@ -87,9 +87,10 @@ st.frame(t => {
   const [cp, ct] = camPath(t, KF);
   PL.update(t, ct);
   // night = darker room on the alert (re-hook visual shift)
-  st.renderer.toneMappingExposure = .62 * (1 - .5 * alert);
+  st.renderer.toneMappingExposure = .4 * (1 - .5 * alert);
   return {cp, ct, noFlash: true, fov: t < 2.6 ? 60 : 52, overlay: t2 => {
     const c = st.ctx, P = v => st.proj(v);
+    c.save(); c.fillStyle = 'rgba(10,12,24,.14)'; c.fillRect(0, 0, 1080, 1920); c.restore();   // evening grade (QA glare: white walls)
     const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
       const w = c.measureText(txt).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;
       c.fillStyle = fg; c.textAlign = 'center'; c.fillText(txt, x, y + size * .36); c.restore(); };

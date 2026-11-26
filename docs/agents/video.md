@@ -55,6 +55,7 @@ Right after the twist / surprise moment of every script, one short spoken line: 
 - **Biti never hidden:** whenever Biti is on screen, nothing covers her — not the mid follow card, the end card, captions, tags or 3D objects (in ep027 the follow card covered her). Check her position against every overlay (follow card y≈330, captions y≈1270, end question y≈350) in the preview frames.
 - **Biti gets a moment:** a bit bigger during the video, or she enters flying in from the side — something that makes people look at her for a second, never over the top. She is still never the subject and never bigger than the subject.
 - **Real physics:** a moving robot never passes through objects (a vacuum stops / turns at an obstacle, goes under furniture only where it fits). Check every path against the props.
+- **Biti is part of the world (Ziv 2026-11-27, after ep029):** "שביטי תשתלב בסרטון... שלא תקפוץ סתם אף פעם, תמיד במקום מתאים". She hovers at a real, fitting spot in the scene (above the pavement/road shoulder, next to the car, over the counter) — never glued in front of the camera, never popping in/out by scale. She enters/leaves by flying from a real direction, and moves between spots along a path in the world.
 - **Never the same set twice in a row:** ep026–028 all used the same house — boring. Every episode gets a fresh, creative world (different home, room, outdoor, layout, light); ask media early for a new set per episode and keep upgrading.
 
 ### CTA tracking (Ziv 2026-11-25)

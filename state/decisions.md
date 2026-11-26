@@ -110,3 +110,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-27 (Ziv → media, approved proposal 2): lighting test after the camera-v3 test — ep037–ep040, indoor light from visible sources (lamps/pendants/window), warm-cool contrast, only this change; tag light:'practical'. docs/agents/video.md + inbox/video + inbox/analytics.
 
 - 2026-11-27 (Ziv → video): ep031 keeps the alert scene, as in the original recording (reverses the earlier no-alert note to media).
+
+- 2026-11-27 (Ziv → video): Biti integrated in the world (fitting spot, flies in/out, never pops). docs/agents/video.md.

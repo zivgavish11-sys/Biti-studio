@@ -28,11 +28,12 @@ test -f "$OUT/a.mp4" && test -f "$OUT/b.mp4"
 echo "== final exports"
 # keep the full file <= ~21 MB for long (~50 s+) episodes (Ziv 2026-11-27): video kbps = min(2800, 21 MB budget - 160k audio)
 VBR=$(python3 -c "print(min(2800, int(21*8*1000/$END - 170)))")
+LBR=$(python3 -c "print(min(420, int(3.7*8*1000/$END - 70)))")   # light <= ~3.8 MB
 printf "file a.mp4\nfile b.mp4\n" > "$OUT/list.txt"
 ffmpeg -v error -y -f concat -safe 0 -i "$OUT/list.txt" -i "$OUT/mix.m4a" -map 0:v -map 1:a \
  -c:v libx264 -preset slow -b:v ${VBR}k -maxrate $((VBR*5/4))k -bufsize $((VBR*5/2))k -profile:v high -level 4.1 -pix_fmt yuv420p -r 30 \
  -c:a aac -b:a 160k -shortest -movflags +faststart "$OUT/${SLUG}_full.tmp.mp4" && mv "$OUT/${SLUG}_full.tmp.mp4" "$OUT/${SLUG}_full.mp4"
-ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=480:854 -r 24 -c:v libx264 -preset slow -b:v 420k -maxrate 600k -bufsize 1200k \
+ffmpeg -v error -y -i "$OUT/${SLUG}_full.mp4" -vf scale=480:854 -r 24 -c:v libx264 -preset slow -b:v ${LBR}k -maxrate $((LBR*10/7))k -bufsize $((LBR*20/7))k \
  -profile:v main -level 3.1 -pix_fmt yuv420p -c:a aac -b:a 64k -ac 1 -movflags +faststart "$OUT/${SLUG}_light.tmp.mp4" && mv "$OUT/${SLUG}_light.tmp.mp4" "$OUT/${SLUG}_light.mp4"
 ls -la "$OUT"/*_full.mp4 "$OUT"/*_light.mp4
 
