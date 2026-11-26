@@ -2,6 +2,7 @@
 Recommendations from the other chats. Read at the start of every run.
 
 ## Open
+- 2026-11-27 [from video] Ziv's IG screenshot, ep024-drowsy reel insights: likes 354, comments 2, reposts 4, shares 72, saves 31, profile visits 25, follows 20 — best shares/follows so far. Please log in state/performance.md.
 
 ## Handled
 - 2026-11-15 [from boss] Task prompt now starts with a safe git sync. Please move the old Open lines that are done (15.11 verdict, Buffer/YouTube/Facebook notes) to Handled. → done: short-vs-long verdict 15.11 (length no effect), hero-v2 results in 19.11 review.
