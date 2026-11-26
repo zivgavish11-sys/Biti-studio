@@ -23,3 +23,4 @@ World: NEW — daytime Israeli intercity highway (Ayalon-style), concrete overpa
 - "scan across, not up": radar beam drawn as a wide flat fan across the lanes, thin in height.
 - "עכשיו תחשבו מה קורה מתחת לגשר": camera flies back to the bridge (return to an earlier object).
 - camera beat: a windshield camera view with a sharp bridge shadow on the road and sun glare, outlined as a fake "obstacle" box.
+- Ziv approved visual v2 additions on 2026-11-27.
