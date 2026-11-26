@@ -5,3 +5,4 @@
 - Anonymity: the product is Biti's, never Ziv's name.
 - Status: hooks sent 2026-11-27.
 - 2026-11-27 Ziv: ep031 joins the batch (29–31). Asked for more hook options → sent 4.
+- Hook 3 picked 2026-11-27 (AC before you enter), + show hook 4 '10 אפליקציות. קול אחד.' mid-video. Ziv: explain the product fully. Script v1 written; device name in the video = none yet ("קוראים לו בשם") — ask Ziv if it's Biti.
