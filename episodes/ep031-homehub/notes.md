@@ -4,3 +4,4 @@
 - Israeli features: Home Front Command alert → shelter countdown; Shabbat mode; boiler timing; voice ID per family member; "I'm leaving" check; shopping list → supermarket.
 - Anonymity: the product is Biti's, never Ziv's name.
 - Status: hooks sent 2026-11-27.
+- 2026-11-27 Ziv: ep031 joins the batch (29–31). Asked for more hook options → sent 4.

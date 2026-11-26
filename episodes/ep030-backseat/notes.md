@@ -24,3 +24,4 @@ World: NEW — family car parked in a sunny Israeli open-air parking lot (daytim
 - Ziv approved visual script v1 on 2026-11-27. Waiting for recordings (ep029 + ep030).
 - 2026-11-27 recording received (raw-voice.mp3). Ziv wants a hook title like "איך הרכב יודע שנשאר תינוק ברכב?" — options sent.
 - align: fixed phrases 35–39 by hand from raw silences (end drift).
+- Ziv picked hook title: "איך הרכב יודע | שנשאר [תינוק] מאחור?" (pill = תינוק).
