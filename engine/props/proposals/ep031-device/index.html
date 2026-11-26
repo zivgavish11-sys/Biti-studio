@@ -23,7 +23,7 @@ const board = real(new THREE.Mesh(new THREE.BoxGeometry(.38, .02, .25), mat(0xb0
 // THE DEVICE v3 (Ziv 2026-11-27 picked "disc tower"): stack of white discs; the rims between them light up light-blue one after another with the voice
 const dev = new THREE.Group(); dev.position.set(.1, .92, .02); scene.add(dev);
 const bodyM = mat(0xf6f4f0, .42);
-const N = 8, R = .045, H = .018, GAP = .005, rims = [];
+const N = 7, R = .045, H = .018, GAP = .005, rims = [];
 for (let i = 0; i < N; i++) {
   const r = R * (1.5 - .17 * i);
   const d = real(new THREE.Mesh(new THREE.CylinderGeometry(r, r, H, 64), bodyM)); d.position.y = i * (H + GAP) + H / 2; d.castShadow = true; dev.add(d);
