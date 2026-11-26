@@ -10,19 +10,26 @@
    ],
    "scene": {
     "robot": false,
-    "look": "studio",
+    "look": "cool",
     "hero": [
      {
       "name": "pro/humanoidSoft",
-      "x": 0.9,
-      "z": 0.5,
-      "ry": -0.35
+      "raw": true,
+      "x": 0.8,
+      "z": 0.9,
+      "ry": -0.35,
+      "frac": 1.15,
+      "az": 0.3
      },
      {
       "name": "pro/suvRobotaxi",
-      "x": -1.3,
-      "z": -1.2,
-      "ry": 0.9
+      "raw": true,
+      "x": -1.4,
+      "z": -1.0,
+      "ry": 0.9,
+      "recolor": {
+       "shell": "#c9ced6"
+      }
      }
     ],
     "color": "cyan"
@@ -43,11 +50,13 @@
     "look": "warm",
     "hero": {
      "name": "pro/humanoidSoft",
+     "raw": true,
      "x": 0,
      "z": 0,
      "ry": 0.3,
      "az": 0.25,
-     "frac": 1.1
+     "frac": 1.5,
+     "el": 0.08
     },
     "color": "cyan"
    },
@@ -64,15 +73,19 @@
    "source": "Drive Tesla, EVwire, TeslaNorth",
    "scene": {
     "robot": false,
-    "look": "cool",
+    "look": "studio",
     "hero": {
      "name": "pro/suvRobotaxi",
+     "raw": true,
      "x": 0,
      "z": 0,
      "ry": 0.7,
      "az": 0.3,
      "frac": 1.15,
-     "el": 0.14
+     "el": 0.14,
+     "recolor": {
+      "shell": "#c9ced6"
+     }
     },
     "color": "orange"
    },
