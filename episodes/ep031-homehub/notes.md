@@ -9,3 +9,4 @@
 - Ziv 2026-11-27: the device is NOT Biti; Ziv approves the product look before building.
 - 2026-11-27 recording received. Ziv picked look 2: lamp — white glowing sphere on a wooden base, no screen, light 'breathes' when called. Image for approval pending.
 - align: fixed phrases 40–46 by hand (end drift).
+- Ziv 2026-11-27 sent a reference (the AI cone 'Lana' from Netflix's Too Hot to Handle): wants white body + light-blue band that brightens when called. We keep an ORIGINAL shape (not a cone / not that prop): white rounded capsule on a short white base, light-blue band between them. Sketch v2 in engine/props/proposals/ep031-device.
