@@ -108,3 +108,5 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-27 (Ziv → media): Blender FROZEN after the side-by-side still ('not very different'; ~50× slower render). No Blender test after ep036; infra parked in tools/blender/. Focus: camera v3 test (ep032–036), then lighting/eye-catchers.
 - 2026-11-27 (Ziv → media): ep031 — no alert scene at all ("אל תכניס את האזעקה"). docs/agents/video.md + inbox/video.
 - 2026-11-27 (Ziv → media, approved proposal 2): lighting test after the camera-v3 test — ep037–ep040, indoor light from visible sources (lamps/pendants/window), warm-cool contrast, only this change; tag light:'practical'. docs/agents/video.md + inbox/video + inbox/analytics.
+
+- 2026-11-27 (Ziv → video): ep031 keeps the alert scene, as in the original recording (reverses the earlier no-alert note to media).

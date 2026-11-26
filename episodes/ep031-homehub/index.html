@@ -4,16 +4,15 @@
 // EP031-homehub — CONCEPT reel: a Hebrew home assistant (NOT Biti; Ziv-approved 7-disc tower). pro-v3 studio warm, media run-19 apartment31.
 // Phrases: 0-2 hook (AC on before you enter) | 3-6 device on the counter, called by name | 7-9 "cool the bedroom" → command to AC
 //          10-16 ten apps / ten ways / no Hebrew | 17-18 one voice | 19-29 how it works (name → sentence → text → AI → right app)
-//          30-33 milk + reminder | 34-35 MID FOLLOW | 36-38 Shabbat | 39-40 concept | 41-42 question card
-// Ziv 2026-11-27: NO alert scene — the alert phrases were cut from the voice (voice-full.mp3 keeps the original).
+//          30-33 milk + reminder | 34-37 RE-HOOK night alert → mamad | 38-39 MID FOLLOW | 40-42 Shabbat | 43-44 concept | 45-46 question card
 // All text on the overlay canvas / DOM (never covered by 3D).
 import {proLook} from '/engine/lib/look-pro.js';
 import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
 import {midFollow, endQuestion} from '/engine/lib/follow-mid.js';
 import {commandLine, coldAir, appCloud, floorPaths, hubRims} from '/engine/props/fx-ep031.js';
-const st = await studio({look: 'hero', episode: 31, fog: .001, outro: 'card', outroAt: 41,
+const st = await studio({look: 'hero', episode: 31, fog: .001, outro: 'card', outroAt: 45,
   hook: ['המזגן נדלק', 'לפני ש<span class="pill">נכנסתם</span>'], hookEnd: 2.4,
-  keys: ['קר', 'המזגן', 'בשם', 'תקרר', 'למזגן', 'עשר', 'עברית', 'אחד', 'לשם', 'המשפט', 'לטקסט', 'בסלנג', 'הנכונה', 'החלב', 'בזמן', 'שבת', 'מראש', 'רעיון', 'לבית'],
+  keys: ['קר', 'המזגן', 'בשם', 'תקרר', 'למזגן', 'עשר', 'עברית', 'אחד', 'לשם', 'המשפט', 'לטקסט', 'בסלנג', 'הנכונה', 'החלב', 'בזמן', 'המטורף', 'אזעקה', 'המוגן', 'שבת', 'מראש', 'רעיון', 'לבית'],
   scenes: (A, B, E) => [0, E]});
 const {scene, A, B, END, cam} = st;
 const M = async (n, g = scene) => { const o = (await st.model(n)).object; g.add(o); return o; };
@@ -22,6 +21,9 @@ const apt = await M('buildings/apartment31'); apt.updateMatrixWorld(true);
 const hub = await M('everyday/homeHub'); hub.position.copy(S(apt, 'deviceSpot')); hub.scale.setScalar(1.4); hub.updateMatrixWorld(true);
 const man = await M('people/mannequin-sit'); man.position.copy(S(apt, 'sofaSpot'));
 const hBox = o => new THREE.Box3().setFromObject(o).getSize(new THREE.Vector3()).y;
+// night walkers (alert): adult + child from the bedroom to the mamad along the floor path (stay on the path = no pass-through)
+const walkA = await M('people/mannequin-walk'); walkA.scale.setScalar(1.72 / hBox(walkA));
+const walkK = await M('people/mannequin-walk'); walkK.scale.setScalar(1.15 / hBox(walkK));
 scene.updateMatrixWorld(true);
 const D = S(apt, 'deviceSpot'), AIR = S(apt, 'airOut'), MAM = S(apt, 'mamadSpot'), HALL = S(apt, 'hallSpot'), BED = S(apt, 'bedSpot'), KID = S(apt, 'kidSpot'), FR = S(apt, 'fridgeSpot');
 const VOICE = S(hub, 'voiceSpot');
@@ -29,11 +31,15 @@ const rims = hubRims(hub);
 const line = commandLine(scene, VOICE, AIR, {lift: 1.4});
 const air = coldAir(scene, AIR);
 const apps = appCloud(scene, D.clone().add(V(0, .72, .15)), {size: .2});
-const flap = apt.getObjectByName('flap'), fdoor = apt.getObjectByName('fridge').getObjectByName('door');
+const R1 = [BED.clone().add(V(.9, 0, .6)), HALL.clone().add(V(-.5, 0, 0)), HALL.clone().add(V(.6, 0, 0)), MAM.clone()];
+const R2 = [KID.clone().add(V(.6, 0, -.6)), HALL.clone(), MAM.clone().add(V(.3, 0, .2))];
+const paths = floorPaths(scene, [R1, R2]);
+const c1 = new THREE.CatmullRomCurve3(R1.map(p => V(p.x, 0, p.z)), false, 'centripetal'), c2 = new THREE.CatmullRomCurve3(R2.map(p => V(p.x, 0, p.z)), false, 'centripetal');
+const flap = apt.getObjectByName('flap'), leaf = apt.getObjectByName('mamad').getObjectByName('leaf'), fdoor = apt.getObjectByName('fridge').getObjectByName('door');
 const flames = ['flame0', 'flame1'].map(n => apt.getObjectByName(n)).filter(Boolean);
-const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [man], focus: D, exposure: .62});
-const MF = midFollow(st, {at: A[34], dur: B[35] + .3 - A[34], timer: true, slot: 'logo'});
-const EQ = endQuestion(st, {at: A[41], q: 'הייתם קונים כזה לבית?', options: ['כן', 'לא']});
+const PL = await proLook(st, {mode: 'studio', preset: 'warm', robots: [], people: [man, walkA, walkK], focus: D, exposure: .62});
+const MF = midFollow(st, {at: A[38], dur: B[39] + .3 - A[38], timer: true, slot: 'logo'});
+const EQ = endQuestion(st, {at: A[45], q: 'הייתם קונים כזה לבית?', options: ['כן', 'לא']});
 const k = (t, s) => [t, V(...s[0]), V(...s[1])];
 const d = D.toArray(), dx = d[0], dz = d[2];
 // camera shots (eye level first, high wide at ~2.5 s)
@@ -51,9 +57,9 @@ st.frame(t => {
   const acOn = win(t, -1, 3.6, .4) + sm(B[9] - .6, B[9], t) * (1 - sm(A[10], A[10] + .5, t));
   flap.rotation.x = -1.0 * Math.min(1, acOn); air.update(t, Math.min(1, acOn));
   // device rims: called by name / speaking / alert full / Shabbat calm
-  const call = Math.min(1, win(t, -1, 3.6, .3) + win(t, A[5], B[9], .25) + win(t, A[17], B[18] + .3, .3) + win(t, A[20], B[29], .3) + win(t, A[30], B[33], .3) + sm(A[41], A[41] + .3, t));
-  const full = 0;
-  rims.set(call * (1 - .6 * win(t, A[36], B[38], .4)), t, {full});
+  const call = Math.min(1, win(t, -1, 3.6, .3) + win(t, A[5], B[9], .25) + win(t, A[17], B[18] + .3, .3) + win(t, A[20], B[29], .3) + win(t, A[30], B[33], .3) + win(t, A[35], B[37] + .3, .3) + sm(A[45], A[45] + .3, t));
+  const full = win(t, A[35], B[37] + .3, .3);
+  rims.set(call * (1 - .6 * win(t, A[40], B[42], .4)), t, {full});
   // command line device → AC
   const cl = win(t, -1, 3.6, .3) + win(t, A[8], B[9] + .4, .3); line.set(Math.min(1, cl)); line.bead(cl > .5 ? (t < 4 ? (t * .5) % 1 : sm(A[9], B[9], t)) : null);
   // app cloud: scatter on 10-16, gather into the device on 17-18
@@ -62,7 +68,13 @@ st.frame(t => {
   else apps.scatter(0);
   // fridge opens on the milk beat
   fdoor.rotation.y = 1.7 * win(t, A[30] - .6, B[31] + .2, .5);
-  flames.forEach(f => f.visible = t > A[36] - .5 && t < B[38] + .5);
+  // night alert: paths, mamad door, walkers; Shabbat candles only then
+  const alert = win(t, A[35] - .2, B[37] + .5, .3); paths.set(alert > .02 ? sm(A[35], A[36] + .4, t) : 0); paths.march(t);
+  leaf.rotation.y = -1.3 * sm(A[36], A[37], t) * (1 - sm(B[37] + .5, B[37] + 1, t));
+  const wk = sm(A[36] - .2, B[37] + .2, t);
+  for (const [w, c, on] of [[walkA, c1, alert], [walkK, c2, alert]]) { w.visible = on > .02; if (w.visible) { const u = Math.min(.97, wk * .97); const p = c.getPointAt(u), q = c.getPointAt(Math.min(1, u + .02)); w.position.copy(p); w.lookAt(q.x, 0, q.z); } }
+  man.visible = alert < .5;
+  flames.forEach(f => f.visible = t > A[40] - .5 && t < B[42] + .5);
   // camera
   const KF = [
     k(0, EYE0), k(1.9, EYE1), k(2.9, WIDE), k(A[3] + .2, DEVW), k(B[4], DEV), k(B[6], DEVC),
@@ -70,10 +82,12 @@ st.frame(t => {
     k(A[10] + .4, DEVL), k(B[14], DEVL), k(A[15] + .3, DEV), k(B[18], DEVC),
     k(A[20] + .2, DEVR), k(B[23], DEVC), k(A[24] + .3, DEVL), k(B[27], DEV), k(B[29], DEVW),
     k(A[30] + .3, FRG), k(B[31], FRG2), k(A[32] + .3, DEVW), k(B[33], DEV),
-    k(A[34] + .3, DEV), k(B[35], DEV),
-    k(A[36] + .4, TBL), k(B[38], TBL2), k(A[39] + .3, OUT), k(B[40], OUT), k(A[41] + .3, END1), k(END, END1)];
+    k(A[35] + .2, MAMW), k(B[37], MAMC), k(A[38] + .3, DEV), k(B[39], DEV),
+    k(A[40] + .4, TBL), k(B[42], TBL2), k(A[43] + .3, OUT), k(B[44], OUT), k(A[45] + .3, END1), k(END, END1)];
   const [cp, ct] = camPath(t, KF);
   PL.update(t, ct);
+  // night = darker room on the alert (re-hook visual shift)
+  st.renderer.toneMappingExposure = .62 * (1 - .5 * alert);
   return {cp, ct, noFlash: true, fov: t < 2.6 ? 60 : 52, overlay: t2 => {
     const c = st.ctx, P = v => st.proj(v);
     const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
@@ -103,10 +117,13 @@ st.frame(t => {
     // 30-33 milk + reminder
     card(470, [['🛒 רשימת קניות · משפחה', {size: 44}], ['✓ חלב', {size: 52, a: sm(A[31], A[31] + .5, t2)}]], win(t2, A[30] + .2, B[31] + .4, .3), {w: 620});
     card(470, [['⏰ תזכורת', {size: 44}], ['תור לרופא · מחר 16:00', {size: 48, a: sm(A[33] - .2, A[33] + .3, t2)}]], win(t2, A[32], B[33] + .4, .3), {w: 680});
-    // 36-38 Shabbat schedule
-    card(470, [['מצב שבת · רק מה שתוכנן מראש', {size: 42}], ['18:00 · אורות בסלון', {size: 46, a: sm(A[37], A[37] + .4, t2)}], ['23:00 · מזגן כבוי', {size: 46, a: sm(A[38], A[38] + .4, t2)}]], win(t2, A[36], B[38] + .4, .3), {w: 760});
-    // 39-40 concept tag
-    box(540, 500, 'קונספט · עוד לא בחנויות', win(t2, A[39], B[40] + .4, .3), {size: 52});
+    // 34-37 alert (generic card, no official logo/app)
+    box(540, 470, '🚨 התרעה', win(t2, A[35], B[37] + .4, .25), {size: 64});
+    box(540, 580, 'כולם למרחב המוגן', win(t2, A[36] + .2, B[37] + .4, .3), {size: 52, bg: '#8ea6ff'});
+    // 40-42 Shabbat schedule
+    card(470, [['מצב שבת · רק מה שתוכנן מראש', {size: 42}], ['18:00 · אורות בסלון', {size: 46, a: sm(A[41], A[41] + .4, t2)}], ['23:00 · מזגן כבוי', {size: 46, a: sm(A[42], A[42] + .4, t2)}]], win(t2, A[40], B[42] + .4, .3), {w: 760});
+    // 43-44 concept tag
+    box(540, 500, 'קונספט · עוד לא בחנויות', win(t2, A[43], B[44] + .4, .3), {size: 52});
   }};
 });
 st.ready();

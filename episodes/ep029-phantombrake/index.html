@@ -1,0 +1,146 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// EP029-phantombrake — pro-v3 DAYLIGHT Israeli highway (media run 19b kit), frame0 eye level on the shoulder. Hook title by Ziv: "למה הרכב בולם בלי סיבה?"
+// Phrases: 0-1 hook (bridge = wall) | 2-3 why brake on an empty road | 4-5 radar behind the front | 6-7 waves out, echo back | 8-9 time → distance | 10-11 wave change → speed
+//          12-15 scans across, not up | 16 back to the bridge | 17-21 bridge, gantry, manhole: strong still echoes | 22-23 = a stopped car | 24-27 camera: shadow/glare
+//          28 re-hook | 29-32 dilemma: ignore still → miss the jam; don't → brake under the bridge | 33-34 MID FOLLOW | 35-38 new radars measure height → drives on | 39-40 question card
+// All text on the overlay canvas / DOM (never covered by 3D).
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V, sm, win, camPath} from '/engine/lib/core.js';
+import {orbRig} from '/engine/props/fx-biti.js';
+import {midFollow, endQuestion} from '/engine/lib/follow-mid.js';
+import {waveFan, echoDots, wallPoints, boxPoints, discPoints, brakes, paintCar, echoTrip, drawTimer, drawDoppler, drawRadarView} from '/engine/props/fx-radar.js';
+const st = await studio({look: 'hero', episode: 29, fog: .001, outro: 'card', outroAt: 39,
+  hook: ['למה הרכב בולם', 'בלי <span class="pill">סיבה</span>?'], hookEnd: 3.0,
+  keys: ['קיר.', 'ריק?', 'רדאר.', 'הד', 'רחוק', 'מהר', 'לרוחב', 'לגובה,', 'לגשר.', 'זזים.', 'רכב', 'מצלמה', 'סנוור,', 'המטורף:', 'בפקק.', 'תבלום', 'גובה.', 'לנסוע.', 'האוטומטית?'],
+  scenes: (A, B, E) => [0, E]});
+const {scene, A, B, END, cam} = st;
+const M = async (n, g = scene) => { const o = (await st.model(n)).object; g.add(o); return o; };
+const S = (o, n) => o.getObjectByName(n).getWorldPosition(new THREE.Vector3());
+const road = await M('road/dayHighway'); road.updateMatrixWorld(true);
+const car = await M('car/radarSedan'); car.updateMatrixWorld(true);
+const jam = []; for (let i = 0; i < 4; i++) { const c = await M('car/sedanLite'); paintCar(c, ['blue', 'red', 'sand', 'black'][i]); c.position.copy(S(road, 'jamSpot' + i)); jam.push(c); }
+const orb = await M('robots/bitiOrb'); orb.position.set(-3, 1.6, 20);
+scene.updateMatrixWorld(true);
+const BR = brakes(car);
+const wheels = [0, 1, 2, 3].map(i => car.getObjectByName(`wheel${i}Spin`)).filter(Boolean);
+const fan = waveFan(scene, V(0, 0, 0), {mode: 'flat', hAngle: 1.1, vAngle: .12, range: 45});
+const dots = echoDots(scene, {r: .09});
+const BE = S(road, 'bridgeEdge'), MAN = S(road, 'manholeSpot');
+const wall = wallPoints(V(0, 0, BE.z), 9, 5.2, .45, .15);
+const deckPts = boxPoints(road.getObjectByName('deck'), .6, {faces: ['-z']}).filter(p => Math.abs(p.x) < 5.5);
+const gantryPts = boxPoints(road.getObjectByName('gantry'), .5, {faces: ['bottom']}).filter(p => Math.abs(p.x) < 5.5);
+const manPts = discPoints(MAN, .35, .12);
+const jamPts = boxPoints(jam[0], .35, {faces: ['-z']});
+const trip = echoTrip(scene, V(0, .5, 0), V(0, 1.5, BE.z));
+const bumper = ['bumperF', 'grille'].map(n => car.getObjectByName(n)).filter(Boolean), shell = car.getObjectByName('radarShell');
+const PL = await proLook(st, {mode: 'outdoor', preset: 'warm', robots: [], people: [], focus: V(0, 1, 40), exposure: .58, env: .26, fill: .18, sunI: 2.6, sun: [.4, .6, -.6], vig: .2});
+const rig = orbRig(st, orb);
+const MF = midFollow(st, {at: A[33], dur: B[34] + .3 - A[33], timer: true});
+const EQ = endQuestion(st, {at: A[39], q: 'אתם סומכים על הבלימה האוטומטית?', options: ['כן', 'לא']});
+// offscreen cards for the fx-radar canvas drawings (they clear their own canvas)
+const off = (w, h) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; return cv; };
+const cvT = off(560, 300), cvD = off(700, 330), cvR = off(620, 520);
+// car z over time: drive → brake hard before the bridge → stand → (new radar) drive on under the bridge
+const Z0 = 10, ZS = 50, zCar = t => { if (t < A[2]) return Z0 + 11 * t; const z1 = Z0 + 11 * A[2]; if (t < B[3]) return z1 + (ZS - z1) * sm(A[2], B[3], t) ** .6;
+  if (t < A[37]) return ZS; return ZS + 26 * sm(A[37], B[38] + .6, t) ** 1.4; };
+const k = (t, s) => [t, V(...s[0]), V(...s[1])];
+st.frame(t => {
+  MF.update(t); EQ.update(t);
+  const z = zCar(t), zv = (zCar(t + .05) - z) / .05; car.position.set(0, 0, z); wheels.forEach(w => w.rotation.x = z / .33);
+  const brk = win(t, A[2] - .1, B[3] + .6, .2); BR.set(brk); car.rotation.x = .028 * win(t, A[2], B[3] + .3, .25); car.updateMatrixWorld(true);
+  const RS = S(car, 'radarSpot');
+  // x-ray of the front: bumper + grille fade, radar shell visible
+  const xr = win(t, A[4], B[7] + .3, .35); bumper.forEach(b => b.visible = xr < .5); if (shell) shell.visible = true;
+  // wave fan: hook, waves beat, scan-across beat, new radar
+  fan.group.position.copy(RS); fan.update(t, Math.min(1, win(t, -1, 3.2, .3) + win(t, A[6], B[7] + .3, .3) + win(t, A[12], B[15] + .3, .3) + win(t, A[35], B[36] + .3, .3)));
+  // echo dots per beat
+  const flat = 1 - sm(A[35] + .3, B[36], t);    // old radar squashes height; new radar = true heights
+  let pts = [], size = .09;
+  if (t < 3.4) pts = dots.flatten(wall, .5, 0);
+  else if (t > A[7] - .2 && t < B[7] + .3) pts = dots.flatten(deckPts, 1.0, .85);
+  else if (t > A[17] - .1 && t < B[21] + .3) { pts = [...(t > A[17] ? dots.flatten(deckPts, 1.0, .85) : []), ...(t > A[18] ? gantryPts : []), ...(t > A[19] ? manPts : [])]; size = .08; }
+  else if (t > A[22] - .1 && t < B[23] + .3) pts = [...dots.flatten(deckPts, 1.0, .85), ...dots.flatten(jamPts, 1.0, .85)];
+  else if (t > A[29] - .1 && t < B[32] + .3) pts = [...dots.flatten(deckPts, 1.0, .85), ...dots.flatten(jamPts, 1.0, .85)];
+  else if (t > A[35] - .1 && t < B[37] + .3) pts = [...dots.flatten(deckPts, 1.0, .85 * flat), ...dots.flatten(jamPts, 1.0, .85 * flat)];
+  dots.set(pts, {k: pts.length ? 1 : 0, size});
+  // echo trip (time → distance)
+  trip.at(t > A[8] && t < B[9] ? sm(A[8], A[8] + 2.2, t) * .999 : 0);
+  // camera
+  const cz = car.position.z;
+  const KF = [
+    k(0, [[-7.0, 1.6, 2], [0, 2.2, 55]]), k(2.0, [[-6.6, 1.6, 4], [0, 2.4, 55]]), k(2.9, [[-14, 16, 30], [0, 0, 50]]), k(B[3], [[-12, 12, 34], [0, 0, 52]]),
+    k(A[4] + .4, [[2.2, .85, cz + 5.6], [0, .5, cz + 2.4]]), k(B[5], [[1.6, .75, cz + 4.6], [0, .5, cz + 2.4]]),
+    k(A[6] + .3, [[-1.6, 1.4, cz - 3.5], [0, 1.6, cz + 14]]), k(B[7], [[-1.2, 1.5, cz - 2.5], [0, 2.4, 60]]),
+    k(A[8] + .3, [[-6.5, 3.2, cz - 1], [0, 1.6, cz + 6]]), k(B[9], [[-6.5, 3.4, cz + 2], [0, 1.6, cz + 7]]),
+    k(A[10] + .3, [[-5.5, 2.4, cz - 2], [0, 1.0, cz + 4]]), k(B[11], [[-5, 2.2, cz - 1], [0, 1.0, cz + 4]]),
+    k(A[12] + .3, [[-3, 9, cz - 9], [0, 0, cz + 16]]), k(B[13], [[-2, 10, cz - 7], [0, 0, cz + 16]]), k(A[14] + .2, [[-9, 1.4, cz + 6], [0, 1.4, cz + 9]]), k(B[15], [[-9, 1.6, cz + 7], [0, 1.6, cz + 10]]),
+    k(A[16] + .4, [[-8, 3.0, 40], [0, 4.0, 60]]), k(B[16], [[-7, 3.0, 44], [0, 4.0, 60]]),
+    k(A[17] + .2, [[-7, 3.2, 46], [0, 4.4, 60]]), k(A[18] + .2, [[-6, 2.6, 16], [0, 5.0, 25]]), k(A[19] + .2, [[-2.5, 2.6, 6], [0, 0, 12]]), k(B[21], [[-2.2, 2.4, 7], [0, 0, 12]]),
+    k(A[22] + .3, [[-12, 10, 40], [2, 1, 72]]), k(B[23], [[-11, 9, 44], [2, 1, 74]]),
+    k(A[24] + .3, [[-.35, 1.25, cz + .2], [0, 1.0, cz + 20]]), k(B[27], [[-.35, 1.25, cz + .3], [0, 1.0, cz + 20]]),
+    k(A[28] + .3, [[-16, 22, 30], [1, 0, 66]]), k(B[32], [[-14, 20, 36], [1, 0, 68]]),
+    k(A[33] + .3, [[-9, 5, cz - 6], [0, 2, cz + 8]]), k(B[34], [[-9, 5, cz - 5], [0, 2, cz + 8]]),
+    k(A[35] + .3, [[-10, 4, 40], [0, 3.5, 58]]), k(B[36], [[-10, 4, 42], [0, 3.5, 58]]),
+    k(A[37] + .2, [[-6.5, 1.8, 48], [0, 1.6, 62]]), k(B[38], [[-6.5, 2.4, 70], [0, 1.2, 82]]),
+    k(A[39] + .3, [[-1.6, 2.0, cz - 3], [0, 1.4, cz + 12]]), k(END, [[-1.4, 2.0, cz - 2.6], [0, 1.4, cz + 12]])];
+  const [cp, ct] = camPath(t, KF);
+  // Biti: hook (flies in from the side), twist (reacts), mid follow, end card big in front
+  const on = win(t, .4, 3.0, .3) + win(t, A[28] - .1, B[34] + .3, .3) + sm(A[39] - .2, A[39] + .3, t);
+  orb.visible = on > .02; const endK = sm(A[39] - .3, A[39] + .2, t);
+  // in front of the camera (so she is seen, never parked far away): forward f m, right r m, up u m
+  const camFront = (f, r, u) => { const F = ct.clone().sub(cp).normalize(); const R = new THREE.Vector3().crossVectors(F, V(0, 1, 0)).normalize(); return cp.clone().addScaledVector(F, f).addScaledVector(R, r).add(V(0, u, 0)); };
+  const hookP = camFront(5.2, -3.6 + 2.5 * sm(.4, 1.5, t), .15), twistP = camFront(4.2, -1.0 + .3 * Math.sin(t * 1.3), -.35), endP = camFront(2.6, 0, -.05);
+  const op = t < 3.2 ? hookP : t < A[39] - .3 ? twistP : endP;
+  orb.position.copy(op); orb.scale.setScalar((1 + .25 * endK + .2 * win(t, .8, 2.2, .4)) * Math.max(.001, Math.min(1, on)));
+  rig.update(t, {mood: t < 3.2 ? 'curious' : t < A[31] ? 'surprise' : t < A[33] ? 'think' : t < A[39] ? 'happy' : t < B[40] + .1 ? 'ask' : 'happy', point: t > .9 && t < 3.0 ? 1 : 0, look: [0, -.1], talk: t > A[39] && t < B[40] ? .5 + .4 * Math.sin(t * 17) : 0});
+  orb.position.x = op.x; orb.position.z = op.z; orb.position.y = op.y + (orb.position.y - 1.6);   // rig.update hovers around its base y 1.6
+  orb.lookAt(cp.x, orb.position.y, cp.z);
+  PL.update(t, ct);
+  return {cp, ct, noFlash: true, fov: t < 2.6 ? 58 : 52, overlay: t2 => {
+    const c = st.ctx, P = v => st.proj(v);
+    const box = (x, y, txt, al, {size = 52, bg = '#fff', fg = '#0a0c1c'} = {}) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.font = `700 ${size}px Rubik`; c.direction = 'rtl';
+      const w = c.measureText(txt).width + 60, h = size * 1.6; st.rr(x - w / 2, y - h / 2, w, h, 18); c.fillStyle = bg; c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 22; c.fill(); c.shadowBlur = 0;
+      c.fillStyle = fg; c.textAlign = 'center'; c.fillText(txt, x, y + size * .36); c.restore(); };
+    const over = (p, txt, al, dy, o = {}) => { const [x, y, zz] = P(p); if (zz > 1) return; box(Math.min(860, Math.max(220, x)), Math.min(1100, Math.max(470, y + dy)), txt, al, o); };
+    const blit = (cv, x, y, al) => { if (al < .02) return; c.save(); c.globalAlpha = al; c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = 24; c.drawImage(cv, x, y); c.restore(); };
+    // hook: the bridge reads as a wall
+    over(V(0, 5.8, BE.z), 'קיר?', win(t2, A[1], 3.3, .3), -40, {size: 50});
+    over(car.position.clone().add(V(0, 1.6, 0)), 'בלימה!', win(t2, A[2] + .2, B[3] + .5, .25), -60, {size: 50});
+    // radar behind the front
+    over(RS, 'רדאר', win(t2, A[5] - .2, B[7] + .2, .3), -230, {size: 48, bg: '#8ea6ff'});
+    // time → distance
+    const tu = sm(A[8], A[8] + 2.2, t2); drawTimer(cvT.getContext('2d'), t2, 560, 300, {u: tu, dist: Math.round(BE.z - zCar(t2))}); blit(cvT, 260, 470, win(t2, A[8], B[9] + .4, .3));
+    // wave change → speed
+    drawDoppler(cvD.getContext('2d'), t2, 700, 330, {mode: 'toward', tag: 'הגל חוזר דחוס → מתקרב'}); blit(cvD, 190, 470, win(t2, A[10], B[11] + .4, .3));
+    // across, not up: side view smear
+    const sv = win(t2, A[14] - .2, B[15] + .4, .3);
+    if (sv > .02) { drawRadarView(cvR.getContext('2d'), t2, 620, 520, {mode: 'side', smear: 1, stack: 0, dots: [{d: 40, h: 5.4}, {d: 55, h: 5.6}, {d: 70, h: .7}, {d: 85, h: .5}]}); blit(cvR, 230, 460, sv); box(540, 1040, 'לגובה: מטושטש', sv, {size: 46}); }
+    box(540, 480, 'לרוחב: חד', win(t2, A[12] + .3, B[13] + .4, .3), {size: 52, bg: '#8ea6ff'});
+    // still objects: 0 km/h tags
+    over(V(0, 6.2, BE.z), 'גשר · 0 קמ״ש', win(t2, A[17], B[21] + .3, .3), -40, {size: 44});
+    over(S(road, 'gantryHit'), 'שלט · 0 קמ״ש', win(t2, A[18], B[21] + .3, .3), -60, {size: 44});
+    over(MAN, 'מכסה ביוב · 0 קמ״ש', win(t2, A[19], B[21] + .3, .3), -90, {size: 44});
+    box(540, 470, 'הד חזק + לא זז', win(t2, A[20], B[21] + .3, .3), {size: 50, bg: '#8ea6ff'});
+    // = a stopped car
+    over(V(0, 6.2, BE.z), 'גשר', win(t2, A[22], B[23] + .3, .3), -40, {size: 46});
+    over(jam[0].position.clone().add(V(0, 1.8, 0)), 'רכב עומד', win(t2, A[22] + .4, B[23] + .3, .3), -60, {size: 46});
+    box(540, 480, 'אותו הד בדיוק', win(t2, A[23], B[23] + .4, .3), {size: 56, bg: '#8ea6ff'});
+    // camera: shadow + glare → fake obstacle
+    const cmk = win(t2, A[24], B[27] + .3, .3);
+    if (cmk > .02) { box(540, 470, '📷 מצלמה בשמשה', cmk, {size: 48});
+      const g = sm(A[26], A[26] + .6, t2) * cmk; c.save(); const rg = c.createRadialGradient(780, 620, 10, 780, 620, 420); rg.addColorStop(0, `rgba(255,252,240,${.85 * g})`); rg.addColorStop(1, 'rgba(255,252,240,0)'); c.fillStyle = rg; c.fillRect(0, 0, 1080, 1920); c.restore();
+      const [sx, sy] = P(V(0, 0, BE.z - 3)); c.save(); c.globalAlpha = g; c.strokeStyle = '#ffffff'; c.lineWidth = 6; c.setLineDash([24, 14]); c.strokeRect(sx - 230, sy - 90, 460, 160); c.setLineDash([]); c.restore();
+      box(sx, sy - 140, 'מכשול?', g, {size: 46}); }
+    // dilemma
+    const dl = win(t2, A[29], B[32] + .4, .3);
+    over(jam[1].position.clone().add(V(0, 2, 0)), 'להתעלם → לפספס רכב בפקק', win(t2, A[29], B[32] + .4, .3), -80, {size: 40});
+    over(V(0, 6.5, BE.z), 'לא להתעלם → בלימה מתחת לגשר', win(t2, A[31], B[32] + .4, .3), -60, {size: 40, bg: '#8ea6ff'});
+    // new radar: height
+    box(540, 480, 'רדאר חדש: מודד גם גובה', win(t2, A[35], B[36] + .4, .3), {size: 52, bg: '#8ea6ff'});
+    over(V(0, 6.2, BE.z), 'למעלה ✓', win(t2, A[37], B[37] + .4, .3), -40, {size: 46});
+  }};
+});
+st.ready();
+</script></body></html>
