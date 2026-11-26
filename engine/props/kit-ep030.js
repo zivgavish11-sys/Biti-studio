@@ -18,6 +18,7 @@ const RB = (w, h, d, r, m, x, y, z, name) => at(mesh(new RoundedBoxGeometry(w, h
 const B = (w, h, d, m, x, y, z, name) => at(mesh(new THREE.BoxGeometry(w, h, d), m, name), x, y, z);
 const cyl = (rt, rb, h, m, name, seg = 24) => mesh(new THREE.CylinderGeometry(rt, rb, h, seg), m, name);
 const spot = (name, x, y, z, ry = 0) => at(grp(name), x, y, z, 0, ry, 0);
+const sc = (o, x, y, z) => (o.scale.set(x, y, z), o);
 const tube = (pts, r, m, name, seg = 32) => mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p))), seg, r, 8), m, name);
 
 /** **car/familyCar** — our sedan (radarSedan base, no front radar) in light sand, wheels, daylight glass, with a RIGHT REAR DOOR THAT OPENS and a CEILING RADAR over the rear bench.
@@ -36,53 +37,98 @@ export function familyCar() {
   const skin = section(-1.14, -.42, .06, -.87, sand, 'rearDoorSkin', 24); skin.position.set(.87, 0, .42); rd.add(skin);
   if (gl) { gl.parent.remove(gl); gl.position.set(gl.position.x + .87, gl.position.y, gl.position.z + .42); rd.add(gl); }
   rd.add(B(.05, .62, .7, CMAT.dash, .045, .62, -.36, 'rearDoorInner'), RB(.08, .05, .4, .02, CMAT.dashSoft, .07, .68, -.36), RB(.02, .03, .12, .01, CMAT.chrome, -.02, .78, -.12, 'rearHandle'));
-  const RY = 1.46, cr = grp('ceilingRadar'); at(cr, 0, RY - .045, -1.0); inn.add(cr);
+  const RY = 1.46, cr = grp('ceilingRadar'); at(cr, 0, RY - .045, -.85); inn.add(cr);
   cr.add(RB(.14, .025, .1, .01, CMAT.head, 0, 0, 0, 'ceilingRadarShell'), B(.1, .004, .07, P.pcb, 0, -.014, 0, 'ceilingRadarBoard'));
   for (let i = 0; i < 6; i++) cr.add(B(.016, .002, .016, P.acc, -.03 + (i % 3) * .03, -.017, -.012 + Math.floor(i / 3) * .024));
   cr.add(spot('ceilingRadarSpot', 0, -.03, 0));
-  g.add(spot('rearSeatSpot', -.4, .47, -.95, Math.PI), spot('rearEye', -1.7, 1.25, -.8), spot('doorOut', -1.6, 0, -.2));
+  g.add(spot('rearSeatSpot', -.4, .47, -.82, Math.PI), spot('rearEye', -1.7, 1.25, -.8), spot('doorOut', -1.6, 0, -.2));
+  // run 20 — CUTAWAY groups (ep030 fix): hide them to look straight into the rear bench. All at identity, so nothing moves.
+  const cut = (name, parent, names) => { let c = g.getObjectByName(name); if (!c) { c = grp(name); parent.add(c); } names.forEach(n => { const o = g.getObjectByName(n); if (o) c.add(o); }); return c; };
+  cut('cutRoof', body, ['roof', 'headliner', 'pillarBL', 'pillarBR', 'pillarCL', 'pillarCR', 'rearWindow', 'brakeTop', 'domeLight', 'rearMirror']);   // windshield + A-pillars stay (frame the front)
+  cut('cutSideR', body, ['frontDoorR', 'rearDoorR', 'sideGlassFR', 'pillarAR', 'mirrorR', 'doorRFrontInner']);
+  // the rear quarter (bodyRear is one full-width block): a copy flattened at x −.64 stays when the right side is cut, the original hides with cutSideR
+  const br = g.getObjectByName('bodyRear'), brc = br.clone(); brc.name = 'bodyRearCut'; brc.geometry = br.geometry.clone(); const bq = brc.geometry.attributes.position;
+  for (let i = 0; i < bq.count; i++) if (bq.getX(i) < -.64) bq.setX(i, -.64); brc.geometry.computeVertexNormals(); body.add(brc);
+  cut('cutSideR', body, ['bodyRear']);
+  cut('cutFront', inn, ['seatPassenger']);   // passenger seat (in front of the infant seat) — hide for the 3/4 + chest shots
+  // thin headliner strip that stays when the roof is cut: carries the ceiling radar, joined to the left roof edge
+  inn.add(B(.98, .014, .44, CMAT.head, .36, RY - .046, -.85, 'radarStrip'), B(.98, .02, .02, CMAT.dashSoft, .36, RY - .046, -1.07), B(.98, .02, .02, CMAT.dashSoft, .36, RY - .046, -.63));
+  cr.position.y = RY - .062;
+  // the rear bench back: bodyRear's flat front face (z −1.07) used to show above the cushion as a pale wall → upholstered back cover in front of it
+  const bc = grp('rearBackCover'); at(bc, 0, .74, -1.045, -.12, 0, 0); inn.add(bc); bc.add(RB(1.56, .58, .04, .03, CMAT.seat, 0, 0, 0, 'rearBackPanel'));
+  for (const x of [-.4, .4]) bc.add(RB(.5, .5, .035, .05, CMAT.seat, x, -.02, .03), RB(.26, .14, .1, .04, CMAT.seat, x, .37, -.01, 'rearHeadrest'));
+  const seatW = R(0x5a5651, .95); seatW.name = 'seatWarm'; ['rearBench', 'rearBackCover'].forEach(n => g.getObjectByName(n).traverse(o => { if (o.isMesh) o.material = seatW; }));   // lighter warm fabric → the rear bench is not a black hole
+  // cut faces: a slim light sill cap along the open right side (reads as a clean section, not a hollow shell)
+  const cap = R(0xe9e4da, .7); inn.add(B(.05, .03, 2.1, cap, -.84, .47, -.45, 'cutCapR'));
   return g;
 }
 
-/** **everyday/infantSeat** — rear-facing infant carrier (0.44 × 0.62 × 0.58 m): 'shell' (grey bucket), 'pad' (soft insert), 'harness' (straps + 'buckle'), **'handle'** (carry arc, .rotation.x to fold), **'canopy'** (light-blue sun shade, .rotation.x open/closed), 'base' (click-in base).
- * Origin = bottom centre of the base; the baby's head is toward −z (front of the carrier, the raised end). Spot **'babySpot'** inside the tilted shell: baby.position = babySpot world pos, baby.quaternion = babySpot world quaternion (same for the blanket, +2 cm up). */
+/** **everyday/infantSeat** — rear-facing infant carrier (0.44 × 0.62 × 0.58 m): 'shell' (bucket), 'pad' (soft light insert), 'harness' (straps + 'buckle'), **'handle'** (carry arc — default FOLDED FLAT behind the head end; .rotation.x 0 = up for carrying), **'canopy'** (light-blue sun shade, .rotation.x open/closed — hide for clear shots), 'base' (click-in base).
+ * Run 20 (ep030 fix): the bucket wall is LOW on the seat's local +x side (= the camera / open-door side when the seat sits rear-facing at rearSeatSpot, rotation.y π), so the baby reads from the side and from above.
+ * Origin = bottom centre of the base; the baby's head is toward −z (the raised end). Spot **'babySpot'** inside the tilted shell: baby.position = babySpot world pos, baby.quaternion = babySpot world quaternion (blanket: same spot, +1 cm up). */
 export function infantSeat() {
   const g = grp('infantSeat');
   g.add(RB(.4, .1, .6, .04, P.seatShell, 0, .05, 0, 'base'));
   const sh = grp('shell'); at(sh, 0, .1, 0, .3, 0, 0); g.add(sh);   // reclined: head end (−z) up
-  const bowl = mesh(new THREE.SphereGeometry(.3, 40, 20, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), P.seatShell, 'bucket'); bowl.material = P.seatShell; bowl.scale.set(.72, .7, 1.05); at(bowl, 0, .22, 0); sh.add(bowl);
-  bowl.geometry = bowl.geometry.clone(); bowl.material = P.seatShell.clone(); bowl.material.side = THREE.DoubleSide; bowl.material.userData.real = true;
-  const rim = mesh(new THREE.TorusGeometry(.3, .018, 10, 64), P.seatShell, 'rimTop'); rim.scale.set(.72, 1.05, 1); at(rim, 0, .22, 0, Math.PI / 2); sh.add(rim);
-  const pad = mesh(new THREE.SphereGeometry(.27, 32, 16, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), P.seatPad, 'pad'); pad.scale.set(.7, .55, 1.0); at(pad, 0, .225, 0); pad.material = P.seatPad.clone(); pad.material.side = THREE.DoubleSide; pad.material.userData.real = true; sh.add(pad);
-  const hr = grp('harness'); sh.add(hr); for (const x of [-.06, .06]) hr.add(B(.025, .005, .26, P.strap, x, .2, -.04)); hr.add(RB(.05, .015, .05, .008, P.buckle, 0, .205, .07, 'buckle'));
-  const hd = grp('handle'); at(hd, 0, .3, .02); g.add(hd); hd.add(tube([[-.23, 0, 0], [-.21, .22, 0], [0, .3, 0], [.21, .22, 0], [.23, 0, 0]], .018, P.seatShell, 'handleArc'));
-  const cp = grp('canopy'); at(cp, 0, .3, .02, -.25, 0, 0); g.add(cp);   // hood over the head end (−z); fold back = .rotation.x +1.2, hide for clear shots
+  const Rb = .3, drop = .15, hOf = (x, z) => { const c = Math.max(0, x / Math.hypot(x, z || 1e-6)); return -drop * Math.pow(c, 1.4); };   // rim height (≤0) — low toward +x
+  const lowSide = (geo, R) => { const q = geo.attributes.position; for (let i = 0; i < q.count; i++) { const x = q.getX(i), y = q.getY(i), z = q.getZ(i); const h = hOf(x, z) * R / Rb; q.setY(i, -R + (y + R) * (R + h) / R); } geo.computeVertexNormals(); return geo; };
+  const shellM = P.seatShell.clone(); shellM.side = THREE.DoubleSide; shellM.userData.real = true;
+  const bowl = mesh(lowSide(new THREE.SphereGeometry(Rb, 48, 24, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), Rb), shellM, 'bucket'); bowl.scale.set(.72, .7, 1.05); at(bowl, 0, .22, 0); sh.add(bowl);
+  const rp = []; for (let i = 0; i <= 96; i++) { const a = i / 96 * Math.PI * 2, x = Math.cos(a) * Rb, z = Math.sin(a) * Rb; rp.push(new THREE.Vector3(x * .72, .22 + hOf(x, z) * .7, z * 1.05)); }
+  sh.add(mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rp, true), 120, .018, 8, true), P.seatShell, 'rimTop'));
+  const padM = P.seatPadL.clone(); padM.side = THREE.DoubleSide; padM.userData.real = true;
+  const pad = mesh(lowSide(new THREE.SphereGeometry(.27, 40, 18, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), .27), padM, 'pad'); pad.scale.set(.7, .55, 1.0); at(pad, 0, .225, 0); sh.add(pad);
+  sh.add(at(mesh(new THREE.CapsuleGeometry(.05, .14, 6, 16), padM, 'headPillow'), 0, .13, -.2, 0, 0, Math.PI / 2));   // soft head-hugger under the baby's head
+  const hr = grp('harness'); sh.add(hr); const strapS = R(0x6f7782, .85); for (const x of [-.055, .055]) hr.add(B(.016, .004, .08, strapS, x, .178, -.13)); hr.add(RB(.035, .01, .03, .006, P.buckle, 0, .18, -.09, 'buckle'));   // only the shoulder straps show above the blanket
+  const hd = grp('handle'); at(hd, 0, .3, .02, -2.0, 0, 0); g.add(hd); hd.add(tube([[-.23, 0, 0], [-.21, .22, 0], [0, .3, 0], [.21, .22, 0], [.23, 0, 0]], .018, P.seatShell, 'handleArc'));   // folded flat back over the head end
+  const cp = grp('canopy'); at(cp, 0, .3, .02, -.25, 0, 0); g.add(cp);
   const c = mesh(new THREE.SphereGeometry(.24, 32, 12, Math.PI, Math.PI, 0, Math.PI / 2), P.canopy, 'canopyFabric'); c.material = P.canopy.clone(); c.material.side = THREE.DoubleSide; c.material.userData.real = true; c.scale.set(.95, .7, 1.1); cp.add(c);
-  sh.add(spot('babySpot', 0, .16, .02));   // inside the tilted shell → copy its WORLD position + quaternion onto the baby / blanket
+  sh.add(spot('babySpot', 0, .16, .02));
   return g;
 }
 
-/** **people/mannequin-baby** — sleeping infant (~0.6 m, grey silhouette like our mannequins), lying slightly reclined along z, head at −z. Origin = bottom centre.
- * Nodes: 'head', **'chest'** (animate breathing: .scale.z/.x small — fx-radar.js breathe()), 'belly', armL/armR, legL/legR, spot **'chestSpot'** (top of the chest — the echo dot / graph anchor). */
+/** **people/mannequin-baby** — sleeping infant (~0.6 m, light grey matte like our mannequins), lying slightly reclined along z, head at −z. Origin = bottom centre.
+ * Run 20: a READABLE calm face (closed eyes as soft lash arcs, small nose, cheeks, ears, a little hair tuft), short arms resting ON the blanket with small hands (fingers) near the chest.
+ * Nodes: 'head' (+ 'face'), **'chest'** (animate breathing: fx-radar.js breathe()), 'belly', armL/armR, handL/handR, legL/legR, spot **'chestSpot'** (top of the chest — echo dot / graph anchor). */
 export function mannequinBaby() {
-  const g = grp('mannequinBaby'), S = P.skin;
-  const hd = mesh(new THREE.SphereGeometry(.07, 24, 16), S, 'head'); hd.scale.set(1, .95, 1.1); at(hd, 0, .1, -.24); g.add(hd);
-  const ch = mesh(new THREE.CapsuleGeometry(.07, .08, 6, 16), S, 'chest'); ch.scale.set(1.1, .8, 1); at(ch, 0, .08, -.1, Math.PI / 2); g.add(ch);
+  const g = grp('mannequinBaby'), S = R(0xb5b0ab, .75), D = R(0x4a4542, .8), Ck = R(0xc4a9a2, .8);
+  const head = grp('head'); at(head, 0, .105, -.235, 0, 0, -.55); g.add(head);   // turned a little toward +x (the camera / open-door side)
+  const sk = mesh(new THREE.SphereGeometry(.072, 32, 24), S, 'skull'); sk.scale.set(1, .97, 1.08); head.add(sk);
+  const face = grp('face'); head.add(face);   // face looks up (+y), slightly toward the feet
+  for (const s of [-1, 1]) {
+    const lid = []; for (let i = 0; i <= 10; i++) { const a = -.55 + 1.1 * i / 10; lid.push([s * .026 + Math.sin(a) * .013, .066 - (1 - Math.cos(a)) * .004, .012 + Math.cos(a) * .0]); }
+    face.add(tube(lid.map(([x, y, z]) => [x, y, z + .0]), .0022, D, 'eye' + (s < 0 ? 'R' : 'L'), 12));
+    face.add(sc(at(mesh(new THREE.SphereGeometry(.016, 12, 8), Ck), s * .036, .052, .03), 1, .35, 1));
+    head.add(sc(at(mesh(new THREE.SphereGeometry(.016, 12, 8), S, 'ear' + (s < 0 ? 'R' : 'L')), s * .07, .0, .0), .45, 1, .8));
+  }
+  face.add(at(mesh(new THREE.SphereGeometry(.009, 12, 8), S, 'nose'), 0, .071, .03));
+  const mo = []; for (let i = 0; i <= 8; i++) { const a = -.6 + 1.2 * i / 8; mo.push([Math.sin(a) * .008, .058 - (1 - Math.cos(a)) * .003, .045]); } face.add(tube(mo, .0016, D, 'mouth', 8));
+  head.add(sc(at(mesh(new THREE.SphereGeometry(.03, 12, 8), R(0x8f8984, .9), 'hair'), 0, .03, -.05), 1.1, .5, .9));
+  const ch = mesh(new THREE.CapsuleGeometry(.068, .07, 6, 16), S, 'chest'); ch.scale.set(1.12, .8, 1); at(ch, 0, .08, -.115, Math.PI / 2); g.add(ch);
+  g.add(at(mesh(new THREE.CylinderGeometry(.035, .04, .04, 16), S, 'neck'), 0, .095, -.175, Math.PI / 2));
   const bl = mesh(new THREE.SphereGeometry(.075, 20, 14), S, 'belly'); bl.scale.set(1, .75, 1); at(bl, 0, .075, .02); g.add(bl);
-  for (const [s, k] of [[1, 'L'], [-1, 'R']]) { g.add(at(mesh(new THREE.CapsuleGeometry(.025, .1, 4, 10), S, 'arm' + k), s * .09, .09, -.1, Math.PI / 2 - .3, 0, s * .3));
+  for (const [s, k] of [[1, 'L'], [-1, 'R']]) {
+    // upper arm from the shoulder down along the side, forearm bent up so the hand rests on the blanket at the chest
+    g.add(tube([[s * .085, .1, -.15], [s * .1, .12, -.09], [s * .075, .152, -.05], [s * .035, .152, -.075]], .019, S, 'arm' + k, 16));
+    const hn = grp('hand' + k); at(hn, s * .03, .153, -.08); g.add(hn);
+    hn.add(sc(at(mesh(new THREE.SphereGeometry(.02, 14, 10), S), 0, 0, 0), 1, .7, 1.1));
+    for (let f = 0; f < 4; f++) hn.add(at(mesh(new THREE.CapsuleGeometry(.0045, .012, 3, 6), S), -s * .006 + (f - 1.5) * .0085 * s * -1, -.002, -.022, Math.PI / 2 + .3, 0, 0));
+    hn.add(at(mesh(new THREE.CapsuleGeometry(.005, .01, 3, 6), S), s * .02, 0, -.006, 0, 0, s * 1.2));
     g.add(at(mesh(new THREE.CapsuleGeometry(.032, .13, 4, 10), S, 'leg' + k), s * .04, .06, .13, Math.PI / 2 + .2, 0, 0)); }
   g.add(spot('chestSpot', 0, .14, -.1));
   return g;
 }
 
-/** **everyday/blanket** — soft knitted baby blanket draped over a lying baby (0.34 × 0.42 m — fits inside the infantSeat shell, bump in the middle, edges falling). Origin = centre bottom; put it on infantSeat babySpot.
- * One mesh 'blanket' (fade with fx-radar seeThrough for "waves pass the fabric"), + 'blanketEdge' fold. */
+/** **everyday/blanket** — soft knitted baby blanket, run 20: covers the belly + legs only, edge just below the chest (the face, chest and hands stay clear). 0.34 × 0.33 m, fits the infantSeat shell.
+ * Origin = the same babySpot origin as the baby (put it on babySpot, +1 cm). One mesh 'blanket' (fade with fx-radar seeThrough), + 'blanketEdge' (rolled fold at the chest). */
 export function blanket() {
-  const g = grp('blanket'), geo = new THREE.PlaneGeometry(.34, .42, 40, 40); geo.rotateX(-Math.PI / 2);
-  const p = geo.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), r = Math.hypot(x / .12, (z - .03) / .17);
-    let y = .14 * Math.exp(-r * r * .9) + .02; if (Math.abs(x) > .11) y -= (Math.abs(x) - .11) * 1.1; y += .004 * Math.sin(x * 90) * Math.sin(z * 70); p.setY(i, Math.max(-.02, y)); }
+  const g = grp('blanket'), z0 = -.075, z1 = .255, geo = new THREE.PlaneGeometry(.34, z1 - z0, 40, 40); geo.rotateX(-Math.PI / 2); geo.translate(0, 0, (z0 + z1) / 2);
+  const p = geo.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i);
+    const top = .128 + .025 * Math.exp(-(((z - .02) / .07) ** 2)) - .03 * Math.max(0, (z - .14) / .11);   // over the belly, lower over the legs
+    let y = top * Math.exp(-((x / .12) ** 6)); if (Math.abs(x) > .1) y = Math.min(y, top - (Math.abs(x) - .1) * 1.4);
+    y += .003 * Math.sin(x * 90) * Math.sin(z * 70); p.setY(i, Math.max(-.02, y)); }
   geo.computeVertexNormals(); const m = mesh(geo, P.blanket, 'blanket'); m.material = P.blanket.clone(); m.material.side = THREE.DoubleSide; m.material.userData.real = true; g.add(m);
-  g.add(at(mesh(new THREE.CapsuleGeometry(.015, .24, 4, 10), P.blanketB, 'blanketEdge'), 0, .12, -.15, 0, 0, Math.PI / 2));
+  g.add(at(mesh(new THREE.CapsuleGeometry(.014, .2, 4, 10), P.blanketB, 'blanketEdge'), 0, .132, z0 + .008, 0, 0, Math.PI / 2));
   return g;
 }
 

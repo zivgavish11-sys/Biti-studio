@@ -105,3 +105,12 @@ export function breathe(baby, t, {rate = .7, amt = .06} = {}) { const ch = baby.
 /** seeThrough(obj, k, {min=.15}) — fade a soft object (the blanket) to see-through so the waves read through it (k 0 = solid, 1 = ghost). */
 export function seeThrough(obj, k, {min = .15} = {}) { obj.traverse(o => { if (!o.isMesh) return; if (!o.userData.m0) { o.userData.m0 = o.material; o.material = o.material.clone(); o.material.transparent = true; }
   o.material.opacity = 1 - (1 - min) * clamp(k); o.material.depthWrite = k < .05; }); }
+
+/** run 20 (ep030 cutaway): soft warm fill on the rear bench so the infant seat area is bright — one light inside over the seat + one from the open (right, −x) side. No shadows, no glow.
+ * const f = rearFill(scene, car); in frame: f.set(k) (0..1). */
+export function rearFill(scene, car, {power = 1.4, color = 0xffe4c8} = {}) {
+  const P = (x, y, z) => new THREE.Vector3(x, y, z).applyMatrix4(car.matrixWorld);
+  const a = new THREE.PointLight(color, power, 1.8, 1.6), b = new THREE.PointLight(color, power * .8, 3.2, 1.6); a.userData.keep = b.userData.keep = true;
+  a.position.copy(P(-.35, 1.2, -.85)); b.position.copy(P(-1.3, 1.35, -.95)); scene.add(a, b);
+  return { a, b, set(k) { a.intensity = power * k; b.intensity = power * .8 * k; } };
+}
