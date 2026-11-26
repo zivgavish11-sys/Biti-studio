@@ -29,3 +29,4 @@ World: NEW modern Israeli apartment at evening — open kitchen + living room, h
 10. Shabbat: candles on the table, a schedule card with pre-set times, the device dims to a calm state.
 11. "זה עוד לא בחנויות. זה רעיון.": camera pulls back to the device alone on the counter, label "קונספט".
 12. end question card "הייתם קונים כזה לבית?" כן/לא, the kitchen + device behind (device big in front instead of Biti).
+- 2026-11-27 Ziv (via media): NO alert scene → cut phrases 34–37 from voice.mp3 (voice-full.mp3 = original), script.txt + timeline + index updated. Now ~61 s.
