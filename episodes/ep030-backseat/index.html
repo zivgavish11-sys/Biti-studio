@@ -86,7 +86,7 @@ st.frame(t => {
   // Biti: hook (flies in, points at the ceiling), twist + mid follow, end card big in front
   // Biti lives in the world (Ziv 2026-11-27): hovers at real spots by the open (cut) side of the car, flies between them — never glued to the camera, never pops
   const path = [[-1, SP(EYE1, 1.2, -1.6, .3)], [.3, SP(EYE1, 1.2, -1.6, .3)], [1.3, SP(EYE1, 1.3, -.22, .1)], [3.0, SP(EYE1, 1.3, -.22, .1)],
-    [4.4, V(cx - 1.7, 2.5, cz + 1.2)], [A[25], V(cx - 1.7, 2.5, cz + 1.2)], [A[26] + .4, SP(CHC, .95, -.12, .16)], [B[29], SP(CHC, .95, -.12, .16)],
+    [4.4, V(cx - 1.7, 2.5, cz + 1.2)], [A[25], V(cx - 1.7, 2.5, cz + 1.2)], [A[26] + .4, SP(CHC, .9, -.13, .05)], [B[29], SP(CHC, .9, -.13, .05)],
     [A[30] + .4, V(cx - 1.8, 2.45, cz + 1.4)], [A[38] - .5, V(cx - 1.8, 2.45, cz + 1.4)], [A[38] + .1, V(cx - 2.05, 1.33, cz + .24)], [END + 1, V(cx - 2.05, 1.33, cz + .24)]];
   let op = path[0][1].clone(); for (let i = 1; i < path.length; i++) { const [t0, p0] = path[i - 1], [t1, p1] = path[i]; if (t >= t0 && t <= t1) { op = p0.clone().lerp(p1, sm(t0, t1, t)); break; } if (t > t1) op = p1.clone(); }
   orb.visible = true; const endK = sm(A[38] - .5, A[38] + .1, t);
