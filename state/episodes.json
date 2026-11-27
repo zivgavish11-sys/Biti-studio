@@ -1,5 +1,5 @@
 {
- "next_episode": 29,
+ "next_episode": 32,
  "episodes": [
   {
    "n": 1,
@@ -336,6 +336,29 @@
      35.5,
      41.5,
      43.0
+    ]
+   }
+  },
+  {
+   "slug": "ep029-phantombrake",
+   "date": "2026-11-30",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "למה הרכב בולם בלי סיבה? (phantom braking: radar range+speed sharp, height weak → bridge/sign/manhole = stopped car; camera shadow/glare; dilemma filter still vs brake; 4D radar measures height)",
+   "hook": "בשביל הרדאר באוטו שלכם, הגשר הזה הוא קיר. (title: למה הרכב בולם בלי סיבה?)",
+   "posted": "scheduled 2026-11-30T18:00+02:00 via Buffer (IG 6b08d1067c3f43554e433fcf, FB 6b08d10670e2a88e2ce2a258, TikTok 6b08d10707985b96e3fd7fb9). 62 s (first ~50 s+ episode), QA pass. Media branch media-ep029-phantombrake.",
+   "cta": {
+    "mid_follow_s": 50.01,
+    "end": "question",
+    "question": "אתם סומכים על הבלימה האוטומטית? כן / לא",
+    "biti": [
+     0.3,
+     3.3,
+     39.47,
+     51.64,
+     55.43,
+     61.94
     ]
    }
   }
