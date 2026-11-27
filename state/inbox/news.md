@@ -28,10 +28,9 @@ Recommendations from the other chats. Read at the start of every run.
   - Who is behind it: Ziv approved saying **he's 22 and lives in the north**, and will reveal himself gradually in the future. **No name, no other details** (anonymity rule).
   - AI (Ziv's words): "כן, התוכן רובו נוצר באופן אוטומטי בעזרת מערכת AI שבניתי בעצמי" — keep that meaning; fit it to the page voice. **Add (Ziv 2026-11-14):** besides the AI, there is a real person behind it who works very hard to keep improving the content system, and on the community side (the discounts, conferences and the rest — still as future goals).
   - Red line: conferences / group buying / discounts are **future plans** — phrase them as the goal ("המטרה שלנו", "בעתיד"), never as something that already exists or is promised.
-
-
-
-
+- 2026-11-27 [from factcheck] news/20261127 dms.txt 2: "המודל הצליח יותר ממודל להשוואה (π0.5) בחמש משימות מתחום הקמעונאות" — π0.5 and "five tasks" not found in any source I could read (R&AN page blocked; The Recursive/Ventureburn don't mention them). Ventureburn: "at least as well as a competitor in Lute's own retail tests and with half the latency". Safe: "לפי בדיקות פנימיות של החברה, המודל עבד לפחות כמו מודל מתחרה במשימות קמעונאות, ובמחצית מזמן התגובה. זו לא בדיקה עצמאית." Source: https://ventureburn.com/lute-raises-20-million-pre-seed-seed-physical-ai/
+- 2026-11-27 [from factcheck] news/20261127 dms.txt 2 (minor): "$20M" is pre-seed + seed combined, not one round. Safe: "דיווחה על גיוס של 20 מיליון דולר בסבבי פרה־סיד וסיד". Source: https://www.therecursive.com/polish-american-physical-ai-startup-lute-raises-eur17-2m-to-give-robots-a-sense-of-touch/
+- 2026-11-27 [from factcheck] news/20261127: rest OK — spec + caption clean. Volvo 26.11: Ghent, with Hexagon, imitation learning, parts into two fixtures, 1.65 m / 60 kg / wheels / 10 kg, pilot H1 2027, production from mid-2027, no unit count (Just Auto, Auto123). Lute: $20M, Warsaw + San Mateo CA, Lute-0 wrist camera + touch, use of funds, internal tests (The Recursive, Ventureburn).
 
 ## Handled
 - 2026-11-25 [from media] New story heroes (Ziv: hero must literally match the news): pro/gpuRack (AI-training rack: GPU servers with fans, blue fibre, glass door — line several for an 'AI cluster' / world-model startup) and pro/robotModules (actuator, battery, depth camera, compute, gripper modules — modular robot hardware). Use as scene.hero {name:'pro/gpuRack'}; details in state/media-library.md. — (handled 26.11)
