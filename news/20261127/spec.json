@@ -1,0 +1,113 @@
+{
+ "date_label": "חדשות היום · 27.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "וולוו מאמנת רובוטים דמויי אדם לעבודה במפעל המכוניות שלה בבלגיה",
+    "סטארט־אפ בשם Lute גייס 20 מיליון דולר כדי ללמד רובוטים להרגיש במגע"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": 0.7,
+      "z": 0,
+      "ry": -0.35,
+      "pose": {
+       "shoulderR": -0.7,
+       "elbowR": -0.8,
+       "shoulderL": -0.7,
+       "elbowL": -0.8
+      }
+     },
+     {
+      "name": "car/sedanLite",
+      "x": -1.8,
+      "z": -1.2,
+      "ry": 1.0
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "2027",
+   "statSub": "אמצע השנה: היעד לעבודה בייצור",
+   "statColor": "cyan",
+   "title": "רובוט דמוי אדם<br>במפעל של <span class=\"pill\">וולוו</span>",
+   "text": "וולוו והחברה Hexagon מאמנות את הרובוט AEON לקראת עבודה במפעל בגנט שבבלגיה. המשימה הראשונה: להניח חלקים בדיוק על מתקני הרכבה. AEON נע על גלגלים ונושא עד 10 ק״ג.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Volvo Cars, TNW",
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": 0,
+      "z": 0,
+      "ry": 0.35,
+      "pose": {
+       "shoulderR": -0.7,
+       "elbowR": -0.8,
+       "shoulderL": -0.7,
+       "elbowL": -0.8
+      },
+      "frac": 1.15,
+      "az": 0.25
+     },
+     {
+      "name": "car/sedanLite",
+      "x": -1.5,
+      "z": -2.2,
+      "ry": 1.0
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "$20M",
+   "statSub": "גיוס בשלבים מוקדמים",
+   "statColor": "orange",
+   "title": "ללמד רובוטים<br>להרגיש ב<span class=\"pill\">מגע</span>",
+   "text": "Lute, עם משרדים בוורשה ובקליפורניה, בונה מודל בינה מלאכותית שמשלב מצלמה וחיישני מגע, כדי לעזור לרובוטים לטפל בחפצים. הביצועים שפרסמה הם מבדיקות פנימיות שלה.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "Robotics & Automation News, The Recursive",
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": {
+     "name": "body/gripper",
+     "scale": 4,
+     "az": 0.5,
+     "el": 0.15,
+     "frac": 1.0
+    },
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "warm",
+    "hero": {
+     "name": "pro/amr",
+     "ry": 0.5,
+     "az": 0.4
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}
