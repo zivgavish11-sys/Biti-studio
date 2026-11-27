@@ -36,7 +36,7 @@ const door = car.getObjectByName('rearDoorR'), canopy = seat.getObjectByName('ca
 const fan = waveFan(scene, RAD, {mode: 'cone', dir: V(0, -1, 0), vAngle: .7, range: 1.1, speed: .8});
 const dot = echoDots(scene, {r: .015});
 const cabin = cabinLight(scene, car, {power: 1.0});
-const GRAPH = st.screen([.9, .45], (c, t, W, H) => drawBreath(c, t, W, H, {mode: t > A[30] - .3 ? 'compare' : 'baby', k: sm(A[19], A[21] + .6, t) || (t > A[30] ? 1 : 0), ruler: sm(A[24], A[24] + .5, t) * (1 - sm(B[25] + .2, B[25] + .6, t))}), {light: .6});
+const GRAPH = st.screen([.9, .45], (c, t, W, H) => drawBreath(c, t, W, H, {mode: t > A[30] - .3 ? 'compare' : 'baby', k: sm(A[19], A[21] + .6, t) || (t > A[30] ? 1 : 0), ruler: 0}), {light: .6});   // factcheck: the sub-mm tag goes on the radar, not on the breath wave
 const scr = GRAPH.mesh; scene.add(scr); scr.position.copy(CS).add(V(-1.45, .78, 0)); scr.rotation.y = -Math.PI / 2;
 const PL = await proLook(st, {mode: 'outdoor', preset: 'warm', robots: [], people: [mom, baby], focus: CS, exposure: .5, env: .22, fill: .16, sunI: 2.6, sun: [.5, .6, .5], vig: .3});
 const rig = orbRig(st, orb);
@@ -117,6 +117,7 @@ st.frame(t => {
     over(CS.clone().add(V(0, .55, 0)), '?', win(t2, A[13], B[14] + .4, .3), -40, {size: 90});
     // 15-18 radar
     over(RAD, 'רדאר בתקרה', win(t2, A[16] - .1, B[18] + .3, .3), -120, {size: 46, bg: '#8ea6ff'});
+    over(RAD, 'הרדאר רגיש לפחות ממילימטר', win(t2, A[24], B[25] + .4, .3), -120, {size: 44, bg: '#8ea6ff'});
     // 26-27 twist
     box(540, 480, 'עובר דרך השמיכה', win(t2, A[27] - .1, B[27] + .5, .3), {size: 56, bg: '#8ea6ff'});
     // 34-37 locked and left
