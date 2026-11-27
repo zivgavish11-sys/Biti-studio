@@ -144,3 +144,27 @@ TikTok 34 (11-17) → 37 → 38 → 41 → 42 (11-21/22) = +2/day. Facebook 12 �
 - Follow-up ep020 (3-step protection) did worse than its parent ep019 on IG/FB; no uptick on TikTok. Cliffhanger chain ("בפרק הבא") didn't pull people to the next part.
 - FB reach is spiky and independent of IG/TikTok (ep019 1491 while IG 136) — can't be predicted from the other two.
 - Series ep014 got the most TikTok comments (11) but IG/TikTok views are ordinary; no visible follow jump.
+
+## Review 2026-11-27 (#7, analytics)
+Sources: IG + FB + TikTok via Buffer post metrics (updated 27.11 ~04:00 UTC); TikTok/FB followers via Metricool; Metricool IG still empty; ep024 follows/profile visits from Ziv's IG screenshot. IG avg watch now comes from Buffer (% = avg watch / video length).
+| Episode | Length | IG views (reach) | IG avg watch (%) | IG shares / saves / likes | TikTok views / avg % / shares / comments | FB reach | Notes |
+|---|---|---|---|---|---|---|---|
+| #14 home1 | 34 s | 227 (190) | 8.1 s (24%) | 0/1/2 | 374 / 24% / 1 / 11 | 204 | final |
+| #17 safehome | 37 s | 512 (450) | 14.6 s (39%) | 0/2/7 | 535 / 22% / 2 / 0 | 234 | final |
+| #18 flail | 37 s | 143 (124) | 11.2 s (30%) | 0/1/2 | 230 / 28% / 1 / 0 | 192 | final |
+| #19 hack | 35 s | 147 (127) | 9.6 s (28%) | 0/1/1 | 375 / 27% / 1 / 2 | 1493 | final |
+| #20 protect | 37 s | 135 (125) | 6.2 s (17%) | 0/1/1 | 357 / 25% / 0 / 0 | 248 | final |
+| #21 dronedelivery | 32 s | 341 (306) | 11.3 s (35%) | 0/2/2 | 134 / 33% / 1 / 0 | 352 | final |
+| #22 home2 (series) | 34 s | 134 (120) | 5.4 s (16%) | 0/0/0 | 97 / 20% / 0 / 0 | 234 | weakest of the period |
+| #23 poolbot (pro-v3) | 54 s | 1412 (1216) | 27.4 s (50%) | 2/1/31 | 1139 / 38% / 1 / 4 | 797 | screenshot @~16 h: 2 profile visits, 0 follows |
+| #24 drowsy (pro-v3, frame0 eye) | 43 s | **20024 (17062)** | 18.3 s (43%) | **72/33/365** | **2089** / 47% / 6 / 4 | **5332** | ~36 h; record on all 3. Screenshot: 354 likes, 72 shares, 31 saves, 25 profile visits, **20 follows** |
+| #25 windowbot (pro-v3) | 41 s | 477 (418) | 12.5 s (30%) | 2/1/3 | 197 / 29% / 0 / 0 | 7 | only ~12 h, re-check |
+| carousels 11-17..11-26 | – | IG 5–17 views | – | – | TikTok 105–429 (11-24..26: 105/105/118) | 0–5 | comment-the-number CTA: ~0 comments |
+### Followers
+TikTok 42 (11-22) → 50 (11-25). FB 13 → 22 (11-26). IG 13 (11-24, screenshot) before ep024's 20 follows; current IG count unknown.
+### Findings
+- ep024: shares 0.36% of views, saves 0.16%, 1 follow per ~1000 views; 20 follows out of 25 profile visits → conversion on the profile is strong, the bottleneck is getting people to the profile (0.12%).
+- Hits = a thing you own acts on / endangers you (car drowsy, car braking, vacuum camera, pool robot). Misses = third party / how-to / home series.
+- pro-v3 (ep023–024) far above ep018–022, but only 2 matured episodes and topic-confounded; no verdict.
+- Length not a problem: 54 s pool had the best IG % watched (50%).
+- CTA tag: ep023/024 are baseline (no mid CTA, no Biti); mid CTA starts ep027.
