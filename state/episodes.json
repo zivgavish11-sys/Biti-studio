@@ -361,6 +361,22 @@
      61.94
     ]
    }
+  },
+  {
+   "slug": "ep031-homehub",
+   "date": "2026-12-01",
+   "format": "long",
+   "look": "pro-v3",
+   "frame0": "eye",
+   "topic": "איך ייראה עוזר בית חכם שמבין עברית? (CONCEPT reel for Ziv's product idea — 7-disc tower device, not Biti; AC before you enter, 10 apps → one voice, wake word → STT → AI → right app, milk list, reminder, alert → mamad, Shabbat mode)",
+   "hook": "אתם עוד בסלון, והחדר כבר קר. (title: המזגן נדלק לפני שנכנסתם)",
+   "posted": "scheduled 2026-12-01T18:00+02:00 via Buffer (IG 6b08e42f7c3f43554e4bb8dd, FB 6b08e43170e2a88e2cead73e, TikTok 6b08e4328899c4e77909e65b). 68 s, QA pass. Media branch media-ep031-homehub. Product-interest test: watch shares/saves/comments 'כן'.",
+   "cta": {
+    "mid_follow_s": 55.91,
+    "end": "question",
+    "question": "הייתם קונים כזה לבית? כן / לא",
+    "biti": []
+   }
   }
  ],
  "test_plan": "Ziv 2026-11-07: long ep001-006 = baseline. Test 1: 4 shorts in classic-v1 (ep007-010, 8-11.11) vs the longs. Test 2: from ep011 (12.11) 4 episodes in look 'hero-v2' (studio({look:'hero'})) at the winning length. Later tests: 3-4 videos each vs the running average. Tag every new episode with format + look."
