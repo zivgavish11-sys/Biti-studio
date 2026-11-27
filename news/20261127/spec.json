@@ -25,7 +25,8 @@
       }
      },
      {
-      "name": "car/sedanLite",
+      "name": "car/radarSedan",
+      "raw": true,
       "x": -1.8,
       "z": -1.2,
       "ry": 1.0
@@ -63,7 +64,8 @@
       "az": 0.25
      },
      {
-      "name": "car/sedanLite",
+      "name": "car/radarSedan",
+      "raw": true,
       "x": -1.5,
       "z": -2.2,
       "ry": 1.0
@@ -85,13 +87,21 @@
    "scene": {
     "robot": false,
     "look": "studio",
-    "hero": {
-     "name": "body/gripper",
-     "scale": 4,
-     "az": 0.5,
-     "el": 0.15,
-     "frac": 1.0
-    },
+    "hero": [
+     {
+      "name": "body/gripper",
+      "scale": 4,
+      "az": 0.35,
+      "el": 0.12,
+      "frac": 1.0
+     },
+     {
+      "name": "farm/apple",
+      "raw": true,
+      "scale": 3.5,
+      "y": 0.18
+     }
+    ],
     "color": "orange"
    },
    "topShade": 0.35
