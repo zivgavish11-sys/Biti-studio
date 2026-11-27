@@ -168,3 +168,5 @@ TikTok 42 (11-22) → 50 (11-25). FB 13 → 22 (11-26). IG 13 (11-24, screenshot
 - pro-v3 (ep023–024) far above ep018–022, but only 2 matured episodes and topic-confounded; no verdict.
 - Length not a problem: 54 s pool had the best IG % watched (50%).
 - CTA tag: ep023/024 are baseline (no mid CTA, no Biti); mid CTA starts ep027.
+
+Followers from Ziv (2026-11-27): IG 34 · FB 26 · TikTok 54 = **114** (previous review ≈62 with IG stale).

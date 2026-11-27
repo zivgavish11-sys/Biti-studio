@@ -6,6 +6,7 @@ Rules here are maintained by the Boss agent; when Ziv changes a rule for you, it
 Biti episodes only: 1) ideas, 2) script, 3) build, publishing of videos. Never the news carousel or analytics.
 
 ## Decisions from Ziv that affect you
+- **Series 'הבית בעוד 30 שנה' (home2056) is stopped (Ziv 2026-11-27):** no more parts and no closing post.
 - 2026-11-02 DECIDED: Biti videos use the **classic** look only (glow-free, real light + shadows). It is the engine default; build once, no neon version.
 - 2026-11-19 (Ziv approved, analytics review #5): **the hero-v2 look is now the permanent standard** — hero test closed (IG: classic ep001–010 ≈ 101–137 views, hero ep011–017 = 121/1365/1596/186/1686/464). Don't build classic-v1 any more.
 - 2026-11-02: Ziv dislikes glow ("תפסיק עם הדברים הזוהרים", wants modern + classic). News 3D template is now glow-free (no bloom, no text/box glows).

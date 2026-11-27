@@ -112,3 +112,7 @@ Every change to the brain/rules (CLAUDE.md, docs/playbook.md, state/topics.md) t
 - 2026-11-27 (Ziv → video): ep031 keeps the alert scene, as in the original recording (reverses the earlier no-alert note to media).
 
 - 2026-11-27 (Ziv → video): Biti integrated in the world (fitting spot, flies in/out, never pops). docs/agents/video.md.
+
+- 2026-11-27 (Ziv → analytics): swap ep028-price ↔ ep029-phantombrake (phantom brake on 29.11, price on 30.11), keeping one episode every day. Sent to inbox/video.
+- 2026-11-27 (Ziv → analytics): the series 'הבית בעוד 30 שנה' (home2056) is stopped; no closing/follow-up post. docs/agents/video.md + docs/series/home2056.md.
+- 2026-11-27 (Ziv → analytics): leave ep027 as is (its 'next episode we explain' line stays; no caption change).
