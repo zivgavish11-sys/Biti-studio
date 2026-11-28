@@ -26,3 +26,5 @@ World: NEW — family car parked in a sunny Israeli open-air parking lot (daytim
 - align: fixed phrases 35–39 by hand from raw silences (end drift).
 - Ziv picked hook title: "איך הרכב יודע | שנשאר [תינוק] מאחור?" (pill = תינוק).
 - 2026-11-27 (run) cutaway integrated (media run 20): cutRoof/cutSideR/cutFront + handle hidden in interior shots, rearFill; Biti moved into the world (spots by the open side, flies between them); bag-vs-baby shot = high 3/4 with the graph above. Preview frames 0 / 40.5 / 47 sent to Ziv for OK.
+- 2026-11-28 Ziv approved preview frames (0 / 40.5). Full build started.
+- 2026-11-28 build QA PASS (59 s, loop WARN). Light + caption sent; waiting for Ziv's OK to schedule 2.12 18:00. Note: Biti's head under the brand row ~39 s.
