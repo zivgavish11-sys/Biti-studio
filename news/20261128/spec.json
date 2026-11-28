@@ -1,0 +1,132 @@
+{
+ "date_label": "חדשות היום · 28.11",
+ "slides": [
+  {
+   "type": "cover",
+   "title": "מה חדש היום<br>בעולם ה<span class=\"pill\">רובוטים</span>?",
+   "bullets": [
+    "דיווח: יאנדקס מתכננת לשלוח חבילות עם רובוט דמוי אדם",
+    "דיווח: סמסונג מכינה רובוטים למפעלי השבבים שלה"
+   ],
+   "scene": {
+    "robot": false,
+    "look": "cool",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": 0.7,
+      "ry": -0.35,
+      "pose": {
+       "shoulderR": -0.7,
+       "elbowR": -0.8,
+       "shoulderL": -0.7,
+       "elbowL": -0.8
+      }
+     },
+     {
+      "name": "robots/deliveryBot",
+      "x": -0.6,
+      "z": 0.3,
+      "ry": 0.7
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "2026",
+   "statSub": "היעד לפיילוט: עד סוף השנה, לפי הדיווח",
+   "statColor": "cyan",
+   "title": "רובוט דמוי אדם<br>ב<span class=\"pill\">משלוחים</span>?",
+   "text": "לפי Kommersant, יאנדקס הרוסית מתכננת פיילוט: רובוט משלוחים יביא את ההזמנה לכניסה לבניין, ורובוט דמוי אדם ימשיך איתה אל הלקוח.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>1</b> בתגובות",
+   "source": "Kommersant, Meduza, EFE",
+   "scene": {
+    "robot": false,
+    "look": "warm",
+    "hero": [
+     {
+      "name": "pro/humanoid",
+      "x": 0.35,
+      "z": 0,
+      "ry": -0.5,
+      "pose": {
+       "shoulderR": -0.7,
+       "elbowR": -0.8,
+       "shoulderL": -0.7,
+       "elbowL": -0.8
+      }
+     },
+     {
+      "name": "home/cardboardBoxClosed",
+      "x": 0.12,
+      "y": 1.0,
+      "z": 0.34,
+      "ry": -0.5,
+      "scale": 1
+     },
+     {
+      "name": "robots/deliveryBot",
+      "x": -0.75,
+      "z": 0.35,
+      "ry": 0.8
+     }
+    ],
+    "color": "cyan"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "story",
+   "stat": "2028",
+   "statSub": "היעד לרובוטים בקווי הייצור, לפי הדיווח",
+   "statColor": "orange",
+   "title": "סמסונג: רובוטים<br>במפעלי ה<span class=\"pill\">שבבים</span>",
+   "text": "לפי דיווח בקוריאה, סמסונג הקימה צוות רובוטיקה בחטיבת השבבים. הרובוטים אמורים להחליף חלקים ולתחזק ציוד. החברה לא הודיעה על כך רשמית.",
+   "cta": "רוצים את הכתבה המלאה? כתבו <b>2</b> בתגובות",
+   "source": "ETNews, Wccftech, Longbridge",
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": [
+     {
+      "name": "pro/amr",
+      "x": 0,
+      "z": 0,
+      "ry": 0.5
+     },
+     {
+      "name": "pro/industrialArm",
+      "x": 0,
+      "y": 0.4,
+      "z": 0,
+      "scale": 0.6
+     },
+     {
+      "name": "prim/wafer",
+      "x": 0.9,
+      "y": 0.9,
+      "z": 0.3
+     }
+    ],
+    "color": "orange"
+   },
+   "topShade": 0.35
+  },
+  {
+   "type": "follow",
+   "scene": {
+    "robot": false,
+    "look": "studio",
+    "hero": {
+     "name": "pro/quadruped",
+     "ry": 0.5,
+     "az": 0.4
+    },
+    "color": "cyan"
+   }
+  }
+ ]
+}

@@ -1664,7 +1664,14 @@ if (sc.look) {
   grid.visible = ring.visible = glow.visible = false;
   let heroObj = null;
   if (sc.hero) { const hs = Array.isArray(sc.hero) ? sc.hero : [sc.hero]; heroObj = new THREE.Group(); scene.add(heroObj);
-    for (const h of hs) { const g = await load(h.name); const o = SkeletonUtils.clone(g.scene); o.position.set(h.x ?? 0, h.y ?? 0, h.z ?? 0); o.rotation.y = h.ry ?? 0; if (h.scale) o.scale.setScalar(h.scale);
+    for (const h of hs) { if (h.name === 'prim/wafer') { // silicon wafer standing on a thin stand (die grid drawn on canvas)
+        const cv = document.createElement('canvas'); cv.width = cv.height = 512; const c = cv.getContext('2d'); c.fillStyle = '#8d93a6'; c.fillRect(0, 0, 512, 512);
+        for (let a = 0; a < 16; a++) for (let b = 0; b < 16; b++) { c.fillStyle = `hsl(${200 + (a + b) * 5},28%,${34 + ((a * 7 + b * 3) % 5) * 4}%)`; c.fillRect(a * 32 + 2, b * 32 + 2, 28, 28); }
+        const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace; const w = new THREE.Group(); w.position.set(h.x ?? 0, h.y ?? 0, h.z ?? 0);
+        const d = new THREE.Mesh(new THREE.CircleGeometry(.36, 96), new THREE.MeshPhysicalMaterial({map: tx, metalness: .7, roughness: .22, iridescence: .8, side: THREE.DoubleSide})); w.add(d);
+        const rim = new THREE.Mesh(new THREE.TorusGeometry(.36, .008, 8, 96), new THREE.MeshStandardMaterial({color: 0xcfd3da, metalness: 1, roughness: .3})); w.add(rim);
+        const st_ = new THREE.Mesh(new THREE.CylinderGeometry(.02, .02, (h.y ?? .9) - .36, 16), rim.material); st_.position.y = -.36 - ((h.y ?? .9) - .36) / 2; w.add(st_); heroObj.add(w); continue; }
+      const g = await load(h.name); const o = SkeletonUtils.clone(g.scene); o.position.set(h.x ?? 0, h.y ?? 0, h.z ?? 0); o.rotation.y = h.ry ?? 0; if (h.scale) o.scale.setScalar(h.scale);
       for (const [n, v] of Object.entries(h.pose || {})) { const nd = o.getObjectByName(n); if (nd) typeof v === 'number' ? (nd.rotation.x = v) : Object.assign(nd.rotation, v); }
       if (!h.raw) LOOK.pro(o, {people: h.name.includes('people/'), paint: h.paint}); for (const [n, c] of Object.entries(h.recolor || {})) o.getObjectByName(n)?.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.color.set(c); } }); heroObj.add(o); } }
   if (sc.pro) scene.traverse(o => { if (o.isMesh && o.name !== 'cyclorama' && !(heroObj && heroObj.getObjectById(o.id))) LOOK.pro(o); });
