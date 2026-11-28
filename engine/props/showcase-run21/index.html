@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body>
+<script type="importmap">{"imports":{"three":"/engine/node_modules/three/build/three.module.js","three/addons/":"/engine/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// Media pro 2026-11-28 run 21 — t 1 = fab/cleanroomBay + 2 processTools + mobileManipulator at a load port (FOUP on deck, OHT overhead) · t 2 = close-up foup + wafer · entrance → showcase-run21b.
+// Render: python3 tools/render.py frames engine/props/showcase-run21 1,2
+import {proLook} from '/engine/lib/look-pro.js';
+import {studio, THREE, V} from '/engine/lib/core.js';
+const st = await studio({look: 'hero', fog: .001, hook: [], hookEnd: 0, scenes: (A, B, E) => [0, E]});
+const {scene} = st;
+const M = async (n, x = 0, z = 0) => { const o = (await st.model(n)).object; o.position.x += x; o.position.z += z; scene.add(o); return o; };
+const S = (o, n) => { o.updateMatrixWorld(true); return o.getObjectByName(n).getWorldPosition(new THREE.Vector3()); };
+const bay = await M('fab/cleanroomBay');
+const t0 = await M('fab/processTool'); t0.position.copy(S(bay, 'toolSpot0'));
+const t1 = await M('fab/processTool'); t1.position.copy(S(bay, 'toolSpot1')); t1.getObjectByName('servicePanel').rotation.y = 1.3;
+const mm = await M('fab/mobileManipulator'); const rs = S(t0, 'robotSpot'); mm.position.set(rs.x - .2, 0, rs.z - .35); mm.rotation.y = Math.PI;
+const f0 = await M('fab/foup'); f0.position.copy(S(mm, 'deckSpot'));
+const f1 = await M('fab/foup'); f1.position.copy(S(t0, 'foupSpot0')); f1.rotation.y = Math.PI;
+const f2 = await M('fab/foup'); const oh = S(bay, 'ohtFoupSpot'); f2.position.copy(oh);
+const w = await M('fab/wafer', 0, 0); w.position.set(-2.6, 1.3, 1.2); w.rotation.set(1.15, .3, 0);
+scene.updateMatrixWorld(true);
+const PL = await proLook(st, {mode: 'studio', preset: 'cool', robots: [], people: [], focus: V(0, 1, 0), exposure: .75});
+st.frame(t => {
+  const v = t < 1.5 ? [[3.2, 3.4, 4.6], [-3.6, 1.0, -1.6]] : [[-1.9, 1.6, 2.5], [-2.7, 1.15, .9]];
+  PL.update(t, V(...v[1])); return {cp: V(...v[0]), ct: V(...v[1]), noFlash: true, fov: 50};
+});
+st.ready();
+</script></body></html>

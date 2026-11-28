@@ -43,3 +43,4 @@
 - road/dayHighway, car/radarSedan, car/sedanLite (kit-ep029.js, built on our cabinCar) — in-house (Media pro), generic, no brands/logos/real place names, CC0, 2026-11-27 (run 19b). FX engine/props/fx-radar.js — in-house, CC0.
 - outdoor/parkingLot, car/familyCar, everyday/{infantSeat, blanket, babyBag}, people/mannequin-baby (kit-ep030.js) — in-house (Media pro), generic, no brands/logos, CC0, 2026-11-27 (run 19c).
 - car/familyCar cutaway groups, infantSeat low side, mannequin-baby face/hands, blanket to the chest (kit-ep030.js, run 20) — in-house (Media pro), CC0, 2026-11-27.
+- fab/{wafer, foup, processTool, cleanroomBay, mobileManipulator}, buildings/aptEntrance (kit-fab.js) — in-house (Media pro), generic, no brands/logos/real chip layouts, CC0, 2026-11-28 (run 21). mobileManipulator reuses our pro/industrialArm.

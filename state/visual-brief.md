@@ -90,3 +90,8 @@ Image sent: before/after of the 20.11 cover (news/20261120 vs news/_lookkit slid
 1. Reels: frame 0 at human eye level (~1.6 m, as if the viewer stands in the scene — the backyard, the street, the orchard row), the high wide shot only at 2–3 s. Backs analytics review #6: the breakouts put the viewer in the picture.
 2. "Slow-motion moment": the one key mechanical moment of each episode (apple picked, brake squeezes, coil field jumps) plays at half speed for ~1.5 s, same way every time = a recognisable signature. Test on 3–4 reels, one change at a time.
 Image sent: engine/props/showcase-farm (t 1, 5.5, 9, 11).
+
+## Proposals sent 2026-11-28 (run 21, fab + Israeli entrance kit) — waiting for Ziv's OK
+1. News carousels: industry stories get their real place behind the hero (clean-room, factory, building entrance) — dark-graded and soft out of focus — instead of the empty dark studio sweep. Hero stays one realistic object; product/robot launches stay in the studio.
+2. One fixed "Israeli doorstep" for every delivery story (rover, drone, humanoid hand-off), in reels and carousels: buildings/aptEntrance (block on pilotis, glass lobby, intercom, mailboxes) = a recognisable local place.
+Image sent: sheet of showcase-run21 t 1,2 + showcase-run21b t 1,2.
