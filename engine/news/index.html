@@ -1673,7 +1673,7 @@ if (sc.look) {
         const st_ = new THREE.Mesh(new THREE.CylinderGeometry(.02, .02, (h.y ?? .9) - .36, 16), rim.material); st_.position.y = -.36 - ((h.y ?? .9) - .36) / 2; w.add(st_); heroObj.add(w); continue; }
       const g = await load(h.name); const o = SkeletonUtils.clone(g.scene); o.position.set(h.x ?? 0, h.y ?? 0, h.z ?? 0); o.rotation.y = h.ry ?? 0; if (h.scale) o.scale.setScalar(h.scale);
       for (const [n, v] of Object.entries(h.pose || {})) { const nd = o.getObjectByName(n); if (nd) typeof v === 'number' ? (nd.rotation.x = v) : Object.assign(nd.rotation, v); }
-      if (!h.raw) LOOK.pro(o, {people: h.name.includes('people/'), paint: h.paint}); for (const [n, c] of Object.entries(h.recolor || {})) o.getObjectByName(n)?.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.color.set(c); } }); heroObj.add(o); } }
+      for (const n of h.hide || []) { const nd = o.getObjectByName(n); if (nd) nd.removeFromParent(); } if (!h.raw) LOOK.pro(o, {people: h.name.includes('people/'), paint: h.paint}); for (const [n, c] of Object.entries(h.recolor || {})) o.getObjectByName(n)?.traverse(m => { if (m.isMesh) { m.material = m.material.clone(); m.material.color.set(c); } }); heroObj.add(o); } }
   if (sc.pro) scene.traverse(o => { if (o.isMesh && o.name !== 'cyclorama' && !(heroObj && heroObj.getObjectById(o.id))) LOOK.pro(o); });
   const L = LOOK.setup({renderer, scene, cam, composer, preset: sc.look === true ? 'studio' : sc.look, dof: sc.dof !== 0});
   let tgt = new THREE.Vector3(...ct);
